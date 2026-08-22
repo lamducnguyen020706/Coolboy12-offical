@@ -11,7 +11,9 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
-| Open items | **none** — all five register entries closed |
+| Primary findings | **4** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D |
+| Sub-resolution | **GAP-D.1**, under GAP-D |
+| Open items | **none** |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
 
 > **Placement note.** This file sits in `docs/conventions/` because that is the smallest
@@ -74,13 +76,18 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
+The register holds **four primary findings** — CONFLICT-A, CONFLICT-B, GAP-C and GAP-D — and
+**one sub-resolution**, GAP-D.1, which sits under GAP-D. GAP-D.1 is not a fifth independent
+architectural finding: it settles the naming of the purpose file that GAP-D introduced, and
+it has no standing apart from GAP-D.
+
 | ID | Finding | Resolution | Status | Constitutional Change |
 |---|---|---|---|---|
 | **CONFLICT-A** | RMS P=13 vs roadmap VERDICT / P14 | P=13 frozen baseline; VERDICT is a provisional roadmap extension | **RESOLVED FOR BUILD** | None |
 | **CONFLICT-B** | 25 vs 27 metadata fields | use the 25 explicitly enumerated fields | **RESOLVED FOR BUILD** | None |
-| **GAP-C** | missing requirement register | non-blocking verification / information gap | **NON-BLOCKING** | None |
+| **GAP-C** | missing requirement register | build not blocked; requirement text not verified | **NON-BLOCKING — UNVERIFIED** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
-| **GAP-D.1** | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
+| **GAP-D.1** *(sub-resolution of GAP-D)* | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
 
 ---
 
@@ -159,7 +166,7 @@ WORKING METADATA SET = the 25 explicitly enumerated fields
 
 ---
 
-### GAP-C — Requirement Register
+### GAP-C — Requirement Register · NON-BLOCKING — UNVERIFIED
 
 The Roadmap assigns each artifact requirement IDs — Artifact 001 carries `Req: BR-98`,
 Artifact 002 carries `Req: BR-02`, and the manifest cites `BR-01` through `BR-113` plus the
@@ -170,10 +177,23 @@ supplied source set**.
 So: **the requirement ID is known; the authoritative document defining its full text is not
 currently available.**
 
-This is **not** an architecture conflict. Nothing in the three authoritative documents
-disagrees with anything else on this point — a referenced document is simply absent. It does
-**not** block Artifacts 001, 002 or 003, each of which is independently supported by the
-Blueprint and RMS sections its manifest entry cites.
+This is **not** an architecture conflict, and it is **not** a blocker. Nothing in the three
+authoritative documents disagrees with anything else on this point — a referenced document is
+simply absent. Artifacts 001, 002 and 003 are each independently supported by the Blueprint and
+RMS sections their manifest entries cite, so the build proceeds.
+
+**Two things must be held apart, and the status carries both:**
+
+```
+BUILD IS NOT BLOCKED          artifacts proceed on their Blueprint and RMS citations
+        +
+REQUIREMENT TEXT IS NOT       no BR-nnn definition has been read, so no artifact has
+VERIFIED                      been verified against its requirement text
+```
+
+The register is **still unavailable**. This entry is therefore not closed and must not be read
+as closed: it is a **standing verification dependency**, discharged only when the matrix is
+supplied and each artifact's `Req:` citation is checked against it.
 
 **Operational rule.**
 
@@ -185,7 +205,8 @@ Blueprint and RMS sections its manifest entry cites.
 - Treat the missing register as a documentation and verification gap, resolvable by supplying
   the matrix.
 
-**Status:** NON-BLOCKING · **Type:** INFORMATION GAP · **Constitutional change:** NONE
+**Status:** NON-BLOCKING — UNVERIFIED · **Type:** INFORMATION / VERIFICATION GAP ·
+**Constitutional change:** NONE
 
 ---
 
@@ -237,9 +258,12 @@ Artifact 003 formalizes `PURPOSE.md` as the purpose-file convention.
 
 Verified state of `canon/**` as Artifact 001 built it:
 
-| Path | Files | Canonical records |
+| Path | Files present | Canonical Records / canonical data |
 |---|---|---|
-| `canon/` and its six partitions | 7 purpose files | **0** |
+| `canon/` and its six partitions | 7 × `PURPOSE.md` | **0** |
+
+`canon/**` is **not** literally empty of files, and is not required to be. It holds seven
+purpose files and no canonical Records.
 
 The distinction that governs, unchanged:
 
@@ -252,9 +276,18 @@ canonical record    = canonical data
                       that model's own canonical gate (G-CANON-W/E/P/V/I, G-REG)
 ```
 
-`canon/**` therefore contains **zero canonical data** and remains empty of Records, which is
-what Roadmap PART X requires before any canonical gate. Each purpose file under `canon/**`
-states its own non-canonical status in its own text.
+So `canon/**` **contains no canonical Records and no canonical data at this stage**, which is
+what Roadmap PART X requires before any canonical gate. The `PURPOSE.md` files inside those
+directories are **structural documentation, not canonical Records and not canonical data** —
+their presence does not populate the partition, and each states its own non-canonical status
+in its own text.
+
+The requirement is on canonical data, never on file count:
+
+```
+canon/** holds no canonical Record        <- the actual constraint
+canon/** holds no file at all             <- NOT the constraint, and not the built state
+```
 
 **No new canon exception is introduced by this note. No canonical record is created by this
 note.** The single pre-existing allowance — a purpose file inside `canon/**` — is the author's
