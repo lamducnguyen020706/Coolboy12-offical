@@ -11,6 +11,7 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
+| Open items | **none** — all five register entries closed |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
 
 > **Placement note.** This file sits in `docs/conventions/` because that is the smallest
@@ -79,7 +80,7 @@ Verified against the working tree, not from prior context.
 | **CONFLICT-B** | 25 vs 27 metadata fields | use the 25 explicitly enumerated fields | **RESOLVED FOR BUILD** | None |
 | **GAP-C** | missing requirement register | non-blocking verification / information gap | **NON-BLOCKING** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
-| **GAP-D.1** | purpose-file **name case** — this note's instruction says `purpose.md`, the tree holds `PURPOSE.md` | **not resolved** — reported, awaiting author ruling | **OPEN** | None |
+| **GAP-D.1** | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
 
 ---
 
@@ -206,23 +207,29 @@ Artifact 003.
 
 **Status:** RESOLVED · **Constitutional change:** NONE
 
-#### GAP-D.1 — purpose-file name case · OPEN
+#### GAP-D.1 — purpose-file name case · RESOLVED
 
-A discrepancy exists between the instruction that produced this note and the repository:
+A discrepancy was raised between an instruction and the repository:
 
 | Source | Purpose-file name |
 |---|---|
 | GAP-D resolution issued before Artifact 001 | `PURPOSE.md` |
 | Artifact 001 as built and committed (`bf2368e`) | `PURPOSE.md` × 68 |
-| Instruction issued with this note | `purpose.md`, with `PURPOSE.md` named as a convention not to introduce |
+| Instruction issued with the first draft of this note | `purpose.md` |
 
-The tree holds 68 `PURPOSE.md` and zero `purpose.md`. Renaming all 68 would modify Artifact
-001, which the instruction for this note also forbids absent a discovered contradiction, and
-which directs that a contradiction be **reported rather than silently changed**. It is
-therefore reported here and **not** acted on.
+**Author ruling: keep `PURPOSE.md`.**
 
-Recorded as written, decided by neither party. The author's ruling settles it, and Artifact
-003 formalizes whichever name is chosen. No file was renamed by this note.
+The convention is **`PURPOSE.md`**, uppercase. This matches the original GAP-D resolution and
+Artifact 001 as built, so no change to the repository was required.
+
+Verified at the time of the ruling, on a case-sensitive filesystem: 68 files named
+byte-exactly `PURPOSE.md`, zero named `purpose.md`, and git's index tracking all 68 in
+uppercase. The instruction to rename `purpose.md` to `PURPOSE.md` therefore had **no targets**
+— it described a state the repository already held. **No file was renamed. Artifact 001 was
+not modified.**
+
+Artifact 003 formalizes `PURPOSE.md` as the purpose-file convention.
+
 
 ---
 
@@ -264,8 +271,10 @@ GAP-D resolution and is not widened here.
 | Purpose-file coverage | **COMPLETE** — 68 / 68 |
 | Modified by this note | **No** |
 
-One contradiction discovered and reported, not acted on: **GAP-D.1**, the purpose-file name
-case. No other contradiction was found.
+One contradiction was discovered and reported rather than acted on — **GAP-D.1**, the
+purpose-file name case. It has since been closed by author ruling in favour of the name
+Artifact 001 already uses, so no change to Artifact 001 followed. No other contradiction was
+found.
 
 ---
 
