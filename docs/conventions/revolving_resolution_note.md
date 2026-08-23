@@ -61,11 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `3b8196d` Artifact 016 — source-of-truth boundary (P0/0d) |
-| Artifacts complete | 001 … 014 · 015 · **016 COMPLETE / PASS** |
-| Next artifact | **017 — NOT CREATED** |
+| HEAD | `26252ce` Artifact 017 — canonical zone declaration (P0/0d) |
+| Artifacts complete | 001 … 015 · 016 · **017 COMPLETE / PASS** |
+| Next artifact | **018 — NOT CREATED** |
 | Working tree | clean |
-| Tracked files | 81 |
+| Tracked files | 82 |
 | Directories | 68, matching Roadmap PART I exactly |
 | Purpose-file coverage | 68 / 68 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 68 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
