@@ -61,7 +61,7 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `26252ce` Artifact 017 — canonical zone declaration (P0/0d) |
+| HEAD | `d68927f` Commit the three authoritative source documents to docs/sources/ |
 | Artifacts complete | 001 … 015 · 016 · **017 COMPLETE / PASS** |
 | Next artifact | **018 — NOT CREATED** |
 | Working tree | clean |
