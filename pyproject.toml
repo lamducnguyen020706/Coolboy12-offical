@@ -1,0 +1,36 @@
+# COOLBOY12 — Artifact 005 · pyproject.toml · P0/0b
+#
+# Scope is Artifact 005 only: the project's build and package definition.
+# Deliberately absent, because later artifacts own them:
+#   006  dependency lockfile
+#   007  test runner configuration
+#   008  linter / formatter configuration
+#   009  editor / tooling configuration
+#   010  test suite scaffolding
+#
+# Three values below are not established by the Blueprint, the Record Model
+# System, or the Roadmap. The word "python" appears in none of the three.
+# They are TECHNICAL IMPLEMENTATION DECISIONS under Artifact 003, chosen
+# minimally and recorded here rather than presented as source-backed:
+#   requires-python  the only observable constraint is the environment the
+#                    build runs in; stdlib tomllib, used by this artifact's
+#                    own validation, is 3.11+
+#   build-backend    setuptools, as the most conservative backend that adds
+#                    no dependency the environment does not already have
+#   version          the Blueprint records "Nothing in this system has been
+#                    implemented", so nothing has been released
+# Each is superseded by an authoritative source that establishes it.
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coolboy12"
+version = "0.0.0"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = true
