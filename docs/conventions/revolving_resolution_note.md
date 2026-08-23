@@ -61,11 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `8a8360d` Artifact 013 — version-control boundary (P0/0d) |
-| Artifacts complete | 001 … 011 · 012 · **013 COMPLETE / PASS** |
-| Next artifact | **014 — NOT CREATED** |
+| HEAD | `544a613` Artifact 014 — environment boundary (P0/0d) |
+| Artifacts complete | 001 … 012 · 013 · **014 COMPLETE / PASS** |
+| Next artifact | **015 — NOT CREATED** |
 | Working tree | clean |
-| Tracked files | 78 |
+| Tracked files | 79 |
 | Directories | 68, matching Roadmap PART I exactly |
 | Purpose-file coverage | 68 / 68 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 68 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
