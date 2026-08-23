@@ -11,7 +11,7 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
-| Primary findings | **9** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I |
+| Primary findings | **10** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J |
 | Sub-resolution | **GAP-D.1**, under GAP-D |
 | Open items | **none** |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
@@ -61,9 +61,9 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `04a1a16` Artifact 008 — linter / formatter configuration (P0/0b) |
-| Artifacts complete | 001 · 002 · 003 · 004 · 005 · 006 · 007 · 008 · **009 COMPLETE / PASS** |
-| Next artifact | **010 — NOT CREATED** |
+| HEAD | `53c2fb3` Artifact 009 — editor / tooling configuration (P0/0b) |
+| Artifacts complete | 001 · 002 · 003 · 004 · 005 · 006 · 007 · 008 · 009 · **010 COMPLETE / PASS** |
+| Next artifact | **011 — NOT CREATED** |
 | Working tree | clean |
 | Tracked files | 72 |
 | Directories | 68, matching Roadmap PART I exactly |
@@ -77,7 +77,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 9** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I.
+**Primary resolution entries: 10** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -95,6 +95,7 @@ separate packaging decisions.
 | **GAP-G** | no test runner named by any source | `pytest` selected by author ruling; configured in `pyproject.toml` | **RESOLVED FOR BUILD** | None |
 | **GAP-H** | no linter or formatter named by any source | `ruff` selected by author ruling, one tool for both roles | **RESOLVED FOR BUILD** | None |
 | **GAP-I** | no editor named by any source | EditorConfig chosen as the editor-agnostic mechanism; no editor made a project requirement | **RESOLVED FOR BUILD** | None |
+| **GAP-J** | Artifact 010's exit condition already satisfied by Artifact 001 | roadmap overlap recorded; 010 verified rather than rebuilt, zero repository delta | **RESOLVED FOR BUILD** | None |
 | **GAP-D.1** *(sub-resolution of GAP-D)* | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
 
 ---
@@ -570,6 +571,55 @@ it. That duplication is the artifact's purpose, not an oversight — unlike GAP-
 **Replaceability, per Blueprint §9.5.** Verified by removing the file: `ruff check`,
 `ruff format --check` and `pytest` returned identical results with and without it. It governs
 nothing and coolboy12's architecture is unchanged by its absence.
+
+**Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
+
+---
+
+### GAP-J — Artifact 010 Overlaps Artifact 001
+
+**The finding.** Artifact 010 (`test suite scaffolding`) required **no new files**. Its exit
+condition —
+*"constitutional/unit/integration/negative/boundary/lockstep/conformance exist"* — was already
+satisfied, correctly and by roadmap mandate, when Artifact 001 was built.
+
+**Why this is an overlap and not an error.** Roadmap PART I line 83 lists
+`tests/{constitutional,unit,integration,negative,boundary,lockstep,conformance}/` as part of the
+repository tree, and Artifact 001's Val is *"tree matches PART I; every dir has a purpose file"*.
+Artifact 001 was therefore **required** to create all seven, and did. Artifact 010 names the same
+seven directories as its own exit condition. Both entries are internally correct; the roadmap
+simply assigns the same seven directories twice.
+
+**Resolution: verify, do not rebuild.** Per the artifact brief — *"do not blindly recreate seven
+existing directories if they already exist"* — Artifact 010 was executed as a verification pass.
+Nothing was created, renamed, duplicated or deleted. **Repository delta: zero.**
+
+Artifact 010's remaining obligation was its Val, *"seven suites discoverable"*, which is a
+verification duty. It was discharged: pytest accepts each of the seven individually (exit 5,
+no tests collected — not exit 4 config error or exit 2 collection error), and a scratch mirror
+with one probe per suite collected 7/7.
+
+#### Downstream constraint discovered — unique test-file basenames
+
+Recorded because it will bite Artifact 011 onward.
+
+The suite directories are **not Python packages** — no `__init__.py`, correctly, since none is
+required by pytest and none is mandated by any source. Under pytest's default import mode this
+means **test files in different suites must have unique basenames**.
+
+Demonstrated in scratch:
+
+| Probe naming | Result |
+|---|---|
+| `test_probe.py` in all seven suites | **6 collection errors**, 1 collected |
+| `test_probe_<suite>.py`, unique per suite | **7 collected, 0 errors** |
+
+This is a property of the scaffold as the sources require it to be, not a defect. It is **not
+resolved here**, because the two available remedies — adding `__init__.py` to each suite, or
+changing pytest's import mode — are both outside Artifact 010's scope and neither is required
+by any source. It becomes actionable when real test files appear.
+
+Artifact 011's `harness.py` is unaffected: it is not a `test_*.py` file and is not collected.
 
 **Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
 
