@@ -61,11 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `124b001` Artifact 018 — patch: remove snapshot statistics, normalize 003 wording |
-| Artifacts complete | 001 … 016 · 017 · **018 COMPLETE / PASS** |
-| Next artifact | **019 — NOT CREATED** |
+| HEAD | `fa09751` Artifact 019 — restart / recovery conventions (P0/0d) |
+| Artifacts complete | 001 … 017 · 018 · **019 COMPLETE / PASS** |
+| Next artifact | **020 — NOT CREATED** |
 | Working tree | clean |
-| Tracked files | 87 |
+| Tracked files | 88 |
 | Directories | 69 — 68 matching Roadmap PART I exactly, plus `docs/sources/` (GAP-K, not a PART I directory) |
 | Purpose-file coverage | 69 / 69 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 69 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
