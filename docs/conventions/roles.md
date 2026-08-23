@@ -38,14 +38,9 @@ design-principle context in which artifact conventions sit; it does not define r
 no role definition below is attributed to it.
 
 The one-line job descriptions in §4 are **reproduced from Artifact 003 §7 · `R` — Role**, which
-already fixed them against Roadmap §0.6. This document does not restate the rest of Artifact 003
-and does not override it; where the two differ, Artifact 003 governs the metadata convention and
-this document is wrong.
-
-**Empirical confirmation.** All 490 manifest rows were scanned: exactly these seven tokens
-appear in the `R` field and no eighth. Usage counts —
-`CONTRACT` 186 · `ARCH` 139 · `PROOF` 69 · `VALID` 47 · `IMPL` 27 · `GOV` 9 · `SURFACE` 6, plus
-seven rows declaring two roles (§6).
+already fixed them against Roadmap §0.6. This document does not restate the rest of Artifact 003.
+Artifact 003 remains the governing artifact/phase convention; Artifact 018 specializes the `R`
+(Role) field and must remain consistent with Artifact 003.
 
 ## 4. The Seven Artifact Roles
 
@@ -75,10 +70,10 @@ Where one artifact is legitimately several files under **RULE G3** (Artifact 003
 files may be one artifact when they share all four of: one responsibility, one lifecycle, one
 owner, one validation"*), the role follows that single shared responsibility.
 
-**Multiple roles are declared, never inferred.** Seven manifest rows declare two roles —
-`IMPL,VALID` (×3), `CONTRACT,VALID`, `IMPL,CONTRACT`, `IMPL,PROOF`, `VALID,PROOF`. A later
-artifact carries more than one role only when its own manifest row states them; no artifact
-acquires a second role by resembling one.
+**Multiple roles are declared, never inferred.** The manifest contains rows declaring two
+roles — for example `IMPL,VALID` and `CONTRACT,VALID`. A later artifact carries more than one
+role only when its own manifest row states them; no artifact acquires a second role by
+resembling one.
 
 ## 6. Role Is One Dimension Among Several
 
@@ -96,10 +91,10 @@ acquires a second role by resembling one.
 | `Canon` | Is it canonical, and about what? |
 | `G` — Gate | What must pass before it may proceed? |
 
-**Role and Type are independent, and the manifest proves it.** A `doc` is `CONTRACT` 125 times,
-`ARCH` 99 times, `GOV` 9 times, and `VALID` twice. `code` is `VALID` 36 times, `IMPL` 26, `ARCH`
-13. `config` is `SURFACE` 4 times, `IMPL` 4, `VALID` 3. There is no `doc = CONTRACT` mapping and
-none may be introduced.
+**Role and Type are independent, and the manifest proves it.** `doc` artifacts carry `CONTRACT`,
+`ARCH`, `GOV`, and `VALID` depending on the artifact; `code` artifacts carry `VALID`, `IMPL`, and
+`ARCH`; `config` artifacts carry `SURFACE`, `IMPL`, and `VALID` (§7 gives concrete examples).
+There is no `doc = CONTRACT` mapping and none may be introduced.
 
 **Role does not set SoT.** The six source-of-truth classes are Artifact 016's, not roles, and no
 role implies one. An `IMPL` artifact is not authoritative because it implements; a `CONTRACT`
@@ -110,11 +105,11 @@ with different vocabularies, and an artifact may carry either without the other.
 
 **Role does not set Owner — and `GOV` is the trap.** `GOV` is a value in **both** the Owner
 vocabulary and the Role vocabulary, and the two are unrelated. The manifest shows both
-independences directly: `Own: GOV` appears 23 times and carries roles other than `GOV`
-(artifact 025 is `SURFACE`; 146–149 are `CONTRACT`), while `R: GOV` appears 9 times under owners
-other than `GOV` (artifact 065 is `Own: R`; 422 is `Own: E`). Seven artifacts happen to carry
-both; that is a coincidence of two fields agreeing, never a rule. **Read `GOV` with its field
-name attached.**
+independences directly: artifacts with `Own: GOV` carry roles other than `GOV` (artifact 025 is
+`SURFACE`; 146–149 are `CONTRACT`), and artifacts with `R: GOV` sit under owners other than
+`GOV` (artifact 065 is `Own: R`; 422 is `Own: E`). Where an artifact happens to carry both, that
+is a coincidence of two fields agreeing, never a rule. **Read `GOV` with its field name
+attached.**
 
 **Role does not set Canon, does not create a gate, and grants no filesystem or canonical write
 permission.** Write authority over `canon/**` is Artifact 017's and belongs to the Mutation
