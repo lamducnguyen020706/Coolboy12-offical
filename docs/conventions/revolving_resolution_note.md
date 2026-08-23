@@ -11,7 +11,7 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
-| Primary findings | **11** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J |
+| Primary findings | **12** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K |
 | Sub-resolution | **GAP-D.1**, under GAP-D |
 | Open items | **CONFLICT-C** — SoT class count, unresolved at source; non-blocking for 016/017/020, potentially blocking for 050 |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
@@ -65,10 +65,10 @@ Verified against the working tree, not from prior context.
 | Artifacts complete | 001 … 015 · 016 · **017 COMPLETE / PASS** |
 | Next artifact | **018 — NOT CREATED** |
 | Working tree | clean |
-| Tracked files | 82 |
-| Directories | 68, matching Roadmap PART I exactly |
-| Purpose-file coverage | 68 / 68 directories |
-| Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 68 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
+| Tracked files | 86 |
+| Directories | 69 — 68 matching Roadmap PART I exactly, plus `docs/sources/` (GAP-K, not a PART I directory) |
+| Purpose-file coverage | 69 / 69 directories |
+| Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 69 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
 | `README.md` | present at repository root |
 | Canonical records | **0** |
 | Pre-existing decision / resolution notes | none |
@@ -77,7 +77,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 11** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J.
+**Primary resolution entries: 12** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -97,6 +97,7 @@ separate packaging decisions.
 | **GAP-H** | no linter or formatter named by any source | `ruff` selected by author ruling, one tool for both roles | **RESOLVED FOR BUILD** | None |
 | **GAP-I** | no editor named by any source | EditorConfig chosen as the editor-agnostic mechanism; no editor made a project requirement | **RESOLVED FOR BUILD** | None |
 | **GAP-J** | Artifact 010's exit condition already satisfied by Artifact 001 | roadmap overlap recorded; 010 verified rather than rebuilt, zero repository delta | **RESOLVED FOR BUILD** | None |
+| **GAP-K** | no source names a repository location for the three source documents themselves | author-decided: `docs/sources/`, exact unmodified copies, MD5-verified | **RESOLVED FOR BUILD** | None |
 | **GAP-D.1** *(sub-resolution of GAP-D)* | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
 
 ---
@@ -669,6 +670,44 @@ changing pytest's import mode — are both outside Artifact 010's scope and neit
 by any source. It becomes actionable when real test files appear.
 
 Artifact 011's `harness.py` is unaffected: it is not a `test_*.py` file and is not collected.
+
+**Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
+
+---
+
+### GAP-K — Source Document Repository Placement
+
+**The finding.** No Blueprint, RMS, or Roadmap section specifies a repository location for the
+three authoritative source documents themselves. They are external inputs to the build, not
+artifacts in the 490-artifact manifest, and every artifact built so far has cited them from a
+session-external upload path rather than an in-repository one.
+
+**The request.** The author asked to commit the Master Blueprint, the Record Model System, and
+the OS File Build Roadmap into the repository, without specifying a location.
+
+**The resolution.** Author-decided: `docs/sources/`, holding exact, unmodified copies of the
+three documents under their original filenames —
+`COOLBOY12_MASTER_BLUEPRINT_v0.7.03.md` · `COOLBOY12_RECORD_MODEL_SYSTEM_v1.0.md` ·
+`COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md`. Byte-identity to the uploaded originals verified
+by MD5 before commit.
+
+**Why this location.** `docs/**` is already the AUTHORITATIVE (specification) zone (PART I).
+`docs/constitution/` was considered and rejected: its own `PURPOSE.md` scopes it to *"the Record
+System constitution and the Bootstrap Meta-Contract"*, introduced at Artifact 031 (P1), and its
+"what does not belong here" list already excludes anything that isn't that constitutional
+artifact. `docs/sources/` is a new subdirectory, not a new top-level namespace, named for exactly
+what it holds.
+
+**What this is not.** Not a new Roadmap artifact — no artifact ID, no `H:`/`S:`/`G:` target, no
+Val/Done criterion is attached to it. Not a change to authority order: Blueprint > RMS > Roadmap
+> Artifact 003 > CLAUDE.md > Resolution Note is unchanged, and `docs/sources/` does not become a
+fourth authority — it holds copies of the first three, unmodified. Not canonical data, not a
+Record.
+
+**Consequence for future sessions.** A session may now cite `docs/sources/<filename>` as a
+stable in-repository path. If any of the three source documents is revised, the superseding copy
+replaces the file here (`Delete: supersede only`) and this entry should be updated to name the
+new revision.
 
 **Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
 
