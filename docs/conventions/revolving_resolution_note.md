@@ -61,7 +61,7 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `c914da0` Artifact 015 — secrets and configuration boundary (P0/0d) |
+| HEAD | `515e57a` Artifact 015 — secrets and configuration boundary, source-fidelity patch (P0/0d) |
 | Artifacts complete | 001 … 013 · 014 · **015 COMPLETE / PASS** |
 | Next artifact | **016 — NOT CREATED** |
 | Working tree | clean |
