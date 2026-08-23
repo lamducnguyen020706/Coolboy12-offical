@@ -61,7 +61,7 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `c65a6db` Artifact 018 — role conventions (P0/0d) |
+| HEAD | `124b001` Artifact 018 — patch: remove snapshot statistics, normalize 003 wording |
 | Artifacts complete | 001 … 016 · 017 · **018 COMPLETE / PASS** |
 | Next artifact | **019 — NOT CREATED** |
 | Working tree | clean |
