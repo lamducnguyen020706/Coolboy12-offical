@@ -61,11 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `55911a4` Artifact 017 — patch: canonical-zone definition and Registry gate |
-| Artifacts complete | 001 … 015 · 016 · **017 COMPLETE / PASS** |
-| Next artifact | **018 — NOT CREATED** |
+| HEAD | `c65a6db` Artifact 018 — role conventions (P0/0d) |
+| Artifacts complete | 001 … 016 · 017 · **018 COMPLETE / PASS** |
+| Next artifact | **019 — NOT CREATED** |
 | Working tree | clean |
-| Tracked files | 86 |
+| Tracked files | 87 |
 | Directories | 69 — 68 matching Roadmap PART I exactly, plus `docs/sources/` (GAP-K, not a PART I directory) |
 | Purpose-file coverage | 69 / 69 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 69 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
