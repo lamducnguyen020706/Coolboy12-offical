@@ -34,8 +34,8 @@ RMS is `n/a` for this artifact and is not cited as an authority below.
 > years within a handful of sessions. Dormancy is expected, not failure.
 
 Blueprint §28 restates the same posture: *"Dormancy is expected, not failure (P-11)."* Nothing
-in this document treats a long absence as an error condition, and no later artifact built from
-it may either.
+in this document treats a long absence as an error condition. This does not prohibit later
+artifacts from defining specific failure conditions encountered during restart or recovery.
 
 ## 4. The Cold-Restart Guarantee
 
@@ -218,10 +218,12 @@ and no Canon is committed from it.
 by regenerating proposals.** The system recovers authoritative state and re-establishes
 operational capability; it does not require, and never claims, identical simulation outputs.
 
-**"Reproducible," as the Roadmap's Done criterion uses it for this artifact, means the
-*procedure* is repeatable** — the same documented sequence (§6) brings the same authoritative
-persisted state back into operation, and does not depend on the identity of any specific
-transient substrate. It does not mean deterministic simulation.
+**For this artifact, the Roadmap's `Done: reproducible` criterion is satisfied by making the
+documented cold-restart procedure repeatable** — the same documented sequence (§6) brings the
+same authoritative persisted state back into operation, and does not depend on the identity of
+any specific transient substrate. This is an implementation interpretation of the Roadmap's Done
+criterion, not a constitutional definition of *reproducible* supplied by the Blueprint. It does
+not mean deterministic simulation.
 
 ## 13. What Restart Must Never Do
 
@@ -240,10 +242,10 @@ Each of these is a real failure mode this document exists to foreclose.
   document mentions re-establishing external credentials at all (§6 step 3), the statement is
   deliberately generic — no provider, vault, keychain, or environment-variable schema is
   specified here.
-- **Restart is not an unattended process.** §23.4 rejects a permanently-running worker for the
-  constitutional workflow path outright: *"a permanently-running worker contradicts P-11 and
-  §28... No daemon, no scheduler, no background advance."* Restart is on-demand, session-
-  oriented, and author-facing — never automatic.
+- **For the constitutional workflow path, restart is not implemented as a permanently-running
+  worker, daemon, scheduler, or background advance.** §23.4 rejects that outright: *"a
+  permanently-running worker contradicts P-11 and §28... No daemon, no scheduler, no background
+  advance."* This artifact does not define an unattended restart mechanism.
 - **Restart does not reclassify anything.** The six source-of-truth classes (Artifact 016) are
   unchanged by dormancy: AUTHORITATIVE remains authoritative; DERIVED and CACHED are rebuilt or
   deleted and rebuilt; TEMPORARY may simply have expired; EXTERNAL is reattached as external
@@ -286,8 +288,8 @@ Cold restart (§6)
 
 ## 16. Standing Rules
 
-1. Dormancy is expected, not failure (P-11). No later artifact may treat it as an error
-   condition.
+1. Dormancy itself is not treated as failure under P-11. This does not prohibit later artifacts
+   from defining specific failure conditions encountered during restart or recovery.
 2. Canon, History Record, WSV-H, Production State, and Creative Memory survive independently of
    the application, the environment, and the reasoning substrate (P-27, §28.1).
 3. Every adapter has a declared exit path; a discontinued external dependency is a migration,
