@@ -8,10 +8,12 @@
 # Blueprint, the RMS, the Roadmap, Artifact 003, CLAUDE.md and the repository.
 # Recorded in the Revolving Resolution Note at GAP-E:
 #
-#   requires-python  UNRESOLVED. The word "python" appears in none of the
-#                    three authoritative documents. PEP 621 makes the field
-#                    optional and Artifact 005 does not require it, so it is
-#                    OMITTED rather than invented.
+#   requires-python  RULED BY THE AUTHOR: >=3.11. The word "python" appears
+#                    in none of the three authoritative documents, so this is
+#                    a ruling, not a derivation. It is required for Artifact
+#                    006 to lock deterministically: without it the resolver
+#                    takes the floor from whichever interpreter the
+#                    environment offers. Recorded at GAP-E.3.a.
 #
 #   build backend    UNRESOLVED. No source names a build system; every
 #                    occurrence of "wheel" in the sources is "flywheel".
@@ -33,6 +35,7 @@
 [project]
 name = "coolboy12"
 version = "0.0.0"
+requires-python = ">=3.11"
 dependencies = []
 
 # Package discovery, so this file matches the tree Artifact 001 built.

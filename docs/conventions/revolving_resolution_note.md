@@ -11,7 +11,7 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
-| Primary findings | **5** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 |
+| Primary findings | **6** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F |
 | Sub-resolution | **GAP-D.1**, under GAP-D |
 | Open items | **none** |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
@@ -61,9 +61,9 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `3da64c7` Rule Artifact 005 version and record GAP-E in the Resolution Note |
-| Artifacts complete | 001 COMPLETE · 002 COMPLETE · 003 COMPLETE · 004 COMPLETE · **005 COMPLETE / PASS** |
-| Next artifact | **006 — NOT CREATED** |
+| HEAD | `dfb641c` Record GAP-E.3 — pyproject implementation decisions |
+| Artifacts complete | 001 · 002 · 003 · 004 · 005 · **006 COMPLETE / PASS** |
+| Next artifact | **007 — NOT CREATED** |
 | Working tree | clean |
 | Tracked files | 72 |
 | Directories | 68, matching Roadmap PART I exactly |
@@ -77,7 +77,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 5** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3.
+**Primary resolution entries: 6** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -91,6 +91,7 @@ separate packaging decisions.
 | **GAP-C** | missing requirement register | build not blocked; requirement text not verified | **NON-BLOCKING — UNVERIFIED** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
 | **GAP-E.3** | unsourced pyproject values | implementation-level resolution for Python requirement, backend, version | **RESOLVED FOR BUILD** | None |
+| **GAP-F** | no dependency-lock mechanism named by any source | `uv` selected by author ruling; `uv.lock` is the single canonical lockfile | **RESOLVED FOR BUILD** | None |
 | **GAP-D.1** *(sub-resolution of GAP-D)* | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
 
 ---
@@ -276,18 +277,25 @@ says only *"the language runtime and the audited external components of §26.3a.
 
 #### GAP-E.3.a — `requires-python`
 
-**Value:** `UNRESOLVED / OMITTED`
-**Classification:** `NON-BLOCKING IMPLEMENTATION GAP`
+**Value:** `requires-python = ">=3.11"`
+**Classification:** `AUTHOR RULING`
 
-The current source set does not establish a canonical project Python-version requirement for
-Artifact 005. Therefore no authoritative Python version was invented, and the field is
-**intentionally omitted** from `/pyproject.toml`. The absence is deliberate, not an oversight.
+*Superseded the original resolution, which omitted the field.* No source set establishes a
+canonical project Python-version requirement — the word "python" appears in none of the three
+authoritative documents — so this is a **ruling, not a derivation**, and it is not a Blueprint,
+RMS or Roadmap fact.
 
-**No specific Python version is stated to be officially supported, and no new architectural
-requirement is created.**
+**Why the omission could not stand.** Artifact 006 demonstrated that without a declared floor
+the resolver takes one from whichever interpreter the environment offers. The same
+`pyproject.toml` locked to `>=3.10`, `>=3.11`, `>=3.12` and `>=3.13` under four interpreters —
+four different lockfiles from one input, which fails Artifact 006's `Val: deterministic
+resolve` and the Blueprint's environment boundary, since the value came from the environment
+rather than from the repository. Declaring the floor removes that dependence: the same input
+now yields a byte-identical lockfile on every interpreter tested.
 
-**Status: GAP-E.3.a — RESOLVED FOR BUILD.** The absence of the field is intentional because no
-source-backed value is currently required.
+**Status: GAP-E.3.a — RESOLVED FOR BUILD** by author ruling. `>=3.11` is a lower bound, not a
+statement that any particular interpreter is officially supported, and no new architectural
+requirement is created.
 
 #### GAP-E.3.b — build backend
 
@@ -331,7 +339,7 @@ those do not automatically define the Python distribution version. The author se
 
 | Value | Current state | Classification | Architectural status |
 |---|---|---|---|
-| `requires-python` | omitted | non-blocking implementation gap | not defined by source |
+| `requires-python` | `>=3.11` | author ruling | not architectural fact |
 | build backend | omitted | non-blocking implementation decision | not defined by source |
 | `version` | `0.0.0` | author ruling | not architectural fact |
 
@@ -367,10 +375,48 @@ and Python package version remain five separate things. `0.0.0` is an **author r
 derivation, and it is consistent with the Blueprint's own record that *"Nothing in this system
 has been implemented."*
 
-**What remains open at source.** GAP-E.3.a and GAP-E.3.b are resolved *for the build* by omission; the
-underlying source silence stands. If a later artifact needs a Python version floor or a named
-backend — artifact 006 (dependency lockfile) and artifact 007 (test runner configuration) are
-the first candidates — the gap resurfaces there and is decided then, not assumed from here.
+**What remains open at source.** GAP-E.3.a is now settled by ruling; GAP-E.3.b remains resolved
+*for the build* by omission. The underlying source silence stands in both cases — no
+authoritative document has been amended. If a later artifact needs a named build backend,
+artifact 007 (test runner configuration) is the first candidate, and the gap is decided there
+rather than assumed from here.
+
+**Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
+
+---
+
+### GAP-F — Dependency Lock Mechanism
+
+**The gap.** Artifact 006 (`dependency lockfile`) requires a lock mechanism, and **no
+authoritative source names one**. Searched: Blueprint, RMS, Roadmap, Artifact 003, CLAUDE.md,
+Artifact 005 and the repository root. No mention of pip, poetry, uv, pdm, pipenv, conda or any
+lock workflow. The Roadmap entry gives the path as `/` with no filename and no format. The only
+`lockfile` occurrence in the sources is artifact 006's own name; all four `hatch` occurrences
+in the Blueprint are "escape hatch".
+
+`uv` and Poetry are both installed in the current container. **That is environment, not
+repository configuration**, and selecting on that basis would breach Blueprint P-33 and §9.5 —
+*the environment runs coolboy12; it does not define coolboy12*. The choice was therefore
+referred rather than made.
+
+**Author ruling: `uv`.** `uv.lock` at the repository root is the single canonical lockfile.
+
+| | |
+|---|---|
+| Mechanism | `uv` |
+| Lockfile | `/uv.lock`, generated by `uv lock` |
+| Classification | **AUTHOR RULING** |
+| Architectural status | **not an architectural fact** |
+
+This is an implementation choice. It is not a Blueprint fact, not an RMS fact, and not a
+Roadmap fact. **No dependency and no dependency tool acquires semantic authority over
+coolboy12** — Blueprint P-31, *dependencies provide capability, never authority*. The lockfile
+is `SoT: DEV-ENV` and carries no coolboy12 semantics.
+
+**Standing note on scale.** Artifact 005 declares `dependencies = []`, so the lockfile records
+the project itself and **zero third-party packages**. It is a valid, deterministic lock of an
+empty dependency set. Integrity hashes will appear only when real dependencies are declared —
+none are recorded now because none exist to record, not because integrity was skipped.
 
 **Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
 
