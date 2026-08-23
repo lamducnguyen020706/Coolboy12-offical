@@ -62,7 +62,34 @@ namespaces = true
 # ---------------------------------------------------------------------------
 
 [dependency-groups]
-dev = ["pytest"]
+dev = ["pytest", "ruff"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+# ---------------------------------------------------------------------------
+# Artifact 008 · linter / formatter configuration · P0/0b · R: VALID · SoT: DEV-ENV
+#
+# No authoritative source names a Python linter or formatter. ruff is an author
+# ruling, recorded at GAP-H. It is one tool covering both roles, so no second
+# competing linter or formatter is introduced.
+#
+# NOT the Blueprint's "linter". Blueprint §12 describes coolboy12's own
+# structural-validation linter — "linter findings block ... deliberately dumb
+# and deliberately fast". That is a coolboy12 semantic mechanism owned by the
+# P4 validation artifacts (125-144). ruff is DEV-ENV tooling and carries no
+# coolboy12 semantic authority (Blueprint P-31).
+#
+# Deliberately minimal, and deliberately NOT duplicating values that already
+# exist elsewhere:
+#   target-version  not set. ruff derives it from [project].requires-python,
+#                   so pinning it here would duplicate Artifact 005 and drift
+#                   if that floor is ever re-ruled.
+#   version floor   not set. Artifact 006 (uv.lock) pins the concrete version.
+#   exclusions      not set. ruff already excludes .venv, .git, __pycache__,
+#                   build and dist by default; a hand-written list would be
+#                   larger and no more correct.
+#   rule selection  ruff's default rule set, pinned by the lockfile.
+# ---------------------------------------------------------------------------
+
+[tool.ruff]

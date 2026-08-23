@@ -11,7 +11,7 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
-| Primary findings | **7** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G |
+| Primary findings | **8** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H |
 | Sub-resolution | **GAP-D.1**, under GAP-D |
 | Open items | **none** |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
@@ -61,9 +61,9 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `942bba7` Artifact 006 — dependency lockfile (P0/0b) |
-| Artifacts complete | 001 · 002 · 003 · 004 · 005 · 006 · **007 COMPLETE / PASS** |
-| Next artifact | **008 — NOT CREATED** |
+| HEAD | `2af027e` Artifact 007 — test runner configuration (P0/0b) |
+| Artifacts complete | 001 · 002 · 003 · 004 · 005 · 006 · 007 · **008 COMPLETE / PASS** |
+| Next artifact | **009 — NOT CREATED** |
 | Working tree | clean |
 | Tracked files | 72 |
 | Directories | 68, matching Roadmap PART I exactly |
@@ -77,7 +77,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 7** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G.
+**Primary resolution entries: 8** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -93,6 +93,7 @@ separate packaging decisions.
 | **GAP-E.3** | unsourced pyproject values | implementation-level resolution for Python requirement, backend, version | **RESOLVED FOR BUILD** | None |
 | **GAP-F** | no dependency-lock mechanism named by any source | `uv` selected by author ruling; `uv.lock` is the single canonical lockfile | **RESOLVED FOR BUILD** | None |
 | **GAP-G** | no test runner named by any source | `pytest` selected by author ruling; configured in `pyproject.toml` | **RESOLVED FOR BUILD** | None |
+| **GAP-H** | no linter or formatter named by any source | `ruff` selected by author ruling, one tool for both roles | **RESOLVED FOR BUILD** | None |
 | **GAP-D.1** *(sub-resolution of GAP-D)* | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
 
 ---
@@ -464,6 +465,56 @@ demonstrated separately, and 5 is reachable only by zero-collected. Artifact 007
 `Val: collects zero tests without error` is therefore met by a runner that starts, reads its
 config, discovers the declared root, and reports zero — not by a placeholder test or a wrapper
 masking a failure.
+
+**Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
+
+---
+
+### GAP-H — Linter / Formatter
+
+**The gap.** Artifact 008 requires a linter and a formatter, and **no authoritative source
+names either**. Searched Blueprint, RMS, Roadmap, Artifact 003, CLAUDE.md and the repository
+for ruff, black, flake8, isort, pylint, mypy, pyright, yapf and autopep8: **zero occurrences
+across all three documents**.
+
+**Author ruling: `ruff`.** One tool covering both roles, so no second competing linter or
+formatter is introduced. Declared at `[dependency-groups] dev = ["pytest", "ruff"]`, configured
+at `[tool.ruff]` in `/pyproject.toml`. Resolved version `ruff 0.16.4`, pinned by Artifact 006.
+
+| | |
+|---|---|
+| Linter and formatter | `ruff` |
+| Classification | **AUTHOR RULING** |
+| Architectural status | **not an architectural fact** |
+
+#### The word "linter" means two different things — do not conflate them
+
+This is the collision most likely to cause a later error, so it is recorded explicitly.
+
+| | Blueprint's linter | Artifact 008's linter |
+|---|---|---|
+| What it is | a **coolboy12 structural-validation mechanism** | a **Python code-quality tool** |
+| Source | Blueprint §12 — *"Linter findings block. The linter is deliberately dumb and deliberately fast"*; everything requiring interpretation goes to Governance (P-24) | no source; author ruling |
+| What it decides | whether a structurally decidable violation blocks — unaxised temporal claims (P-21), missing basis state (P-22), empty anchor transformation (P-29) | unused imports, whitespace, line length |
+| Owned by | the **P4 validation artifacts (125–144)** | DEV-ENV tooling, Artifact 008 |
+
+**ruff must never be made to implement the Blueprint's linter.** Under P-31, *dependencies
+provide capability, never authority*: ruff can report an unused variable; it cannot decide that
+a Record is canonical, that a fact is true, or that a mutation is authorized.
+
+#### Three values deliberately not set
+
+Each would have duplicated something that already exists, creating a drift hazard:
+
+| Not set | Why | Verified |
+|---|---|---|
+| `target-version` | ruff derives it from `[project].requires-python` | ruff reports `target_version = 3.11`, matching Artifact 005 |
+| version floor | Artifact 006 pins the concrete version | `ruff 0.16.4` in `uv.lock` |
+| exclusions | ruff's defaults already cover `.venv`, `.git`, `__pycache__`, `build`, `dist` | confirmed in ruff's resolved `file_resolver.exclude` |
+
+Rule selection is ruff's default set — **413 rules enabled**, not a disabled-everything
+configuration. The clean result comes from the repository containing **zero `.py` files**, not
+from suppression.
 
 **Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
 
