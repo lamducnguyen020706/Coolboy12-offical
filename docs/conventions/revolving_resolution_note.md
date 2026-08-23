@@ -61,7 +61,7 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `e15c69f` Artifact 019 — patch: scope four overreaching universal claims |
+| HEAD | `48779cf` Artifact 019 — patch: align Standing Rule 11 with §13's scoped wording |
 | Artifacts complete | 001 … 017 · 018 · **019 COMPLETE / PASS** |
 | Next artifact | **020 — NOT CREATED** |
 | Working tree | clean |
