@@ -61,7 +61,7 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `544a613` Artifact 014 — environment boundary (P0/0d) |
+| HEAD | `ded705e` Artifact 014 — environment boundary, freeze-audit fix (P0/0d) |
 | Artifacts complete | 001 … 012 · 013 · **014 COMPLETE / PASS** |
 | Next artifact | **015 — NOT CREATED** |
 | Working tree | clean |
