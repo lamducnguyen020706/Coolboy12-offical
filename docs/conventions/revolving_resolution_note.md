@@ -11,7 +11,7 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
-| Primary findings | **4** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D |
+| Primary findings | **5** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E |
 | Sub-resolution | **GAP-D.1**, under GAP-D |
 | Open items | **none** |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
@@ -61,10 +61,10 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `01e67f5` Artifact 002 — README.md (P0/0a) |
-| Preceding commit | `bf2368e` Artifact 001 — repository tree (P0/0a) |
+| HEAD | `ebcb979` Artifact 005 — resolve the three unsourced pyproject values |
+| Artifacts complete | 001 tree · 002 README · 003 conventions · 004 CLAUDE.md · 005 pyproject (CONDITIONAL until GAP-E.3 was ruled; now resolved) |
 | Working tree | clean |
-| Tracked files | 69 |
+| Tracked files | 72 |
 | Directories | 68, matching Roadmap PART I exactly |
 | Purpose-file coverage | 68 / 68 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 68 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
@@ -76,10 +76,11 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-The register holds **four primary findings** — CONFLICT-A, CONFLICT-B, GAP-C and GAP-D — and
-**one sub-resolution**, GAP-D.1, which sits under GAP-D. GAP-D.1 is not a fifth independent
-architectural finding: it settles the naming of the purpose file that GAP-D introduced, and
-it has no standing apart from GAP-D.
+The register holds **five primary findings** — CONFLICT-A, CONFLICT-B, GAP-C, GAP-D and
+GAP-E — and **one sub-resolution**, GAP-D.1, which sits under GAP-D. GAP-D.1 is not an
+independent architectural finding: it settles the naming of the purpose file that GAP-D
+introduced, and it has no standing apart from GAP-D. GAP-E carries three numbered parts
+(E.1–E.3) because one source silence produced three separate packaging decisions.
 
 | ID | Finding | Resolution | Status | Constitutional Change |
 |---|---|---|---|---|
@@ -87,6 +88,7 @@ it has no standing apart from GAP-D.
 | **CONFLICT-B** | 25 vs 27 metadata fields | use the 25 explicitly enumerated fields | **RESOLVED FOR BUILD** | None |
 | **GAP-C** | missing requirement register | build not blocked; requirement text not verified | **NON-BLOCKING — UNVERIFIED** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
+| **GAP-E** | Python packaging values undefined by every source | E.1 and E.2 omitted as not required; E.3 version ruled `0.0.0` by the author | **RESOLVED FOR BUILD** | None |
 | **GAP-D.1** *(sub-resolution of GAP-D)* | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
 
 ---
@@ -251,6 +253,44 @@ not modified.**
 
 Artifact 003 formalizes `PURPOSE.md` as the purpose-file convention.
 
+
+---
+
+### GAP-E — Python Packaging Values
+
+**The gap.** Artifact 005 (`pyproject.toml`) required three values that **no authoritative
+source establishes**. Searched: Blueprint (including §9.5, the artifact's only BP citation),
+RMS, Roadmap, Artifact 003, CLAUDE.md, and the repository.
+
+The search result that governs all three: **the word "python" appears zero times in all three
+authoritative documents**, and every occurrence of "wheel" in them is "flywheel". The sources
+establish that the language is Python only indirectly, through `.py` paths in the Roadmap
+manifest and through Artifact 005 being a `pyproject.toml` at all. They establish nothing
+about its version, its packaging, or its release numbering.
+
+Blueprint §9.5 turned out to describe the execution-environment layer — *"the environment runs
+the system; it does not define it"* — and carries no packaging requirement. Blueprint §26.8
+says only *"the language runtime and the audited external components of §26.3a."*
+
+| Part | Value | Classification | Resolution |
+|---|---|---|---|
+| **E.1** | `requires-python` | UNRESOLVED at source | **Omitted.** Optional under PEP 621 and not required by the Artifact 005 manifest entry. Not invented. |
+| **E.2** | build backend / `[build-system]` | UNRESOLVED at source | **Omitted.** No source names a build system. PEP 517's documented fallback applies, and wheel and sdist build without the table — so omission costs nothing against `Done: builds`. |
+| **E.3** | `version` | UNRESOLVED at source · **required** | **`0.0.0`, by author ruling.** `[project]` must carry a version for the file to resolve or build; no source supplies one. |
+
+**On E.3.** The Blueprint's `Version | v0.7.0` is the version *of that document* — "architectural
+supersession of v0.6.3". No source connects it to a package version, and the two are not
+derived from one another. Blueprint version, RMS version, Roadmap version, repository version
+and Python package version remain five separate things. `0.0.0` is an **author ruling**, not a
+derivation, and it is consistent with the Blueprint's own record that *"Nothing in this system
+has been implemented."*
+
+**What remains open at source.** E.1 and E.2 are resolved *for the build* by omission; the
+underlying source silence stands. If a later artifact needs a Python version floor or a named
+backend — artifact 006 (dependency lockfile) and artifact 007 (test runner configuration) are
+the first candidates — the gap resurfaces there and is decided then, not assumed from here.
+
+**Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
 
 ---
 

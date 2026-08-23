@@ -5,7 +5,8 @@
 # 010 test suite scaffolding.
 #
 # Resolution of the three previously unsourced values, after searching the
-# Blueprint, the RMS, the Roadmap, Artifact 003, CLAUDE.md and the repository:
+# Blueprint, the RMS, the Roadmap, Artifact 003, CLAUDE.md and the repository.
+# Recorded in the Revolving Resolution Note at GAP-E:
 #
 #   requires-python  UNRESOLVED. The word "python" appears in none of the
 #                    three authoritative documents. PEP 621 makes the field
@@ -17,13 +18,13 @@
 #                    [build-system] is therefore OMITTED. PEP 517's documented
 #                    fallback applies and the package still builds.
 #
-#   version          UNRESOLVED and REQUIRED. [project] must carry a version
-#                    for this file to resolve or build, and no source
+#   version          RULED BY THE AUTHOR: 0.0.0. [project] must carry a
+#                    version for this file to resolve or build, and no source
 #                    establishes one. The Blueprint's v0.7.0 is the version of
 #                    that document, not of this package, and the two are not
-#                    connected by any source. The value below is a placeholder
-#                    awaiting an author ruling, and Artifact 005 is CONDITIONAL
-#                    on it.
+#                    connected by any source. 0.0.0 is an author ruling, not a
+#                    derivation. Recorded in the Revolving Resolution Note at
+#                    GAP-E.3.
 #
 # name and dependencies are derived from source: the Blueprint states the
 # system name "coolboy12", Artifact 001 establishes src/coolboy12/, and the
