@@ -211,20 +211,19 @@ here.
 
 ## 12. Secret References
 
-Internal configuration may need to refer to a secret without containing it. Where that
-distinction is drawn:
+Internal configuration may need to refer to externally held secret material without containing
+its value.
 
-```
-secret reference  ≠  secret value
-```
+A configuration mechanism may refer to external secret material without embedding the value.
+This document does not define a reference object, reference syntax, or a separate
+source-of-truth classification for references.
 
-A configuration mechanism may refer to externally held secret material without embedding its
-value. This document does not define a reference object, a reference syntax, or a separate
-source-of-truth classification for references — whether a given reference construct itself
-counts as secret-bearing material is unspecified here, not resolved. What is fixed is the
-destination rule: neither a secret value nor secret-bearing material may enter Canon or Derived,
-however it is referred to. If Artifact 021 requires a reference mechanism, defining it is 021's
-implementation choice, made inside that boundary — not a constitutional requirement fixed here.
+Artifact 021 must ensure that neither a secret value nor secret-bearing material enters
+`canon/**` or `derived/**`.
+
+Whether a particular reference is itself sensitive, secret-bearing, or otherwise subject to
+additional handling is outside the scope of this artifact unless an authoritative source
+explicitly defines that classification.
 
 ## 13. Configuration Loader Boundary — What Artifact 021 Inherits
 
@@ -275,11 +274,9 @@ This document does not:
    authority. The mutation path is unchanged: proposal → validation → Human Gate → Mutation
    Coordinator → canon.
 5. A secret's origin is never canonical provenance.
-6. A secret reference is not a secret value, and may be handled differently by the downstream
-   loader.
-7. A secret leaking into version control is a version-control incident, not a canon event; the
+6. A secret leaking into version control is a version-control incident, not a canon event; the
    two are independent failures with independent fixes.
-8. This document defines the boundary. Artifact 021 implements the loader inside it.
+7. This document defines the boundary. Artifact 021 implements the loader inside it.
 
 ## 16. Boundary of This Document
 
