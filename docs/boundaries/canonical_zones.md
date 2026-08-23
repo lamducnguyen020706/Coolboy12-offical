@@ -23,8 +23,12 @@ AUTHORITATIVE is not permission to write.**
 
 ## 2. What a Canonical Zone Is
 
-A **canonical zone** is a repository zone that stores the authoritative canonical Records of a
-Record Model. Blueprint §9.1 fixes what that means by separating four classes of state:
+A **canonical zone** is a repository zone under the `canon/**` family whose contents are governed
+by the canonical write boundary and owned by a Record Model. The semantic status of what the zone
+contains is model-scoped: **not every canonical-zone Record is World truth**, and some zones are
+authoritative only within their own model or purpose (§5).
+
+Blueprint §9.1 fixes what that means by separating four classes of state:
 
 | Class (§9.1) | What it holds | Rule |
 |---|---|---|
@@ -196,10 +200,13 @@ Blueprint §12.6 and Spine law 2 give the same single path — *propose → chec
 commit → changelog → log* — and make the commit atomic. This document reproduces the sequence
 and defines no sub-step of it; the stages belong to §12.6 and to Artifact 152.
 
-**Each model writes only after its own gate.** PART X: after `G-CANON-W`, World canon, Coordinator
-only, on the path above; after `G-CANON-E/P/V/I`, *"that model's records, on the same path, **and
-not before its own gate**."* This document does not define those gates. It is their
-precondition — the zones must be declared before any gate can rely on them.
+**Each canonical model operation is governed by the gate applicable to that model.** The Roadmap
+defines `G-CANON-W`, `G-CANON-E`, `G-CANON-P`, `G-CANON-V`, and `G-CANON-I` for their respective
+model writes, while **`G-REG`** governs the Registry-definition boundary. PART X states the rule
+for the model writes: after `G-CANON-W`, World canon, Coordinator only, on the path above; after
+`G-CANON-E/P/V/I`, *"that model's records, on the same path, **and not before its own gate**."*
+This document defines none of those gates. It is their precondition — the zones must be declared
+before any gate can rely on them.
 
 ## 9. Direct-Write Prohibition
 
