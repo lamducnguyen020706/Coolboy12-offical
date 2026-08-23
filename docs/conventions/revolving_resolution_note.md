@@ -61,9 +61,9 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `f88e391` Artifact 010 — test suite scaffolding verified (P0/0b) |
-| Artifacts complete | 001 … 009 · 010 · **011 COMPLETE / PASS** |
-| Next artifact | **012 — NOT CREATED** |
+| HEAD | `134df26` Artifact 011 — constitutional test harness (P0/0c) |
+| Artifacts complete | 001 … 010 · 011 · **012 COMPLETE / PASS** |
+| Next artifact | **013 — NOT CREATED** |
 | Working tree | clean |
 | Tracked files | 72 |
 | Directories | 68, matching Roadmap PART I exactly |
