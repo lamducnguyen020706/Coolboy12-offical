@@ -1,108 +1,175 @@
 # COOLBOY12 — Standing Instructions
 
-**Artifact 004 · `CLAUDE.md` standing instructions · `/CLAUDE.md`**
-Own: CONST · RM: n/a · T: doc · R: CONTRACT · SoT: AUTHORITATIVE · Auth: governing ·
-Canon: n/a · CD: no · Ph/St: P0/0a · Req: BR-01,BR-07,BR-17 · BP: §7,§10,§13 · RMS: §2 ·
-H: 003 · S: — · LS: — · G: — · → all · Risk: HINGE · ∥: no
-
-This file is every session's only guaranteed input. Read it before touching the project.
-
-**This document is operational, not architectural.** It governs how a session begins work,
-not what is true. `Auth: governing` binds *session conduct*; it grants no authority over the
-Blueprint or RMS, and nothing here can override them.
+## Artifact Identity
 
 ```
-Master Blueprint + RMS      architectural authority
-        ↓
-Repaired Roadmap            build decomposition and order
-        ↓
-Artifact + Phase Conventions   how an artifact entry is expressed (Artifact 003)
-        ↓
-CLAUDE.md                   standing operational instructions   ← this file
-        ↓
+ID:     004
+Name:   CLAUDE.md standing instructions
+path:   /CLAUDE.md
+Own:    CONST
+RM:     n/a
+T:      doc
+R:      CONTRACT
+SoT:    AUTHORITATIVE
+Auth:   governing
+Canon:  n/a
+CD:     no
+Ph/St:  P0/0a
+Req:    BR-01,BR-07,BR-17
+BP:     §7,§10,§13
+RMS:    §2
+H:      003
+S:      —
+LS:     —
+G:      —
+→:      all
+Val:    carries ten Spine laws, six models, AD-1, Record≠Canon, RR/HR World-only, I-101…I-108
+Done:   cold session reads correct law
+Why:    every session's only guaranteed input
+Risk:   HINGE
+∥:      no
+```
+
+Twenty-five fields, per Artifact 003. No inheritance, no blank field, no hidden metadata.
+
+---
+
+## What This File Governs
+
+**CLAUDE.md governs HOW A SESSION WORKS.** Nothing more.
+
+| Source | Governs |
+|---|---|
+| Blueprint + RMS | **what is true** |
+| Repaired Roadmap | **what gets built when** |
+| Artifact + Phase Conventions (003) | **how an artifact is expressed** |
+| CLAUDE.md | **how a session conducts itself** |
+
+> **`Auth: governing` on CLAUDE.md binds session conduct. It grants no authority over the
+> Blueprint or RMS.**
+
+Read this file first in every session. It is the only guaranteed input.
+
+---
+
+## Authority Hierarchy
+
+```
+Master Blueprint + RMS
+        ↓                architectural authority
+Repaired Roadmap
+        ↓                build decomposition and order
+Artifact + Phase Conventions
+        ↓                artifact expression rules
+CLAUDE.md
+        ↓                standing operational instructions
 implementation
 ```
+
+This file MUST NEVER override a layer above it. Where it and they differ, **they are right and
+this file is wrong.**
 
 ---
 
 ## Read First
 
-Before any architectural work, check:
+Before any architectural work, read:
 
 1. the current **Master Blueprint**
 2. the current **Record Model System (RMS)**
 3. the current **Repaired Roadmap**
-4. **Artifact + Phase Conventions** (Artifact 003, `docs/conventions/artifact_conventions.md`)
-5. the artifact's own **declared dependencies** and any relevant existing artifact
+4. **Artifact + Phase Conventions** — [`docs/conventions/artifact_conventions.md`](docs/conventions/artifact_conventions.md)
+5. the artifact's own declared dependencies and any relevant existing artifact
 
-This is not a mandate to reread all 490 manifest entries every session. Read the governing
-source relevant to the task, then the artifact's declared dependencies, then the repository,
-then implement, then validate:
+**Do NOT reread all 490 manifest entries every session.** The rule is:
 
 ```
-read governing source for the task
-   ↓
-read the artifact's declared dependencies (H/S/LS/G)
-   ↓
-inspect the repository
-   ↓
-implement
-   ↓
-validate
+read the governing source relevant to the task
+        ↓
+read Artifact 003
+        ↓
+read the current artifact's H / S / LS / G
+        ↓
+inspect relevant existing artifacts
+        ↓
+inspect repository state
+        ↓
+implement only declared scope
+        ↓
+validate against Val / Done
+        ↓
+inspect git diff / git status
+        ↓
+report exact result
 ```
 
 ---
 
 ## Source of Truth and Authority
 
-Blueprint and RMS are architectural authority. The Roadmap decomposes implementation from
-them. Artifact 003 fixes how that decomposition is expressed. This file is standing
-operational instruction beneath all four.
+- **Blueprint / RMS** decide what is true of the system. Architectural authority.
+- **Roadmap** decides what gets built when. Build decomposition and order.
+- **Artifact 003** decides how a manifest entry is written. Expression only.
+- **CLAUDE.md** decides how a session conducts itself. Conduct only.
 
-- **Blueprint / RMS = architectural authority.** They decide what is true of the system.
-- **Roadmap = build decomposition and order.** It decides what gets built when.
-- **Artifact 003 = artifact authoring convention.** It decides how a manifest entry is written.
-- **CLAUDE.md = standing operational instructions.** It decides how a session conducts itself.
+### The Spine — ten laws, unamended
 
-If a conflict is found between sources: **do not silently reinterpret it, do not "fix" the
-architecture locally, report the conflict, and preserve source authority** — see Conflict
-Handling below.
+The frozen constitutional core (Blueprint §10). A session MUST NOT violate any of them.
+
+| # | Law | Rule |
+|---|---|---|
+| 1 | **One Canon** | Exactly one canonical truth about the universe. No parallel canon, no duplicate truth, no second source. |
+| 2 | **One Path** | Canon changes only through *propose → check → human gate → commit → changelog → log*. No other route; the commit is atomic. |
+| 3 | **One Authority** | Only the human commits canon. No AI output, simulation result, deadline, or report is canonical until the human gates it. |
+| 4 | **The Foundation Lock** | Foundation truths are immutable except through deliberate ceremony. If generated content contradicts a Foundation truth, the content is wrong. |
+| 5 | **The Publishing Firewall** | Published artifacts are in-world manifestations. They reference canon one-directionally; they never become canon. |
+| 6 | **Provisional by Default** | Every AI proposal, simulation delta, and emergent seed is provisional until gated. Every AI action is advisory unless explicitly approved. |
+| 7 | **The Severity Floor** | Changes to a Foundation truth, relationship topology, a load-bearing mystery, or the Spine can never be treated as trivial. |
+| 8 | **Every Event Propagates** | A confirmed canon change runs its consequences through the dependency graph. Propagation follows explicit relationships, not heuristics. |
+| 9 | **Every Object Has Lineage** | Every Record traces to the decision that created or last changed it. A change with no recorded reason is an audit flag. |
+| 10 | **Nothing Bypasses the Composer** | Every action is a composed, logged workflow. No side door. The Composer routes work *to* the human gate; it never replaces it. |
 
 ---
 
 ## Repository / Artifact Rules
 
-### Artifact-first build discipline
+### Artifact-First Build Discipline
 
 Work from the Roadmap artifact manifest. Do not improvise scope.
 
 ```
 identify artifact
-   ↓
+        ↓
 read its exact manifest entry
-   ↓
+        ↓
 check H / S / LS / G
-   ↓
-read the cited Blueprint / RMS sections
-   ↓
+        ↓
+read cited Blueprint / RMS sections
+        ↓
 inspect existing artifacts
-   ↓
+        ↓
 build only that artifact
-   ↓
+        ↓
 validate against Val / Done
 ```
 
-**"While I am here, I will also build..." is not permitted.** An unrelated later artifact is
-not built early because it happens to be convenient, related, or already understood.
+> **"While I am here, I will also build…" is PROHIBITED.**
 
-### Purpose-file convention
+An unrelated artifact MUST NOT be built early because it is nearby, because its dependencies
+appear satisfied, because it is convenient, because the implementation is already understood,
+or because the current file references it. **Scope is governed by the Roadmap.**
 
-Every repository directory carries a purpose file named **`PURPOSE.md`**. This is the
-convention Artifact 001 established, and the Revolving Resolution Note records at GAP-D and
-GAP-D.1 (author ruling: keep `PURPOSE.md`). Coverage is complete: 68 of 68 directories at the
-time of writing. Do not introduce `purpose.md`, `purpose.txt`, or any alternative naming, and
-do not rename existing `PURPOSE.md` files without an explicit author instruction that
-acknowledges it changes a completed artifact.
+### Purpose-File Convention
+
+Every repository directory carries **`PURPOSE.md`**. Current coverage: **68 / 68 directories**.
+
+`PURPOSE.md` is: structural documentation · a directory responsibility declaration.
+`PURPOSE.md` is NOT: canonical data · a Record · an authority source · World Truth · a
+semantic definition.
+
+**PROHIBITED:** `purpose.md`, `purpose.txt`, or any alternate naming. Do not rename existing
+`PURPOSE.md` files without an explicit author instruction acknowledging that it changes a
+completed artifact.
 
 ---
 
@@ -110,7 +177,7 @@ acknowledges it changes a completed artifact.
 
 1. Identify the artifact.
 2. Inspect its manifest entry.
-3. Verify dependencies (`H`/`S`/`LS`/`G`).
+3. Verify dependencies (`H` / `S` / `LS` / `G`).
 4. Read the authoritative source sections it cites.
 5. Inspect repository state.
 6. Implement only the declared scope.
@@ -118,64 +185,49 @@ acknowledges it changes a completed artifact.
 8. Inspect `git diff` / `git status`.
 9. Report the exact result.
 
-Do not report completion from file creation alone. For a documentation artifact, validate
-required sections, required terminology, required links, metadata, source citations, and
-scope boundaries. For a code or config artifact, run the checks the artifact itself defines.
-Generating a test is not running it; generating a drill is not executing it; generating a
-benchmark is not measuring it — do not claim runtime validation an artifact has not received.
-
 ---
 
 ## Metadata and Artifact Conventions
 
-Every manifest entry states **all 25 fields** defined by Artifact 003 — no inheritance from a
-header or neighbour, no blank field. Use `n/a` where a field is genuinely not applicable and
-`—` where a relational field declares nothing, per Artifact 003's null rule. Full field
-definitions, legal vocabularies, and worked examples live in
-[`docs/conventions/artifact_conventions.md`](docs/conventions/artifact_conventions.md); they
-are not restated here.
+Read **Artifact 003** for the full convention:
+[`docs/conventions/artifact_conventions.md`](docs/conventions/artifact_conventions.md).
+Do not duplicate it here.
 
-**Current build resolution: 25 explicit fields.** The Roadmap states 27 in one place and 25 in
-another; the enumerated set contains 25. This is a build convention carried from the Revolving
-Resolution Note, not a constitutional amendment to the Roadmap. Do not invent fields 26 or 27.
+- Every manifest entry states **all 25 fields**.
+- **No metadata inheritance** from a header, block, or neighbour.
+- **No blank fields.** Use `n/a` (not applicable) and `—` (nothing declared) per Artifact 003.
+- Type / Role / SoT vocabularies come from Artifact 003.
+- `H` / `S` / `LS` / `G` / `→` rules come from Artifact 003.
+- **RULE G / G2 / G3** govern artifact boundaries: specification ≠ schema · example ≠ test ·
+  many files → one artifact only when responsibility, lifecycle, ownership, and validation are
+  all shared.
 
-### Artifact granularity
+**Current resolution: 25 fields.** The Roadmap contains both 27 and 25 references; Artifact 003
+froze the build convention at the 25 explicitly enumerated fields. Do not invent fields 26 or
+27. This is a build convention; it does not amend the Roadmap, and a future source-level
+amendment may supersede it.
 
-Artifact boundaries are governed by Artifact 003's RULE G, G2 and G3:
+### Dependency / Gate Discipline
 
-- **specification ≠ schema** — different owner, lifecycle, validation; always two artifacts.
-- **example ≠ test** — an example shows correct use; a test proves enforcement; always two
-  artifacts.
-- **many files → one artifact** only when responsibility, lifecycle, ownership, and validation
-  are all shared, and the merge is declared explicitly at the entry.
+| Symbol | Meaning |
+|---|---|
+| `H` | **hard dependency** — must exist before this can be authored or finalized |
+| `S` | **soft dependency** — supporting context, not a blocker |
+| `LS` | **lockstep** — must land together in one authoring cycle |
+| `G` | **gate** — must be passed before this may legally proceed |
+| `→` | **unlocks** — what becomes possible after completion |
 
-Do not reproduce Artifact 003 here. Read it.
+> **Dependency ≠ Gate. Unlock ≠ Gate.**
 
-### Dependency / gate discipline
-
-```
-H   hard dependency    must exist before this can be authored or finalized
-S   soft dependency    supporting context, not a blocker
-LS  lockstep           must land together in one authoring cycle (LS-1 … LS-8)
-G   gate               must be passed before this may legally proceed
-→   unlocks            what this artifact enables once complete
-```
-
-- Do not promote a soft dependency to hard.
-- Do not invent a lockstep group. Membership comes from the Roadmap's declaration.
-- Do not invent a gate.
-- **Do not bypass a gate because dependencies are satisfied** — a dependency answers "what
-  must exist," a gate answers "what must be passed." They are never substitutes for each
-  other.
-- **Do not treat an unlock as permission to ignore a gate.** `→` says what becomes possible,
-  not what becomes legal without its own gate.
+MUST NOT: treat a satisfied dependency as permission to bypass a gate · treat an unlock as
+permission to ignore a gate · invent a gate · invent a lockstep system · promote a soft
+dependency to hard.
 
 ---
 
 ## Record Model Boundaries
 
-There are exactly **six sovereign Record Models**. No model is a superclass of another and
-nothing inherits from World.
+Exactly **six sovereign Record Models**:
 
 | Code | Model | The question it alone answers |
 |---|---|---|
@@ -186,48 +238,82 @@ nothing inherits from World.
 | **V** | Visual | How is World Truth visually specified and represented? |
 | **I** | Issue | What was published, and how is that publication composed? |
 
-- **Do not create a seventh Record Model.**
-- Do not move a responsibility between models for convenience. Ownership is architectural, not
-  a filing choice.
-- **Do not universalize model-owned semantics.** Lifecycle, temporal mechanism, relationship
-  representation, and state vocabulary are deliberately not the same across models.
+MUST NOT: create a seventh model · treat any model as a superclass of another · inherit
+anything from World · move a responsibility between models for convenience · universalize
+model-owned semantics.
 
-This is a boundary reminder, not the specification. Full architecture is in the Blueprint and
-RMS; per-model detail is docs/models/**.
+This is an operational boundary reminder. Full architecture is in the Blueprint and RMS.
 
-### Authority ≠ canonicality ≠ source-of-truth class
+### RR / HR are World-only
 
-Three different questions, never collapsed into one:
+**Relationship Record and History Record are World Record Model concepts.** Neither is a
+Record System primitive, and neither may be required of another Record Model (I-102). Do not
+export them. Each other model defines its own temporal and relationship mechanism.
+
+### AD-1 — one identity grammar, model-owned semantics
+
+```
+[PARTITION]-[KIND]-[OBJECT_ID]-[SLUG]
+```
+
+Partition-first · two-character kind codes · ordinals never reused, including after
+retirement · slug is decoration only.
+
+**Universal:** syntax, positions, parsing, resolution, uniqueness, minting.
+**Model-owned:** Kind meaning, Kind taxonomy, semantic interpretation, lifecycle, authority.
+
+> **UNIVERSAL IDENTITY GRAMMAR ≠ UNIVERSAL SEMANTIC MODEL.** The grammar fixes the syntax of
+> the name and decides nothing about the thing named.
+
+### Record System invariants I-101 … I-108
+
+| ID | Invariant |
+|---|---|
+| **I-101** | Every partition owns exactly one sovereign Record Model. No Record Model is a specialization of another, and none is the template for another. |
+| **I-102** | Relationship Record and History Record are World Record Model concepts. Neither is a Record System primitive, and neither may be required of another Record Model. |
+| **I-103** | A mechanism may be shared across Record Models; a semantic may not be shared without evidence in each model that carries it. Shared infrastructure never confers shared meaning. |
+| **I-104** | Record and Canon are not synonyms. Canonicality is a status property whose meaning is defined by each Record Model that has one, and two models hold Records that are never canonical. |
+| **I-105** | Registry is a sovereign Record Model. Its definitions are Records, not configuration. It holds semantic authority over definitions and never semantic ownership of another model's Records. |
+| **I-106** | A kind roster that is listed is not thereby frozen. Only the World taxonomy is established; every other roster names a boundary and is revisable by that model's own design work until it declares otherwise. |
+| **I-107** | A package composition declared for a Record Model that has not been independently designed is provisional and may not be implemented as a requirement. |
+| **I-108** | No Record carries a WSV attribute by default. An indicator definition is a Registry Record; an indicator value is World-state; neither is a universal field. |
+
+---
+
+## Authority ≠ Canonicality ≠ SoT
+
+Three separate questions. Never collapse them.
 
 ```
 authority              who may commit / what a Record governs
-canonicality           whether content is canon, and about what — model-defined
-source-of-truth class  where a thing is held: AUTHORITATIVE / DERIVED / CACHED /
-                        TEMPORARY / EXTERNAL / DEV-ENV — a repository property
+canonicality           whether something is canon, and about what — model-defined
+source-of-truth class  where the thing is held:
+                       AUTHORITATIVE / DERIVED / CACHED / TEMPORARY / EXTERNAL / DEV-ENV
 ```
 
-`SoT: AUTHORITATIVE` does **not** mean World Canon — a specification in `docs/**` is
-authoritative about architecture and `Canon: n/a`. `SoT: DEV-ENV` does **not** mean the
-artifact lacks architectural weight — this file is `SoT: AUTHORITATIVE`, `Auth: governing`,
-and `Canon: n/a`, all three true at once. **Record is not automatically Canon.** See
-Blueprint §13.0 and Artifact 003's field definitions for `SoT`, `Auth`, `Canon`.
+- **`SoT: AUTHORITATIVE` ≠ World Canon.** A specification in `docs/**` is authoritative about
+  architecture and `Canon: n/a`.
+- **`SoT: DEV-ENV` ≠ architecturally irrelevant.**
+- **Record ≠ automatically Canon** (I-104, Blueprint §13.0).
+
+Otherwise a later session will collapse repository location, authority, and canon into one
+concept. See Blueprint §13.0 and Artifact 003's `SoT` / `Auth` / `Canon` definitions.
 
 ---
 
 ## Canonical Data Safety
 
-- **Do not write canonical records directly.** Every canonical write passes through the
-  governed Mutation Coordinator path — there is no second write path.
-- **Do not bypass the governed mutation path** for convenience, speed, or because "it's just a
-  test."
-- **Do not weaken or disable canonical-write restrictions** to make development easier. A
-  restriction that is inconvenient is a restriction working as designed.
-- **Do not place implementation artifacts into canonical-data zones.** `canon/**` holds
-  canonical Records once each model's own canonical gate has passed, and its `PURPOSE.md`
-  files — nothing else, and nothing before the gate.
+- **No direct canonical writes.** Never write canonical Records directly. All canonical
+  mutation passes through the governed Mutation Coordinator path (Spine law 2) once that
+  architecture exists.
+- **No bypass** — not for convenience, tests, speed, or development ease. Do not weaken or
+  disable canonical-write restrictions.
+- **No implementation files inside canonical zones.** `canon/**` is the canonical-data zone
+  plus its established `PURPOSE.md` documentation. Nothing else, and nothing before that
+  model's own canonical gate.
 
-This file does not define the mutation protocol. The authoritative mutation and canonical-
-boundary artifacts do, when built (Roadmap P5, artifacts 145–166).
+**The Mutation Coordinator is NOT yet implemented.** It is Roadmap P5 (artifacts 145–166). The
+rules above are current operational rules; the mechanism arrives later. Do not claim it exists.
 
 ---
 
@@ -235,118 +321,135 @@ boundary artifacts do, when built (Roadmap P5, artifacts 145–166).
 
 ```
 SOURCE CONFLICT
-      ↓
-identify the exact documents / sections in conflict
-      ↓
+        ↓
+identify exact documents / sections
+        ↓
 do not silently choose an interpretation
-      ↓
-follow the established authority precedence
-      ↓
+        ↓
+follow source authority precedence
+        ↓
 if unresolved, report the conflict
-      ↓
-continue only where the artifact at hand is not blocked by it
+        ↓
+continue only if the current artifact is not blocked
 ```
 
-This file is not a decision log. Current build resolutions are recorded in the
-**Revolving Resolution Note**
-([`docs/conventions/revolving_resolution_note.md`](docs/conventions/revolving_resolution_note.md)),
-not here.
+Blueprint/RMS remain architectural authority · Roadmap is build decomposition and order ·
+Artifact 003 governs artifact expression · CLAUDE.md governs session conduct.
+
+**This file is not a decision log.** Current build resolutions live in
+[`docs/conventions/revolving_resolution_note.md`](docs/conventions/revolving_resolution_note.md).
 
 ---
 
 ## No Invention
 
-When a source does not define something, do not fill the gap with generic architecture
-knowledge or assumed convention.
+When a source does not define something:
 
 ```
 identify the gap
-   ↓
+        ↓
 check whether another authoritative source defines it
-   ↓
-if not, report it
+        ↓
+if not → report it
 ```
 
-Especially for: requirements, metadata, Kind taxonomy, gates, lockstep, dependencies,
-canonicality, and model ownership. **Do not invent a value merely because an artifact needs
-one to proceed.**
+MUST NOT fill gaps with: generic architecture assumptions · common software patterns ·
+invented field definitions · invented requirement meanings · invented gate semantics ·
+invented lockstep relationships · invented canonicality · invented model ownership.
 
-### Requirement register
+### Requirement Register
 
-Requirement IDs (`BR-nn`) are stated in the Roadmap and are preserved exactly. The requirement
-register defining their full text is **not currently available** — this is GAP-C in the
-Revolving Resolution Note, status NON-BLOCKING — UNVERIFIED. Do not invent requirement text.
-Do not claim an artifact has been verified against requirement text that has not been read.
+The Roadmap states requirement IDs (`BR-nn`); the authoritative requirement register is **not
+currently available**.
 
-### No silent architecture changes
+- Preserve requirement IDs exactly.
+- Do not invent requirement text.
+- Do not claim verification against unavailable requirement definitions.
+- GAP-C does not currently block the build. Status: missing · non-blocking · unverified.
 
-Agents must not: change Blueprint semantics · change RMS semantics · silently reinterpret
+### No Silent Architecture Changes
+
+Agents MUST NOT: change Blueprint semantics · change RMS semantics · silently reinterpret
 Roadmap architecture · invent missing definitions · invent requirement meanings · create a new
 Record Model · create a new gate · create a new lockstep group · invent a new metadata field ·
 revive retired terminology as current architecture.
 
-### No COM terminology as current architecture
+If architecture needs to change: **stop → identify the source conflict → report it → do not
+patch architecture locally.**
 
-The governing architecture is the Record System — six sovereign Record Models, no universal
-object. Do not use, as **current** architecture: Canon Object Model · COM · universal Canon
-Object · universal lifecycle · universal canonicality · universal relationship semantics ·
-universal history semantics. Where a historical document uses this terminology, it is
-historical context, not current architecture — and historical source documents are never
-rewritten to remove it.
+### No COM Terminology as Current Architecture
+
+The governing architecture is the Record System. MUST NOT use as **current** architecture:
+Canon Object Model · COM · universal Canon Object · universal lifecycle · universal
+canonicality · universal relationship semantics · universal history semantics.
+
+Historical Blueprint text may still contain historical terminology. **Do not rewrite historical
+source documents to remove it.** This rule applies to current implementation language.
 
 ---
 
 ## Validation and Git Discipline
 
-Validate every artifact against: its own `Val` and `Done` · Artifact 003's metadata
-conventions · the Blueprint/RMS sections it cites · actual repository state. File creation
-alone is not evidence of completion.
+Validate every artifact against: its own `Val` · its own `Done` · Artifact 003 conventions ·
+the cited Blueprint/RMS sections · actual repository state.
 
-**Git:**
+> **File creation alone is not evidence of completion.**
 
-- Inspect `git status` before and after work.
-- Do not modify a file outside the current artifact's declared scope.
+**Documentation artifacts** — validate required sections, required terminology, required links,
+metadata, source citations, scope boundary.
+**Code / config artifacts** — execute the checks the artifact defines.
+
+```
+generating a test      ≠  running the test
+generating a drill     ≠  executing the drill
+generating a benchmark ≠  measuring the benchmark
+```
+
+Do not claim runtime validation unless runtime validation actually occurred.
+
+**Git:** `git status` before work → work → `git diff` / `git status` after work.
+
+- Do not modify files outside the current artifact's scope.
 - Do not commit unless explicitly instructed.
-- Git history is not an architectural source of truth. It records that files changed, never
-  what canonically changed.
+- Git history is not architectural authority. It records file changes, never canonical meaning.
 
 ---
 
 ## Current Build Resolutions
 
-Full reasoning lives in the Revolving Resolution Note. Summary only:
-
-| | Current resolution |
+| Area | Current resolution |
 |---|---|
-| **Metadata** | 25-field working convention (Artifact 003) |
-| **Purpose files** | `PURPOSE.md`, every directory |
-| **Production Kind count** | 13 RMS-frozen baseline + VERDICT as a provisional roadmap-level extension, pending formal RMS admission |
-| **Requirement register** | missing · non-blocking · unverified (GAP-C) |
+| Metadata | 25-field working convention |
+| Purpose files | `PURPOSE.md`, every directory |
+| Production taxonomy | 13 RMS-frozen baseline + VERDICT as provisional roadmap extension, pending formal RMS admission |
+| Requirement register | missing · non-blocking · unverified |
 
-None of these is a constitutional amendment. Each is superseded by whatever formally resolves
-it at source.
+**These are build resolutions, not constitutional amendments.** Detailed reasoning stays in the
+Revolving Resolution Note.
 
 ---
 
 ## What Not to Do
 
-Do not put into this file: the complete Blueprint · the complete RMS · the 490-artifact
-Roadmap · Record Model schemas · Registry schemas · detailed World Truth · the detailed
-mutation protocol · detailed validation implementation · API documentation · generated source
-code · canonical records · a temporary decision presented as constitutional truth · invented
-requirement text · a future artifact described as already built.
+MUST NOT put into this file: complete Blueprint text · complete RMS text · the complete
+490-artifact Roadmap · Record Model schemas · Registry schemas · detailed World Truth · the
+detailed mutation protocol · detailed validation implementation · API documentation · generated
+source code · canonical Records · a temporary decision presented as constitutional truth ·
+invented requirement definitions · future artifacts represented as already complete.
 
-**Current completed foundation, as of this artifact:**
+Summarize a boundary; point deeper architecture back to the authoritative source.
+
+---
+
+## Current Foundation Status
 
 ```
 001  repository tree
 002  README.md
 003  artifact + phase conventions
-004  this file
+004  CLAUDE.md   ← this file
 ```
 
-Nothing at 005 or beyond exists unless repository inspection proves otherwise. Nothing here
-claims a runtime, a test suite executed, or a system operational — none of that exists yet.
-
-This file is the standing operational layer. It is smaller than, and subordinate to, the
-Blueprint and the RMS. Where it and they differ, they are right and this file is wrong.
+Nothing after Artifact 004 exists unless repository inspection proves it. There is **no
+runtime**, **no executed test suite**, **no operational system**, and **no completed later
+phase**. Artifact 004 is the standing operational layer, not the runtime.
