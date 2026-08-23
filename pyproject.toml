@@ -43,3 +43,26 @@ dependencies = []
 [tool.setuptools.packages.find]
 where = ["src"]
 namespaces = true
+
+# ---------------------------------------------------------------------------
+# Artifact 007 · test runner configuration · P0/0b · R: VALID · SoT: DEV-ENV
+#
+# No authoritative source names a test runner; the only "test runner" string in
+# the three documents is artifact 007's own manifest name. pytest is an author
+# ruling, recorded at GAP-G in the Revolving Resolution Note. It is DEV-ENV
+# tooling and carries no coolboy12 semantic authority (Blueprint P-31).
+#
+# pytest is declared in a dev dependency group, not in [project.dependencies]:
+# runtime dependencies stay empty, as Artifact 005 declares. It is left
+# unconstrained here so that Artifact 006 (uv.lock) does the pinning, which is
+# what a lockfile is for, rather than this file inventing a version floor.
+#
+# testpaths names the root Artifact 001 already built. The seven suites are
+# Artifact 010's responsibility and are not created here.
+# ---------------------------------------------------------------------------
+
+[dependency-groups]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -11,7 +11,7 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
-| Primary findings | **6** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F |
+| Primary findings | **7** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G |
 | Sub-resolution | **GAP-D.1**, under GAP-D |
 | Open items | **none** |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
@@ -61,9 +61,9 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `dfb641c` Record GAP-E.3 — pyproject implementation decisions |
-| Artifacts complete | 001 · 002 · 003 · 004 · 005 · **006 COMPLETE / PASS** |
-| Next artifact | **007 — NOT CREATED** |
+| HEAD | `942bba7` Artifact 006 — dependency lockfile (P0/0b) |
+| Artifacts complete | 001 · 002 · 003 · 004 · 005 · 006 · **007 COMPLETE / PASS** |
+| Next artifact | **008 — NOT CREATED** |
 | Working tree | clean |
 | Tracked files | 72 |
 | Directories | 68, matching Roadmap PART I exactly |
@@ -77,7 +77,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 6** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F.
+**Primary resolution entries: 7** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -92,6 +92,7 @@ separate packaging decisions.
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
 | **GAP-E.3** | unsourced pyproject values | implementation-level resolution for Python requirement, backend, version | **RESOLVED FOR BUILD** | None |
 | **GAP-F** | no dependency-lock mechanism named by any source | `uv` selected by author ruling; `uv.lock` is the single canonical lockfile | **RESOLVED FOR BUILD** | None |
+| **GAP-G** | no test runner named by any source | `pytest` selected by author ruling; configured in `pyproject.toml` | **RESOLVED FOR BUILD** | None |
 | **GAP-D.1** *(sub-resolution of GAP-D)* | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
 
 ---
@@ -417,6 +418,52 @@ is `SoT: DEV-ENV` and carries no coolboy12 semantics.
 the project itself and **zero third-party packages**. It is a valid, deterministic lock of an
 empty dependency set. Integrity hashes will appear only when real dependencies are declared —
 none are recorded now because none exist to record, not because integrity was skipped.
+
+**Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
+
+---
+
+### GAP-G — Test Runner
+
+**The gap.** Artifact 007 (`test runner configuration`) requires a runner, and **no
+authoritative source names one**. Searched Blueprint, RMS, Roadmap, Artifact 003, CLAUDE.md and
+the repository for pytest, unittest, nose, nox and tox: the single `test runner` occurrence in
+all three documents is artifact 007's own manifest name.
+
+One weak signal exists and is recorded as **INFERENCE, not evidence**: artifact 007's
+`Val: collects zero tests without error` uses *collect*, which is pytest's term for the
+discovery phase. That is suggestive; it is not a naming.
+
+**Author ruling: `pytest`.**
+
+| | |
+|---|---|
+| Runner | `pytest` |
+| Declared at | `[dependency-groups] dev = ["pytest"]` in `/pyproject.toml` |
+| Configured at | `[tool.pytest.ini_options] testpaths = ["tests"]` |
+| Classification | **AUTHOR RULING** |
+| Architectural status | **not an architectural fact** |
+
+**Boundary.** pytest is DEV-ENV tooling under Blueprint §9.5 and P-33 — the environment runs
+coolboy12 and does not define it. Under P-31, *dependencies provide capability, never
+authority*: the runner may execute a validator and report that a check failed, but it does not
+define validity, and it is never a Canon, Registry, Record Model or mutation authority.
+
+**Two deliberate restraints.**
+
+- **No version floor is declared.** `pytest` is unconstrained in `pyproject.toml` so that
+  Artifact 006 (`uv.lock`) does the pinning — currently `pytest 9.1.1`. Declaring a floor here
+  would invent a second unsourced value alongside GAP-E.3.a.
+- **Runtime dependencies stay empty.** pytest sits in a dev dependency group, so
+  `[project].dependencies` remains `[]` exactly as Artifact 005 declares it.
+
+**On the exit code.** With no test suite yet, pytest exits **5**, its dedicated
+`NO TESTS COLLECTED` status. That is not an error and is not suppressed: configuration error is
+4, collection error is 2, internal error is 3, and a failing test is 1. All four were
+demonstrated separately, and 5 is reachable only by zero-collected. Artifact 007's
+`Val: collects zero tests without error` is therefore met by a runner that starts, reads its
+config, discovers the declared root, and reports zero — not by a placeholder test or a wrapper
+masking a failure.
 
 **Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
 
