@@ -61,7 +61,7 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `d68927f` Commit the three authoritative source documents to docs/sources/ |
+| HEAD | `55911a4` Artifact 017 — patch: canonical-zone definition and Registry gate |
 | Artifacts complete | 001 … 015 · 016 · **017 COMPLETE / PASS** |
 | Next artifact | **018 — NOT CREATED** |
 | Working tree | clean |
