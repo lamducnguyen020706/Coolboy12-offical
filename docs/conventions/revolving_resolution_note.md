@@ -11,9 +11,9 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
-| Primary findings | **10** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J |
+| Primary findings | **11** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J |
 | Sub-resolution | **GAP-D.1**, under GAP-D |
-| Open items | **none** |
+| Open items | **CONFLICT-C** — SoT class count, unresolved at source; non-blocking for 016/017/020, potentially blocking for 050 |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
 
 > **Placement note.** This file sits in `docs/conventions/` because that is the smallest
@@ -61,11 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `315f6f3` Artifact 015 — secrets and configuration boundary, final micro-patch (P0/0d) |
-| Artifacts complete | 001 … 013 · 014 · **015 COMPLETE / PASS** |
-| Next artifact | **016 — NOT CREATED** |
+| HEAD | `3b8196d` Artifact 016 — source-of-truth boundary (P0/0d) |
+| Artifacts complete | 001 … 014 · 015 · **016 COMPLETE / PASS** |
+| Next artifact | **017 — NOT CREATED** |
 | Working tree | clean |
-| Tracked files | 80 |
+| Tracked files | 81 |
 | Directories | 68, matching Roadmap PART I exactly |
 | Purpose-file coverage | 68 / 68 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 68 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
@@ -77,7 +77,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 10** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J.
+**Primary resolution entries: 11** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -88,6 +88,7 @@ separate packaging decisions.
 |---|---|---|---|---|
 | **CONFLICT-A** | RMS P=13 vs roadmap VERDICT / P14 | P=13 frozen baseline; VERDICT is a provisional roadmap extension | **RESOLVED FOR BUILD** | None |
 | **CONFLICT-B** | 25 vs 27 metadata fields | use the 25 explicitly enumerated fields | **RESOLVED FOR BUILD** | None |
+| **CONFLICT-C** | Blueprint/RMS state **five** SoT classes (§29.6a); Roadmap PART VII states **six**, adding DEV-ENV | recorded, not resolved — the two tables classify different objects (data classes vs repository artifact classes); DEV-ENV is Roadmap-only | **RECORDED — UNRESOLVED AT SOURCE** | None |
 | **GAP-C** | missing requirement register | build not blocked; requirement text not verified | **NON-BLOCKING — UNVERIFIED** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
 | **GAP-E.3** | unsourced pyproject values | implementation-level resolution for Python requirement, backend, version | **RESOLVED FOR BUILD** | None |
@@ -172,6 +173,54 @@ WORKING METADATA SET = the 25 explicitly enumerated fields
   working input, not its final decision.
 
 **Status:** RESOLVED FOR BUILD · **Working cardinality:** 25 · **Constitutional change:** NONE
+
+---
+
+### CONFLICT-C — Source-of-Truth Class Count
+
+**The finding.** The three authoritative documents do not agree on how many source-of-truth
+classes exist.
+
+| Source | Statement | Count |
+|---|---|---|
+| Blueprint §29.6a | table of AUTHORITATIVE · DERIVED · CACHED · TEMPORARY · EXTERNAL, scoped to *"Every **data class** in the system"* | **five** |
+| Blueprint §7 change register | *"Five classes; every external store is DERIVED or CACHED"* — marked **Frozen** | **five** |
+| Blueprint §13 capability table | *"Assigns one of five classes (§29.6a)"* | **five** |
+| RMS §4 | row reads: Source-of-truth classification · *"§29.6a — five classes"* · Constitutional | **five** |
+| Roadmap PART VII | table headed *"**Artifact class**"*, adding **DEV-ENV** for `src/**`, `tests/**`, `benchmarks/**`, `.claude/**` | **six** |
+| Roadmap row 016 | `Val: six SoT classes; every directory classified` | **six** |
+
+**Verified by search.** The string `DEV-ENV` occurs **zero times in the Master Blueprint** and
+**zero times in the RMS**. It is a Roadmap-only class.
+
+**Affected artifacts.** 016 (this finding's origin) · 017 · 020 · 050 · Roadmap PART VII and
+PART I · every later artifact carrying a `SoT:` field, since `SoT: DEV-ENV` appears throughout
+the manifest.
+
+**Architectural consequence.** If DEV-ENV were admitted as a *record-level* `sot_class` value,
+it would extend a scheme the Blueprint and RMS both record as frozen at five, and RMS §4 carries
+`sot_class` among the seven FROZEN universal envelope fields. If it is confined to *repository
+artifact* classification, no Blueprint statement is contradicted, because §29.6a scopes itself
+to data classes and PART VII's own column header is *Artifact class*.
+
+**Why this is recorded and not decided.** The two-level reading is textually available — the
+sources literally classify different objects — but it is an inference, and the source-precedence
+rule (Blueprint > RMS > Roadmap) would otherwise put a frozen five-class Blueprint scheme against
+a six-class Roadmap Val. **No session may resolve this by choosing an interpretation.** It needs
+an authorial ruling or a source amendment.
+
+**What Artifact 016 did with it.** 016 classifies repository directories using the Roadmap's six,
+because its own Val and Done are directory-scoped and PART VII is the Roadmap's own normative
+table. It states the split explicitly in its §2, labels DEV-ENV as Roadmap-only with no Blueprint
+basis, and explicitly declines to decide whether DEV-ENV is admissible as a record-level class —
+routing that question to Artifact 050 and to this entry.
+
+**Build impact.** Not blocking for 016, 017, or 020, all of which are directory-scoped.
+**Potentially blocking for Artifact 050**, whose `Val` is *"every record carries exactly one
+class"* against `BP: §29.6a` — the five-class table. 050 will have to know whether DEV-ENV is a
+legal record-level value.
+
+**Status:** RECORDED — UNRESOLVED AT SOURCE · **Constitutional change:** NONE
 
 ---
 
