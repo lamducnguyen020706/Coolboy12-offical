@@ -11,7 +11,7 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
-| Primary findings | **8** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H |
+| Primary findings | **9** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I |
 | Sub-resolution | **GAP-D.1**, under GAP-D |
 | Open items | **none** |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
@@ -61,9 +61,9 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `2af027e` Artifact 007 — test runner configuration (P0/0b) |
-| Artifacts complete | 001 · 002 · 003 · 004 · 005 · 006 · 007 · **008 COMPLETE / PASS** |
-| Next artifact | **009 — NOT CREATED** |
+| HEAD | `04a1a16` Artifact 008 — linter / formatter configuration (P0/0b) |
+| Artifacts complete | 001 · 002 · 003 · 004 · 005 · 006 · 007 · 008 · **009 COMPLETE / PASS** |
+| Next artifact | **010 — NOT CREATED** |
 | Working tree | clean |
 | Tracked files | 72 |
 | Directories | 68, matching Roadmap PART I exactly |
@@ -77,7 +77,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 8** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H.
+**Primary resolution entries: 9** — CONFLICT-A · CONFLICT-B · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -94,6 +94,7 @@ separate packaging decisions.
 | **GAP-F** | no dependency-lock mechanism named by any source | `uv` selected by author ruling; `uv.lock` is the single canonical lockfile | **RESOLVED FOR BUILD** | None |
 | **GAP-G** | no test runner named by any source | `pytest` selected by author ruling; configured in `pyproject.toml` | **RESOLVED FOR BUILD** | None |
 | **GAP-H** | no linter or formatter named by any source | `ruff` selected by author ruling, one tool for both roles | **RESOLVED FOR BUILD** | None |
+| **GAP-I** | no editor named by any source | EditorConfig chosen as the editor-agnostic mechanism; no editor made a project requirement | **RESOLVED FOR BUILD** | None |
 | **GAP-D.1** *(sub-resolution of GAP-D)* | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
 
 ---
@@ -515,6 +516,60 @@ Each would have duplicated something that already exists, creating a drift hazar
 Rule selection is ruff's default set — **413 rules enabled**, not a disabled-everything
 configuration. The clean result comes from the repository containing **zero `.py` files**, not
 from suppression.
+
+**Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
+
+---
+
+### GAP-I — Editor / Tooling
+
+**The gap.** Artifact 009 requires editor/tooling configuration, and **no authoritative source
+names an editor**. Searched Blueprint, RMS, Roadmap, Artifact 003, CLAUDE.md and the repository
+for VS Code, Visual Studio, PyCharm, IntelliJ, JetBrains, Vim, Neovim, Emacs, Sublime and
+EditorConfig: **zero occurrences across all three documents**. The repository contained no
+`.vscode/`, no `.idea/`, no `.editorconfig` and no workspace file.
+
+**Resolution: EditorConfig, one file — `/.editorconfig`.**
+
+Chosen because it is **editor-agnostic**. A `.vscode/` directory would have made VS Code a de
+facto project requirement on no evidence; EditorConfig reduces drift without naming an editor
+at all. Recorded as a **TECHNICAL IMPLEMENTATION DECISION**, not an architectural fact.
+
+#### The word "Editor" means two different things — do not conflate them
+
+The second such collision in this build, after GAP-H's "linter".
+
+| | Blueprint's Editor | Artifact 009's editor |
+|---|---|---|
+| What it is | the **Editor-in-Chief**, an AI coworker role | a **text editor** |
+| Source | Blueprint §21 — *"The Editor-in-Chief recommends what to tell and when"* | no source; implementation decision |
+| What it decides | what is worth telling, in what form, at what time | indentation and newlines |
+| Owned by | the **P16 coworker artifacts** | DEV-ENV, Artifact 009 |
+
+#### Every value measured, none invented
+
+Artifact 008 owns lint and format policy; Artifact 009 mirrors it and defines nothing. The two
+Python settings were read from ruff's own resolved settings and verified equal:
+
+| `.editorconfig` | ruff | Match |
+|---|---|---|
+| `indent_size = 4` | `formatter.indent_width = 4` | yes |
+| `max_line_length = 88` | `formatter.line_width = 88` | yes |
+| `indent_style = space` | `formatter.indent_style = space` | yes |
+
+The generic settings — `charset`, `end_of_line`, `insert_final_newline`,
+`trim_trailing_whitespace`, `indent_style` — describe conventions **all 74 tracked files
+already follow**: zero CRLF, zero missing final newlines, zero trailing whitespace, zero
+tab-indented files, zero non-UTF-8. Adopting the file changed nothing.
+
+**Coupling note.** `indent_size` and `max_line_length` duplicate Artifact 008, because no editor
+derives them from ruff. If 008's formatter policy is ever changed, this file must change with
+it. That duplication is the artifact's purpose, not an oversight — unlike GAP-H's
+`target-version`, which ruff derives and which was therefore deliberately *not* duplicated.
+
+**Replaceability, per Blueprint §9.5.** Verified by removing the file: `ruff check`,
+`ruff format --check` and `pytest` returned identical results with and without it. It governs
+nothing and coolboy12's architecture is unchanged by its absence.
 
 **Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
 

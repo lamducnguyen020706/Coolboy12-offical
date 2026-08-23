@@ -1,0 +1,42 @@
+# COOLBOY12 — Artifact 009 · editor/tooling configuration · P0/0b
+# R: IMPL · SoT: DEV-ENV · Auth: none · H: 008 · Val: consistent with 008
+#
+# Artifact 008 owns lint and format policy. This file does not define policy;
+# it mirrors 008's resolved settings into editor space so an editor and the
+# repository do not drift apart. Where the two ever disagree, Artifact 008 is
+# right and this file is wrong.
+#
+# NOT the Blueprint's "Editor". Blueprint §21 describes the Editor-in-Chief,
+# an AI coworker role in the editorial workflow. That is a coolboy12 semantic
+# role. This file configures a text editor and carries no coolboy12 semantic
+# authority (Blueprint §9.5, P-31, P-33).
+#
+# EditorConfig was chosen because no source names an editor and the repository
+# contains no editor configuration. It is editor-agnostic, so it reduces drift
+# without making any particular editor a project requirement. Remove it and
+# coolboy12's architecture is unchanged — Blueprint §9.5's replaceability test.
+#
+# Every value below was measured from the repository or read from ruff's own
+# resolved settings. None was invented:
+#   charset, end_of_line, insert_final_newline, trim_trailing_whitespace,
+#   indent_style   all 74 tracked files already conform; adopting this file
+#                  changes nothing
+#   indent_size    ruff formatter.indent_width = 4
+#   max_line_length  ruff formatter.line_width = 88
+#
+# Coupling note: indent_size and max_line_length duplicate Artifact 008 because
+# no editor derives them from ruff. If 008's formatter policy is ever changed,
+# this file must be changed with it.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.py]
+indent_size = 4
+max_line_length = 88
