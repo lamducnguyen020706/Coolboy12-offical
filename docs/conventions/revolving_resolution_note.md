@@ -61,11 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `134df26` Artifact 011 — constitutional test harness (P0/0c) |
-| Artifacts complete | 001 … 010 · 011 · **012 COMPLETE / PASS** |
-| Next artifact | **013 — NOT CREATED** |
+| HEAD | `8a8360d` Artifact 013 — version-control boundary (P0/0d) |
+| Artifacts complete | 001 … 011 · 012 · **013 COMPLETE / PASS** |
+| Next artifact | **014 — NOT CREATED** |
 | Working tree | clean |
-| Tracked files | 72 |
+| Tracked files | 78 |
 | Directories | 68, matching Roadmap PART I exactly |
 | Purpose-file coverage | 68 / 68 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 68 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
