@@ -61,11 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `ded705e` Artifact 014 — environment boundary, freeze-audit fix (P0/0d) |
-| Artifacts complete | 001 … 012 · 013 · **014 COMPLETE / PASS** |
-| Next artifact | **015 — NOT CREATED** |
+| HEAD | `c914da0` Artifact 015 — secrets and configuration boundary (P0/0d) |
+| Artifacts complete | 001 … 013 · 014 · **015 COMPLETE / PASS** |
+| Next artifact | **016 — NOT CREATED** |
 | Working tree | clean |
-| Tracked files | 79 |
+| Tracked files | 80 |
 | Directories | 68, matching Roadmap PART I exactly |
 | Purpose-file coverage | 68 / 68 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 68 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
