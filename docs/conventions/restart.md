@@ -302,7 +302,9 @@ Cold restart (§6)
 8. Canon is never reconstructed from Derived state or from Git history.
 9. Restart never bypasses the canonical gate or the Mutation Coordinator.
 10. No secret persists through restart, in any form.
-11. Restart is on-demand and session-oriented; no daemon, scheduler, or background advance.
+11. For the constitutional workflow path, restart is not implemented as a permanently-running
+    worker, daemon, scheduler, or background advance; this document defines no unattended
+    restart mechanism.
 12. Restart introduces no seventh source-of-truth class and no new artifact role.
 13. This document defines the P0 contract only; the full dormancy specification (454), snapshot
     model (455), Return Briefing (456), degraded modes (457–458), and drill (477) are downstream
