@@ -117,8 +117,10 @@ applies without exception and without a size, duration, or rebuild-status carve-
   `derived/health/` are DERIVED; "diagnostic" is not an exemption category.
 - **No exception for generated docs or debug output.** Being machine-generated does not change
   a destination's source-of-truth class.
-- **A derived artifact that needs to indicate a secret exists must not copy the secret.** It may
-  record that a value was supplied, was valid, or was used — never the value itself.
+- **A derived artifact must not contain the secret value or secret-bearing material**, under
+  any of the exceptions above or otherwise. Whether non-secret metadata about secret use — that
+  a value was supplied, was valid, or was used — may be derived is outside this artifact,
+  unless a later contract explicitly requires it.
 
 ## 7. Secret ≠ Canonical Data
 
@@ -147,10 +149,10 @@ secret  →  cached artifact        PROHIBITED
 ```
 
 "Automatically generated," "rebuildable," "cache," and "health report" are not exemptions.
-`derived/**`'s own PART I prohibition — *anything unrebuildable* — already excludes secret
-material by construction: a secret is not derivable from canonical Records, so anything that
-depends on the secret to reproduce cannot be rebuilt by the rebuild process alone, and does not
-belong in a directory whose entire content must be freely regenerable.
+`derived/**` remains subject to its own DERIVED and rebuildability rules from PART VII and PART
+I. Those rules are not the basis for the prohibition stated here. Artifact 015 adds the specific
+boundary that secret material must never enter `derived/**`, independently of whether an
+artifact built from it could otherwise be reconstructed.
 
 ## 9. Environment and Mutation Boundary Compatibility
 
@@ -216,11 +218,13 @@ distinction is drawn:
 secret reference  ≠  secret value
 ```
 
-A reference (a name, a key, a pointer to where the value lives) is not itself secret material
-and is not bound by this document's prohibitions the way the value it points to is. This
-document states the distinction; it defines no reference object, schema, or syntax. If Artifact
-021 requires one, it is 021's implementation choice, not a constitutional requirement fixed
-here.
+A configuration mechanism may refer to externally held secret material without embedding its
+value. This document does not define a reference object, a reference syntax, or a separate
+source-of-truth classification for references — whether a given reference construct itself
+counts as secret-bearing material is unspecified here, not resolved. What is fixed is the
+destination rule: neither a secret value nor secret-bearing material may enter Canon or Derived,
+however it is referred to. If Artifact 021 requires a reference mechanism, defining it is 021's
+implementation choice, made inside that boundary — not a constitutional requirement fixed here.
 
 ## 13. Configuration Loader Boundary — What Artifact 021 Inherits
 
