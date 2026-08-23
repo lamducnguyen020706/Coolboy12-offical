@@ -61,9 +61,9 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `53c2fb3` Artifact 009 — editor / tooling configuration (P0/0b) |
-| Artifacts complete | 001 · 002 · 003 · 004 · 005 · 006 · 007 · 008 · 009 · **010 COMPLETE / PASS** |
-| Next artifact | **011 — NOT CREATED** |
+| HEAD | `f88e391` Artifact 010 — test suite scaffolding verified (P0/0b) |
+| Artifacts complete | 001 … 009 · 010 · **011 COMPLETE / PASS** |
+| Next artifact | **012 — NOT CREATED** |
 | Working tree | clean |
 | Tracked files | 72 |
 | Directories | 68, matching Roadmap PART I exactly |
