@@ -317,10 +317,13 @@ that can only be recovered by restoring the environment was canonical to begin w
 
 The test, applied to this layer (§9.5 point 4, §26.8, §29.7):
 
-> **If the execution environment were replaced, coolboy12's architecture and semantic ownership
-> would remain valid.**
+> **The environment is replaceable.** coolboy12 could be built in a different environment, or by
+> hand over a longer period, and the blueprint would be unchanged. That is the test — and it is
+> the anonymisation test (§29.7) applied one layer up.
 
-Run it by removing the environment's name from the architecture. What must still stand:
+Restated for this document: if the execution environment were replaced, coolboy12's architecture
+and semantic ownership would remain valid. Run it by removing the environment's name from the
+architecture. What must still stand:
 
 - the six Record Models — W, E, P, R, V, I
 - Canon
