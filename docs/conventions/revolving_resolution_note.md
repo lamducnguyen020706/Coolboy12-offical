@@ -61,7 +61,7 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `fa09751` Artifact 019 — restart / recovery conventions (P0/0d) |
+| HEAD | `e15c69f` Artifact 019 — patch: scope four overreaching universal claims |
 | Artifacts complete | 001 … 017 · 018 · **019 COMPLETE / PASS** |
 | Next artifact | **020 — NOT CREATED** |
 | Working tree | clean |
