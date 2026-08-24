@@ -61,11 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `48779cf` Artifact 019 — patch: align Standing Rule 11 with §13's scoped wording |
-| Artifacts complete | 001 … 017 · 018 · **019 COMPLETE / PASS** |
-| Next artifact | **020 — NOT CREATED** |
+| HEAD | `92a99ec` Artifact 020 — rebuild conventions (P0/0d) |
+| Artifacts complete | 001 … 018 · 019 · **020 COMPLETE / PASS** |
+| Next artifact | **021 — NOT CREATED** |
 | Working tree | clean |
-| Tracked files | 88 |
+| Tracked files | 89 |
 | Directories | 69 — 68 matching Roadmap PART I exactly, plus `docs/sources/` (GAP-K, not a PART I directory) |
 | Purpose-file coverage | 69 / 69 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 69 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
