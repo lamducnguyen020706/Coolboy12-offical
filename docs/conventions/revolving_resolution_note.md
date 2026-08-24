@@ -61,11 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `d59a057` Artifact 018 — patch: frame role descriptions as working convention |
-| Artifacts complete | 001 … 018 · 019 · **020 COMPLETE / PASS** |
-| Next artifact | **021 — NOT CREATED** |
+| HEAD | `13fe3b8` Artifact 020 — source-exact audit patch: correct four citations |
+| Artifacts complete | 001 … 019 · 020 · **021 COMPLETE / PASS** |
+| Next artifact | **022 — NOT CREATED** (canon write-deny hook, `H: 017,021`) |
 | Working tree | clean |
-| Tracked files | 89 |
+| Tracked files | 93 |
 | Directories | 69 — 68 matching Roadmap PART I exactly, plus `docs/sources/` (GAP-K, not a PART I directory) |
 | Purpose-file coverage | 69 / 69 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 69 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
@@ -364,7 +364,15 @@ against `Done: builds`.
 **No specific backend is architecturally required, and no build-system decision is created in
 the Blueprint, the RMS, or the Roadmap.**
 
-**Status: GAP-E.3.b — RESOLVED FOR BUILD.**
+**Status: GAP-E.3.b — RESOLVED FOR BUILD, and now confirmed by execution.**
+
+**Confirmed at Artifact 021.** Artifact 021 is the first artifact to place importable Python in
+`src/**`, so it is the first that could test the omission rather than reason about it. It was
+tested: `uv pip install -e .` against the repository's `.venv` resolved, built, and installed
+`coolboy12==0.0.0`, and `from coolboy12.bootstrap.config import load_config` then succeeded. PEP
+517's fallback plus Artifact 005's existing `[tool.setuptools.packages.find]` is sufficient, and
+no `[build-system]` table was added. The prediction recorded here held; the omission cost
+nothing.
 
 #### GAP-E.3.c — project version
 
