@@ -20,7 +20,7 @@ import traceback
 
 import pytest
 
-from coolboy12.bootstrap.config import SecretInCanonicalPathError, load_config
+from coolboy12.bootstrap.config import SecretInProtectedPathError, load_config
 
 WORKSPACE = "/workspace"
 
@@ -40,7 +40,7 @@ PLACEHOLDER = "PLACEHOLDER-NOT-A-REAL-SECRET-a1b2c3d4"
 )
 def test_secret_bearing_setting_in_canon_is_refused(setting):
     """Test C — secret material at a ``canon/**`` location is rejected."""
-    with pytest.raises(SecretInCanonicalPathError) as raised:
+    with pytest.raises(SecretInProtectedPathError) as raised:
         load_config({setting: "canon/world/access.txt"}, root=WORKSPACE)
 
     assert raised.value.zone == "canon"
@@ -59,8 +59,34 @@ def test_secret_bearing_setting_in_canon_is_refused(setting):
 )
 def test_canon_is_refused_however_the_path_is_written(location):
     """Normalization is part of the refusal, not a way around it."""
-    with pytest.raises(SecretInCanonicalPathError):
+    with pytest.raises(SecretInProtectedPathError):
         load_config({"COOLBOY12_API_TOKEN": location}, root=WORKSPACE)
+
+
+@pytest.mark.parametrize(
+    "location",
+    [
+        "canon/../outside.txt",
+        "derived/../outside.txt",
+        "nested/../../canon/access.txt",
+        "../canon/access.txt",
+    ],
+)
+def test_traversal_out_of_the_workspace_is_not_a_protected_zone(location):
+    """Normalization runs in both directions, and it is not a bypass.
+
+    ``canon/../outside.txt`` normalizes to a location that is not in canon, so
+    refusing it would be refusing ordinary configuration. The two that climb
+    above the workspace land outside it entirely, which Artifact 015 §3 calls
+    EXTERNAL — where secret material is supposed to be.
+
+    The reverse direction, ``docs/../canon/...`` normalizing *into* canon, is
+    refused; that case is covered above. Neither result depends on any of
+    these paths existing.
+    """
+    config = load_config({"COOLBOY12_API_TOKEN": location}, root=WORKSPACE)
+
+    assert config["API_TOKEN"] == location
 
 
 @pytest.mark.parametrize(
@@ -74,7 +100,7 @@ def test_canon_is_refused_however_the_path_is_written(location):
 )
 def test_secret_bearing_setting_in_derived_is_refused(location):
     """Artifact 015 §15 rule 3 — generated, cached and diagnostic alike."""
-    with pytest.raises(SecretInCanonicalPathError) as raised:
+    with pytest.raises(SecretInProtectedPathError) as raised:
         load_config({"COOLBOY12_API_TOKEN": location}, root=WORKSPACE)
 
     assert raised.value.zone == "derived"
@@ -87,7 +113,7 @@ def test_refusal_is_explicit_and_nothing_is_loaded():
     the rest of the configuration, because a partly-loaded result would look
     like a success.
     """
-    with pytest.raises(SecretInCanonicalPathError):
+    with pytest.raises(SecretInProtectedPathError):
         load_config(
             {
                 "COOLBOY12_LOG_LEVEL": "debug",
@@ -105,7 +131,7 @@ def test_secret_value_does_not_leak_into_the_failure(caplog, capsys):
     """
     location = f"canon/world/{PLACEHOLDER}.txt"
 
-    with caplog.at_level(0), pytest.raises(SecretInCanonicalPathError) as raised:
+    with caplog.at_level(0), pytest.raises(SecretInProtectedPathError) as raised:
         load_config(
             {"COOLBOY12_API_TOKEN": location, "COOLBOY12_PASSWORD": PLACEHOLDER},
             root=WORKSPACE,

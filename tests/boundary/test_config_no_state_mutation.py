@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 
 from coolboy12.bootstrap import config as config_module
-from coolboy12.bootstrap.config import SecretInCanonicalPathError, load_config
+from coolboy12.bootstrap.config import SecretInProtectedPathError, load_config
 
 
 def _snapshot(root: Path) -> dict[str, bytes]:
@@ -64,7 +64,7 @@ def test_refusal_writes_nothing_either(tmp_path):
     (tmp_path / "canon").mkdir()
     before = _snapshot(tmp_path)
 
-    with pytest.raises(SecretInCanonicalPathError):
+    with pytest.raises(SecretInProtectedPathError):
         load_config({"COOLBOY12_API_TOKEN": "canon/access.txt"}, root=tmp_path)
 
     assert _snapshot(tmp_path) == before

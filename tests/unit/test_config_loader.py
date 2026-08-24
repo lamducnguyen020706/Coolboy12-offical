@@ -35,12 +35,52 @@ def test_valid_configuration_loads():
     assert config["WORKSPACE"] == "src"
 
 
-def test_only_the_namespace_is_read():
-    """Entries outside ``COOLBOY12_`` are not configuration and are ignored."""
-    config = load_config({"PATH": "/usr/bin", "HOME": "/root"}, root="/workspace")
+def test_coolboy12_namespace_is_stripped():
+    """``COOLBOY12_FOO`` is loaded as ``FOO``.
+
+    The prefix selects the namespace; it is not part of the setting's name.
+    """
+    config = load_config({"COOLBOY12_FOO": "bar"}, root="/workspace")
+
+    assert config["FOO"] == "bar"
+    assert "COOLBOY12_FOO" not in config
+    assert list(config) == ["FOO"]
+
+
+def test_unrelated_environment_variables_are_ignored():
+    """Namespace isolation — an ordinary environment is not configuration."""
+    config = load_config(
+        {
+            "PATH": "/usr/bin",
+            "HOME": "/root",
+            "SHELL": "/bin/sh",
+            "UNRELATED_VAR": "x",
+            "COOLBOY12_LOG_LEVEL": "debug",
+        },
+        root="/workspace",
+    )
+
+    assert dict(config.settings) == {"LOG_LEVEL": "debug"}
+
+
+def test_prefix_must_match_exactly():
+    """A name that merely resembles the namespace is not in it."""
+    config = load_config(
+        {"COOLBOY12": "x", "COOLBOY123_A": "y", "XCOOLBOY12_B": "z"},
+        root="/workspace",
+    )
 
     assert len(config) == 0
-    assert "PATH" not in config
+
+
+def test_iteration_order_is_deterministic():
+    """The public iteration order is sorted, not insertion- or hash-dependent."""
+    config = load_config(
+        {"COOLBOY12_C": "3", "COOLBOY12_A": "1", "COOLBOY12_B": "2"},
+        root="/workspace",
+    )
+
+    assert list(config) == ["A", "B", "C"]
 
 
 def test_empty_environment_loads_successfully():

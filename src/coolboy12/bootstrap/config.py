@@ -28,9 +28,17 @@ What this module is not
 Not a Canon manager, Registry loader, Record Model loader, mutation mechanism,
 canonical writer, derived-store manager, rebuild engine, staleness engine,
 validation framework, secret-management platform, permission framework, policy
-engine, or configuration database. It writes nothing, anywhere: every function
-below is a pure function of its arguments and touches no filesystem path, so it
-cannot modify ``canon/**``, ``derived/**``, or any other state.
+engine, or configuration database. It writes nothing, anywhere: no function
+below opens, creates, or stats a filesystem path, so it cannot modify
+``canon/**``, ``derived/**``, or any other state.
+
+Determinism is a property of the inputs, not a claim of mathematical purity.
+:func:`load_config` computes its result from its two arguments alone and holds
+no state between calls, so the same arguments always produce the same result.
+Called with its defaults it *reads* two process-global sources — ``os.environ``
+and the current working directory — and its result varies with them, as any
+environment configuration loader's must. Pass both arguments explicitly to
+close over that variability, which is what the tests do.
 
 Adjacent artifacts, and where this one stops
 --------------------------------------------
@@ -64,7 +72,7 @@ __all__ = [
     "Config",
     "ConfigError",
     "MalformedConfigError",
-    "SecretInCanonicalPathError",
+    "SecretInProtectedPathError",
     "load_config",
 ]
 
@@ -83,8 +91,13 @@ no dependency beyond the standard library.
 """
 
 
-_CANONICAL_ZONE_DIRECTORIES = ("canon", "derived")
+_PROTECTED_ZONE_DIRECTORIES = ("canon", "derived")
 """The two directory names a secret may never reach.
+
+Named *protected* rather than *canonical* because the tuple holds both, and
+Canon and Derived are not the same thing: Artifact 015 states them as two
+separate rules, and collapsing them under one label here would blur a
+distinction the boundary depends on.
 
 Artifact 015 §15 states them as rules 2 and 3: "No secret may enter
 ``canon/**``" and "No secret may enter ``derived/**``". Artifact 021's own
@@ -135,11 +148,13 @@ class MalformedConfigError(ConfigError):
     """The environment holds a ``COOLBOY12_`` entry that is not a setting."""
 
 
-class SecretInCanonicalPathError(ConfigError):
-    """A secret-bearing setting designates a location inside a canonical zone.
+class SecretInProtectedPathError(ConfigError):
+    """A secret-bearing setting designates a location inside a protected zone.
 
     This is Artifact 021's ``Val`` — "refuses secrets in canon paths" — as a
-    raised exception.
+    raised exception. It is named for the *protected zone* rather than for
+    Canon alone because Artifact 015 §15 protects two of them, rules 2 and 3,
+    and Derived is not Canon. ``zone`` says which one was designated.
 
     The exception carries the setting *name* and the *zone*, and never the
     value. Artifact 015 §16 keeps real credential material out of the boundary
@@ -205,8 +220,10 @@ class Config:
             return NotImplemented
         return dict(self._settings) == dict(other._settings)
 
-    def __hash__(self) -> int:
-        return hash(frozenset(self._settings.items()))
+    # Deliberately not hashable. Defining ``__eq__`` above sets ``__hash__``
+    # to None, and that is the wanted outcome: hashing would pull every loaded
+    # value — secret-bearing ones included — through a hash, and no caller
+    # needs a Config in a set or as a dict key.
 
     def __repr__(self) -> str:
         """Name the settings; never show a value.
@@ -231,12 +248,14 @@ def load_config(
 
     :param environ: the environment mapping to read. Defaults to
         ``os.environ``. It is a parameter so that the loader is a pure
-        function of its inputs: the same mapping and the same ``root`` always
-        produce the same result, with no wall clock, no randomness, no
+        deterministic in its inputs: the same mapping and the same ``root``
+        always produce the same result, with no wall clock, no randomness, no
         network, no Git history, no previous derived state, and no cache
-        involved (the hidden dependencies Artifact 020 §7 prohibits).
+        involved (the hidden dependencies Artifact 020 §7 prohibits). The
+        default reads ``os.environ``, which is process-global and may change
+        between calls; that is the environment being loaded, not hidden state.
     :param root: the workspace directory that relative configured paths are
-        resolved against, for the canonical-zone check only. Defaults to the
+        resolved against, for the protected-zone check only. Defaults to the
         current working directory — the workspace the execution environment
         provides (Blueprint §26.8). It is never read from, written to, or
         required to exist; the check below is purely lexical.
@@ -245,7 +264,7 @@ def load_config(
         ``COOLBOY12_`` prefix stripped from each name.
 
     :raises MalformedConfigError: an entry in the namespace is not a setting.
-    :raises SecretInCanonicalPathError: a secret-bearing setting designates a
+    :raises SecretInProtectedPathError: a secret-bearing setting designates a
         location inside ``canon/`` or ``derived/``.
 
     No setting is required. No authoritative source names one, and inventing a
@@ -270,9 +289,9 @@ def load_config(
 
         value = source[key]
         if _names_secret_material(name):
-            zone = _canonical_zone_designated_by(value, base)
+            zone = _protected_zone_designated_by(value, base)
             if zone is not None:
-                raise SecretInCanonicalPathError(setting=key, zone=zone)
+                raise SecretInProtectedPathError(setting=key, zone=zone)
 
         accepted[name] = value
 
@@ -285,15 +304,15 @@ def _names_secret_material(name: str) -> bool:
     return any(marker in lowered for marker in _SECRET_NAME_MARKERS)
 
 
-def _canonical_zone_designated_by(value: str, base: str) -> str | None:
-    """Return the canonical zone ``value`` points into, or ``None``.
+def _protected_zone_designated_by(value: str, base: str) -> str | None:
+    """Return the protected zone ``value`` points into, or ``None``.
 
     Purely lexical. The path is normalized and compared against ``base``; the
     filesystem is never consulted, nothing is opened, and nothing is created.
     That is what makes it safe for a loader to run this check at all: it can
     neither read a canonical record nor bring one into existence.
 
-    A location outside ``base`` is not in a canonical zone. Secret material
+    A location outside ``base`` is not in a protected zone. Secret material
     held outside the workspace is exactly where Artifact 015 §3 says it
     belongs — EXTERNAL — and Artifact 015 §13 permits the loader to consume it
     for runtime use.
@@ -313,4 +332,4 @@ def _canonical_zone_designated_by(value: str, base: str) -> str | None:
         return None
 
     head = relative.replace("\\", "/").split("/", 1)[0]
-    return head if head in _CANONICAL_ZONE_DIRECTORIES else None
+    return head if head in _PROTECTED_ZONE_DIRECTORIES else None
