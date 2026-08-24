@@ -61,7 +61,7 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `13fe3b8` Artifact 020 — source-exact audit patch: correct four citations |
+| HEAD | `32e407f` Artifact 021 — patch to final form |
 | Artifacts complete | 001 … 019 · 020 · **021 COMPLETE / PASS** |
 | Next artifact | **022 — NOT CREATED** (canon write-deny hook, `H: 017,021`) |
 | Working tree | clean |
