@@ -10,6 +10,8 @@ placeholder, in the style Artifact 015 §16 uses.
 
 from __future__ import annotations
 
+import traceback
+
 import pytest
 
 from coolboy12.bootstrap.config import (
@@ -20,19 +22,29 @@ from coolboy12.bootstrap.config import (
 )
 
 
-def test_valid_configuration_loads():
-    """Test A — a valid environment configuration loads."""
+def test_valid_configuration_loads(tmp_path):
+    """Test A — a valid environment configuration loads.
+
+    The whole of ``Done: loads``: the right type, the right settings, the
+    right values, and nothing else carried along.
+    """
     config = load_config(
         {
             "COOLBOY12_LOG_LEVEL": "debug",
             "COOLBOY12_WORKSPACE": "src",
             "PATH": "/usr/bin",
         },
-        root="/workspace",
+        root=tmp_path,
     )
 
+    assert isinstance(config, Config)
     assert config.get("LOG_LEVEL") == "debug"
     assert config["WORKSPACE"] == "src"
+
+    # The representation is exactly the two namespaced settings, as strings.
+    assert dict(config.settings) == {"LOG_LEVEL": "debug", "WORKSPACE": "src"}
+    assert len(config) == 2
+    assert all(isinstance(value, str) for value in config.settings.values())
 
 
 def test_coolboy12_namespace_is_stripped():
@@ -83,9 +95,16 @@ def test_iteration_order_is_deterministic():
     assert list(config) == ["A", "B", "C"]
 
 
-def test_empty_environment_loads_successfully():
-    """No setting is required, because no authoritative source names one."""
-    assert len(load_config({}, root="/workspace")) == 0
+def test_empty_environment_loads_successfully(tmp_path):
+    """No setting is required, because no authoritative source names one.
+
+    The result is a valid, empty configuration — not a failure, and not None.
+    """
+    config = load_config({}, root=tmp_path)
+
+    assert isinstance(config, Config)
+    assert len(config) == 0
+    assert dict(config.settings) == {}
 
 
 def test_malformed_namespace_entry_fails_explicitly():
@@ -94,8 +113,19 @@ def test_malformed_namespace_entry_fails_explicitly():
     The one structural rule of the namespace is that a setting has a name.
     An invalid configuration stays invalid; it never becomes an empty one.
     """
-    with pytest.raises(MalformedConfigError):
-        load_config({ENV_PREFIX: "orphaned"}, root="/workspace")
+    orphaned_value = "ORPHANED-PLACEHOLDER-NOT-A-REAL-SECRET-e5f6a7b8"
+
+    with pytest.raises(MalformedConfigError) as raised:
+        load_config({ENV_PREFIX: orphaned_value}, root="/workspace")
+
+    # An entry with no name may still hold sensitive material, so the value is
+    # withheld here for the same reason it is withheld from a zone refusal.
+    error = raised.value
+    rendered = "".join(
+        traceback.format_exception(type(error), error, error.__traceback__)
+    )
+    for text in (str(error), repr(error), rendered):
+        assert orphaned_value not in text
 
 
 def test_loading_is_deterministic():
