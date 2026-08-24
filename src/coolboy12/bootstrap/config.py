@@ -247,10 +247,10 @@ def load_config(
     """Load the execution environment's configuration, or refuse it.
 
     :param environ: the environment mapping to read. Defaults to
-        ``os.environ``. It is a parameter so that the loader is a pure
-        deterministic in its inputs: the same mapping and the same ``root``
-        always produce the same result, with no wall clock, no randomness, no
-        network, no Git history, no previous derived state, and no cache
+        ``os.environ``. It is a parameter so that the loader is deterministic
+        in its inputs: the same mapping and the same ``root`` always produce
+        the same result, with no wall clock, no randomness, no network, no
+        Git history, no previous derived state, and no cache
         involved (the hidden dependencies Artifact 020 §7 prohibits). The
         default reads ``os.environ``, which is process-global and may change
         between calls; that is the environment being loaded, not hidden state.
