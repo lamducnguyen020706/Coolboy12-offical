@@ -42,11 +42,21 @@ already fixed them against Roadmap §0.6. This document does not restate the res
 Artifact 003 remains the governing artifact/phase convention; Artifact 018 specializes the `R`
 (Role) field and must remain consistent with Artifact 003.
 
+**What is source-derived, and what is working convention.** The Roadmap fixes the seven
+artifact-role values, and Artifact 003 fixes the one-line job of each. The remaining columns of
+§4 — when to select a role, and what selecting it does *not* imply — state this convention's
+working definitions for assigning a value to an artifact's primary responsibility. They do not
+create an additional authority source or a constitutional taxonomy, and no source is cited for
+them because none defines them.
+
 ## 4. The Seven Artifact Roles
 
 Exactly seven. None may be added, renamed, merged, or split.
 
-| Role | Job (Artifact 003) | Select it when | Not implied |
+The **Role** and **Job** columns are source-derived (Roadmap §0.6, Artifact 003). The **Select
+it when** and **Not implied** columns are this convention's working definitions, per §3.
+
+| Role | Job (Artifact 003) | Select it when *(working convention)* | Not implied *(working convention)* |
 |---|---|---|---|
 | **`ARCH`** | states architecture | The artifact establishes how a subsystem, model, boundary, or mechanism is organized | Not implementation; not semantic authority conferred by being architecture |
 | **`CONTRACT`** | fixes a contract others must satisfy | The artifact states what must hold, what is prohibited, or what downstream artifacts must obey | Not Canon; a contract is not canonical data |
@@ -70,10 +80,10 @@ Where one artifact is legitimately several files under **RULE G3** (Artifact 003
 files may be one artifact when they share all four of: one responsibility, one lifecycle, one
 owner, one validation"*), the role follows that single shared responsibility.
 
-**Multiple roles are declared, never inferred.** The manifest contains rows declaring two
-roles — for example `IMPL,VALID` and `CONTRACT,VALID`. A later artifact carries more than one
-role only when its own manifest row states them; no artifact acquires a second role by
-resembling one.
+**Multiple roles are declared, never inferred.** Where a manifest row itself declares two roles —
+for example `IMPL,VALID` or `CONTRACT,VALID` — the artifact carries both. A later artifact
+carries more than one role only when its own manifest row states them; no artifact acquires a
+second role by resembling one.
 
 ## 6. Role Is One Dimension Among Several
 
