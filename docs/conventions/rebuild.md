@@ -70,12 +70,17 @@ Artifact 167 owns the formal derived-artifact contract.
 | **Output** | The derived artifact produced. |
 | **Failure** | What constitutes a failed rebuild, and what that failure means (§11). |
 
-**The Method is stated as a capability, not as a command.** P-27 requires authoritative state to
-remain interpretable *"without the application that produced them"*; a rebuild method written as
-*"run the current tool's command"* fails the moment the tool changes. Write *"re-index the
+**The Method is stated as a capability, not as a command.** §29.7 fixes what passing looks like:
+sections describe *"capabilities, contracts, and boundaries"*, and its own worked instance is
+*"an index that can be rebuilt from canonical records"* (P-31). A rebuild method written as *"run
+the current tool's command"* fails that test the moment the tool changes. Write *"re-index the
 authoritative Records into the search projection"* — a description a future implementation can
 satisfy with different tooling. Tool-specific invocation belongs to implementation artifacts, not
 here.
+
+P-27 is a separate requirement, and it is about the *records*: Canon, History Record, Production
+State, and Creative Memory must stay interpretable *"without the application that produced them"*.
+It constrains the stored state, not how a rebuild method is phrased.
 
 ## 6. Authoritative Sources
 
@@ -86,19 +91,32 @@ on, matching its owning architecture — not `canon/**` by reflex.
 Two limits on that list:
 
 - **History is not a generic rebuild source.** History may be an authoritative source where a
-  model's architecture uses it that way. World's History Record and WSV-H are **World-owned
-  mechanisms** (I-102); other Record Models define their own temporal architecture (I-107).
-  Nothing here universalizes World's mechanism across the other five models.
+  model's architecture uses it that way. The History Record is a World Record Model concept and is
+  not a Record System primitive (I-102); WSV is a *"World-owned singleton"* (RMS §10.7) and WSV-H
+  is its history. Traceable evolution is required of every Record Model, but *"the mechanism is
+  model-owned"* (I-90). Nothing here universalizes World's mechanism across the other five models.
 - **Authored state is never rebuilt.** Schedules, plans, dismissals, deferrals, preferences and
   other authorial acts are Production State — *"durable, provenanced, and never destroyed by a
   rebuild"* (P-26). A derived representation of an authorial act is never treated as that act's
   source. This is the main protection against a lossy rebuild.
 
 **Model ownership is preserved.** The rebuildability principle, the source declaration, the
-non-authority of output, and the rebuild direction are universal. *What* is derived, *which*
-authoritative inputs it needs, what its output *means*, and the semantics of the transformation
-remain owned by the Record Model concerned (RMS §4). This document creates no universal derived
-semantic model.
+non-authority of output, and the rebuild direction are universal, and RMS §4 supports that half
+directly: it places source-of-truth classification among the universal mechanisms and marks it
+*"Constitutional"* — explicitly **not** model-owned — and it lists indexing as universal with the
+note *"Never authoritative; indexes are derived."* What that machinery is applied to does not
+follow from it. A semantic is not shared across Record Models without evidence in each model that
+carries it (I-103), and RMS §4 draws that same line where it splits structural from semantic
+validation and provenance capture from provenance meaning. So *which* authoritative inputs a
+particular derived artifact depends on, what its output *means*, and the semantics of the
+transformation are settled by the Record Model concerned and not here. This document creates no
+universal derived semantic model.
+
+**What RMS §4 does not say.** RMS §4 contains no occurrence of *rebuild*, *derived artifact*, or
+*transformation*, and states no rebuild rule. The model-ownership line above rests on I-103 and on
+RMS §4's own mechanism/semantic split, not on a derivation clause in §4. RMS §4's classification
+row also reads *"§29.6a — five classes"* where this document follows Artifact 016's six; that
+discrepancy is CONFLICT-C in the Revolving Resolution Note and is not resolved here.
 
 ## 7. Direction of Derivation
 
@@ -282,7 +300,7 @@ recovery, or checkpoint state is created here.
 226  rebuild engine                  src/coolboy12/kernel/rebuild.py         (IMPL)
 227  staleness propagation           src/coolboy12/kernel/staleness.py
 228  derived-layer validator         src/coolboy12/validation/derived.py     (VALID)
-229  delete-and-rebuild proof · 230  P8 conformance suite                    (PROOF)
+229  derived tests + worked example · 230  P8 conformance suite              (PROOF)
 ```
 
 **None of these exists.** This document is upstream of all of them and implements no part of any.
