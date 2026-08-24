@@ -61,7 +61,7 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `92a99ec` Artifact 020 — rebuild conventions (P0/0d) |
+| HEAD | `d59a057` Artifact 018 — patch: frame role descriptions as working convention |
 | Artifacts complete | 001 … 018 · 019 · **020 COMPLETE / PASS** |
 | Next artifact | **021 — NOT CREATED** |
 | Working tree | clean |
