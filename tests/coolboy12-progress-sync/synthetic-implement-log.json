@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "timezone": "Asia/Ho_Chi_Minh",
+  "events": [
+    {
+      "event_id": "synthetic-050-draft",
+      "timestamp": "2026-08-24T09:10:12+07:00",
+      "summary": "Draft artifact 050",
+      "artifact": "050",
+      "phase": "P2",
+      "type": "prompt",
+      "source": "SYNTHETIC TEST DATA",
+      "completion_recorded": false
+    },
+    {
+      "event_id": "synthetic-050-audit",
+      "timestamp": "2026-08-24T11:25:41+07:00",
+      "summary": "Audit artifact 050",
+      "artifact": "050",
+      "phase": "P2",
+      "type": "prompt",
+      "source": "SYNTHETIC TEST DATA",
+      "completion_recorded": false
+    },
+    {
+      "event_id": "synthetic-050-patch",
+      "timestamp": "2026-08-24T14:08:17+07:00",
+      "summary": "Patch artifact 050",
+      "artifact": "050",
+      "phase": "P2",
+      "type": "prompt",
+      "source": "SYNTHETIC TEST DATA",
+      "completion_recorded": false
+    },
+    {
+      "event_id": "synthetic-050-freeze",
+      "timestamp": "2026-08-24T16:42:33+07:00",
+      "summary": "Freeze artifact 050",
+      "artifact": "050",
+      "phase": "P2",
+      "type": "prompt",
+      "source": "SYNTHETIC TEST DATA",
+      "completion_recorded": true,
+      "completed_before": 21,
+      "completed_after": 50,
+      "frontier_after": "050"
+    }
+  ]
+}
