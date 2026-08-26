@@ -174,10 +174,6 @@ def strong_completion_signal(prompt: str, artifact: str | None) -> bool:
     return has_freeze and has_commit and has_artifact
 
 
-def working_files() -> set[str]:
-    return {str(path.relative_to(ROOT)) for path in ROOT.rglob("*") if path.is_file() and ".git" not in path.parts}
-
-
 def expected_next(progress: dict, artifacts: list[dict]) -> str:
     completed = progress.get("completed_artifacts", [])
     completed_set = set(completed)
@@ -193,8 +189,13 @@ def evidence_supports_completion(artifact: str | None, progress: dict, artifacts
     row = next((a for a in artifacts if a["id"] == artifact), None)
     if row is None:
         return False
+    # Evidence is git-tracked files only. An untracked working file is not
+    # evidence: it can be created by any tool call, which would let a single
+    # prompt plus a stray file fabricate a completion. HTML_UPDATE_CONTRACT.md
+    # forbids inferring completion "from a prompt, file, commit or tool call
+    # alone", so the file must at minimum have been deliberately staged.
     tracked = set(publisher.tracked_files())
-    present = tracked | working_files()
+    present = tracked
     planned = (row.get("planned_path") or "").strip().strip("`")
     actual = set(publisher.evidence_for(row, tracked).get("actual_files", []))
     if planned and planned not in {"/", "coolboy12/"}:

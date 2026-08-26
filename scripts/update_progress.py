@@ -156,6 +156,32 @@ def load_state() -> dict:
     return state
 
 
+def validate_state_against_roadmap(state: dict, artifacts: list[dict]) -> dict:
+    """Reject a state whose next_artifact or current_phase contradicts the Roadmap.
+
+    load_state proves the completed set is well-formed on its own terms. It
+    cannot prove next_artifact or current_phase are right, because both are
+    claims about the Roadmap. A hand-edited state naming next_artifact 099 or
+    current_phase P7 passed every earlier check, so both are checked here.
+    """
+    completed = set(state.get("completed_artifacts", []))
+    expected_next = next((a["id"] for a in artifacts if a["id"] not in completed), "freeze")
+    if state.get("next_artifact") != expected_next:
+        raise RuntimeError(
+            f"progress.json refused: next_artifact must be {expected_next}, "
+            f"got {state.get('next_artifact')!r}"
+        )
+    phase_by_id = {a["id"]: a["phase"] for a in artifacts}
+    legal = {phase_by_id.get(state.get("current_frontier")), phase_by_id.get(expected_next)}
+    legal.discard(None)
+    if legal and state.get("current_phase") not in legal:
+        raise RuntimeError(
+            f"progress.json refused: current_phase must be one of {sorted(legal)}, "
+            f"got {state.get('current_phase')!r}"
+        )
+    return state
+
+
 def load_log() -> dict:
     data = json.loads(LOG_PATH.read_text(encoding="utf-8"))
     if not isinstance(data.get("events"), list):
@@ -221,8 +247,10 @@ def timeline_html(log: dict, state: dict) -> str:
             if event.get("phase"): meta.append(esc(event["phase"]))
             if event.get("type"): meta.append(esc(event["type"]))
             event_rows.append(f'<div class="log-event"><time>{parsed.astimezone(dt.timezone(dt.timedelta(hours=7))).strftime("%H:%M:%S")}</time><span class="event-dot">●</span><div><strong>{summary}</strong><small>{" · ".join(meta) if meta else "prompt activity"}</small></div></div>')
-        older = "" if date_key == sorted(groups, reverse=True)[0] else " closed"
-        days.append(f'<details class="day-node"{older}><summary><span class="day-date">{day_dt.strftime("%d %b %Y").upper()}</span><span class="day-count">{daily_completed} artifact{"s" if daily_completed != 1 else ""} completed · <b>+{daily_pct:.1f}%</b></span><span class="day-overall">Overall {cumulative} / 490 · {cumulative/490*100:.1f}%</span></summary><div class="day-events">{"".join(event_rows)}</div></details>')
+        # <details> has no "closed" attribute; absence of "open" is closed.
+        # The newest day is the one that opens.
+        newest = " open" if date_key == sorted(groups, reverse=True)[0] else ""
+        days.append(f'<details class="day-node"{newest}><summary><span class="day-date">{day_dt.strftime("%d %b %Y").upper()}</span><span class="day-count">{daily_completed} artifact{"s" if daily_completed != 1 else ""} completed · <b>+{daily_pct:.1f}%</b></span><span class="day-overall">Overall {cumulative} / 490 · {cumulative/490*100:.1f}%</span></summary><div class="day-events">{"".join(event_rows)}</div></details>')
     return "".join(days)
 
 
@@ -285,7 +313,7 @@ def render_html(state: dict, log: dict, phases: list[dict], artifacts: list[dict
         next_dependency_links="".join(f'<span class="file dependency">{esc(path)}</span>' for path in next_dependency_files) or '<span class="file dependency">None declared</span>'
         next_trace=f'<p><label>Artifact</label><strong>{esc(clean(next_row.get("name","")))}</strong></p><p><label>Description</label>{esc(clean(next_row.get("description",next_row.get("validation",""))))}</p><p><label>Purpose</label>{esc(clean(next_row.get("purpose","")))}</p><p><label>Manifest</label><strong>{next_kind}</strong></p><p><label>Exact Artifact files · repository-relative paths</label><span class="file-list">{next_links}</span></p><p><label>Directory</label><code>{esc(next_directory)}</code></p><p><label>Dependency files · supporting inputs</label><span class="file-list">{next_dependency_links}</span></p><p><label>Dependencies · unlocks</label>{esc(clean(next_row.get("dependencies","—")))} · {esc(clean(next_row.get("unlocks","—")))}</p><p><label>Validation / done condition</label>{esc(clean(next_row.get("validation","")))} · {esc(clean(next_row.get("done_condition","")))}</p>'
     template=HTML_TEMPLATE
-    replacements={"__UPDATED__":esc(state.get("last_updated_at",state.get("updated_at",""))),"__FRONTIER__":esc(state["current_frontier"]),"__NEXT__":esc(state["next_artifact"]),"__COMPLETED__":str(completed),"__TOTAL__":str(total),"__OVERALL__":f"{completed/total*100:.1f}%","__CURRENT_PHASE__":esc(current_phase["id"]),"__CURRENT_PHASE_NAME__":esc(current_phase["name"]),"__CURRENT_PHASE_DONE__":str(current_done),"__CURRENT_PHASE_COUNT__":str(current_phase["count"]),"__CURRENT_PHASE_PCT__":f"{current_done/current_phase["count"]*100:.1f}%","__CURRENT_PHASE_LEFT__":str(current_phase["count"]-current_done),"__CURRENT_PHASE_NOTE__":esc(current_phase_note),"__STRIP__":strip,"__PHASE_TABLE__":phase_table,"__PHASES__":phases_html,"__LOG__":log_html,"__NEXT_TRACE__":next_trace,"__BRANCH__":esc(state["repository_branch"]),"__COMMIT__":esc(commit),"__COMMITS__":str(state["commit_count"]),"__FILES__":str(state["file_count"]),"__TESTS__":str(state["test_file_count"]),"__LOG_COUNT__":str(len(log.get("events",[]))),"__REPO__":REPO_URL}
+    replacements={"__UPDATED__":esc(state.get("last_updated_at",state.get("updated_at",""))),"__FRONTIER__":esc(state["current_frontier"]),"__NEXT__":esc(state["next_artifact"]),"__COMPLETED__":str(completed),"__TOTAL__":str(total),"__OVERALL__":f"{completed/total*100:.1f}%","__CURRENT_PHASE__":esc(current_phase["id"]),"__CURRENT_PHASE_NAME__":esc(current_phase["name"]),"__CURRENT_PHASE_DONE__":str(current_done),"__CURRENT_PHASE_COUNT__":str(current_phase["count"]),"__CURRENT_PHASE_PCT__":f"{current_done/current_phase['count']*100:.1f}%","__CURRENT_PHASE_LEFT__":str(current_phase["count"]-current_done),"__CURRENT_PHASE_NOTE__":esc(current_phase_note),"__STRIP__":strip,"__PHASE_TABLE__":phase_table,"__PHASES__":phases_html,"__LOG__":log_html,"__NEXT_TRACE__":next_trace,"__BRANCH__":esc(state["repository_branch"]),"__COMMIT__":esc(commit),"__COMMITS__":str(state["commit_count"]),"__FILES__":str(state["file_count"]),"__TESTS__":str(state["test_file_count"]),"__LOG_COUNT__":str(len(log.get("events",[]))),"__REPO__":REPO_URL}
     for key,value in replacements.items(): template=template.replace(key,value)
     return template
 
@@ -311,7 +339,7 @@ def main() -> int:
     if not CONTRACT_PATH.exists() or "HTML_UPDATE_CONTRACT_VERSION = 1.0" not in CONTRACT_PATH.read_text(encoding="utf-8"):
         raise RuntimeError("Pre-flight refused: reports/HTML_UPDATE_CONTRACT.md version 1.0 is required")
     phases, artifacts=parse_roadmap()
-    state=repo_facts(load_state())
+    state=repo_facts(validate_state_against_roadmap(load_state(), artifacts))
     log=load_log()
     tracked=tracked_files()
     evidence={a["id"]:evidence_for(a,tracked) for a in artifacts}
