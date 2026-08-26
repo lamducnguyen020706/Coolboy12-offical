@@ -13,6 +13,22 @@ single source of the zone inventory, exactly as its §4 states: *"This is the
 complete zone inventory. Artifact 022 denies direct writes across it; Artifact
 023 encodes it. Neither may add a zone, remove one, or reinterpret an owner."*
 
+**What is source-required, and what is this artifact's own choice.** No source
+defines a schema for ``zones.json``. The Roadmap fixes its path, its ``Val``
+(*"zones match 017 exactly"*) and its ``Why`` (*"hook needs machine-readable
+zones"*); Artifact 017 §12 fixes which list to match — *"§4 is the list it
+must match"* — and 017 defines no identifiers, no descriptions, and no
+metadata beyond that tree. So exactly three things are source-required: the
+zone **paths**, their **Record Model owners**, and the **count**. Every field
+*name* here (``artifact``, ``schema_version``, ``declared_by``,
+``canonical_root``, ``id``, ``description``) is Artifact 023's own encoding
+choice.
+
+Tests below are grouped accordingly. The source-required group may not be
+relaxed. The encoding-contract group fixes 023's output shape so Artifact 024
+can consume it without probing — that is a real contract, but it is 023's,
+not the Blueprint's, and this file does not pretend otherwise.
+
 No test writes anything under ``canon/**``.
 """
 
@@ -51,7 +67,14 @@ def declared_zones() -> list[tuple[str, str, str]]:
 
 
 def test_zone_paths_match_artifact_017_exactly():
-    """The encoded paths are 017's inventory, in 017's order, and nothing else."""
+    """The encoded paths are 017's inventory and nothing else.
+
+    Compared as an ordered list. No source requires 023 to preserve 017's
+    ordering — that part is determinism, chosen because 017's order is the
+    obvious one and a stable file diffs cleanly. The membership, though, is
+    the ``Val``, and it is exact in both directions: nothing missing, nothing
+    extra.
+    """
     config = load_config()
 
     assert [zone["path"] for zone in config["zones"]] == [
@@ -79,11 +102,18 @@ def test_exactly_six_zones_and_no_seventh():
     assert len(declared_zones()) == 6
 
 
-def test_canonical_root_is_the_family_declared_by_017():
-    config = load_config()
+def test_canonical_root_is_the_family_root_of_017_s_tree():
+    """The root is the line 017 §4's tree hangs the six zones from.
 
-    assert config["canonical_root"] == "canon/**"
-    assert "canon/**" in DECLARATION.read_text(encoding="utf-8")
+    Asserting only that ``canon/**`` appears *somewhere* in 017 would pass on
+    any incidental mention; the string occurs many times in that document.
+    This pins it to the tree's own root line.
+    """
+    declaration = DECLARATION.read_text(encoding="utf-8")
+    tree_root = re.search(r"^(canon/\*\*)\s*$", declaration, re.MULTILINE)
+
+    assert tree_root, "017 §4's tree root line could not be found — the test is blind"
+    assert load_config()["canonical_root"] == tree_root.group(1)
 
 
 # --------------------------------------------------------------------------
@@ -108,15 +138,49 @@ def test_identifiers_and_paths_are_unique():
     assert len(set(paths)) == len(paths)
 
 
+def test_zone_paths_follow_the_grammar_017_renders():
+    """Every path is exactly ``canon/<name>/**``, the form 017 §4 uses.
+
+    Stronger than "starts with canon/ and has no ``..``", which would admit
+    ``canon//world/**``, ``canon/world/*``, ``canon/world`` and
+    ``canon/../world/**``. The grammar is source-backed: 017 §4 renders all
+    six zones in this one shape and no other.
+    """
+    grammar = re.compile(r"^canon/[a-z]+/\*\*$")
+
+    for zone in load_config()["zones"]:
+        assert grammar.fullmatch(zone["path"]), zone["path"]
+
+
 def test_no_zone_escapes_the_canonical_root():
-    """Every encoded zone lives beneath ``canon/``. None may point outside it."""
+    """Belt and braces on the grammar: nothing traverses out of canon."""
     for zone in load_config()["zones"]:
         assert zone["path"].startswith("canon/"), zone["path"]
         assert ".." not in zone["path"], zone["path"]
 
 
+def test_description_names_the_record_model_017_assigns():
+    """``description`` is non-authoritative, but it is not free prose either.
+
+    017 §4 writes each zone as ``canon/world/** W — World``. The description
+    must name that model, so a reader cannot be told something 017 does not
+    say. Nothing downstream may treat this string as semantics: the model
+    codes are the machine-readable part, and 017 remains the meaning.
+    """
+    declared = {path: name for path, _, name in declared_zones()}
+
+    for zone in load_config()["zones"]:
+        assert declared[zone["path"]] in zone["description"], zone["path"]
+
+
 def test_every_zone_carries_the_same_four_fields():
-    """The shape is uniform, so a consumer can rely on it without probing."""
+    """023's own encoding contract — not a source requirement.
+
+    No source names a field of ``zones.json``. This assertion fixes the shape
+    Artifact 023 emits so Artifact 024 can consume it without probing, and it
+    doubles as the structural scope guard: a permission or mutation field
+    cannot be added without failing here.
+    """
     for zone in load_config()["zones"]:
         assert set(zone) == {"id", "path", "record_model", "description"}
 
@@ -132,20 +196,37 @@ def test_configuration_encodes_no_permission_or_mutation_policy():
     Write authority is Artifact 017's declaration and Artifact 022's
     enforcement. A permission rule encoded here would be a second, competing
     statement of the same boundary.
-    """
-    raw = ZONES.read_text(encoding="utf-8").lower()
 
-    for forbidden in (
+    Checked over the structure's *keys* rather than the raw text. A substring
+    scan of the whole file would fail the day a description legitimately
+    contained "allowed", which is a false positive that teaches people to
+    weaken the guard.
+    """
+    forbidden = {
         "permission",
+        "permissions",
         "write_access",
         "allow",
         "deny",
         "authorization",
-        "mutation_rule",
+        "mutation_rules",
         "readonly",
         "writable",
-    ):
-        assert forbidden not in raw, forbidden
+        "write",
+    }
+
+    def keys(node):
+        if isinstance(node, dict):
+            for key, value in node.items():
+                yield key
+                yield from keys(value)
+        elif isinstance(node, list):
+            for item in node:
+                yield from keys(item)
+
+    present = {key.lower() for key in keys(load_config())}
+
+    assert present.isdisjoint(forbidden), present & forbidden
 
 
 def test_artifact_022_does_not_read_this_file():
