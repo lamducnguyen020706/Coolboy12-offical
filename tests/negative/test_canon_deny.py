@@ -178,6 +178,9 @@ def test_deletion_of_canon_is_denied(workspace):
         "mv somewhere canon/world/test.md",
         "cp a.md canon/world/test.md",
         "touch canon/world/test.md",
+        "touch canon/world/file.txt",
+        "mkdir canon/world/newdir",
+        "mv src/a canon/world/a",
         "sed -i s/a/b/ canon/world/test.md",
         "tee canon/world/test.md",
     ],
@@ -313,6 +316,7 @@ def test_opaque_interpreter_hiding_its_target_is_denied(workspace):
     "command",
     [
         "python3 -c \"open('/dynamic/path','w')\"",
+        "python -c \"open('/dynamic/path','w')\"",
         "python3 script.py",
         "node -e \"fs.writeFileSync('x')\"",
         "ruby -e \"File.write('x', 1)\"",
@@ -449,6 +453,7 @@ def test_unrelated_tool_is_not_denied(workspace):
     [
         "sort -o canon/world/out.txt input.txt",
         "sort --output=canon/world/out.txt input.txt",
+        "sort --output canon/world/out.txt input.txt",
         "git diff --output=canon/world/out.patch",
         "git diff --output canon/world/out.patch",
     ],
@@ -530,7 +535,15 @@ def test_option_rich_commands_are_opaque_not_mutators(command, workspace):
 
 @pytest.mark.parametrize(
     "command",
-    ["rm -rf docs/x", "mkdir -p docs/sub", "cp -a src/a docs/a", "mv src/a docs/a"],
+    [
+        "rm -rf docs/x",
+        "mkdir -p docs/sub",
+        "cp -a src/a docs/a",
+        "mv src/a docs/a",
+        "cp src/a docs/a",
+        "mkdir docs/newdir",
+        "touch docs/file.txt",
+    ],
 )
 def test_harmless_mutator_flags_still_classify(command, workspace):
     """The option allowlist must not turn every flag into a denial.
@@ -624,6 +637,7 @@ def test_reads_of_canon_are_allowed(tool, workspace):
         "head -5 canon/world/a.md",
         "cat canon/PURPOSE.md 2>/dev/null",
         "grep -r x canon/ 2>&1",
+        "git status",
         "git status canon/",
         "git log -- canon/world/",
         "diff canon/world/a.md canon/world/b.md",
