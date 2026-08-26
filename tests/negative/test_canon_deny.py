@@ -18,54 +18,60 @@ these tests must not perform. Every fixture lives in a temporary directory.
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
+# tests/negative/test_canon_deny.py -> parents[2] is the repository root.
+# Audited against the real tree rather than assumed: parents[1] is tests/ and
+# holds no hook.
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HOOK = REPO_ROOT / ".claude/hooks/canon_deny.py"
+SOURCE_HOOK = REPO_ROOT / ".claude/hooks/canon_deny.py"
 
 DENY = 2
 ALLOW = 0
 
 
+def build_workspace(root: Path) -> Path:
+    """Lay out a repository-shaped tree and install the real hook inside it.
+
+    The production hook derives its protected root from its own ``__file__``,
+    so a test that spoofed the root through an environment variable would be
+    proving a mechanism the hook no longer uses. Copying the artifact into the
+    temporary tree exercises the real derivation instead.
+    """
+    (root / ".claude/hooks").mkdir(parents=True, exist_ok=True)
+    for zone in ("world", "epistemic", "production", "registry", "visual", "issue"):
+        (root / "canon" / zone).mkdir(parents=True, exist_ok=True)
+    for plain in ("docs", "src", "canonical", "canon_backup"):
+        (root / plain).mkdir(exist_ok=True)
+    shutil.copy2(SOURCE_HOOK, root / ".claude/hooks/canon_deny.py")
+    return root
+
+
 @pytest.fixture(scope="module")
 def workspace(tmp_path_factory):
-    """An isolated repository-shaped tree with an empty canonical zone.
-
-    Mirrors the real layout so the hook resolves a root the same way it does
-    in production, without any test touching the real ``canon/**``.
-    """
-    root = tmp_path_factory.mktemp("canon-deny-repo")
-    (root / ".claude/hooks").mkdir(parents=True)
-    for zone in ("world", "epistemic", "production", "registry", "visual", "issue"):
-        (root / "canon" / zone).mkdir(parents=True)
-    (root / "docs").mkdir()
-    (root / "src").mkdir()
-    (root / "canonical").mkdir()
-    (root / "canon_backup").mkdir()
-    return root
+    """An isolated repository whose installed hook guards its own canon."""
+    return build_workspace(tmp_path_factory.mktemp("canon-deny-repo"))
 
 
 def invoke(
     payload: dict, workspace: Path, extra_env: dict | None = None
 ) -> subprocess.CompletedProcess:
-    """Run the hook the way Claude Code runs it: JSON on stdin, status back.
+    """Run the workspace's own hook: JSON on stdin, exit status back.
 
-    ``extra_env`` is handed to the subprocess only, never exported into the
-    test process, so a shell-variable fixture cannot leak between tests.
+    ``extra_env`` reaches the subprocess only, never the test process, so a
+    shell-variable fixture cannot leak between tests. ``CLAUDE_PROJECT_DIR``
+    is deliberately absent — the hook must not need it.
     """
-    env = {
-        "CLAUDE_PROJECT_DIR": str(workspace),
-        "PATH": "/usr/bin:/bin",
-        "PYTHONDONTWRITEBYTECODE": "1",
-    }
+    env = {"PATH": "/usr/bin:/bin", "PYTHONDONTWRITEBYTECODE": "1"}
     if extra_env:
         env.update(extra_env)
     return subprocess.run(
-        [sys.executable, str(HOOK)],
+        [sys.executable, str(workspace / ".claude/hooks/canon_deny.py")],
         input=json.dumps(payload),
         text=True,
         capture_output=True,
@@ -281,6 +287,163 @@ def test_read_while_cwd_is_inside_canon_is_allowed(workspace):
     assert invoke(payload, workspace).returncode == ALLOW
 
 
+def test_opaque_interpreter_hiding_its_target_is_denied(workspace):
+    """§27 — the most important regression in this file.
+
+    The old heuristic asked "can I find a canonical path in this text?" and
+    allowed the command when it could not. An interpreter defeats that
+    outright: the target is assembled inside program logic the command line
+    never exposes. The three-class policy denies it because the command is
+    opaque, not because a canonical token was spotted.
+    """
+    command = (
+        'python3 -c "import os;'
+        "open(os.environ['CANON']+'/world/test.md','w').write('x')\""
+    )
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+    env = {"CANON": str(workspace / "canon")}
+
+    result = invoke(payload, workspace, env)
+
+    assert result.returncode == DENY, "interpreter bypass returned ALLOW"
+    assert "opaque" in result.stderr
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "python3 -c \"open('/dynamic/path','w')\"",
+        "python3 script.py",
+        "node -e \"fs.writeFileSync('x')\"",
+        "ruby -e \"File.write('x', 1)\"",
+        "perl -e \"open(F,'>x')\"",
+        "bash -c 'touch anything'",
+        "sh -c 'touch anything'",
+        "make install",
+        "npm run build",
+    ],
+)
+def test_opaque_execution_is_denied_without_naming_canon(command, workspace):
+    """§7 — opacity alone is the ground for denial.
+
+    None of these names ``canon``. The hook cannot establish what any of them
+    writes without running it, so none can be proven outside the boundary.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+def test_opaque_denial_is_not_a_read_firewall(workspace):
+    """The asymmetry is deliberate, and worth stating in a test.
+
+    ``cat`` is allowed against canon because it is *recognized* read-only.
+    ``python3`` is denied even when it only reads, because the hook cannot
+    tell. That is a refusal to certify opaque execution, not a read block.
+    """
+    read = {"tool_name": "Bash", "tool_input": {"command": "cat canon/PURPOSE.md"}}
+    opaque = {"tool_name": "Bash", "tool_input": {"command": "python3 reader.py"}}
+
+    assert invoke(read, workspace).returncode == ALLOW
+    assert invoke(opaque, workspace).returncode == DENY
+
+
+def test_mutation_denied_when_any_of_several_targets_is_canonical(workspace):
+    """§21 — one safe target does not redeem the command."""
+    payload = {
+        "tool_name": "Bash",
+        "tool_input": {"command": "cp src/a docs/a canon/world/a"},
+    }
+
+    assert invoke(payload, workspace).returncode == DENY
+
+
+@pytest.mark.parametrize("command", ["rm -rf canon", "mv x canon"])
+def test_the_canon_root_itself_is_protected(command, workspace):
+    """§25 — the boundary is the family root, not only its six subtrees."""
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+def test_environment_variable_cannot_relocate_the_protected_root(tmp_path):
+    """§28 — the trust boundary comes from the hook's own location.
+
+    A decoy directory that also contains ``.claude/`` and ``canon/`` is fed in
+    as ``CLAUDE_PROJECT_DIR``. The real repository's canon must stay guarded:
+    an environment variable that could move the boundary would be a way to
+    move the guard off the thing it guards.
+    """
+    real = build_workspace(tmp_path / "realrepo")
+    decoy = tmp_path / "fake"
+    (decoy / ".claude").mkdir(parents=True)
+    (decoy / "canon").mkdir()
+
+    # The target is absolute and inside the *real* repository's canon. A
+    # relative target would prove nothing here: it lands in whichever canon
+    # the hook picked, so it denies either way. Only an absolute path
+    # distinguishes the two roots.
+    target = str(real / "canon/world/test.md")
+    result = subprocess.run(
+        [sys.executable, str(real / ".claude/hooks/canon_deny.py")],
+        input=json.dumps(write_payload(target)),
+        text=True,
+        capture_output=True,
+        check=False,
+        env={"PATH": "/usr/bin:/bin", "CLAUDE_PROJECT_DIR": str(decoy)},
+    )
+
+    assert result.returncode == DENY, "CLAUDE_PROJECT_DIR relocated the boundary"
+
+
+@pytest.mark.parametrize(
+    ("payload", "label"),
+    [
+        ({"tool_name": "Write", "tool_input": {"content": "x"}}, "Write without path"),
+        ({"tool_name": "Edit", "tool_input": {"old": "a"}}, "Edit without path"),
+        ({"tool_name": "MultiEdit", "tool_input": {}}, "MultiEdit without path"),
+        ({"tool_name": "Bash", "tool_input": {}}, "Bash without command"),
+        ({"tool_name": "Bash", "tool_input": {"command": "   "}}, "Bash blank command"),
+    ],
+)
+def test_unevaluable_known_write_actions_fail_closed(payload, label, workspace):
+    """§17 — a known write-capable tool with no usable target is denied."""
+    assert invoke(payload, workspace).returncode == DENY, label
+
+
+@pytest.mark.parametrize(
+    "raw", ["", "   ", "{not json", "[1,2,3]", '"a string"', "null"]
+)
+def test_unevaluable_stdin_fails_closed(raw, workspace):
+    """§29 — empty, malformed and non-object payloads all deny."""
+    result = subprocess.run(
+        [sys.executable, str(workspace / ".claude/hooks/canon_deny.py")],
+        input=raw,
+        text=True,
+        capture_output=True,
+        check=False,
+        env={"PATH": "/usr/bin:/bin"},
+    )
+
+    assert result.returncode == DENY, repr(raw)
+    assert "Traceback" not in result.stderr
+
+
+def test_unrelated_tool_is_not_denied(workspace):
+    """§18/§30 — Artifact 022 is not a general tool-authorization layer.
+
+    A tool outside the write/read/Bash enforcement set carries no canonical
+    write responsibility, and inventing a denial for it would quietly turn
+    this artifact into something the Roadmap did not ask for.
+    """
+    payload = {
+        "tool_name": "WebFetch",
+        "tool_input": {"url": "https://example.invalid"},
+    }
+
+    assert invoke(payload, workspace).returncode == ALLOW
+
+
 # --------------------------------------------------------------------------
 # The hook must not become a read firewall or a general write blocker.
 # --------------------------------------------------------------------------
@@ -393,12 +556,12 @@ def test_malformed_payload_fails_closed(workspace):
     become *safe*. Still no stack trace — a policy denial is not a crash.
     """
     result = subprocess.run(
-        [sys.executable, str(HOOK)],
+        [sys.executable, str(workspace / ".claude/hooks/canon_deny.py")],
         input="{not json",
         text=True,
         capture_output=True,
         check=False,
-        env={"CLAUDE_PROJECT_DIR": str(workspace), "PATH": "/usr/bin:/bin"},
+        env={"PATH": "/usr/bin:/bin"},
     )
 
     assert result.returncode == DENY
@@ -432,7 +595,7 @@ def test_hook_writes_nothing_anywhere(workspace):
 
 def test_hook_holds_no_mutation_or_registry_machinery():
     """Boundary guard: 022 is not 152, not the Human Gate, not a validator."""
-    source = HOOK.read_text(encoding="utf-8")
+    source = SOURCE_HOOK.read_text(encoding="utf-8")
     body = source.split('"""', 2)[-1]
 
     for forbidden in (

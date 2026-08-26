@@ -35,62 +35,90 @@ become a second canonical write path while P5 is still being built.
 **This hook does not make canon writable through the right path. It only
 makes the wrong path fail.**
 
+The one question it answers
+---------------------------
+Artifact 022 never decides whether a mutation is *legitimate*. It decides
+only whether the environment can prove, without executing anything, that a
+requested filesystem mutation does not target ``canon/**``::
+
+    proven outside canon   → allow
+    proven inside canon    → deny
+    cannot prove outside   → deny
+
+The third line is the whole design. *Unknown is never safe.*
+
+Bash policy
+-----------
+Every Bash command falls into exactly one of three classes.
+
+* **Read-only** — a recognized inspecting command (``cat``, ``grep``, ``ls``,
+  ``git status`` …). Allowed, including against ``canon/**`` and including
+  from a working directory inside it. Artifact 017 restricts *writing* canon,
+  not reading it.
+* **Simple mutation** — a recognized mutator (``touch``, ``cp``, ``mv``,
+  ``rm``, ``tee``, ``sed -i`` …) or a data redirect, whose filesystem targets
+  can be read straight off the command line. Allowed **only** when every
+  target is statically resolvable and every one resolves outside canon.
+* **Opaque** — anything else: an interpreter (``python3``, ``node``,
+  ``ruby``, ``perl``, ``sh -c`` …), a build tool, an unrecognized program.
+  Denied. Its filesystem effects live inside program logic the command line
+  does not expose, so no inspection of the text can establish them.
+
+The opaque class is not a claim that those programs write. It is the
+admission that this hook cannot tell, and a guardrail that guesses is not a
+guardrail. Note the asymmetry this creates, and keep it in mind when reading
+a denial: ``cat canon/foo.md`` is allowed because ``cat`` is *recognized* as
+read-only, while ``python3 reader.py`` is denied even if it only reads.
+**This is not a read firewall** — it is a refusal to certify opaque
+execution.
+
+Unresolved ``$VAR``, ``$(...)`` and backtick substitution in a mutating
+command are denied for the same reason. Variables this process can resolve
+are substituted textually first, so ``cd "$CANON" && touch f`` is judged on
+where ``$CANON`` actually points. The hook never runs a shell, never expands
+through one, and never interprets program source.
+
+Trust boundary
+--------------
+The protected root is derived from this file's own location and from nothing
+else. ``CLAUDE_PROJECT_DIR`` deliberately does **not** override it: an
+environment variable that could relocate the boundary would be a way to move
+the guard off the thing it guards.
+
 What this hook is not
 ---------------------
 Not the Mutation Coordinator, not the Human Gate, not a canonical validation
 pipeline, not a transaction system, not a History Record or WSV-H writer, not
-Creative Memory, and not a Registry validator. It reads no canonical content,
-writes nothing anywhere, and decides nothing about whether a proposed change
-is *good* — only about whether the path being written is inside the canonical
-zone. ``Auth: enforcing`` is enforcement of a boundary, never authority over
-what the boundary protects (P-31: dependencies provide capability, never
-authority; I-84: no external component holds canonical semantics).
+Creative Memory, and not a Registry validator. It reads no canonical content
+and writes nothing anywhere. ``Auth: enforcing`` is enforcement of a
+boundary, never authority over what the boundary protects (P-31; I-84).
 
 Blueprint I-83 is explicit that a guard like this one is defence in depth:
 "Execution-substrate guard rails are defence-in-depth, never constitutional
-authority." The constitutional guarantee arrives with artifact 152. This is a
-door that fails shut in the meantime.
+authority." A determined actor with shell access is not fully containable by
+text inspection; the constitutional guarantee arrives with artifact 152. This
+is a door that fails shut in the meantime.
 
 Adjacent artifacts, and where this one stops
 --------------------------------------------
 * **017** ``docs/boundaries/canonical_zones.md`` — declares the canonical
   zones. This hook consumes that declaration's boundary (``canon/**``) and
   reproduces no part of its taxonomy, ownership table, or semantics.
-* **021** ``src/coolboy12/bootstrap/config.py`` — the configuration loader.
-  Not imported: a hook must run under a bare interpreter with no package
-  install, and 021 is DEV-ENV runtime code, not a hook dependency.
-* **023** ``.claude/hooks/zones.json`` — machine-readable zones. **Roadmap
-  row 023 declares ``H: 017,022``, so 023 depends on this hook, not the
-  reverse.** This hook therefore reads no zones file and must not: it holds
-  the one boundary its own ``Val`` names, and 023 will encode the full zone
-  inventory later.
-* **024** ``.claude/settings.json`` — registers hooks. Registration is 024's
-  job (``Val: hooks registered``); this artifact does not modify settings.
-
-Bash analysis is conservative
------------------------------
-Explicit canonical mutations are denied. Environment-variable paths that this
-process can resolve are resolved and then judged. **Unresolved shell
-indirection in a potentially mutating command fails closed** — an unknown
-``$VAR``, ``$(...)`` or backtick substitution could name anything, and the
-hook must never turn *unknown* into *safe*. A mutation is also denied when the
-working directory is already inside the canonical zone, even if the command
-text never spells ``canon``. Read-only commands stay allowed throughout. The
-hook never executes, expands through a shell, or interprets arbitrary code.
-
-Reads are never blocked
------------------------
-Artifact 017 restricts *writing* ``canon/**``, not reading it. An operator
-and the environment must be able to inspect canon. ``READ canon/**`` is
-allowed; ``WRITE canon/**`` is denied.
+* **021** ``src/coolboy12/bootstrap/config.py`` — not imported. A hook runs
+  under a bare interpreter with no package install, so 021 is an
+  architectural dependency, not a runtime one.
+* **023** ``.claude/hooks/zones.json`` — Roadmap row 023 declares
+  ``H: 017,022``, so 023 depends on this hook, not the reverse. No zones file
+  is read here.
+* **024** ``.claude/settings.json`` — registration is 024's job
+  (``Val: hooks registered``); this artifact does not modify settings.
 
 Hook contract
 -------------
 Confirmed from the hooks actually running in this environment rather than
 assumed: a payload arrives as JSON on stdin; **exit 2 with a message on
-stderr denies** the action and shows the reason; **exit 0 allows**. That is
-the mechanism ``~/.claude/stop-hook-git-check.sh`` uses, observed working.
-Registration as a ``PreToolUse`` hook belongs to Artifact 024.
+stderr denies**; **exit 0 allows**. That is the mechanism
+``~/.claude/stop-hook-git-check.sh`` uses, observed working.
 """
 
 from __future__ import annotations
@@ -108,20 +136,15 @@ CANONICAL_ROOT_NAME = "canon"
 
 Artifact 017 §4 declares the canonical family as ``canon/**`` with six model
 subtrees beneath it. Guarding the family root covers every subtree, including
-``canon/registry/**``, without reproducing 017's inventory here — the zone
-taxonomy is 017's and the machine-readable encoding is 023's.
+``canon/registry/**``, and covers the root directory itself. The zone
+taxonomy stays 017's; its machine-readable encoding stays 023's.
 """
 
 WRITE_TOOLS = frozenset({"Write", "Edit", "NotebookEdit", "MultiEdit"})
-"""Tools whose purpose is to change a file at a named path."""
-
 READ_TOOLS = frozenset({"Read", "Glob", "Grep", "NotebookRead"})
-"""Tools that inspect without changing. Never denied (see *Reads*, above)."""
-
 PATH_KEYS = ("file_path", "notebook_path", "path", "filePath")
-"""Keys a write tool may carry its target path under."""
 
-READ_ONLY_SHELL = frozenset(
+READ_ONLY_COMMANDS = frozenset(
     {
         "cat",
         "grep",
@@ -150,16 +173,32 @@ READ_ONLY_SHELL = frozenset(
         "realpath",
         "readlink",
         "echo",
+        "pwd",
+        "true",
+        "false",
     }
 )
-"""Shell commands that inspect without changing anything.
+"""Recognized inspecting commands. Deliberately small — see *Bash policy*."""
 
-A Bash command touching the canonical zone is allowed **only** when every one
-of its segments is one of these. That is an allowlist, not a blocklist: an
-unrecognized command near ``canon/`` is denied rather than permitted, because
-a blocklist of mutating verbs can always be evaded (``python3 -c "open(...,
-'w')"``) while an allowlist fails in the safe direction.
-"""
+SIMPLE_MUTATORS = frozenset(
+    {
+        "touch",
+        "cp",
+        "mv",
+        "rm",
+        "rmdir",
+        "mkdir",
+        "tee",
+        "sed",
+        "ln",
+        "install",
+        "truncate",
+        "dd",
+        "chmod",
+        "chown",
+    }
+)
+"""Mutators whose targets are readable straight off the command line."""
 
 GIT_READ_ONLY_SUBCOMMANDS = frozenset(
     {
@@ -176,65 +215,35 @@ GIT_READ_ONLY_SUBCOMMANDS = frozenset(
         "grep",
     }
 )
-"""Git subcommands that only read. ``git checkout``/``restore``/``rm`` write."""
 
-_STDERR_REDIRECT = re.compile(r"\d*>&\d+|\d+>\s*\S+")
-"""``2>&1``, ``2>/dev/null`` and friends.
-
-Stripped before scanning for write redirects. Treating a stderr redirect as a
-write is how ``cat canon/PURPOSE.md 2>/dev/null`` — an ordinary read — would
-otherwise be denied, which Artifact 017 does not prohibit and §9 of this
-artifact's contract forbids blocking.
-"""
-
-_WRITE_REDIRECT = re.compile(r">")
-
-_SEGMENT_SPLIT = re.compile(r"\|\||&&|[;|&`]|\$\(")
+READ_ONLY = "read_only"
+SIMPLE_MUTATION = "simple_mutation"
+OPAQUE = "opaque"
 
 _ENV_VAR = re.compile(r"\$\{(\w+)\}|\$(\w+)")
-"""``$VAR`` and ``${VAR}``."""
-
 _COMMAND_SUB = re.compile(r"\$\(|`")
-"""``$(...)`` and backticks — never resolvable without executing them."""
-
-_REDIRECT_PREFIX = "<>&|"
+_STDERR_REDIRECT = re.compile(r"\d*>&\d+|\d+>\s*\S+")
+_WRITE_REDIRECT = re.compile(r">>?\s*(\"[^\"]*\"|'[^']*'|[^\s;&|]+)")
+_SEGMENT_SPLIT = re.compile(r"\|\||&&|[;|&`]|\$\(|\)")
 
 
 def repository_root() -> str:
-    """Locate the repository root without trusting the process's cwd.
+    """The repository root, derived only from this file's own location.
 
-    The hook lives at ``<root>/.claude/hooks/canon_deny.py``, so its own
-    location fixes the root. ``CLAUDE_PROJECT_DIR`` is honoured only when it
-    actually looks like this repository, so an unrelated or hostile value
-    cannot redirect the boundary somewhere harmless.
+    The hook lives at ``<root>/.claude/hooks/canon_deny.py``. Nothing in the
+    environment may point it elsewhere — a relocatable boundary is not a
+    boundary.
     """
-    from_file = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    )
-    declared = os.environ.get("CLAUDE_PROJECT_DIR")
-    if declared:
-        candidate = os.path.abspath(os.path.expanduser(declared))
-        if os.path.isdir(os.path.join(candidate, ".claude")):
-            return candidate
-    return from_file
-
-
-def canonical_root(root: str) -> str:
-    """Absolute, symlink-resolved path of the protected ``canon/`` directory."""
-    return os.path.realpath(os.path.join(root, CANONICAL_ROOT_NAME))
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def is_inside_canon(target: str, root: str, cwd: str | None = None) -> bool:
-    """Whether ``target`` resolves inside ``<root>/canon``.
+    """Whether ``target`` resolves to ``<root>/canon`` or anything beneath it.
 
-    Normalizes before deciding, so ``./canon/f.md`` and ``docs/../canon/f.md``
-    are both recognized, and ``canon/../elsewhere`` is not. ``realpath``
-    resolves symlinks, so a link pointing into the canonical tree cannot be
-    used to arrive there by another name.
-
-    Comparison is path-segment based, never string-prefix, so ``canonical/``
-    and ``canon_backup/`` are correctly outside the boundary despite sharing
-    a textual prefix with ``canon``.
+    Normalized and symlink-resolved before deciding, so ``./canon/f``,
+    ``docs/../canon/f`` and a link into the tree are all recognized while
+    ``canon/../elsewhere`` is not. Compared by path segment, never by string
+    prefix, so ``canonical/`` and ``canon_backup/`` stay outside.
     """
     candidate = (target or "").strip()
     if not candidate:
@@ -242,31 +251,20 @@ def is_inside_canon(target: str, root: str, cwd: str | None = None) -> bool:
 
     base = cwd if cwd and os.path.isabs(cwd) else root
     resolved = os.path.realpath(os.path.join(base, os.path.expanduser(candidate)))
-    protected = canonical_root(root)
-
-    if resolved == protected:
-        return True
-    return resolved.startswith(protected + os.sep)
+    protected = os.path.realpath(os.path.join(root, CANONICAL_ROOT_NAME))
+    return resolved == protected or resolved.startswith(protected + os.sep)
 
 
-def _mentions_canon(text: str) -> bool:
-    """Whether ``text`` references the canonical zone as a path segment.
-
-    Matches ``canon/`` and a bare ``canon`` used as a path token, so
-    ``cd canon && ...`` is seen. Segment-anchored, so ``canonical/`` and
-    ``canon_backup/`` do not match.
-    """
-    boundary = rf"(?<![\w.-]){CANONICAL_ROOT_NAME}(?:/|$|[\s'\")])"
-    return bool(re.search(boundary, text))
+def _unquote(word: str) -> str:
+    return word.strip().strip("\"'")
 
 
 def _expand_known_env(command: str, environ: dict) -> str:
-    """Substitute only the shell variables this process can actually resolve.
+    """Substitute only the variables this process can resolve.
 
-    Textual substitution from the hook's own environment. Nothing is executed
-    and no shell is invoked: an unresolvable variable is left in place so that
-    :func:`_has_unresolved_indirection` can still see it. Erasing it instead
-    would silently convert unknown into safe.
+    Pure text substitution — no shell, no execution. An unresolvable variable
+    is left in place so :func:`_has_unresolved_indirection` can still see it;
+    erasing it would silently turn unknown into safe.
     """
 
     def substitute(match: re.Match) -> str:
@@ -278,12 +276,7 @@ def _expand_known_env(command: str, environ: dict) -> str:
 
 
 def _has_unresolved_indirection(command: str, environ: dict) -> bool:
-    """Whether the command still depends on a path this hook cannot resolve.
-
-    Command substitution is always unresolved — predicting its output would
-    mean running it. A variable is unresolved when it is absent from the
-    environment the hook was given.
-    """
+    """Whether the command still depends on a path this hook cannot resolve."""
     if _COMMAND_SUB.search(command):
         return True
     return any(
@@ -292,64 +285,85 @@ def _has_unresolved_indirection(command: str, environ: dict) -> bool:
     )
 
 
-def _candidate_path_tokens(command: str):
-    """Bare words that could denote a filesystem path.
+def classify_bash(
+    command: str, root: str, cwd: str | None
+) -> tuple[str, list[str], str | None]:
+    """Sort a command into one of the three classes.
 
-    Quotes and redirect punctuation are stripped so ``>canon/f`` and
-    ``"canon/f"`` are both seen as the path they name.
-    """
-    for raw in re.split(r"[\s;&|()]+", command):
-        token = raw.strip().strip("\"'").lstrip(_REDIRECT_PREFIX).strip("\"'")
-        if token and not token.startswith("-"):
-            yield token
+    :returns: ``(class, targets, effective_cwd)``. ``targets`` are the paths a
+        simple mutation would touch; ``effective_cwd`` accounts for any ``cd``
+        the command performs first.
 
-
-def _shell_touches_canon_destructively(command: str) -> bool:
-    """Whether a canon-referencing shell command may change the filesystem.
-
-    Allowlist, evaluated after stripping stderr redirects: the command is
-    permitted only when it contains no write redirect and every segment's
-    leading word is a known read-only command. Anything unrecognized is
-    treated as destructive.
-
-    **Known limit, stated rather than papered over.** This is not a shell
-    parser, and arbitrary shell is not fully containable by inspection — a
-    determined obfuscation (an unusual interpreter, an encoded string, an
-    indirect exec) can still reach the filesystem. Blueprint I-83 anticipates
-    exactly this: "Execution-substrate guard rails are defence-in-depth,
-    never constitutional authority." The constitutional guarantee is the
-    Mutation Coordinator (artifact 152); this hook raises the cost of the
-    accidental and the casual, and it fails toward denial when unsure.
+    ``cd`` is neither read-only nor mutating on its own — it relocates the
+    directory later segments act in, which is why ``cd canon && touch f`` is
+    caught even though ``touch f`` names nothing canonical.
     """
     scrubbed = _STDERR_REDIRECT.sub(" ", command)
+    targets = [_unquote(m.group(1)) for m in _WRITE_REDIRECT.finditer(scrubbed)]
+    kind = SIMPLE_MUTATION if targets else READ_ONLY
+    effective_cwd = cwd
 
-    if _WRITE_REDIRECT.search(scrubbed):
-        return True
-
-    for segment in _SEGMENT_SPLIT.split(scrubbed):
-        words = segment.strip().split()
+    for segment in _SEGMENT_SPLIT.split(_WRITE_REDIRECT.sub(" ", scrubbed)):
+        words = [_unquote(word) for word in segment.split()]
         if not words:
             continue
         head = os.path.basename(words[0]).lower()
+        arguments = [word for word in words[1:] if not word.startswith("-")]
+
+        if head == "cd":
+            if arguments:
+                base = effective_cwd if effective_cwd else root
+                effective_cwd = os.path.realpath(os.path.join(base, arguments[0]))
+            continue
         if head == "git":
-            subcommands = [w for w in words[1:] if not w.startswith("-")]
-            if subcommands and subcommands[0] in GIT_READ_ONLY_SUBCOMMANDS:
+            if arguments and arguments[0] in GIT_READ_ONLY_SUBCOMMANDS:
                 continue
-            return True
-        if head not in READ_ONLY_SHELL:
-            return True
-    return False
+            return OPAQUE, targets, effective_cwd
+        if head in READ_ONLY_COMMANDS:
+            continue
+        if head in SIMPLE_MUTATORS:
+            kind = SIMPLE_MUTATION
+            targets.extend(arguments)
+            continue
+        return OPAQUE, targets, effective_cwd
+
+    return kind, targets, effective_cwd
+
+
+def evaluate_bash(
+    command: str, root: str, cwd: str | None, environ: dict
+) -> tuple[bool, str]:
+    """Apply the Bash policy. Returns ``(deny, reason)``."""
+    expanded = _expand_known_env(command, environ)
+    kind, targets, effective_cwd = classify_bash(expanded, root, cwd)
+
+    if kind == READ_ONLY:
+        return False, ""
+
+    if kind == OPAQUE:
+        return True, _reason(
+            "<opaque command; its filesystem effects cannot be established "
+            "without executing it>"
+        )
+
+    if _has_unresolved_indirection(expanded, environ):
+        return True, _reason("<mutation with unresolved path indirection>")
+
+    if effective_cwd and is_inside_canon(effective_cwd, root):
+        return True, _reason("<mutation from a working directory inside canon/>")
+
+    for target in targets:
+        if is_inside_canon(target, root, effective_cwd):
+            return True, _reason("<mutation targeting canon/>")
+
+    return False, ""
 
 
 def evaluate(payload: dict, root: str) -> tuple[bool, str]:
     """Decide whether the requested action must be denied.
 
-    :returns: ``(deny, reason)``. ``reason`` is empty when allowed.
-
-    Fails closed. Where the target cannot be resolved but the request plainly
-    references the canonical zone, the action is denied: permitting an
-    unreadable request risks exactly the write this hook exists to stop, and
-    a false refusal costs a rephrase.
+    An unrelated tool is left alone — Artifact 022 guards one boundary and is
+    not a general tool-authorization layer.
     """
     tool = payload.get("tool_name") or payload.get("toolName") or ""
     tool_input = payload.get("tool_input") or payload.get("toolInput") or {}
@@ -367,54 +381,15 @@ def evaluate(payload: dict, root: str) -> tuple[bool, str]:
                 if is_inside_canon(value, root, cwd):
                     return True, _reason(value)
                 return False, ""
-        # A write tool with no resolvable path is ambiguous; fail closed only
-        # when the request mentions the canonical zone at all.
-        blob = json.dumps(tool_input, ensure_ascii=False)
-        if _mentions_canon(blob):
-            return True, _reason("<unresolved path in tool input>")
-        return False, ""
+        # A write tool with no usable target is unevaluable, and an
+        # unevaluable write is exactly what must not be waved through.
+        return True, _reason("<write tool with no resolvable target>")
 
     if tool == "Bash":
         command = tool_input.get("command")
         if not isinstance(command, str) or not command.strip():
-            return False, ""
-        return _evaluate_bash(command, root, cwd, dict(os.environ))
-
-    return False, ""
-
-
-def _evaluate_bash(
-    command: str, root: str, cwd: str | None, environ: dict
-) -> tuple[bool, str]:
-    """Apply the conservative Bash policy.
-
-    A — read-only command                              -> allow
-    B — mutation with an explicit canonical target      -> deny
-    C — mutation whose resolved variable lands in canon -> deny
-    D — mutation with unresolved indirection            -> deny
-    E — mutation proven to target outside canon         -> allow
-    F — anything unclassifiable                         -> deny
-
-    Read-only is decided first and unconditionally, so inspecting canon stays
-    possible even from a working directory inside it.
-    """
-    expanded = _expand_known_env(command, environ)
-
-    if not _shell_touches_canon_destructively(expanded):
-        return False, ""
-
-    if _has_unresolved_indirection(expanded, environ):
-        return True, _reason("<shell mutation with unresolved path indirection>")
-
-    if _mentions_canon(expanded):
-        return True, _reason("<shell command targeting canon/>")
-
-    if cwd and is_inside_canon(cwd, root):
-        return True, _reason("<shell mutation from a working directory inside canon/>")
-
-    for token in _candidate_path_tokens(expanded):
-        if is_inside_canon(token, root, cwd):
-            return True, _reason("<shell command targeting canon/>")
+            return True, _reason("<Bash tool with no usable command>")
+        return evaluate_bash(command, root, cwd, dict(os.environ))
 
     return False, ""
 
@@ -432,26 +407,32 @@ def _reason(target: str) -> str:
     )
 
 
+def _unevaluable(detail: str) -> int:
+    """Fail closed on input the hook cannot evaluate.
+
+    A payload the hook cannot parse is a target it cannot judge, and
+    permitting an unevaluable action is the bypass this artifact exists to
+    prevent. The diagnostic names the fault only — never the payload.
+    """
+    print(
+        f"canon_deny: unreadable hook payload ({detail}). "
+        "Action denied because the hook could not establish a safe decision.",
+        file=sys.stderr,
+    )
+    return EXIT_DENY
+
+
 def main() -> int:
-    root = repository_root()
     try:
         raw = sys.stdin.read()
-        payload = json.loads(raw) if raw.strip() else {}
-        if not isinstance(payload, dict):
-            payload = {}
+        payload = json.loads(raw) if raw.strip() else None
     except (ValueError, OSError) as exc:
-        # Fail closed. A payload the hook cannot parse is a target it cannot
-        # evaluate, and permitting an unevaluable action is exactly the bypass
-        # this artifact exists to prevent. The concise diagnostic carries the
-        # exception type only — never the payload.
-        print(
-            f"canon_deny: unreadable hook payload ({type(exc).__name__}). "
-            "Action denied because the hook could not establish a safe decision.",
-            file=sys.stderr,
-        )
-        return EXIT_DENY
+        return _unevaluable(type(exc).__name__)
 
-    deny, reason = evaluate(payload, root)
+    if not isinstance(payload, dict):
+        return _unevaluable("payload is not a JSON object")
+
+    deny, reason = evaluate(payload, repository_root())
     if deny:
         print(reason, file=sys.stderr)
         return EXIT_DENY
