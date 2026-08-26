@@ -28,9 +28,19 @@ def build_fixture_repo(temp: Path) -> None:
     Every test that runs the publisher or the hook uses one of these. Running
     them against the real checkout would rewrite the tracked canonical report,
     which is a committed deliverable, not scratch space.
+
+    implement-log.json is reset to an empty events list rather than copied
+    live: the real file accumulates genuine UserPromptSubmit activity as the
+    session runs, so a test asserting an exact event count against the copied
+    file is not deterministic across time. progress.json is copied as-is —
+    the declared build frontier is fixture input, not activity history.
     """
     shutil.copytree(ROOT / ".claude", temp / ".claude")
     shutil.copytree(ROOT / "reports", temp / "reports")
+    (temp / "reports/implement-log.json").write_text(
+        json.dumps({"version": 1, "timezone": "Asia/Ho_Chi_Minh", "events": []}, indent=2) + "\n",
+        encoding="utf-8",
+    )
     (temp / "scripts").mkdir()
     shutil.copy2(PUBLISHER, temp / "scripts/update_progress.py")
     (temp / "docs/sources").mkdir(parents=True)
@@ -111,6 +121,10 @@ class ClaudeCodeIntegrationTests(unittest.TestCase):
             shutil.copy2(ROADMAP, temp / "docs/sources" / ROADMAP.name)
             canon_file = temp / ".claude/hooks/canon_deny.py"
             canon_file.write_text("# audit fixture\n", encoding="utf-8")
+            (temp / "reports/implement-log.json").write_text(
+                json.dumps({"version": 1, "timezone": "Asia/Ho_Chi_Minh", "events": []}, indent=2) + "\n",
+                encoding="utf-8",
+            )
 
             subprocess.run(["git", "init", "-q"], cwd=temp, check=True)
             subprocess.run(["git", "config", "user.email", "audit@example.invalid"], cwd=temp, check=True)
