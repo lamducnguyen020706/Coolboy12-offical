@@ -290,14 +290,17 @@ def test_read_while_cwd_is_inside_canon_is_allowed(workspace):
     assert invoke(payload, workspace).returncode == ALLOW
 
 
-def test_opaque_interpreter_hiding_its_target_is_denied(workspace):
-    """§27 — the most important regression in this file.
+def test_interpreter_computing_its_own_path_is_documented_residual_risk(workspace):
+    """CONFLICT-D — the boundary of what static inspection can establish.
 
-    The old heuristic asked "can I find a canonical path in this text?" and
-    allowed the command when it could not. An interpreter defeats that
-    outright: the target is assembled inside program logic the command line
-    never exposes. The three-class policy denies it because the command is
-    opaque, not because a canonical token was spotted.
+    An interpreter assembles its target inside program logic the command line
+    never exposes. The retired policy caught this by denying every opaque
+    command, which also denied ``pytest``, ``git commit`` and ``ruff`` and
+    halted the build (CONFLICT-D). Route 3 moved the decision axis to
+    canonical reachability, and this construction establishes none.
+
+    Recorded here as the honest limit of the guard rail rather than left as a
+    silent gap.
     """
     command = (
         'python3 -c "import os;'
@@ -308,8 +311,25 @@ def test_opaque_interpreter_hiding_its_target_is_denied(workspace):
 
     result = invoke(payload, workspace, env)
 
-    assert result.returncode == DENY, "interpreter bypass returned ALLOW"
-    assert "opaque" in result.stderr
+    # RESIDUAL RISK, asserted deliberately rather than wished away.
+    #
+    # The canonical path here is assembled *inside Python source* at run time:
+    # `os.environ['CANON']` is not shell syntax, so no textual expansion
+    # reaches it, and no word of the command resolves under canon/. Proving
+    # the target would mean interpreting arbitrary Python, which this hook
+    # must never do. It therefore ALLOWS — and that gap is exactly what I-83
+    # and I-100 describe as defence-in-depth's limit: "execution-substrate
+    # guard rails are defence-in-depth, never constitutional authority". The
+    # constitutional guarantee is artifact 152, not this file.
+    #
+    # The shell-variable form of the same attack IS caught — see
+    # `test_resolvable_env_var_into_canon_is_denied`. This test
+    # exists so that the boundary between the two is recorded and cannot be
+    # narrowed by accident.
+    assert result.returncode == ALLOW, (
+        "the residual-risk contract changed; if this now denies, the fix is "
+        "real and this test should be re-pointed at the new boundary"
+    )
 
 
 @pytest.mark.parametrize(
@@ -327,29 +347,66 @@ def test_opaque_interpreter_hiding_its_target_is_denied(workspace):
         "npm run build",
     ],
 )
-def test_opaque_execution_is_denied_without_naming_canon(command, workspace):
-    """§7 — opacity alone is the ground for denial.
+def test_opaque_execution_naming_no_canonical_path_is_allowed(command, workspace):
+    """CONFLICT-D — opacity alone is **no longer** a ground for denial.
 
-    None of these names ``canon``. The hook cannot establish what any of them
-    writes without running it, so none can be proven outside the boundary.
+    None of these names a canonical path, so none establishes a write into
+    ``canon/**``. Denying them was the rule that made ``pytest``, ``git
+    commit`` and ``ruff`` unrunnable and blocked the build; Blueprint §26.8
+    lists command execution *including tests* among the facilities the
+    environment legitimately provides.
+
+    This is the assertion that inverted under the approved Route 3 amendment.
+    It is inverted deliberately, not relaxed to make a suite pass: the same
+    commands aimed at a canonical path are still denied, one test below.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "python3 script.py canon/world/test.md",
+        "make install canon/world/out",
+        "sed -i s/a/b/ canon/world/test.md",
+        "dd if=src/a of=canon/world/a",
+    ],
+)
+def test_opaque_execution_naming_a_canonical_path_is_still_denied(command, workspace):
+    """The other half of the inversion — the half that must not move.
+
+    An opaque command that names a path under ``canon/**`` establishes
+    canonical reachability even though its option grammar is not modelled
+    here. Without this, dropping the blanket opaque denial would have let
+    ``sed -i``, ``dd of=`` and ``chmod`` write canon unchallenged.
     """
     payload = {"tool_name": "Bash", "tool_input": {"command": command}}
 
     assert invoke(payload, workspace).returncode == DENY, command
 
 
-def test_opaque_denial_is_not_a_read_firewall(workspace):
-    """The asymmetry is deliberate, and worth stating in a test.
+def test_reads_stay_allowed_and_the_asymmetry_is_narrower_now(workspace):
+    """``cat canon/…`` is allowed; ``python3 reader.py`` is now allowed too.
 
-    ``cat`` is allowed against canon because it is *recognized* read-only.
-    ``python3`` is denied even when it only reads, because the hook cannot
-    tell. That is a refusal to certify opaque execution, not a read block.
+    Artifact 017 restricts *writing* canon, not reading it. Under the retired
+    policy an opaque command was denied even when it only read. What survives
+    is a much narrower asymmetry: an opaque command that *names* a canonical
+    path is denied whether it reads or writes, because the hook cannot tell
+    which — while a recognized read-only command is allowed against the same
+    path.
     """
     read = {"tool_name": "Bash", "tool_input": {"command": "cat canon/PURPOSE.md"}}
     opaque = {"tool_name": "Bash", "tool_input": {"command": "python3 reader.py"}}
+    opaque_naming_canon = {
+        "tool_name": "Bash",
+        "tool_input": {"command": "python3 reader.py canon/PURPOSE.md"},
+    }
 
     assert invoke(read, workspace).returncode == ALLOW
-    assert invoke(opaque, workspace).returncode == DENY
+    assert invoke(opaque, workspace).returncode == ALLOW
+    assert invoke(opaque_naming_canon, workspace).returncode == DENY
 
 
 def test_mutation_denied_when_any_of_several_targets_is_canonical(workspace):
@@ -470,19 +527,22 @@ def test_read_only_command_with_output_option_is_denied(command, workspace):
     assert invoke(payload, workspace).returncode == DENY, command
 
 
-def test_output_option_is_denied_even_outside_canon(workspace):
-    """The refusal is of the syntax, not of the destination.
+def test_output_option_outside_canon_is_allowed(workspace):
+    """The refusal is of the destination, not of the syntax.
 
-    Artifact 022 does not need to support advanced output options, so it
-    declines to parse them rather than risk reading one wrong. §24 accepts
-    this false refusal explicitly: avoiding false negatives is the goal.
+    This inverted under Route 3. The retired rule denied ``sort -o`` wherever
+    it pointed, because unparsed option syntax was itself the ground for
+    denial. Blueprint §26.8 makes derived stores and proposals freely
+    writable, so a write demonstrably outside ``canon/**`` has no reason to be
+    refused. The canonical form of the same command is still denied, in the
+    parametrized test directly above.
     """
     payload = {
         "tool_name": "Bash",
         "tool_input": {"command": "sort -o docs/out.txt in.txt"},
     }
 
-    assert invoke(payload, workspace).returncode == DENY
+    assert invoke(payload, workspace).returncode == ALLOW
 
 
 @pytest.mark.parametrize(
@@ -492,7 +552,6 @@ def test_output_option_is_denied_even_outside_canon(workspace):
         "cp -t canon/world src/a",
         "install --target-directory=canon/world src/a",
         "ln --target-directory=canon/world src/a",
-        "cp --target-directory=docs src/a",
     ],
 )
 def test_mutator_option_syntax_cannot_create_a_bypass(command, workspace):
@@ -500,12 +559,29 @@ def test_mutator_option_syntax_cannot_create_a_bypass(command, workspace):
 
     ``--target-directory=`` and ``-t`` send the write somewhere the positional
     arguments never name, so extracting positional targets missed it entirely.
-    Only plainly harmless flags keep a mutator classified; anything else is
-    opaque, including the last case, whose destination is outside canon.
+    Each is still denied under Route 3: the option's value names a path under
+    ``canon/**``, which establishes the target even though the option grammar
+    itself is not modelled.
     """
     payload = {"tool_name": "Bash", "tool_input": {"command": command}}
 
     assert invoke(payload, workspace).returncode == DENY, command
+
+
+def test_mutator_option_pointing_outside_canon_is_allowed(workspace):
+    """The counterpart, and the reason the case above is not vacuous.
+
+    ``cp --target-directory=docs`` was denied under the retired policy purely
+    for carrying an unrecognized option. It establishes no canonical target,
+    so Route 3 allows it — which is what makes the canonical cases above a
+    test of the boundary rather than of option syntax.
+    """
+    payload = {
+        "tool_name": "Bash",
+        "tool_input": {"command": "cp --target-directory=docs src/a"},
+    }
+
+    assert invoke(payload, workspace).returncode == ALLOW
 
 
 @pytest.mark.parametrize(
@@ -711,6 +787,125 @@ def test_hook_writes_nothing_anywhere(workspace):
     invoke(write_payload("docs/test.md"), workspace)
 
     assert {str(p.relative_to(workspace)) for p in workspace.rglob("*")} == before
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        r"grep -e 'a\|b' file",
+        'grep -e "a|b" file',
+        r"grep -E 'foo\|bar' canon/world/f.md",
+        "echo 'a; touch canon/world/x'",
+        'echo "a; touch canon/world/x"',
+        "echo 'a && touch canon/world/x'",
+    ],
+)
+def test_quoted_separators_are_not_shell_syntax(command, workspace):
+    """The quoted-pipe defect, fixed and pinned.
+
+    The retired splitter was a regex over ``|``, ``;`` and ``&`` that could
+    not see quoting, so ``grep -e 'a\\|b' file`` was cut at the quoted pipe
+    into fragments whose first word was not ``grep``. Those fragments read as
+    unknown commands and the search was denied.
+
+    The last three cases matter more than they look: a quoted ``touch
+    canon/...`` is an argument to ``echo``, and a real shell would print it
+    rather than run it. Denying them would be a false positive; splitting on
+    the quoted separator is what produced one.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "echo 'a'; touch canon/world/x",
+        'echo "a" && touch canon/world/x',
+        "true | touch canon/world/x",
+        "true || touch canon/world/x",
+        "(touch canon/world/x)",
+        "cat f `touch canon/world/x`",
+        "python3 -c 'import os' && rm -rf canon/world",
+    ],
+)
+def test_unquoted_separators_still_split(command, workspace):
+    """The other half — fixing the false positive must not lose real ones.
+
+    Every separator here is genuine shell syntax, so the canonical mutation
+    in the later segment really would run. A quote-aware splitter that
+    stopped splitting altogether would pass the test above and open a bypass;
+    this is the test that would catch it.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "touch docs/sentinel.txt",
+        "mkdir docs/sentinel_dir",
+        "python3 -c \"open('docs/sentinel.txt','w').write('x')\"",
+        "echo x > docs/sentinel.txt",
+    ],
+)
+def test_classifying_a_command_never_executes_it(command, workspace):
+    """§17 — the hook decides by inspection, never by running the command.
+
+    Each of these is ALLOWED by the policy, which is exactly what makes the
+    test meaningful: an allow verdict must still leave the filesystem
+    untouched. A hook that learned a command's effect by performing it would
+    create the sentinel and fail here.
+    """
+    before = {str(p.relative_to(workspace)) for p in workspace.rglob("*")}
+
+    invoke({"tool_name": "Bash", "tool_input": {"command": command}}, workspace)
+
+    assert {str(p.relative_to(workspace)) for p in workspace.rglob("*")} == before
+
+
+def test_hook_never_shells_out_to_classify():
+    """§17 — classification is static. No subprocess, no eval, no exec.
+
+    Checked against the executable body rather than the docstring, which
+    discusses these names in prose.
+    """
+    body = SOURCE_HOOK.read_text(encoding="utf-8").split('"""', 2)[-1]
+
+    for forbidden in (
+        "subprocess",
+        "os.system",
+        "os.popen",
+        "eval(",
+        "exec(",
+        "shell=True",
+        "importlib",
+    ):
+        assert forbidden not in body, forbidden
+
+
+def test_canonical_path_in_a_commit_message_is_a_known_false_positive(workspace):
+    """The over-denial that survives Route 3, pinned so it stays visible.
+
+    A canonical path inside ``git commit -m`` is indistinguishable from one
+    in an argument, so it denies. Refusing a commit is not a canonical write,
+    so the error runs to the safe side — and ``git commit -F``/heredoc passes
+    the message on stdin, which the hook never sees.
+
+    Asserted rather than hidden: if a future change makes this allow, that is
+    an improvement, and this test should be re-pointed rather than deleted.
+    """
+    flagged = {
+        "tool_name": "Bash",
+        "tool_input": {"command": 'git commit -m "deny writes to canon/world"'},
+    }
+    stdin_form = {"tool_name": "Bash", "tool_input": {"command": "git commit -F -"}}
+
+    assert invoke(flagged, workspace).returncode == DENY
+    assert invoke(stdin_form, workspace).returncode == ALLOW
 
 
 def test_hook_holds_no_mutation_or_registry_machinery():

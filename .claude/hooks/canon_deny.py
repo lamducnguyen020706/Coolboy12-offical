@@ -62,7 +62,8 @@ Every Bash command falls into exactly one of three classes.
 * **Opaque** — everything else. An interpreter (``python3``, ``node``,
   ``ruby``, ``perl``, ``sh -c`` …), a build tool, an unrecognized program —
   and also a *recognized* command invoked in a form this hook does not
-  understand. Denied.
+  understand. **Allowed unless it establishes a canonical target.** Opacity
+  is not itself grounds for denial (CONFLICT-D; see *Decision axis*).
 
 Membership in a list is never enough on its own, because option syntax can
 move where a command writes:
@@ -83,18 +84,59 @@ move where a command writes:
   attack surface for the classifier, not a gap.
 
 The opaque class is not a claim that those programs write. It is the
-admission that this hook cannot tell, and a guardrail that guesses is not a
-guardrail. Note the asymmetry this creates, and keep it in mind when reading
-a denial: ``cat canon/foo.md`` is allowed because ``cat`` is *recognized* as
-read-only, while ``python3 reader.py`` is denied even if it only reads.
-**This is not a read firewall** — it is a refusal to certify opaque
-execution.
+admission that this hook cannot tell.
 
-Unresolved ``$VAR``, ``$(...)`` and backtick substitution in a mutating
-command are denied for the same reason. Variables this process can resolve
-are substituted textually first, so ``cd "$CANON" && touch f`` is judged on
-where ``$CANON`` actually points. The hook never runs a shell, never expands
-through one, and never interprets program source.
+Decision axis — canonical reachability, not command provability
+---------------------------------------------------------------
+This artifact once denied every opaque command outright. That rule was an
+implementation hardening choice, not a source requirement: searched across
+the Blueprint, the RMS and the Roadmap, *opaque* never appears as a command
+policy at all. Blueprint §26.8 scopes the boundary by **path** — "a hook
+that denies direct writes to **those paths** is the deterministic expression
+of Spine law 2" — while the same section lists command execution *including
+tests* as a facility the environment legitimately provides, and states that
+derived stores and proposals are freely writable. Denying every command
+whose effects could not be proven denied all three of those grants, which is
+how registering this hook halted the build (CONFLICT-D).
+
+So the question asked here is **"does this invocation establish a write
+target under canon/**?"** — never "is this command safe?". A command that
+establishes no canonical target is allowed however little this hook
+understands it. ``pytest``, ``git commit``, ``ruff``, ``make`` and
+``sed -n`` all run.
+
+The asymmetry that remains is narrower and worth reading a denial against:
+``cd canon && python3 anything.py`` is denied because a relative write from
+that directory lands in canon, while ``python3 reader.py`` from the root is
+allowed.
+
+Unresolved ``$VAR``, ``$(...)`` and backtick substitution in a *simple
+mutation* stay denied — there the command is known to write and only the
+destination is missing, so the canonical target cannot be ruled out.
+Variables this process can resolve are substituted textually first, so
+``cd "$CANON" && touch f`` is judged on where ``$CANON`` actually points.
+The hook never runs a shell, never expands through one, and never interprets
+program source.
+
+Residual risk, stated rather than papered over
+-----------------------------------------------
+An opaque command that computes its own path writes into canon unseen —
+``python3 -c "…open(os.environ['CANON'] + '/f.md','w')…"`` names no
+canonical path in its text, and ``sed -i … canon/world/f.md`` is opaque
+because sed's option grammar is not modelled here. Establishing either would
+mean interpreting arbitrary program source, which this hook must not do.
+That residual is what I-83 and I-100 already anticipate: "execution-substrate
+guard rails are defence-in-depth, **never constitutional authority**". The
+constitutional guarantee is the Mutation Coordinator and the Human Gate
+(artifact 152), not this file. §26.8 says the same from the other side — "if
+the hook and the Human Gate ever disagree, the gate is right and the hook is
+a bug".
+
+The error runs the other way too, and one case is common enough to name:
+``git commit -m "… canon/** …"`` is **denied**, because a canonical path in
+the message is indistinguishable from one in an argument. Denying a commit
+is not a canonical write, so this errs to the safe side; ``git commit -F``
+or a heredoc passes the message on stdin, where the hook never sees it.
 
 Trust boundary
 --------------
@@ -246,7 +288,62 @@ _ENV_VAR = re.compile(r"\$\{(\w+)\}|\$(\w+)")
 _COMMAND_SUB = re.compile(r"\$\(|`")
 _STDERR_REDIRECT = re.compile(r"\d*>&\d+|\d+>\s*\S+")
 _WRITE_REDIRECT = re.compile(r">>?\s*(\"[^\"]*\"|'[^']*'|[^\s;&|]+)")
-_SEGMENT_SPLIT = re.compile(r"\|\||&&|[;|&`]|\$\(|\)")
+
+_SEGMENT_SEPARATORS = ";|&`()"
+
+_PATH_RUNS = re.compile(r"[\w./~+@-]+")
+"""Maximal runs of path characters, used to find a target inside a token.
+
+Deliberately not a path *validator* — it over-collects (``open``, ``w`` and
+``.write`` are all runs) and every candidate is then resolved properly by
+:func:`is_inside_canon`. Over-collecting is safe here; missing an embedded
+literal is not.
+"""
+
+
+def _split_segments(command: str) -> list[str]:
+    """Split a command on its *unquoted* separators.
+
+    Not a shell parser, and deliberately not grown into one. It tracks one
+    thing — whether the cursor is inside a quoted run — because that is the
+    single fact the previous regex lacked: ``grep -e 'a\\|b' file`` was split
+    at the quoted pipe, leaving fragments whose first word was not ``grep``,
+    and the invocation was misread as a pipeline of unknown commands. A false
+    denial on a read-only search, not a bypass, but the classifier was reading
+    text that was never shell syntax.
+
+    Genuine pipelines still split: ``cat f | grep x`` yields two segments.
+    """
+    segments: list[str] = []
+    current: list[str] = []
+    quote: str | None = None
+    index = 0
+
+    while index < len(command):
+        char = command[index]
+        if char == "\\" and index + 1 < len(command) and quote != "'":
+            # A backslash escapes the next character everywhere except inside
+            # single quotes, where shell treats it literally.
+            current.append(char)
+            current.append(command[index + 1])
+            index += 2
+            continue
+        if quote:
+            if char == quote:
+                quote = None
+            current.append(char)
+        elif char in "\"'":
+            quote = char
+            current.append(char)
+        elif char in _SEGMENT_SEPARATORS:
+            segments.append("".join(current))
+            current = []
+        else:
+            current.append(char)
+        index += 1
+
+    segments.append("".join(current))
+    return segments
 
 
 def repository_root() -> str:
@@ -345,8 +442,14 @@ def classify_bash(
     targets = [_unquote(m.group(1)) for m in _WRITE_REDIRECT.finditer(scrubbed)]
     kind = SIMPLE_MUTATION if targets else READ_ONLY
     effective_cwd = cwd
+    opaque = False
+    opaque_words: list[str] = []
 
-    for segment in _SEGMENT_SPLIT.split(_WRITE_REDIRECT.sub(" ", scrubbed)):
+    # Every segment is scanned, including those after an opaque one. Returning
+    # early on the first opaque head would abandon the rest of the command, so
+    # `python3 build.py && touch canon/world/f` would have its canonical target
+    # collected only if the interpreter came second.
+    for segment in _split_segments(_WRITE_REDIRECT.sub(" ", scrubbed)):
         words = [_unquote(word) for word in segment.split()]
         if not words:
             continue
@@ -364,20 +467,28 @@ def classify_bash(
             )
             if read_only_subcommand and not _has_write_producing_option(words):
                 continue
-            return OPAQUE, targets, effective_cwd
+            opaque = True
+            opaque_words.extend(words)
+            continue
         if head in READ_ONLY_COMMANDS:
             if _has_write_producing_option(words):
-                return OPAQUE, targets, effective_cwd
+                opaque = True
+                opaque_words.extend(words)
             continue
         if head in SIMPLE_MUTATORS:
             if not _mutator_options_are_understood(words):
-                return OPAQUE, targets, effective_cwd
+                opaque = True
+                opaque_words.extend(words)
+                continue
             kind = SIMPLE_MUTATION
             targets.extend(arguments)
             continue
-        return OPAQUE, targets, effective_cwd
+        opaque = True
+        opaque_words.extend(words)
 
-    return kind, targets, effective_cwd
+    if opaque and kind != SIMPLE_MUTATION:
+        return OPAQUE, targets, effective_cwd, opaque_words
+    return kind, targets, effective_cwd, opaque_words
 
 
 def evaluate_bash(
@@ -385,21 +496,35 @@ def evaluate_bash(
 ) -> tuple[bool, str]:
     """Apply the Bash policy. Returns ``(deny, reason)``."""
     expanded = _expand_known_env(command, environ)
-    kind, targets, effective_cwd = classify_bash(expanded, root, cwd)
+    kind, targets, effective_cwd, opaque_words = classify_bash(expanded, root, cwd)
 
     if kind == READ_ONLY:
         return False, ""
 
-    if kind == OPAQUE:
-        return True, _reason(
-            "<opaque command; its filesystem effects cannot be established "
-            "without executing it>"
-        )
+    for word in opaque_words:
+        # An opaque command naming a canonical path establishes canonical
+        # reachability even though its option grammar is not modelled here.
+        # This is what keeps `sed -i … canon/world/f.md`, `dd of=canon/…`,
+        # `chmod … canon/…` and `cp --target-directory=canon/world` denied
+        # now that opacity alone no longer denies.
+        #
+        # Scanned as path-shaped runs rather than whole words, because a
+        # literal target is routinely embedded in a larger token: the whole
+        # word of `python3 -c "open('canon/world/f.md','w')…"` is not a path,
+        # while the run `canon/world/f.md` inside it plainly is.
+        for candidate in _PATH_RUNS.findall(word):
+            if is_inside_canon(candidate, root, effective_cwd):
+                return True, _reason("<command naming a path inside canon/>")
 
-    if _has_unresolved_indirection(expanded, environ):
+    if kind == SIMPLE_MUTATION and _has_unresolved_indirection(expanded, environ):
+        # A known write whose destination is missing: canon cannot be ruled
+        # out. This is not the old opacity rule — the command is established
+        # to write, and only where is unknown.
         return True, _reason("<mutation with unresolved path indirection>")
 
     if effective_cwd and is_inside_canon(effective_cwd, root):
+        # Reached only when the command is not read-only, so a relative write
+        # would land in canon. `cd canon && cat f` never gets here.
         return True, _reason("<mutation from a working directory inside canon/>")
 
     for target in targets:

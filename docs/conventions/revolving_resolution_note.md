@@ -63,7 +63,7 @@ Verified against the working tree, not from prior context.
 |---|---|
 | HEAD | `536feff` Record UserPromptSubmit activity from live Claude Code session |
 | Artifacts complete | 001 … 021 · **022 FROZEN** (`.claude/hooks/canon_deny.py`, canon write-deny hook) · **023** (`.claude/hooks/zones.json`, zone configuration) |
-| Next artifact | **024 — BLOCKED, NOT REGISTERED** (agent settings, `.claude/settings.json`, `H: 023`) — see **CONFLICT-D** |
+| Next artifact | **024 — DEFERRED, NOT REGISTERED** (agent settings, `.claude/settings.json`, `H: 023`). CONFLICT-D is resolved and 022 re-frozen, so 024 is now implementable; it was deliberately not built in the same session as the unfreeze |
 | Working tree | clean apart from `reports/**` hook telemetry and the deferred Artifact 024 test file |
 | Tracked files | 136 |
 | Directories | 81 tracked — 68 matching Roadmap PART I exactly, plus `docs/sources/` (GAP-K) and 12 carrying the GAP-L progress-sync system |
@@ -89,7 +89,7 @@ separate packaging decisions.
 | **CONFLICT-A** | RMS P=13 vs roadmap VERDICT / P14 | P=13 frozen baseline; VERDICT is a provisional roadmap extension | **RESOLVED FOR BUILD** | None |
 | **CONFLICT-B** | 25 vs 27 metadata fields | use the 25 explicitly enumerated fields | **RESOLVED FOR BUILD** | None |
 | **CONFLICT-C** | Blueprint/RMS state **five** SoT classes (§29.6a); Roadmap PART VII states **six**, adding DEV-ENV | recorded, not resolved — the two tables classify different objects (data classes vs repository artifact classes); DEV-ENV is Roadmap-only | **RECORDED — UNRESOLVED AT SOURCE** | None |
-| **CONFLICT-D** | Artifact 022's unconditional `OPAQUE` deny cannot coexist with Artifact 024 registering it at `PreToolUse` across Bash | recorded, not resolved — registration deferred; `.claude/settings.json` left at its pre-024 baseline | **BLOCKING ARTIFACT 024 — UNRESOLVED AT SOURCE** | None |
+| **CONFLICT-D** | Artifact 022's unconditional `OPAQUE` deny cannot coexist with Artifact 024 registering it at `PreToolUse` across Bash | Route 3 approved by the author: 022 unfrozen under control, decision axis moved from command provability to canonical reachability, re-frozen | **RESOLVED FOR BUILD · AUTHORIAL RULING — SOURCE UNCHANGED** | None |
 | **GAP-C** | missing requirement register | build not blocked; requirement text not verified | **NON-BLOCKING — UNVERIFIED** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
 | **GAP-E.3** | unsourced pyproject values | implementation-level resolution for Python requirement, backend, version | **RESOLVED FOR BUILD** | None |
@@ -267,15 +267,59 @@ nothing, is **unverified** — proving it needs either a write into `canon/**` o
 matcher probe, and neither was authorised. Any future session choosing that route must establish
 inclusion before treating the boundary as enforced.
 
-**Adjacent defect, routed not patched.** Artifact 022's `_SEGMENT_SPLIT` splits on `|` without
-respecting quoting, so `grep -e 'a\|b'` — a pipe inside quotes — is misclassified `OPAQUE` and
-denied. A false-positive denial, not a bypass. Recorded here because 022 is frozen.
+**Adjacent defect, patched under the same unfreeze.** Artifact 022's `_SEGMENT_SPLIT` split on `|`
+without respecting quoting, so `grep -e 'a\|b'` — a pipe inside quotes — was misclassified
+`OPAQUE` and denied. A false-positive denial, not a bypass.
 
-**Open item.** Whether to register across all tools and run tooling outside Claude Code, to scope
-the matcher and accept an unguarded Bash path, or to amend Artifact 022's `OPAQUE` policy, is an
-authorial decision this note does not make. Artifact 024 stays open until it is ruled on.
+---
 
-**Status:** BLOCKING ARTIFACT 024 — UNRESOLVED AT SOURCE · **Constitutional change:** NONE
+#### Resolution
+
+**SOURCE FACT.** Blueprint §26.8 scopes the boundary by **path**: *"a hook that denies direct
+writes to **those paths** is the deterministic expression of Spine law 2."* The same section lists
+command execution *including tests* among the facilities the environment legitimately provides,
+and states that derived stores and proposals are **freely writable**. Searched across all three
+sources, *opaque* never appears as a command policy — the Blueprint's two hits concern opaque
+*data stores* (AC-4), the Roadmap's four are `RULE G3` adapter *shells*, and the RMS has none.
+`OPAQUE → DENY` was therefore an implementation hardening decision, never a source requirement,
+and it denied three things §26.8 explicitly grants.
+
+**AUTHORIAL RULING.** Route 3 approved: controlled unfreeze of Artifact 022 to move the decision
+axis from *command provability* to *canonical reachability*, then re-freeze. Routes 1 and 2 were
+rejected — Route 1 denies granted facilities and its "run tooling outside Claude Code" escape
+hatch is itself unguarded; Route 2 was **experimentally disproven**, a fabricated canonical Record
+was written into `canon/world/` through Bash in an isolated sandbox while the hook was never
+invoked.
+
+**Matcher inclusion — now PROVEN.** This entry previously recorded it unproven. An isolated probe
+project with a harmless logging hook, driven by the `claude` CLI, resolved it: with
+`matcher: "Write|Edit|MultiEdit|NotebookEdit"` the probe logged `Write` only; with `matcher: ""`
+the same prompt and tools logged `Write` **and** `Bash`. Alternation matcher syntax is supported
+and selects by exact tool name, and the control proves Bash can fire `PreToolUse`.
+
+**IMPLEMENTATION CONSEQUENCE.** Artifact 022 now denies an identifiable write into `canon/**` from
+any tool — redirects, the seven mutators, write-producing options, a canonical working directory,
+resolvable variables expanding into canon, and opaque commands that name a canonical path. Opacity
+alone no longer denies, so `pytest`, `git`, `ruff`, `make` and `sed -n` run. The quoted-pipe
+defect is fixed by a quote-aware splitter that is not a shell parser. Suite: 158 tests, all
+passing.
+
+**Residual risk — stated, not solved.** An opaque command that computes its target at run time
+writes into canon unseen: `python3 -c "…open(os.environ['CANON'] + '/f.md','w')…"` names no
+canonical path in its text. Establishing it would mean interpreting arbitrary program source,
+which this hook must not do. This is the limit I-83 and I-100 already describe — *"execution-
+substrate guard rails are defence-in-depth, never constitutional authority"* — and the
+constitutional guarantee remains artifact 152 plus the Human Gate. The literal-path forms of the
+same attack **are** caught. Arbitrary command semantics are **not** solved and no such claim is
+made here. One over-denial also survives: a canonical path inside `git commit -m` denies, which
+errs to the safe side and is avoided by `git commit -F`.
+
+**Standing.** Artifact 022 is **RE-FROZEN**. Artifact 024 **remains deferred** — nothing is
+registered, and `.claude/settings.json` is still at its pre-024 baseline. The source was not
+amended; the implementation was brought into line with it.
+
+**Status:** RESOLVED FOR BUILD · AUTHORIAL RULING — SOURCE UNCHANGED · **Constitutional change:**
+NONE
 
 ---
 
