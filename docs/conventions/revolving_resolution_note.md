@@ -61,13 +61,13 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `8e98eba` Record UserPromptSubmit activity from live Claude Code session |
-| Artifacts complete | 001 … 021 · **022 FROZEN / FREEZE-READY** (`.claude/hooks/canon_deny.py`, canon write-deny hook) |
-| Next artifact | **023 — NOT CREATED** (zone permission configuration, `.claude/hooks/zones.json`, `H: 017,022`) |
-| Working tree | clean |
-| Tracked files | 134 |
-| Directories | 69 — 68 matching Roadmap PART I exactly, plus `docs/sources/` (GAP-K, not a PART I directory) |
-| Purpose-file coverage | 69 / 69 directories |
+| HEAD | `536feff` Record UserPromptSubmit activity from live Claude Code session |
+| Artifacts complete | 001 … 021 · **022 FROZEN** (`.claude/hooks/canon_deny.py`, canon write-deny hook) · **023** (`.claude/hooks/zones.json`, zone configuration) |
+| Next artifact | **024 — BLOCKED, NOT REGISTERED** (agent settings, `.claude/settings.json`, `H: 023`) — see **CONFLICT-D** |
+| Working tree | clean apart from `reports/**` hook telemetry and the deferred Artifact 024 test file |
+| Tracked files | 136 |
+| Directories | 81 tracked — 68 matching Roadmap PART I exactly, plus `docs/sources/` (GAP-K) and 12 carrying the GAP-L progress-sync system |
+| Purpose-file coverage | 69 / 69 Roadmap-governed directories (the 12 GAP-L directories carry none and are not PART I directories) |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 69 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
 | `README.md` | present at repository root |
 | Canonical records | **0** |
@@ -77,7 +77,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 13** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K · GAP-L.
+**Primary resolution entries: 14** — CONFLICT-A · CONFLICT-B · CONFLICT-C · CONFLICT-D · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K · GAP-L.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -89,6 +89,7 @@ separate packaging decisions.
 | **CONFLICT-A** | RMS P=13 vs roadmap VERDICT / P14 | P=13 frozen baseline; VERDICT is a provisional roadmap extension | **RESOLVED FOR BUILD** | None |
 | **CONFLICT-B** | 25 vs 27 metadata fields | use the 25 explicitly enumerated fields | **RESOLVED FOR BUILD** | None |
 | **CONFLICT-C** | Blueprint/RMS state **five** SoT classes (§29.6a); Roadmap PART VII states **six**, adding DEV-ENV | recorded, not resolved — the two tables classify different objects (data classes vs repository artifact classes); DEV-ENV is Roadmap-only | **RECORDED — UNRESOLVED AT SOURCE** | None |
+| **CONFLICT-D** | Artifact 022's unconditional `OPAQUE` deny cannot coexist with Artifact 024 registering it at `PreToolUse` across Bash | recorded, not resolved — registration deferred; `.claude/settings.json` left at its pre-024 baseline | **BLOCKING ARTIFACT 024 — UNRESOLVED AT SOURCE** | None |
 | **GAP-C** | missing requirement register | build not blocked; requirement text not verified | **NON-BLOCKING — UNVERIFIED** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
 | **GAP-E.3** | unsourced pyproject values | implementation-level resolution for Python requirement, backend, version | **RESOLVED FOR BUILD** | None |
@@ -222,6 +223,59 @@ class"* against `BP: §29.6a` — the five-class table. 050 will have to know wh
 legal record-level value.
 
 **Status:** RECORDED — UNRESOLVED AT SOURCE · **Constitutional change:** NONE
+
+---
+
+### CONFLICT-D — Artifact 022's Deny-On-Opacity vs Artifact 024's Registration
+
+**The finding.** Artifact 022 classifies every Bash command as `READ_ONLY`, `SIMPLE_MUTATION`, or
+`OPAQUE`, and denies the `OPAQUE` class unconditionally — opacity is itself grounds for denial.
+That policy is correct and was hardened deliberately across four rounds. Artifact 024's job is to
+register that hook at `PreToolUse`. The two cannot both hold across Bash: `python`, `pytest`,
+`git add`, `git commit`, `git push`, `git branch`, `sed`, `make`, and `npm` are all `OPAQUE`, so
+registering the hook across Bash denies the repository's own test, lint, and commit path.
+
+**Demonstrated, not predicted.** The registration was applied during the Artifact 024 build and
+took effect mid-session — Claude Code re-reads `.claude/settings.json` per tool call, proven
+because reverting the file restored Bash immediately. While it was active:
+
+| Command | Result |
+|---|---|
+| `.venv/bin/python -m pytest …` | **DENIED** |
+| `sed -n '…p' <file>` | **DENIED** |
+| `git branch --show-current` | **DENIED** |
+| `git status` · `git log` · `git diff` · `cat` · `grep` | allowed |
+
+**Why this blocks the artifact rather than merely inconveniencing it.** Roadmap row 024 declares
+`Val: hooks registered` and `Done: active`. Establishing either by execution requires a test
+runner, and the registration denies the test runner. Artifact 024 cannot evidence its own exit
+condition while it is in force. Artifacts 025–028, which row 024 unlocks, inherit the same block.
+
+**The source tension.** Blueprint I-83: *"Execution-substrate guard rails are defence-in-depth,
+never constitutional authority."* Registered across Bash, the guard stops being defence-in-depth
+and becomes the primary control over the shell — roughly thirty read-only commands plus seven
+mutators is the whole remaining surface. Roadmap row 024 also carries `Auth: none`, so 024 is not
+the place to resolve this by narrowing what 022 enforces.
+
+**What was done about it.** Nothing was registered. `.claude/settings.json` is at its pre-024
+baseline, carrying only the GAP-L `UserPromptSubmit` hook. Artifact 022 was not modified — it is
+frozen, and the fix, if any, is a source-level decision rather than an implementation patch.
+
+**What is verified and what is not.** A matcher scoped to `Write|Edit|MultiEdit|NotebookEdit` was
+observed to *exclude* Bash. Whether it correctly *selects* those four tools, rather than selecting
+nothing, is **unverified** — proving it needs either a write into `canon/**` or a Bash-scoped
+matcher probe, and neither was authorised. Any future session choosing that route must establish
+inclusion before treating the boundary as enforced.
+
+**Adjacent defect, routed not patched.** Artifact 022's `_SEGMENT_SPLIT` splits on `|` without
+respecting quoting, so `grep -e 'a\|b'` — a pipe inside quotes — is misclassified `OPAQUE` and
+denied. A false-positive denial, not a bypass. Recorded here because 022 is frozen.
+
+**Open item.** Whether to register across all tools and run tooling outside Claude Code, to scope
+the matcher and accept an unguarded Bash path, or to amend Artifact 022's `OPAQUE` policy, is an
+authorial decision this note does not make. Artifact 024 stays open until it is ruled on.
+
+**Status:** BLOCKING ARTIFACT 024 — UNRESOLVED AT SOURCE · **Constitutional change:** NONE
 
 ---
 
