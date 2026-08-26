@@ -444,6 +444,112 @@ def test_unrelated_tool_is_not_denied(workspace):
     assert invoke(payload, workspace).returncode == ALLOW
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        "sort -o canon/world/out.txt input.txt",
+        "sort --output=canon/world/out.txt input.txt",
+        "git diff --output=canon/world/out.patch",
+        "git diff --output canon/world/out.patch",
+    ],
+)
+def test_read_only_command_with_output_option_is_denied(command, workspace):
+    """§27 — membership in the read-only list is not enough on its own.
+
+    ``sort`` inspects, but ``sort -o`` writes; ``git diff`` inspects, but
+    ``git diff --output=`` writes. Classifying on the executable name alone
+    let both through. A write-producing option makes the invocation opaque.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+def test_output_option_is_denied_even_outside_canon(workspace):
+    """The refusal is of the syntax, not of the destination.
+
+    Artifact 022 does not need to support advanced output options, so it
+    declines to parse them rather than risk reading one wrong. §24 accepts
+    this false refusal explicitly: avoiding false negatives is the goal.
+    """
+    payload = {
+        "tool_name": "Bash",
+        "tool_input": {"command": "sort -o docs/out.txt in.txt"},
+    }
+
+    assert invoke(payload, workspace).returncode == DENY
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "cp --target-directory=canon/world src/a",
+        "cp -t canon/world src/a",
+        "install --target-directory=canon/world src/a",
+        "ln --target-directory=canon/world src/a",
+        "cp --target-directory=docs src/a",
+    ],
+)
+def test_mutator_option_syntax_cannot_create_a_bypass(command, workspace):
+    """§25 — an option can move where a mutator writes.
+
+    ``--target-directory=`` and ``-t`` send the write somewhere the positional
+    arguments never name, so extracting positional targets missed it entirely.
+    Only plainly harmless flags keep a mutator classified; anything else is
+    opaque, including the last case, whose destination is outside canon.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "install -m 644 src/a canon/world/a",
+        "dd if=src/a of=canon/world/a",
+        "truncate -s 0 canon/world/a",
+        "chmod 777 canon/world/a",
+        "chown root canon/world/a",
+        "ln -s src/a canon/world/a",
+        "sed -i s/a/b/ canon/world/test.md",
+    ],
+)
+def test_option_rich_commands_are_opaque_not_mutators(command, workspace):
+    """§13-§17 — commands needing a real CLI parser are deliberately opaque.
+
+    ``dd``'s ``of=``, ``install``'s many forms and ``sed``'s in-place flag all
+    require option semantics this hook has no business implementing. Removing
+    them from the mutator set shrinks the classifier's attack surface; each
+    now falls through to opaque and is denied.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    ["rm -rf docs/x", "mkdir -p docs/sub", "cp -a src/a docs/a", "mv src/a docs/a"],
+)
+def test_harmless_mutator_flags_still_classify(command, workspace):
+    """The option allowlist must not turn every flag into a denial.
+
+    Without this control, tightening option handling would quietly make the
+    simple-mutation class unreachable and the policy a blanket write firewall.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
+
+
+def test_sort_without_output_option_still_reads(workspace):
+    """``sort input.txt`` inspects and stays allowed."""
+    payload = {"tool_name": "Bash", "tool_input": {"command": "sort canon/PURPOSE.md"}}
+
+    assert invoke(payload, workspace).returncode == ALLOW
+
+
 # --------------------------------------------------------------------------
 # The hook must not become a read firewall or a general write blocker.
 # --------------------------------------------------------------------------

@@ -55,14 +55,32 @@ Every Bash command falls into exactly one of three classes.
   ``git status`` …). Allowed, including against ``canon/**`` and including
   from a working directory inside it. Artifact 017 restricts *writing* canon,
   not reading it.
-* **Simple mutation** — a recognized mutator (``touch``, ``cp``, ``mv``,
-  ``rm``, ``tee``, ``sed -i`` …) or a data redirect, whose filesystem targets
-  can be read straight off the command line. Allowed **only** when every
-  target is statically resolvable and every one resolves outside canon.
-* **Opaque** — anything else: an interpreter (``python3``, ``node``,
-  ``ruby``, ``perl``, ``sh -c`` …), a build tool, an unrecognized program.
-  Denied. Its filesystem effects live inside program logic the command line
-  does not expose, so no inspection of the text can establish them.
+* **Simple mutation** — one of seven mutators (``touch``, ``cp``, ``mv``,
+  ``rm``, ``rmdir``, ``mkdir``, ``tee``) or a data redirect, invoked with
+  plainly positional targets. Allowed **only** when every target is
+  statically resolvable and every one resolves outside canon.
+* **Opaque** — everything else. An interpreter (``python3``, ``node``,
+  ``ruby``, ``perl``, ``sh -c`` …), a build tool, an unrecognized program —
+  and also a *recognized* command invoked in a form this hook does not
+  understand. Denied.
+
+Membership in a list is never enough on its own, because option syntax can
+move where a command writes:
+
+* A read-only command carrying a write-producing option is opaque.
+  ``sort input.txt`` inspects; ``sort -o out.txt input.txt`` writes, and so
+  does ``git diff --output=out.patch``. Both are denied rather than parsed —
+  this hook does not need to support advanced output syntax, and refusing is
+  cheaper than getting it subtly wrong.
+* A mutator carrying an option this hook does not recognize is opaque.
+  ``cp src dst`` has readable targets; ``cp --target-directory=canon/world
+  src`` writes somewhere the positional arguments never name. Only a small
+  set of plainly harmless flags (``-r``, ``-f``, ``-p``, ``-v``, ``-a``,
+  ``-n``, ``-d`` and their long forms) keeps a mutator classified.
+* ``sed``, ``ln``, ``install``, ``dd``, ``chmod``, ``chown`` and ``truncate``
+  are deliberately **not** mutators here. Each has option-rich semantics that
+  would need a real CLI parser to judge, so each is opaque. That is a smaller
+  attack surface for the classifier, not a gap.
 
 The opaque class is not a claim that those programs write. It is the
 admission that this hook cannot tell, and a guardrail that guesses is not a
@@ -180,25 +198,29 @@ READ_ONLY_COMMANDS = frozenset(
 )
 """Recognized inspecting commands. Deliberately small — see *Bash policy*."""
 
-SIMPLE_MUTATORS = frozenset(
-    {
-        "touch",
-        "cp",
-        "mv",
-        "rm",
-        "rmdir",
-        "mkdir",
-        "tee",
-        "sed",
-        "ln",
-        "install",
-        "truncate",
-        "dd",
-        "chmod",
-        "chown",
-    }
+SIMPLE_MUTATORS = frozenset({"touch", "cp", "mv", "rm", "rmdir", "mkdir", "tee"})
+"""The only mutators whose targets are readable straight off the command line.
+
+Seven, deliberately. ``sed``, ``ln``, ``install``, ``dd``, ``chmod``, ``chown``
+and ``truncate`` are absent on purpose: judging them needs option semantics
+this hook has no business implementing, so they fall through to opaque.
+"""
+
+SAFE_SHORT_MUTATOR_FLAGS = frozenset("rRfpvand")
+SAFE_LONG_MUTATOR_FLAGS = frozenset(
+    {"recursive", "force", "parents", "verbose", "no-clobber", "dir", "archive"}
 )
-"""Mutators whose targets are readable straight off the command line."""
+"""Flags that plainly do not move where a mutator writes.
+
+Any other option makes the invocation opaque. This is an allowlist because an
+unrecognized option can redirect the destination (``-t``,
+``--target-directory``), and ignoring what it cannot read is how a classifier
+turns unknown into safe.
+"""
+
+WRITE_PRODUCING_OPTIONS = frozenset({"-o", "--output", "-t", "--target-directory"})
+WRITE_PRODUCING_PREFIXES = ("--output=", "--target-directory=", "--out-file=")
+"""Options that make an otherwise read-only command write a file."""
 
 GIT_READ_ONLY_SUBCOMMANDS = frozenset(
     {
@@ -285,6 +307,27 @@ def _has_unresolved_indirection(command: str, environ: dict) -> bool:
     )
 
 
+def _has_write_producing_option(words: list[str]) -> bool:
+    """Whether a read-only invocation carries an option that writes a file."""
+    return any(
+        word in WRITE_PRODUCING_OPTIONS or word.startswith(WRITE_PRODUCING_PREFIXES)
+        for word in words
+    )
+
+
+def _mutator_options_are_understood(words: list[str]) -> bool:
+    """Whether every option on a mutator is one that cannot move the target."""
+    for word in words:
+        if not word.startswith("-") or word == "--":
+            continue
+        if word.startswith("--"):
+            if word[2:].split("=", 1)[0] not in SAFE_LONG_MUTATOR_FLAGS:
+                return False
+        elif any(flag not in SAFE_SHORT_MUTATOR_FLAGS for flag in word[1:]):
+            return False
+    return True
+
+
 def classify_bash(
     command: str, root: str, cwd: str | None
 ) -> tuple[str, list[str], str | None]:
@@ -316,12 +359,19 @@ def classify_bash(
                 effective_cwd = os.path.realpath(os.path.join(base, arguments[0]))
             continue
         if head == "git":
-            if arguments and arguments[0] in GIT_READ_ONLY_SUBCOMMANDS:
+            read_only_subcommand = (
+                arguments and arguments[0] in GIT_READ_ONLY_SUBCOMMANDS
+            )
+            if read_only_subcommand and not _has_write_producing_option(words):
                 continue
             return OPAQUE, targets, effective_cwd
         if head in READ_ONLY_COMMANDS:
+            if _has_write_producing_option(words):
+                return OPAQUE, targets, effective_cwd
             continue
         if head in SIMPLE_MUTATORS:
+            if not _mutator_options_are_understood(words):
+                return OPAQUE, targets, effective_cwd
             kind = SIMPLE_MUTATION
             targets.extend(arguments)
             continue
