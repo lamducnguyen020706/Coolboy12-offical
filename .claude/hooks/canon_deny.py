@@ -37,15 +37,30 @@ makes the wrong path fail.**
 
 The one question it answers
 ---------------------------
-Artifact 022 never decides whether a mutation is *legitimate*. It decides
-only whether the environment can prove, without executing anything, that a
-requested filesystem mutation does not target ``canon/**``::
+Artifact 022 never decides whether a mutation is *legitimate*, and it does
+not decide whether a command is safe. It answers exactly one question, by
+static inspection, without executing anything::
 
-    proven outside canon   → allow
-    proven inside canon    → deny
-    cannot prove outside   → deny
+    does this invocation establish a write target under canon/** ?
 
-The third line is the whole design. *Unknown is never safe.*
+        identifiable write into canon/**        → deny
+        identifiable write outside canon/**     → allow
+        recognized read-only operation          → allow
+        known mutation, destination unresolved  → deny
+        no canonical write established          → allow
+        malformed or unevaluable write request  → deny
+
+**This hook denies identifiable writes into ``canon/**``. It does not deny a
+command merely because it cannot fully understand that command's internal
+semantics.**
+
+Two of those lines look similar and are not. A **known mutation with an
+unresolved destination** — ``cp "$UNKNOWN" "$DEST"`` — is denied because the
+command is established to write and only *where* is missing, so canon cannot
+be ruled out. A command that establishes **no canonical write** is allowed;
+the accurate phrasing for that outcome is *no canonical write established by
+this hook*, never *safe*. The hook has not certified the command, and is not
+asked to.
 
 Bash policy
 -----------
@@ -70,9 +85,9 @@ move where a command writes:
 
 * A read-only command carrying a write-producing option is opaque.
   ``sort input.txt`` inspects; ``sort -o out.txt input.txt`` writes, and so
-  does ``git diff --output=out.patch``. Both are denied rather than parsed —
-  this hook does not need to support advanced output syntax, and refusing is
-  cheaper than getting it subtly wrong.
+  does ``git diff --output=out.patch``. The option's value is read as the
+  destination, so each is judged on where it points rather than refused for
+  its syntax.
 * A mutator carrying an option this hook does not recognize is opaque.
   ``cp src dst`` has readable targets; ``cp --target-directory=canon/world
   src`` writes somewhere the positional arguments never name. Only a small
@@ -80,11 +95,13 @@ move where a command writes:
   ``-n``, ``-d`` and their long forms) keeps a mutator classified.
 * ``sed``, ``ln``, ``install``, ``dd``, ``chmod``, ``chown`` and ``truncate``
   are deliberately **not** mutators here. Each has option-rich semantics that
-  would need a real CLI parser to judge, so each is opaque. That is a smaller
-  attack surface for the classifier, not a gap.
+  would need a real CLI parser to judge, so each is opaque — and each is
+  still denied when it names a canonical destination positionally, which is
+  the form all of them use.
 
 The opaque class is not a claim that those programs write. It is the
-admission that this hook cannot tell.
+admission that this hook cannot tell, which is why the class alone decides
+nothing.
 
 Decision axis — canonical reachability, not command provability
 ---------------------------------------------------------------
@@ -118,25 +135,46 @@ Variables this process can resolve are substituted textually first, so
 The hook never runs a shell, never expands through one, and never interprets
 program source.
 
+What counts as a write target
+------------------------------
+A path earns target status from its **shell-level position**, never from
+appearing somewhere in the text:
+
+* a redirect destination — ``> canon/world/f.md``;
+* a positional argument of one of the seven mutators;
+* the value of a modelled write-producing option — ``-o``, ``--output``,
+  ``-t``, ``--target-directory``, in either spelling;
+* a **bare positional** word of an opaque command, including the right-hand
+  side of an unprefixed ``key=value``, which is how ``dd if=… of=…`` names
+  its destination. This is what keeps ``sed -i … canon/world/f.md``,
+  ``chmod … canon/world/f.md`` and ``install src/a canon/world/f.md``
+  denied without modelling any of their option grammars;
+* any of the above resolved against a working directory inside canon.
+
+A **quoted** word never counts, and neither does an unmodelled option or a
+value joined to one. ``python3 -c "print('canon/world/x.md')"``,
+``echo "canon/world/x.md"``, ``grep -e 'canon/world/x.md' f`` and
+``pytest --rootdir=canon`` all mention a canonical path and none of them
+writes one. Quote-tracking spans whitespace, so the path inside
+``git commit -m 'deny writes to canon/world'`` stays part of the message.
+
 Residual risk, stated rather than papered over
 -----------------------------------------------
-An opaque command that computes its own path writes into canon unseen —
-``python3 -c "…open(os.environ['CANON'] + '/f.md','w')…"`` names no
-canonical path in its text, and ``sed -i … canon/world/f.md`` is opaque
-because sed's option grammar is not modelled here. Establishing either would
-mean interpreting arbitrary program source, which this hook must not do.
+The cost of that precision is stated plainly: **a canonical path inside a
+quoted argument is not inspected, so an interpreter one-liner can write into
+canon unseen.** ``python3 -c "open('canon/world/f.md','w').write('x')"`` is
+allowed, and so is the ``os.environ['CANON']`` form that computes the path at
+run time. Separating that from ``print('canon/world/x.md')`` requires
+interpreting the program, and this hook must not interpret program source —
+so it does not pretend to. The shell-level forms of the same write are all
+caught.
+
 That residual is what I-83 and I-100 already anticipate: "execution-substrate
 guard rails are defence-in-depth, **never constitutional authority**". The
 constitutional guarantee is the Mutation Coordinator and the Human Gate
 (artifact 152), not this file. §26.8 says the same from the other side — "if
 the hook and the Human Gate ever disagree, the gate is right and the hook is
 a bug".
-
-The error runs the other way too, and one case is common enough to name:
-``git commit -m "… canon/** …"`` is **denied**, because a canonical path in
-the message is indistinguishable from one in an argument. Denying a commit
-is not a canonical write, so this errs to the safe side; ``git commit -F``
-or a heredoc passes the message on stdin, where the hook never sees it.
 
 Trust boundary
 --------------
@@ -291,14 +329,97 @@ _WRITE_REDIRECT = re.compile(r">>?\s*(\"[^\"]*\"|'[^']*'|[^\s;&|]+)")
 
 _SEGMENT_SEPARATORS = ";|&`()"
 
-_PATH_RUNS = re.compile(r"[\w./~+@-]+")
-"""Maximal runs of path characters, used to find a target inside a token.
+def _tokenize(segment: str) -> list[tuple[str, bool]]:
+    """Split one segment into ``(text, was_quoted)`` words.
 
-Deliberately not a path *validator* — it over-collects (``open``, ``w`` and
-``.write`` are all runs) and every candidate is then resolved properly by
-:func:`is_inside_canon`. Over-collecting is safe here; missing an embedded
-literal is not.
-"""
+    Quote-aware for the same reason :func:`_split_segments` is, one level
+    down: a quoted run holds together across whitespace. Splitting on
+    whitespace alone would cut ``-m 'deny writes to canon/world'`` into four
+    words and leave the last one looking like a bare path argument, which is
+    exactly the false positive this cleanup exists to remove.
+
+    ``was_quoted`` is true if any part of the word came from inside quotes.
+    """
+    tokens: list[tuple[str, bool]] = []
+    current: list[str] = []
+    quote: str | None = None
+    quoted = False
+    started = False
+
+    index = 0
+    while index < len(segment):
+        char = segment[index]
+        if char == "\\" and index + 1 < len(segment) and quote != "'":
+            # Escapes everywhere except inside single quotes, matching
+            # _split_segments so both layers read the same string the same way.
+            current.append(segment[index + 1])
+            started = True
+            index += 2
+            continue
+        index += 1
+        if quote:
+            if char == quote:
+                quote = None
+            else:
+                current.append(char)
+        elif char in "\"'":
+            quote, quoted, started = char, True, True
+        elif char.isspace():
+            if started:
+                tokens.append(("".join(current), quoted))
+            current, quoted, started = [], False, False
+        else:
+            current.append(char)
+            started = True
+
+    if started:
+        tokens.append(("".join(current), quoted))
+    return tokens
+
+
+def identify_canonical_write_targets(tokens: list[tuple[str, bool]]) -> list[str]:
+    """Write targets visible at the *shell* level in one opaque invocation.
+
+    Answers only "which paths does this invocation hand a command as a
+    destination?" — never "what might this program do?". The hook does not
+    parse Python, JavaScript, or any command's full option grammar, so an
+    argument earns target status only from shell-level position:
+
+    * the value of a **modelled** write-producing option (``-o``,
+      ``--output``, ``-t``, ``--target-directory``), in both the separated
+      and ``=``-joined spellings;
+    * a **bare positional** word — unquoted, not an option — including the
+      right-hand side of an unprefixed ``key=value`` form, which is how
+      ``dd if=… of=…`` names its destination.
+
+    Everything else is excluded, because it is a string the command consumes
+    rather than a path it writes:
+
+    * a **quoted** word — program source, a search pattern, a message. This
+      is why ``python3 -c "print('canon/world/x.md')"`` is not a write, and
+      it is also why the ``open(…,'w')`` form of the same token is not one
+      either. Telling those two apart requires interpreting the program, and
+      that is the residual risk this hook declines to fake away.
+    * an **unmodelled option**, and any value joined to it. ``pytest
+      --rootdir=canon`` selects a directory to search, not one to write.
+    """
+    targets: list[str] = []
+    expect_value = False
+
+    for text, was_quoted in tokens[1:]:  # [0] is the program name
+        if expect_value:
+            targets.append(text)
+            expect_value = False
+        elif not was_quoted and text in WRITE_PRODUCING_OPTIONS:
+            expect_value = True
+        elif not was_quoted and text.startswith(WRITE_PRODUCING_PREFIXES):
+            targets.append(text.split("=", 1)[1])
+        elif was_quoted or text.startswith("-"):
+            continue
+        else:
+            targets.append(text.split("=", 1)[-1])
+
+    return targets
 
 
 def _split_segments(command: str) -> list[str]:
@@ -443,14 +564,15 @@ def classify_bash(
     kind = SIMPLE_MUTATION if targets else READ_ONLY
     effective_cwd = cwd
     opaque = False
-    opaque_words: list[str] = []
+    opaque_targets: list[str] = []
 
     # Every segment is scanned, including those after an opaque one. Returning
     # early on the first opaque head would abandon the rest of the command, so
     # `python3 build.py && touch canon/world/f` would have its canonical target
     # collected only if the interpreter came second.
     for segment in _split_segments(_WRITE_REDIRECT.sub(" ", scrubbed)):
-        words = [_unquote(word) for word in segment.split()]
+        tokens = _tokenize(segment)
+        words = [text for text, _ in tokens]
         if not words:
             continue
         head = os.path.basename(words[0]).lower()
@@ -468,27 +590,27 @@ def classify_bash(
             if read_only_subcommand and not _has_write_producing_option(words):
                 continue
             opaque = True
-            opaque_words.extend(words)
+            opaque_targets.extend(identify_canonical_write_targets(tokens))
             continue
         if head in READ_ONLY_COMMANDS:
             if _has_write_producing_option(words):
                 opaque = True
-                opaque_words.extend(words)
+                opaque_targets.extend(identify_canonical_write_targets(tokens))
             continue
         if head in SIMPLE_MUTATORS:
             if not _mutator_options_are_understood(words):
                 opaque = True
-                opaque_words.extend(words)
+                opaque_targets.extend(identify_canonical_write_targets(tokens))
                 continue
             kind = SIMPLE_MUTATION
             targets.extend(arguments)
             continue
         opaque = True
-        opaque_words.extend(words)
+        opaque_targets.extend(identify_canonical_write_targets(tokens))
 
     if opaque and kind != SIMPLE_MUTATION:
-        return OPAQUE, targets, effective_cwd, opaque_words
-    return kind, targets, effective_cwd, opaque_words
+        return OPAQUE, targets, effective_cwd, opaque_targets
+    return kind, targets, effective_cwd, opaque_targets
 
 
 def evaluate_bash(
@@ -496,25 +618,19 @@ def evaluate_bash(
 ) -> tuple[bool, str]:
     """Apply the Bash policy. Returns ``(deny, reason)``."""
     expanded = _expand_known_env(command, environ)
-    kind, targets, effective_cwd, opaque_words = classify_bash(expanded, root, cwd)
+    kind, targets, effective_cwd, opaque_targets = classify_bash(expanded, root, cwd)
 
     if kind == READ_ONLY:
         return False, ""
 
-    for word in opaque_words:
-        # An opaque command naming a canonical path establishes canonical
-        # reachability even though its option grammar is not modelled here.
-        # This is what keeps `sed -i … canon/world/f.md`, `dd of=canon/…`,
-        # `chmod … canon/…` and `cp --target-directory=canon/world` denied
-        # now that opacity alone no longer denies.
-        #
-        # Scanned as path-shaped runs rather than whole words, because a
-        # literal target is routinely embedded in a larger token: the whole
-        # word of `python3 -c "open('canon/world/f.md','w')…"` is not a path,
-        # while the run `canon/world/f.md` inside it plainly is.
-        for candidate in _PATH_RUNS.findall(word):
-            if is_inside_canon(candidate, root, effective_cwd):
-                return True, _reason("<command naming a path inside canon/>")
+    for target in opaque_targets:
+        # A destination handed to a command whose option grammar is not
+        # modelled here: `sed -i … canon/world/f.md`, `dd of=canon/…`,
+        # `chmod … canon/…`, `cp --target-directory=canon/world`. Shell-level
+        # position makes these targets; a canonical path merely *mentioned*
+        # in a quoted argument is not one.
+        if is_inside_canon(target, root, effective_cwd):
+            return True, _reason("<command writing to a path inside canon/>")
 
     if kind == SIMPLE_MUTATION and _has_unresolved_indirection(expanded, environ):
         # A known write whose destination is missing: canon cannot be ruled

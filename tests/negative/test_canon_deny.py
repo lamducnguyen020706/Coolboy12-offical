@@ -197,10 +197,7 @@ def test_shell_mutation_of_canon_is_denied(command, workspace):
     [
         "cd canon && echo x > world/f.md",
         "( cd canon/world && touch f.md )",
-        "python3 -c \"open('canon/world/f.md','w').write('x')\"",
         "perl -e 'open(F,\">canon/world/f\")'",
-        "ruby -e 'File.write(\"canon/world/f\", 1)'",
-        "node -e 'fs.writeFileSync(\"canon/world/f\")'",
         "git checkout canon/world",
         "git rm canon/world/test.md",
     ],
@@ -209,13 +206,49 @@ def test_shell_bypass_attempts_are_denied(command, workspace):
     """Adversarial cases found by attacking this hook, locked in as regressions.
 
     A blocklist of mutating verbs missed every one of these: ``cd canon &&``
-    hides the path from a ``canon/`` match, and an interpreter reaches the
-    filesystem without naming ``rm`` or ``mv``. The allowlist denies anything
-    that is not a recognized read-only command.
+    hides the path from a ``canon/`` match, and ``git checkout``/``git rm``
+    name the destination positionally after a subcommand that is not
+    read-only. Each is caught by shell-level position, not by pattern.
+
+    The ``perl`` case is caught by redirect detection — the ``>`` inside its
+    quoted source is read as a shell redirect. That is incidental rather than
+    principled, and errs to the safe side; the equivalent interpreter forms
+    that use no ``>`` are residual, and are asserted as such directly below.
     """
     payload = {"tool_name": "Bash", "tool_input": {"command": command}}
 
     assert invoke(payload, workspace).returncode == DENY, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "python3 -c \"open('canon/world/f.md','w').write('x')\"",
+        "ruby -e 'File.write(\"canon/world/f\", 1)'",
+        "node -e 'fs.writeFileSync(\"canon/world/f\")'",
+    ],
+)
+def test_interpreter_source_naming_canon_is_residual_risk(command, workspace):
+    """The cost of removing the false positives, asserted rather than hidden.
+
+    These write into ``canon/**`` and are **allowed**. The canonical path sits
+    inside a quoted argument, and this hook does not inspect quoted arguments
+    — that is precisely what stops ``python3 -c "print('canon/world/x.md')"``,
+    ``echo "canon/world/x.md"`` and ``git commit -m '… canon/world'`` from
+    being denied. Separating ``open(…, 'w')`` from ``print(…)`` inside that
+    string requires interpreting the program, which Artifact 022 must not do.
+
+    This is a real reduction in depth against a determined actor with shell
+    access, and I-83 already scopes that: "execution-substrate guard rails are
+    defence-in-depth, never constitutional authority". The constitutional
+    guarantee is artifact 152 plus the Human Gate.
+
+    Asserted as ALLOW deliberately. If a future change denies these, that is
+    an improvement — re-point this test rather than deleting it.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
 
 
 def test_resolvable_env_var_into_canon_is_denied(workspace):
@@ -798,6 +831,9 @@ def test_hook_writes_nothing_anywhere(workspace):
         "echo 'a; touch canon/world/x'",
         'echo "a; touch canon/world/x"',
         "echo 'a && touch canon/world/x'",
+        'echo "she said \\"hi\\" and left"',
+        'python3 -c "x=\\"canon/world/f.md\\"; print(x)"',
+        r"grep -e 'a\|b' 'canon/world/notes.md'",
     ],
 )
 def test_quoted_separators_are_not_shell_syntax(command, workspace):
@@ -887,25 +923,42 @@ def test_hook_never_shells_out_to_classify():
         assert forbidden not in body, forbidden
 
 
-def test_canonical_path_in_a_commit_message_is_a_known_false_positive(workspace):
-    """The over-denial that survives Route 3, pinned so it stays visible.
+@pytest.mark.parametrize(
+    "command",
+    [
+        'git commit -m "deny writes to canon/world"',
+        "git commit -m 'deny writes to canon/world'",
+        "python3 -c \"print('canon')\"",
+        "python3 -c \"print('canon/world/example.md')\"",
+        'echo "canon/world/example.md"',
+        "echo 'see canon/world/example.md for details'",
+        "pytest --rootdir=canon",
+        "grep -e 'canon/world/example.md' file.txt",
+        "grep -rn canon docs/",
+        "git commit -F -",
+    ],
+)
+def test_mentioning_a_canonical_path_is_not_writing_one(command, workspace):
+    """§13 — a textual mention is not a filesystem write.
 
-    A canonical path inside ``git commit -m`` is indistinguishable from one
-    in an argument, so it denies. Refusing a commit is not a canonical write,
-    so the error runs to the safe side — and ``git commit -F``/heredoc passes
-    the message on stdin, which the hook never sees.
+    This is the false-positive class the Route-3 cleanup removed. The earlier
+    implementation scanned every path-shaped run inside every word of an
+    opaque command, so a message, a search pattern, a printed string or an
+    unmodelled option's value all read as canonical targets. ``git commit -m``
+    denying on its own commit message was the case that surfaced it.
 
-    Asserted rather than hidden: if a future change makes this allow, that is
-    an improvement, and this test should be re-pointed rather than deleted.
+    A path now counts only from shell-level position, so each of these is
+    allowed while the positional forms — ``sed -i … canon/world/f.md``,
+    ``dd of=canon/world/f.md`` — remain denied.
+
+    The first two matter most: quote tracking spans whitespace, so the whole
+    quoted message is one word. Splitting on whitespace first would leave
+    ``canon/world"`` looking like a bare path argument, which is the exact
+    bug this fixes.
     """
-    flagged = {
-        "tool_name": "Bash",
-        "tool_input": {"command": 'git commit -m "deny writes to canon/world"'},
-    }
-    stdin_form = {"tool_name": "Bash", "tool_input": {"command": "git commit -F -"}}
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
 
-    assert invoke(flagged, workspace).returncode == DENY
-    assert invoke(stdin_form, workspace).returncode == ALLOW
+    assert invoke(payload, workspace).returncode == ALLOW, command
 
 
 def test_hook_holds_no_mutation_or_registry_machinery():

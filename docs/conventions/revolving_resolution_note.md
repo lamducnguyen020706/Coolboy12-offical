@@ -305,20 +305,31 @@ alone no longer denies, so `pytest`, `git`, `ruff`, `make` and `sed -n` run. The
 defect is fixed by a quote-aware splitter that is not a shell parser. Suite: 158 tests, all
 passing.
 
-**Residual risk — stated, not solved.** An opaque command that computes its target at run time
-writes into canon unseen: `python3 -c "…open(os.environ['CANON'] + '/f.md','w')…"` names no
-canonical path in its text. Establishing it would mean interpreting arbitrary program source,
-which this hook must not do. This is the limit I-83 and I-100 already describe — *"execution-
-substrate guard rails are defence-in-depth, never constitutional authority"* — and the
-constitutional guarantee remains artifact 152 plus the Human Gate. The literal-path forms of the
-same attack **are** caught. Arbitrary command semantics are **not** solved and no such claim is
-made here. One over-denial also survives: a canonical path anywhere in a Bash command string
-denies, which errs to the safe side. **Correction, established while implementing Artifact 024:**
-this was first recorded as "avoided by `git commit -F` or a heredoc". The heredoc half is wrong —
-the Bash tool submits the whole command string, heredoc body included, so the hook sees it, and
-the Artifact 024 commit was itself denied on its own message. Only `git commit -F <file>`, with
-the message in a file, keeps it out of the command string. The same sentence stands in Artifact
-022's docstring; 022 is re-frozen, so it is reported rather than patched.
+**Residual risk — stated, not solved.** *(Revised by the Route-3 cleanup patch; the earlier
+wording described an interim implementation.)* A path counts as a write target only from its
+**shell-level position** — a redirect destination, a mutator's positional argument, the value of
+a modelled write-producing option, a bare positional word of an opaque command, or any of those
+resolved against a working directory inside canon. A path inside a **quoted** argument is not
+inspected. The consequence is stated plainly rather than hidden: an interpreter one-liner can
+write into canon unseen, and this now includes the **literal**-path form
+`python3 -c "open('canon/world/f.md','w').write('x')"`, not only the computed
+`os.environ['CANON']` form. Separating that from `python3 -c "print('canon/world/x.md')"`
+requires interpreting the program, which Artifact 022 must not do.
+
+That is a real reduction in depth against a determined actor with shell access, accepted because
+I-83 and I-100 already scope it — *"execution-substrate guard rails are defence-in-depth, never
+constitutional authority"* — with the constitutional guarantee remaining artifact 152 plus the
+Human Gate. Every shell-level form of the same write stays denied, including `sed -i`, `dd of=`,
+`chmod`, `install`, `ln`, `truncate`, `cp -t`, `sort -o` and `git diff --output=`.
+
+**The over-denial recorded here earlier is fixed, not surviving.** It was that any canonical path
+anywhere in a command string denied — `git commit -m "… canon/world"` denied on its own message,
+which blocked the Artifact 024 commit. Quote-aware tokenisation now keeps a quoted message whole,
+so it is no longer read as a bare path argument. The note that only `git commit -F <file>` worked
+around it, and the observation that a heredoc does **not** (the Bash tool submits the whole
+command string, heredoc body included), are both retained here as history; neither is now a live
+constraint. Artifact 022's docstring sentence stating that constraint was removed in the same
+patch.
 
 **Standing.** Artifact 022 is **RE-FROZEN**. Artifact 024 **remains deferred** — nothing is
 registered, and `.claude/settings.json` is still at its pre-024 baseline. The source was not
