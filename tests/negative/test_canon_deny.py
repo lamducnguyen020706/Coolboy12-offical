@@ -439,6 +439,82 @@ def test_opaque_command_writing_to_canon_is_denied(command, workspace):
 @pytest.mark.parametrize(
     "command",
     [
+        'touch "canon/world/file.md"',
+        "touch 'canon/world/file.md'",
+        'cp src/a "canon/world/file.md"',
+        'mv src/a "canon/world/file.md"',
+        'rm "canon/world/file.md"',
+        'mkdir "canon/world/newdir"',
+        'tee "canon/world/file.md"',
+        "sed -i 's/a/b/' \"canon/world/file.md\"",
+        'chmod 644 "canon/world/file.md"',
+        'chown root "canon/world/file.md"',
+        'install src/a "canon/world/file.md"',
+        'ln -s src/a "canon/world/file.md"',
+        'truncate -s 0 "canon/world/file.md"',
+        'git checkout "canon/world/file.md"',
+        'git rm "canon/world/file.md"',
+        'git restore --source HEAD "canon/world/file.md"',
+        'sort -o "canon/world/out.patch" input.txt',
+        'sort --output "canon/world/out.patch" input.txt',
+        'sort --output="canon/world/out.patch" input.txt',
+        'cp -t "canon/world" src/a',
+        'cp --target-directory "canon/world" src/a',
+        'cp --target-directory="canon/world" src/a',
+        'echo x > "canon/world/file.md"',
+    ],
+)
+def test_quoting_a_canonical_target_does_not_hide_it(command, workspace):
+    """Quotes set word boundaries; they do not change what a path means.
+
+    This is the bypass this test exists for. An earlier version treated any
+    quoted word as automatically non-target, on the theory that a quoted
+    string is program source or a message. That held for the seven mutators,
+    which read unquoted words — but every ``POSITIONAL_WRITERS`` command,
+    every git working-tree subcommand, and the ``--option="value"`` joined
+    form could be handed a quoted canonical path and pass.
+
+    ``chmod 644 "canon/world/f.md"`` writes exactly where
+    ``chmod 644 canon/world/f.md`` writes. Target status comes from which
+    command receives the path and in what position — never from quoting.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        'touch "docs/file.md"',
+        'cp src/a "docs/file.md"',
+        'mv src/a "docs/file.md"',
+        'mkdir "docs/newdir"',
+        'echo x > "docs/out.txt"',
+        'sort -o "docs/out.patch" input.txt',
+        'sort --output="docs/out.patch" input.txt',
+        'cp --target-directory="docs" src/a',
+        'chmod 644 "docs/file.md"',
+        'git checkout "docs/file.md"',
+    ],
+)
+def test_quoted_targets_outside_canon_stay_allowed(command, workspace):
+    """The counterpart, and the proof quoting is not itself a deny mechanism.
+
+    Every command here is one whose quoted canonical twin is denied directly
+    above. Each is allowed, because the destination resolves outside
+    ``canon/**``. Without this, the test above would pass just as well if the
+    fix had been "deny anything quoted", which would be a worse bug than the
+    one it replaced.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
         "echo x > canon/world/f.md",
         "echo x >> canon/world/f.md",
         "echo x 1> canon/world/f.md",

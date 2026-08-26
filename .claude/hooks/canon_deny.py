@@ -156,12 +156,20 @@ appearing somewhere in the text:
 Everything else is an input, not a destination. A positional path given to a
 command that is **not** on those lists is not a target: ``pytest
 canon/world``, ``python3 canon/world/script.py`` and ``node
-canon/world/s.js`` all name a canonical path and none of them writes one. A
-**quoted** word never counts, nor does an unmodelled option or a value joined
-to one — ``python3 -c "print('canon/world/x.md')"``, ``echo
-"canon/world/x.md"``, ``grep -e 'canon/world/x.md' f`` and ``pytest
---rootdir=canon``. Quote tracking spans whitespace, so the path inside
-``git commit -m 'deny writes to canon/world'`` stays part of the message.
+canon/world/s.js`` all name a canonical path and none of them writes one. Nor
+does an unmodelled option or a value joined to one — ``pytest
+--rootdir=canon``.
+
+**Quoting is not part of this decision.** Quotes set word boundaries and are
+then discarded, so ``touch "canon/world/f.md"`` is judged exactly as
+``touch canon/world/f.md`` is, and ``sort --output="canon/world/out"`` as
+``sort --output=canon/world/out``. Treating a quoted word as automatically
+safe was a real bypass: every :data:`POSITIONAL_WRITERS` command and every
+git working-tree subcommand could be handed a quoted canonical path and pass.
+What keeps ``python3 -c "print('canon/world/x.md')"``, ``echo
+"canon/world/x.md"``, ``grep -e 'canon/world/x.md' f`` and ``git commit -m
+'deny writes to canon/world'`` allowed is that none of those commands writes
+where it is pointed — the command decides, not the quotes.
 
 Residual risk, stated rather than papered over
 -----------------------------------------------
@@ -430,21 +438,22 @@ def extract_write_redirect_targets(command: str) -> tuple[list[str], str]:
 
 _SEGMENT_SEPARATORS = ";|&`()"
 
-def _tokenize(segment: str) -> list[tuple[str, bool]]:
-    """Split one segment into ``(text, was_quoted)`` words.
+def _tokenize(segment: str) -> list[str]:
+    """Split one segment into words, respecting quotes and dropping them.
 
     Quote-aware for the same reason :func:`_split_segments` is, one level
-    down: a quoted run holds together across whitespace. Splitting on
-    whitespace alone would cut ``-m 'deny writes to canon/world'`` into four
-    words and leave the last one looking like a bare path argument, which is
-    exactly the false positive this cleanup exists to remove.
+    down: a quoted run holds together across whitespace, so
+    ``-m 'deny writes to canon/world'`` is two words rather than five.
 
-    ``was_quoted`` is true if any part of the word came from inside quotes.
+    Quoting affects **word boundaries only**. It deliberately does not mark a
+    word as non-target: ``touch "canon/world/f.md"`` writes exactly where
+    ``touch canon/world/f.md`` does, and the shell's quotes are parsing
+    syntax, not a change of meaning. Which arguments are destinations is
+    decided by command context in :func:`identify_canonical_write_targets`.
     """
-    tokens: list[tuple[str, bool]] = []
+    tokens: list[str] = []
     current: list[str] = []
     quote: str | None = None
-    quoted = False
     started = False
 
     index = 0
@@ -464,21 +473,21 @@ def _tokenize(segment: str) -> list[tuple[str, bool]]:
             else:
                 current.append(char)
         elif char in "\"'":
-            quote, quoted, started = char, True, True
+            quote, started = char, True
         elif char.isspace():
             if started:
-                tokens.append(("".join(current), quoted))
-            current, quoted, started = [], False, False
+                tokens.append("".join(current))
+            current, started = [], False
         else:
             current.append(char)
             started = True
 
     if started:
-        tokens.append(("".join(current), quoted))
+        tokens.append("".join(current))
     return tokens
 
 
-def identify_canonical_write_targets(tokens: list[tuple[str, bool]]) -> list[str]:
+def identify_canonical_write_targets(tokens: list[str]) -> list[str]:
     """Write targets visible at the *shell* level in one opaque invocation.
 
     Answers only "which paths does this invocation hand a command as a
@@ -488,42 +497,51 @@ def identify_canonical_write_targets(tokens: list[tuple[str, bool]]) -> list[str
 
     * the value of a **modelled** write-producing option (``-o``,
       ``--output``, ``-t``, ``--target-directory``), in both the separated
-      and ``=``-joined spellings;
-    * a **bare positional** word — unquoted, not an option — including the
-      right-hand side of an unprefixed ``key=value`` form, which is how
-      ``dd if=… of=…`` names its destination.
+      and ``=``-joined spellings, on any command;
+    * a **positional** word — not an option — when the command is one that
+      writes where it is pointed: :data:`POSITIONAL_WRITERS`, or git with a
+      :data:`GIT_WRITE_SUBCOMMANDS` subcommand. The right-hand side of an
+      unprefixed ``key=value`` counts too, which is how ``dd if=… of=…``
+      names its destination.
 
-    Everything else is excluded, because it is a string the command consumes
-    rather than a path it writes:
+    Everything else is an input rather than a destination:
 
-    * a **quoted** word — program source, a search pattern, a message. This
-      is why ``python3 -c "print('canon/world/x.md')"`` is not a write, and
-      it is also why the ``open(…,'w')`` form of the same token is not one
-      either. Telling those two apart requires interpreting the program, and
-      that is the residual risk this hook declines to fake away.
+    * a positional word of any **other** command. ``pytest canon/world``,
+      ``python3 canon/world/script.py`` and ``node canon/world/s.js`` each
+      name a canonical path; none writes to it.
     * an **unmodelled option**, and any value joined to it. ``pytest
       --rootdir=canon`` selects a directory to search, not one to write.
+
+    **Quoting decides nothing here.** Quotes are word boundaries, stripped by
+    :func:`_tokenize` before this runs, so ``chmod 644 "canon/world/f.md"``
+    is read exactly as its unquoted twin. An earlier version treated a quoted
+    word as automatically non-target, which let every positional writer and
+    every git working-tree subcommand through on a quoted path.
+
+    The residual this leaves is program-internal: ``python3 -c
+    "open('canon/world/x','w')"`` hands ``python3`` one argument that this
+    hook does not interpret, and ``python3`` is not a positional writer.
     """
     targets: list[str] = []
     if not tokens:
         return targets
 
-    head = os.path.basename(tokens[0][0]).lower()
-    arguments = [text for text, _ in tokens[1:] if not text.startswith("-")]
+    head = os.path.basename(tokens[0]).lower()
+    arguments = [text for text in tokens[1:] if not text.startswith("-")]
     writes_positionally = head in POSITIONAL_WRITERS or (
         head == "git" and arguments and arguments[0] in GIT_WRITE_SUBCOMMANDS
     )
     expect_value = False
 
-    for text, was_quoted in tokens[1:]:  # [0] is the program name
+    for text in tokens[1:]:  # [0] is the program name
         if expect_value:
             targets.append(text)
             expect_value = False
-        elif not was_quoted and text in WRITE_PRODUCING_OPTIONS:
+        elif text in WRITE_PRODUCING_OPTIONS:
             expect_value = True
-        elif not was_quoted and text.startswith(WRITE_PRODUCING_PREFIXES):
+        elif text.startswith(WRITE_PRODUCING_PREFIXES):
             targets.append(text.split("=", 1)[1])
-        elif was_quoted or text.startswith("-"):
+        elif text.startswith("-"):
             continue
         elif writes_positionally:
             targets.append(text.split("=", 1)[-1])
@@ -657,7 +675,7 @@ def _mutator_options_are_understood(words: list[str]) -> bool:
 
 def classify_bash(
     command: str, root: str, cwd: str | None
-) -> tuple[str, list[str], str | None]:
+) -> tuple[str, list[str], str | None, list[str]]:
     """Sort a command into one of the three classes.
 
     :returns: ``(class, targets, effective_cwd)``. ``targets`` are the paths a
@@ -679,8 +697,7 @@ def classify_bash(
     # `python3 build.py && touch canon/world/f` would have its canonical target
     # collected only if the interpreter came second.
     for segment in _split_segments(remainder):
-        tokens = _tokenize(segment)
-        words = [text for text, _ in tokens]
+        words = _tokenize(segment)
         if not words:
             continue
         head = os.path.basename(words[0]).lower()
@@ -698,23 +715,23 @@ def classify_bash(
             if read_only_subcommand and not _has_write_producing_option(words):
                 continue
             opaque = True
-            opaque_targets.extend(identify_canonical_write_targets(tokens))
+            opaque_targets.extend(identify_canonical_write_targets(words))
             continue
         if head in READ_ONLY_COMMANDS:
             if _has_write_producing_option(words):
                 opaque = True
-                opaque_targets.extend(identify_canonical_write_targets(tokens))
+                opaque_targets.extend(identify_canonical_write_targets(words))
             continue
         if head in SIMPLE_MUTATORS:
             if not _mutator_options_are_understood(words):
                 opaque = True
-                opaque_targets.extend(identify_canonical_write_targets(tokens))
+                opaque_targets.extend(identify_canonical_write_targets(words))
                 continue
             kind = SIMPLE_MUTATION
             targets.extend(arguments)
             continue
         opaque = True
-        opaque_targets.extend(identify_canonical_write_targets(tokens))
+        opaque_targets.extend(identify_canonical_write_targets(words))
 
     if opaque and kind != SIMPLE_MUTATION:
         return OPAQUE, targets, effective_cwd, opaque_targets
