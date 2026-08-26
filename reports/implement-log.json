@@ -71,6 +71,26 @@
       "type": "prompt",
       "source": "UserPromptSubmit",
       "completion_recorded": false
+    },
+    {
+      "event_id": "db812aa2d514cb30e3c566cd",
+      "timestamp": "2026-08-26T13:17:53+07:00",
+      "summary": "Patch artifact 022",
+      "artifact": "022",
+      "phase": "P0",
+      "type": "prompt",
+      "source": "UserPromptSubmit",
+      "completion_recorded": false
+    },
+    {
+      "event_id": "e6af1b5d3af9c5260a902a4f",
+      "timestamp": "2026-08-26T13:30:13+07:00",
+      "summary": "Prompt received",
+      "artifact": null,
+      "phase": null,
+      "type": "prompt",
+      "source": "UserPromptSubmit",
+      "completion_recorded": false
     }
   ]
 }
