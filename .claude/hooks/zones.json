@@ -1,0 +1,44 @@
+{
+  "artifact": "023",
+  "schema_version": 1,
+  "declared_by": "docs/boundaries/canonical_zones.md",
+  "canonical_root": "canon/**",
+  "zones": [
+    {
+      "id": "world",
+      "path": "canon/world/**",
+      "record_model": "W",
+      "description": "World Record Model canonical zone"
+    },
+    {
+      "id": "epistemic",
+      "path": "canon/epistemic/**",
+      "record_model": "E",
+      "description": "Epistemic Record Model canonical zone"
+    },
+    {
+      "id": "production",
+      "path": "canon/production/**",
+      "record_model": "P",
+      "description": "Production Record Model canonical zone"
+    },
+    {
+      "id": "registry",
+      "path": "canon/registry/**",
+      "record_model": "R",
+      "description": "Registry Record Model canonical zone"
+    },
+    {
+      "id": "visual",
+      "path": "canon/visual/**",
+      "record_model": "V",
+      "description": "Visual Record Model canonical zone"
+    },
+    {
+      "id": "issue",
+      "path": "canon/issue/**",
+      "record_model": "I",
+      "description": "Issue Record Model canonical zone"
+    }
+  ]
+}
