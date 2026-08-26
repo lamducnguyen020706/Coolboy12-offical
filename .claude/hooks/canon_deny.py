@@ -150,7 +150,12 @@ appearing somewhere in the text:
   :data:`POSITIONAL_WRITERS` (``sed``, ``ln``, ``install``, ``dd``,
   ``chmod``, ``chown``, ``truncate``) and git's working-tree subcommands
   (:data:`GIT_WRITE_SUBCOMMANDS`). Their option grammars stay unmodelled and
-  they stay opaque; only the destination is read;
+  they stay opaque; only the destination is read. Two of those families need
+  one more bit before a positional is a destination at all, because the same
+  subcommand or flag decides whether the argument is a file: ``git checkout``
+  takes a path *or* a ref (``-b canon/world`` names a branch), and ``sed``
+  rewrites its input only under ``-i`` / ``--in-place``. See
+  :func:`classify_git_write_target` and :func:`classify_sed_invocation`;
 * any of the above resolved against a working directory inside canon.
 
 Everything else is an input, not a destination. A positional path given to a
@@ -381,10 +386,22 @@ only that a positional path given to one of them is a destination, which is
 what keeps ``sed -i … canon/world/f.md`` and ``chmod … canon/world/f.md``
 denied while ``pytest canon/world`` and ``python3 canon/world/s.py`` — whose
 positional paths are inputs — are not.
+
+Membership is necessary, not sufficient. ``sed`` is here yet
+``sed -n '1,5p' canon/world/f.md`` reads and is allowed: see
+:func:`classify_sed_invocation`. Adding a command to this set is a claim
+about where it writes, never a claim that every invocation of it writes.
 """
 
 GIT_WRITE_SUBCOMMANDS = frozenset({"rm", "mv", "checkout", "restore", "clean", "apply"})
 """Git subcommands that rewrite working-tree files at the paths they name."""
+
+GIT_REF_CREATING_OPTIONS = frozenset({"-b", "-B", "--orphan", "-c", "--create"})
+"""Options after which the operand names a branch or ref, never a path.
+
+``git checkout -b canon/world`` creates a branch. The name is allowed to look
+like a path and nothing is written there.
+"""
 
 
 def extract_write_redirect_targets(command: str) -> tuple[list[str], str]:
@@ -560,10 +577,6 @@ def identify_canonical_write_targets(tokens: list[str]) -> list[str]:
         return targets
 
     head = os.path.basename(tokens[0]).lower()
-    arguments = [text for text in tokens[1:] if not text.startswith("-")]
-    writes_positionally = head in POSITIONAL_WRITERS or (
-        head == "git" and arguments and arguments[0] in GIT_WRITE_SUBCOMMANDS
-    )
     options, joined = write_options_for(head)
     expect_value = False
 
@@ -575,12 +588,90 @@ def identify_canonical_write_targets(tokens: list[str]) -> list[str]:
             expect_value = True
         elif joined and text.startswith(joined):
             targets.append(text.split("=", 1)[1])
-        elif text.startswith("-"):
-            continue
-        elif writes_positionally:
-            targets.append(text.split("=", 1)[-1])
 
+    targets.extend(positional_write_targets(head, tokens))
     return targets
+
+
+def positional_write_targets(head: str, tokens: list[str]) -> list[str]:
+    """Positional arguments this command writes to, by command family.
+
+    Most commands write nothing where they are pointed, so the default is
+    none. Two families need more than a name check, because the same
+    subcommand or flag decides whether an argument is a file at all.
+    """
+    if head == "git":
+        return classify_git_write_target(tokens)
+    if head == "sed":
+        return classify_sed_invocation(tokens)
+    if head in POSITIONAL_WRITERS:
+        return [
+            text.split("=", 1)[-1] for text in tokens[1:] if not text.startswith("-")
+        ]
+    return []
+
+
+def classify_git_write_target(tokens: list[str]) -> list[str]:
+    """Working-tree paths in a git invocation — refs and branches excluded.
+
+    ``git checkout`` takes a path *or* a ref, and the difference is not in the
+    argument. ``git checkout -b canon/world`` creates a branch whose name
+    happens to look like a path and writes nothing there; treating every
+    positional of a write subcommand as a destination denied it.
+
+    Three forms, and no more than three — this is not a git parser:
+
+    * after ``--`` every argument is a pathspec, whatever precedes it, which
+      covers ``git checkout -- p`` and ``git checkout HEAD -- p``;
+    * a ref-creating option (:data:`GIT_REF_CREATING_OPTIONS`) means the
+      operand names a ref, so nothing is a path;
+    * otherwise the positionals of a :data:`GIT_WRITE_SUBCOMMANDS` subcommand
+      are paths, which is the ``git rm p`` / ``git restore p`` case.
+
+    Anything else yields no target. An ambiguous form is left alone rather
+    than guessed at: opaque is not a denial.
+    """
+    arguments = tokens[1:]
+    if "--" in arguments:
+        return arguments[arguments.index("--") + 1 :]
+    if not arguments or arguments[0] not in GIT_WRITE_SUBCOMMANDS:
+        return []
+    if any(argument in GIT_REF_CREATING_OPTIONS for argument in arguments):
+        return []
+    return [text for text in arguments[1:] if not text.startswith("-")]
+
+
+def classify_sed_invocation(tokens: list[str]) -> list[str]:
+    """The file ``sed`` rewrites, which exists only when editing in place.
+
+    ``sed -n '1,5p' f`` and ``sed 's/a/b/' f`` read ``f`` and write stdout;
+    the input is not a destination. Only ``-i`` / ``--in-place`` makes sed
+    rewrite what it is given, so treating sed as an unconditional positional
+    writer denied ordinary reads of canonical files.
+
+    The script itself is left in the returned list. It is not filtered out
+    because it need not be: ``s/a/b/`` does not resolve to a path under
+    ``canon/**``, and excluding it would mean parsing sed's argument order.
+    Nothing here interprets the expression.
+    """
+    if not any(_sed_edits_in_place(text) for text in tokens[1:]):
+        return []
+    return [text for text in tokens[1:] if not text.startswith("-")]
+
+
+def _sed_edits_in_place(option: str) -> bool:
+    """Whether one ``sed`` argument requests in-place editing.
+
+    Covers ``-i``, the suffix form ``-i.bak``, bundled short options such as
+    ``-ni``, and ``--in-place`` with or without ``=SUFFIX``.
+    """
+    if option == "--in-place" or option.startswith("--in-place="):
+        return True
+    return (
+        option.startswith("-")
+        and not option.startswith("--")
+        and "i" in option[1:]
+    )
 
 
 def _split_segments(command: str) -> list[str]:

@@ -441,6 +441,106 @@ def test_opaque_command_writing_to_canon_is_denied(command, workspace):
 @pytest.mark.parametrize(
     "command",
     [
+        "git checkout -b canon/world",
+        "git checkout -B canon/world",
+        "git checkout --orphan canon/world",
+        "git switch -c canon/world",
+        "git switch --create canon/world",
+    ],
+)
+def test_git_branch_names_are_not_paths(command, workspace):
+    """``git checkout -b canon/world`` creates a branch, not a file.
+
+    ``git checkout`` takes a path *or* a ref, and the argument alone does not
+    say which. Treating every positional of a write subcommand as a
+    destination denied branch creation whose name happened to look like a
+    path — nothing is written there.
+
+    A ref-creating option is the signal, and it is the whole of the rule.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "git rm canon/world/file.md",
+        "git restore canon/world/file.md",
+        "git checkout canon/world/file.md",
+        "git checkout -- canon/world/file.md",
+        "git checkout HEAD -- canon/world/file.md",
+        "git restore --source HEAD canon/world/file.md",
+        "git mv src/a canon/world/file.md",
+        "git clean -fd canon/world",
+    ],
+)
+def test_git_working_tree_paths_are_still_denied(command, workspace):
+    """The counterpart: excluding refs must not excuse pathspecs.
+
+    Everything after ``--`` is a pathspec whatever precedes it, which is why
+    ``git checkout HEAD -- p`` is caught alongside ``git checkout -- p``.
+    Without this, the branch fix would read as "git never writes".
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "sed -n '1,5p' canon/world/file.md",
+        "sed 's/a/b/' canon/world/file.md",
+        "sed -E 's/a/b/' canon/world/file.md",
+        "sed -e 's/a/b/' canon/world/file.md",
+        "sed -n '1,5p' docs/file.md",
+        "sed -i 's/a/b/' docs/file.md",
+        "sed --in-place 's/a/b/' docs/file.md",
+    ],
+)
+def test_sed_reads_and_non_canonical_edits_are_allowed(command, workspace):
+    """sed rewrites its input only in place; otherwise it writes stdout.
+
+    ``sed -n '1,5p' canon/world/f`` reads a canonical file and prints part of
+    it. Listing sed as an unconditional positional writer made every such
+    read a denial — Artifact 017 restricts writing canon, not reading it.
+
+    The last two prove the in-place form is judged on where it points, not on
+    the flag alone.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "sed -i 's/a/b/' canon/world/file.md",
+        "sed --in-place 's/a/b/' canon/world/file.md",
+        "sed -i.bak 's/a/b/' canon/world/file.md",
+        "sed -ni 's/a/b/' canon/world/file.md",
+        "sed --in-place=.bak 's/a/b/' canon/world/file.md",
+        'sed -i "s/a/b/" "canon/world/file.md"',
+    ],
+)
+def test_sed_in_place_edits_of_canon_are_denied(command, workspace):
+    """In place is the one sed form that writes the file it is given.
+
+    Covers the suffix form ``-i.bak`` and the bundled ``-ni``, both of which
+    request in-place editing without the argument being exactly ``-i``. The
+    sed expression itself is never interpreted.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
         "echo -o canon/world/x",
         "echo --output=canon/world/x",
         "pytest -o canon/world/x",
