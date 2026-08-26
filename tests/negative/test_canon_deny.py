@@ -49,19 +49,28 @@ def workspace(tmp_path_factory):
     return root
 
 
-def invoke(payload: dict, workspace: Path) -> subprocess.CompletedProcess:
-    """Run the hook the way Claude Code runs it: JSON on stdin, status back."""
+def invoke(
+    payload: dict, workspace: Path, extra_env: dict | None = None
+) -> subprocess.CompletedProcess:
+    """Run the hook the way Claude Code runs it: JSON on stdin, status back.
+
+    ``extra_env`` is handed to the subprocess only, never exported into the
+    test process, so a shell-variable fixture cannot leak between tests.
+    """
+    env = {
+        "CLAUDE_PROJECT_DIR": str(workspace),
+        "PATH": "/usr/bin:/bin",
+        "PYTHONDONTWRITEBYTECODE": "1",
+    }
+    if extra_env:
+        env.update(extra_env)
     return subprocess.run(
         [sys.executable, str(HOOK)],
         input=json.dumps(payload),
         text=True,
         capture_output=True,
         check=False,
-        env={
-            "CLAUDE_PROJECT_DIR": str(workspace),
-            "PATH": "/usr/bin:/bin",
-            "PYTHONDONTWRITEBYTECODE": "1",
-        },
+        env=env,
     )
 
 
@@ -200,6 +209,78 @@ def test_shell_bypass_attempts_are_denied(command, workspace):
     assert invoke(payload, workspace).returncode == DENY, command
 
 
+def test_resolvable_env_var_into_canon_is_denied(workspace):
+    """§17 — ``cd "$CANON" && touch`` resolves into canon and is denied."""
+    payload = {
+        "tool_name": "Bash",
+        "tool_input": {"command": 'cd "$CANON" && touch world/test.md'},
+    }
+    env = {"CANON": str(workspace / "canon")}
+
+    assert invoke(payload, workspace, env).returncode == DENY
+
+
+def test_braced_env_var_into_canon_is_denied(workspace):
+    """``${CANON}`` is the same indirection in another spelling."""
+    payload = {
+        "tool_name": "Bash",
+        "tool_input": {"command": 'cd "${CANON}" && echo x > test.md'},
+    }
+    env = {"CANON": str(workspace / "canon" / "world")}
+
+    assert invoke(payload, workspace, env).returncode == DENY
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        'cd "$UNKNOWN_DIR" && touch test.md',
+        'cd "$(resolve_target)" && touch test.md',
+        "cd `resolve_target` && touch test.md",
+        'cp a.md "$DEST"',
+        'rm -rf "${TARGET_DIR}"',
+    ],
+)
+def test_unresolved_indirection_in_a_mutation_fails_closed(command, workspace):
+    """§9 — unknown is unsafe.
+
+    The hook cannot know where an undefined variable or an unexecuted command
+    substitution points, so it cannot prove the target is outside canon. It
+    must not resolve the unknown to empty and continue.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+def test_mutation_while_cwd_is_inside_canon_is_denied(workspace):
+    """§13 — a relative mutation is not safe just because it omits "canon".
+
+    Enforced twice over, by design: the explicit working-directory guard, and
+    the fact that bare tokens resolve against ``cwd`` and so land in canon too.
+    Mutation-tested — disabling either mechanism alone still denies; disabling
+    both fails this test.
+    """
+    payload = {
+        "tool_name": "Bash",
+        "tool_input": {"command": "touch test.md"},
+        "cwd": str(workspace / "canon" / "world"),
+    }
+
+    assert invoke(payload, workspace).returncode == DENY
+
+
+def test_read_while_cwd_is_inside_canon_is_allowed(workspace):
+    """§14 — the distinction is mutation, not the working directory."""
+    payload = {
+        "tool_name": "Bash",
+        "tool_input": {"command": "cat test.md"},
+        "cwd": str(workspace / "canon" / "world"),
+    }
+
+    assert invoke(payload, workspace).returncode == ALLOW
+
+
 # --------------------------------------------------------------------------
 # The hook must not become a read firewall or a general write blocker.
 # --------------------------------------------------------------------------
@@ -229,6 +310,26 @@ def test_prefix_lookalikes_are_not_inside_canon(target, workspace):
     Guards against string-prefix logic, which would produce false denials.
     """
     assert invoke(write_payload(target), workspace).returncode == ALLOW, target
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "echo x > docs/test.md",
+        "touch src/test.py",
+        "cp a.md docs/test.md",
+        "rm docs/x.md",
+    ],
+)
+def test_shell_mutation_outside_canon_is_allowed(command, workspace):
+    """§21 — the conservative policy still permits ordinary development.
+
+    Without this control the Bash rule could degenerate into "any mutation is
+    denied", which would be a general write firewall rather than Artifact 022.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
 
 
 def test_traversal_out_of_canon_is_allowed(workspace):
@@ -284,8 +385,13 @@ def test_write_tool_with_unresolvable_path_mentioning_canon_fails_closed(workspa
     assert invoke(payload, workspace).returncode == DENY
 
 
-def test_malformed_payload_does_not_crash_or_deny_everything(workspace):
-    """A broken payload is an environment fault, reported, not a stack trace."""
+def test_malformed_payload_fails_closed(workspace):
+    """A payload the hook cannot parse is denied, not permitted.
+
+    Changed from allow to deny by the hard audit: an unevaluable target is
+    exactly the case this artifact exists to stop, so *unknown* must never
+    become *safe*. Still no stack trace — a policy denial is not a crash.
+    """
     result = subprocess.run(
         [sys.executable, str(HOOK)],
         input="{not json",
@@ -295,8 +401,9 @@ def test_malformed_payload_does_not_crash_or_deny_everything(workspace):
         env={"CLAUDE_PROJECT_DIR": str(workspace), "PATH": "/usr/bin:/bin"},
     )
 
-    assert result.returncode == ALLOW
+    assert result.returncode == DENY
     assert "Traceback" not in result.stderr
+    assert "unreadable hook payload" in result.stderr
 
 
 def test_denial_message_does_not_echo_payload_content(workspace):

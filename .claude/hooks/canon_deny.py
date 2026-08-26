@@ -67,6 +67,17 @@ Adjacent artifacts, and where this one stops
 * **024** ``.claude/settings.json`` — registers hooks. Registration is 024's
   job (``Val: hooks registered``); this artifact does not modify settings.
 
+Bash analysis is conservative
+-----------------------------
+Explicit canonical mutations are denied. Environment-variable paths that this
+process can resolve are resolved and then judged. **Unresolved shell
+indirection in a potentially mutating command fails closed** — an unknown
+``$VAR``, ``$(...)`` or backtick substitution could name anything, and the
+hook must never turn *unknown* into *safe*. A mutation is also denied when the
+working directory is already inside the canonical zone, even if the command
+text never spells ``canon``. Read-only commands stay allowed throughout. The
+hook never executes, expands through a shell, or interprets arbitrary code.
+
 Reads are never blocked
 -----------------------
 Artifact 017 restricts *writing* ``canon/**``, not reading it. An operator
@@ -180,6 +191,14 @@ _WRITE_REDIRECT = re.compile(r">")
 
 _SEGMENT_SPLIT = re.compile(r"\|\||&&|[;|&`]|\$\(")
 
+_ENV_VAR = re.compile(r"\$\{(\w+)\}|\$(\w+)")
+"""``$VAR`` and ``${VAR}``."""
+
+_COMMAND_SUB = re.compile(r"\$\(|`")
+"""``$(...)`` and backticks — never resolvable without executing them."""
+
+_REDIRECT_PREFIX = "<>&|"
+
 
 def repository_root() -> str:
     """Locate the repository root without trusting the process's cwd.
@@ -239,6 +258,50 @@ def _mentions_canon(text: str) -> bool:
     """
     boundary = rf"(?<![\w.-]){CANONICAL_ROOT_NAME}(?:/|$|[\s'\")])"
     return bool(re.search(boundary, text))
+
+
+def _expand_known_env(command: str, environ: dict) -> str:
+    """Substitute only the shell variables this process can actually resolve.
+
+    Textual substitution from the hook's own environment. Nothing is executed
+    and no shell is invoked: an unresolvable variable is left in place so that
+    :func:`_has_unresolved_indirection` can still see it. Erasing it instead
+    would silently convert unknown into safe.
+    """
+
+    def substitute(match: re.Match) -> str:
+        name = match.group(1) or match.group(2)
+        value = environ.get(name)
+        return value if value is not None else match.group(0)
+
+    return _ENV_VAR.sub(substitute, command)
+
+
+def _has_unresolved_indirection(command: str, environ: dict) -> bool:
+    """Whether the command still depends on a path this hook cannot resolve.
+
+    Command substitution is always unresolved — predicting its output would
+    mean running it. A variable is unresolved when it is absent from the
+    environment the hook was given.
+    """
+    if _COMMAND_SUB.search(command):
+        return True
+    return any(
+        (match.group(1) or match.group(2)) not in environ
+        for match in _ENV_VAR.finditer(command)
+    )
+
+
+def _candidate_path_tokens(command: str):
+    """Bare words that could denote a filesystem path.
+
+    Quotes and redirect punctuation are stripped so ``>canon/f`` and
+    ``"canon/f"`` are both seen as the path they name.
+    """
+    for raw in re.split(r"[\s;&|()]+", command):
+        token = raw.strip().strip("\"'").lstrip(_REDIRECT_PREFIX).strip("\"'")
+        if token and not token.startswith("-"):
+            yield token
 
 
 def _shell_touches_canon_destructively(command: str) -> bool:
@@ -315,11 +378,43 @@ def evaluate(payload: dict, root: str) -> tuple[bool, str]:
         command = tool_input.get("command")
         if not isinstance(command, str) or not command.strip():
             return False, ""
-        if not _mentions_canon(command):
-            return False, ""
-        if _shell_touches_canon_destructively(command):
-            return True, _reason("<shell command targeting canon/>")
+        return _evaluate_bash(command, root, cwd, dict(os.environ))
+
+    return False, ""
+
+
+def _evaluate_bash(
+    command: str, root: str, cwd: str | None, environ: dict
+) -> tuple[bool, str]:
+    """Apply the conservative Bash policy.
+
+    A — read-only command                              -> allow
+    B — mutation with an explicit canonical target      -> deny
+    C — mutation whose resolved variable lands in canon -> deny
+    D — mutation with unresolved indirection            -> deny
+    E — mutation proven to target outside canon         -> allow
+    F — anything unclassifiable                         -> deny
+
+    Read-only is decided first and unconditionally, so inspecting canon stays
+    possible even from a working directory inside it.
+    """
+    expanded = _expand_known_env(command, environ)
+
+    if not _shell_touches_canon_destructively(expanded):
         return False, ""
+
+    if _has_unresolved_indirection(expanded, environ):
+        return True, _reason("<shell mutation with unresolved path indirection>")
+
+    if _mentions_canon(expanded):
+        return True, _reason("<shell command targeting canon/>")
+
+    if cwd and is_inside_canon(cwd, root):
+        return True, _reason("<shell mutation from a working directory inside canon/>")
+
+    for token in _candidate_path_tokens(expanded):
+        if is_inside_canon(token, root, cwd):
+            return True, _reason("<shell command targeting canon/>")
 
     return False, ""
 
@@ -345,14 +440,16 @@ def main() -> int:
         if not isinstance(payload, dict):
             payload = {}
     except (ValueError, OSError) as exc:
-        # Malformed input must not become an accidental permit, but it also
-        # must not deny every unrelated action. Nothing is known about the
-        # target here, so allow and make the environment fault visible.
+        # Fail closed. A payload the hook cannot parse is a target it cannot
+        # evaluate, and permitting an unevaluable action is exactly the bypass
+        # this artifact exists to prevent. The concise diagnostic carries the
+        # exception type only — never the payload.
         print(
-            f"canon_deny: unreadable hook payload ({type(exc).__name__})",
+            f"canon_deny: unreadable hook payload ({type(exc).__name__}). "
+            "Action denied because the hook could not establish a safe decision.",
             file=sys.stderr,
         )
-        return EXIT_ALLOW
+        return EXIT_DENY
 
     deny, reason = evaluate(payload, root)
     if deny:
