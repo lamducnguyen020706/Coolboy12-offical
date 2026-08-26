@@ -1,5 +1,26 @@
 {
   "version": 1,
   "timezone": "Asia/Ho_Chi_Minh",
-  "events": []
+  "events": [
+    {
+      "event_id": "989b4ce2bcc567a7676d0d0f",
+      "timestamp": "2026-08-26T12:18:12+07:00",
+      "summary": "Prompt received",
+      "artifact": null,
+      "phase": null,
+      "type": "prompt",
+      "source": "UserPromptSubmit",
+      "completion_recorded": false
+    },
+    {
+      "event_id": "fae1d90dea0389c039194729",
+      "timestamp": "2026-08-26T12:23:02+07:00",
+      "summary": "Prompt received",
+      "artifact": null,
+      "phase": null,
+      "type": "prompt",
+      "source": "UserPromptSubmit",
+      "completion_recorded": false
+    }
+  ]
 }
