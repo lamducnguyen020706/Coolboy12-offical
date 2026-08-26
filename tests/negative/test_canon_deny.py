@@ -414,8 +414,10 @@ def test_opaque_execution_naming_no_canonical_path_is_allowed(command, workspace
         "truncate -s 0 canon/world/test.md",
         "python3 build.py > canon/world/out.txt",
         "python3 build.py 1>canon/world/out.txt",
-        "some-tool --output=canon/world/out.txt",
-        "some-tool -o canon/world/out.txt",
+        "sort --output=canon/world/out.txt input.txt",
+        "sort -o canon/world/out.txt input.txt",
+        "git diff --output=canon/world/out.patch",
+        "mv -t canon/world src/a",
     ],
 )
 def test_opaque_command_writing_to_canon_is_denied(command, workspace):
@@ -434,6 +436,38 @@ def test_opaque_command_writing_to_canon_is_denied(command, workspace):
     payload = {"tool_name": "Bash", "tool_input": {"command": command}}
 
     assert invoke(payload, workspace).returncode == DENY, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "echo -o canon/world/x",
+        "echo --output=canon/world/x",
+        "pytest -o canon/world/x",
+        "pytest -t canon/world",
+        "python3 -o canon/world/x",
+        "node -o canon/world/x",
+        "make -o canon/world/x",
+        "some-tool -o canon/world/out.txt",
+        "some-tool --output=canon/world/out.txt",
+    ],
+)
+def test_an_option_means_what_its_own_command_says(command, workspace):
+    """``-o`` is not a destination everywhere it appears.
+
+    Destination options were read globally, so any command handed ``-o``,
+    ``--output``, ``-t`` or ``--target-directory`` had the next word treated
+    as a file it writes. For ``echo`` and ``python3`` those are not output
+    options; for ``pytest -o`` it is a config override; for several commands
+    the string is not an option at all. Every one of these denied.
+
+    Recognition is now per command, so an option means what the command
+    receiving it says it means. The modelled cases are unaffected — see the
+    test directly below, where ``sort -o`` and ``cp -t`` still deny.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
 
 
 @pytest.mark.parametrize(

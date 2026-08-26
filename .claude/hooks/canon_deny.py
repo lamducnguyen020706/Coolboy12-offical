@@ -311,8 +311,41 @@ unrecognized option can redirect the destination (``-t``,
 turns unknown into safe.
 """
 
-WRITE_PRODUCING_OPTIONS = frozenset({"-o", "--output", "-t", "--target-directory"})
-WRITE_PRODUCING_PREFIXES = ("--output=", "--target-directory=", "--out-file=")
+COMMAND_WRITE_OPTIONS = {
+    "sort": frozenset({"-o", "--output"}),
+    "git": frozenset({"--output"}),
+    "cp": frozenset({"-t", "--target-directory"}),
+    "mv": frozenset({"-t", "--target-directory"}),
+    "install": frozenset({"-t", "--target-directory"}),
+    "ln": frozenset({"-t", "--target-directory"}),
+}
+"""Options that name a file destination, **per command**.
+
+An option string means whatever the command it is given to decides it means.
+Reading ``-o`` as a destination everywhere denied ``echo -o canon/world/x``,
+``pytest -o …`` and ``python3 -o …``, none of which writes anything: for
+those commands ``-o`` is not an output file, and for some it is not an option
+at all.
+
+Only entries the rest of this artifact already justifies are listed. ``sort
+-o`` and ``git diff --output`` turn an inspecting command into a writing one;
+``-t``/``--target-directory`` moves a mutator's destination away from its
+positional arguments, which is exactly what the mutator flag allowlist
+refuses to wave through. Nothing here is a general CLI database, and adding a
+command needs a reason from this artifact, not from the option's usual
+meaning elsewhere.
+
+The cost is stated: a genuine output option on an unlisted command —
+``gcc -o canon/world/x main.c`` — is not read as a destination. That is the
+same residual as any other unmodelled command semantics.
+"""
+
+
+def write_options_for(head: str) -> tuple[frozenset[str], tuple[str, ...]]:
+    """The destination options for one command: separated and ``=``-joined."""
+    options = COMMAND_WRITE_OPTIONS.get(head, frozenset())
+    joined = tuple(f"{option}=" for option in options if option.startswith("--"))
+    return options, joined
 """Options that make an otherwise read-only command write a file."""
 
 GIT_READ_ONLY_SUBCOMMANDS = frozenset(
@@ -531,15 +564,16 @@ def identify_canonical_write_targets(tokens: list[str]) -> list[str]:
     writes_positionally = head in POSITIONAL_WRITERS or (
         head == "git" and arguments and arguments[0] in GIT_WRITE_SUBCOMMANDS
     )
+    options, joined = write_options_for(head)
     expect_value = False
 
     for text in tokens[1:]:  # [0] is the program name
         if expect_value:
             targets.append(text)
             expect_value = False
-        elif text in WRITE_PRODUCING_OPTIONS:
+        elif text in options:
             expect_value = True
-        elif text.startswith(WRITE_PRODUCING_PREFIXES):
+        elif joined and text.startswith(joined):
             targets.append(text.split("=", 1)[1])
         elif text.startswith("-"):
             continue
@@ -653,10 +687,17 @@ def _has_unresolved_indirection(command: str, environ: dict) -> bool:
 
 
 def _has_write_producing_option(words: list[str]) -> bool:
-    """Whether a read-only invocation carries an option that writes a file."""
+    """Whether this invocation carries a destination option *for its command*.
+
+    Command-aware: ``sort -o out`` writes, ``echo -o out`` does not.
+    """
+    if not words:
+        return False
+    options, joined = write_options_for(os.path.basename(words[0]).lower())
+    if not options:
+        return False
     return any(
-        word in WRITE_PRODUCING_OPTIONS or word.startswith(WRITE_PRODUCING_PREFIXES)
-        for word in words
+        word in options or (joined and word.startswith(joined)) for word in words[1:]
     )
 
 
