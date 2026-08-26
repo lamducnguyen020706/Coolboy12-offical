@@ -61,10 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `536feff` Record UserPromptSubmit activity from live Claude Code session |
-| Artifacts complete | 001 … 021 · **022 FROZEN** (`.claude/hooks/canon_deny.py`, canon write-deny hook) · **023** (`.claude/hooks/zones.json`, zone configuration) |
-| Next artifact | **024 — DEFERRED, NOT REGISTERED** (agent settings, `.claude/settings.json`, `H: 023`). CONFLICT-D is resolved and 022 re-frozen, so 024 is now implementable; it was deliberately not built in the same session as the unfreeze |
-| Working tree | clean apart from `reports/**` hook telemetry and the deferred Artifact 024 test file |
+| HEAD | `1c2efed` Record UserPromptSubmit activity from live Claude Code session |
+| Artifacts complete | 001 … 021 · **022 RE-FROZEN** (`.claude/hooks/canon_deny.py`, canon write-deny hook; CONFLICT-D amendment) · **023** (`.claude/hooks/zones.json`, zone configuration) · **024** (`.claude/settings.json`, hook registration) |
+| Next artifact | **025 — NOT CREATED** (`propose` command, `.claude/commands/propose.md`, `H: 024`) |
+| Artifact 024 registration | **LIVE** — `PreToolUse`, `matcher: ""`, invoking `canon_deny.py`. Verified in-session: a canonical write denies, `pytest`/`git`/`ruff`/`sed` run |
+| Working tree | clean apart from `reports/**` hook telemetry |
 | Tracked files | 136 |
 | Directories | 81 tracked — 68 matching Roadmap PART I exactly, plus `docs/sources/` (GAP-K) and 12 carrying the GAP-L progress-sync system |
 | Purpose-file coverage | 69 / 69 Roadmap-governed directories (the 12 GAP-L directories carry none and are not PART I directories) |
@@ -311,8 +312,13 @@ which this hook must not do. This is the limit I-83 and I-100 already describe �
 substrate guard rails are defence-in-depth, never constitutional authority"* — and the
 constitutional guarantee remains artifact 152 plus the Human Gate. The literal-path forms of the
 same attack **are** caught. Arbitrary command semantics are **not** solved and no such claim is
-made here. One over-denial also survives: a canonical path inside `git commit -m` denies, which
-errs to the safe side and is avoided by `git commit -F`.
+made here. One over-denial also survives: a canonical path anywhere in a Bash command string
+denies, which errs to the safe side. **Correction, established while implementing Artifact 024:**
+this was first recorded as "avoided by `git commit -F` or a heredoc". The heredoc half is wrong —
+the Bash tool submits the whole command string, heredoc body included, so the hook sees it, and
+the Artifact 024 commit was itself denied on its own message. Only `git commit -F <file>`, with
+the message in a file, keeps it out of the command string. The same sentence stands in Artifact
+022's docstring; 022 is re-frozen, so it is reported rather than patched.
 
 **Standing.** Artifact 022 is **RE-FROZEN**. Artifact 024 **remains deferred** — nothing is
 registered, and `.claude/settings.json` is still at its pre-024 baseline. The source was not

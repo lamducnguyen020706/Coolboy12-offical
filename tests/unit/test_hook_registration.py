@@ -15,28 +15,28 @@ Every assertion walks the *parsed* structure. Searching the raw text for
 ``PostToolUse`` registration that fires after the write it was meant to
 prevent, and on a duplicate. Each of those is tested against explicitly.
 
-Registration is currently deferred — CONFLICT-D
------------------------------------------------
-Artifact 024 is **not registered**. Artifact 022 denies its ``OPAQUE`` Bash
-class unconditionally, and ``pytest``, ``git commit`` and ``sed`` are all
-``OPAQUE``, so registering the hook across Bash denies the runner that would
-prove ``Val: hooks registered``. The artifact cannot evidence its own exit
-condition while in force. See ``docs/conventions/revolving_resolution_note.md``,
-CONFLICT-D; the registration awaits an authorial ruling.
+Registration is live — CONFLICT-D resolved
+-------------------------------------------
+Artifact 024 **is** registered, at ``PreToolUse`` with ``matcher: ""``. That
+became possible only once CONFLICT-D was resolved: Artifact 022 used to deny
+its ``OPAQUE`` Bash class unconditionally, and ``pytest``, ``git commit`` and
+``sed`` are all ``OPAQUE``, so registering across Bash denied the runner that
+would have proved ``Val: hooks registered``. Artifact 022's controlled
+unfreeze moved that decision to canonical reachability, so broad registration
+is now both safe and required — Bash must stay inside the boundary, because a
+matcher excluding it was experimentally shown to let a Bash redirect write
+``canon/**`` unseen.
 
-So the assertions that presuppose a registration are skipped **only while no
-registration exists anywhere in the file**. The moment ``canon_deny.py``
-appears under any lifecycle, every one of them runs — including the checks
-that it is at ``PreToolUse`` and nowhere later. A blanket skip would let a
-wrong registration land unnoticed; this one cannot.
-
-The checks that hold at baseline — valid JSON, absence from later lifecycles,
-survival of the pre-existing hook, no policy in settings — always run.
+The assertions that presuppose a registration remain gated on one actually
+existing, keyed to **any** lifecycle rather than to ``PreToolUse``. That gate
+is now satisfied, so all of them run; it is kept because gating on the correct
+lifecycle would have skipped exactly the tests that detect a wrong one.
 """
 
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -80,8 +80,10 @@ def registered_anywhere() -> bool:
 needs_registration = pytest.mark.skipif(
     not registered_anywhere(),
     reason=(
-        "Artifact 024 registration deferred pending the CONFLICT-D ruling; "
-        "these arm as soon as canon_deny.py appears in .claude/settings.json"
+        "no Artifact 022 registration in .claude/settings.json; these arm as "
+        "soon as canon_deny.py appears under any lifecycle. Expected to be "
+        "satisfied — Artifact 024 is registered — so a skip here means the "
+        "registration was removed"
     ),
 )
 
@@ -112,7 +114,14 @@ def test_artifact_022_is_not_registered_at_a_later_lifecycle():
     A guard that runs afterwards is not a guard. This fails if the
     registration is ever moved to any event that cannot block the action.
     """
-    for event in ("PostToolUse", "Stop", "SubagentStop", "Notification", "SessionEnd"):
+    for event in (
+        "PostToolUse",
+        "Stop",
+        "SubagentStop",
+        "Notification",
+        "SessionStart",
+        "SessionEnd",
+    ):
         assert not canon_deny_entries(event), f"registered at {event}"
 
 
@@ -152,18 +161,36 @@ def test_registration_uses_the_command_type():
 
 
 @needs_registration
-def test_matcher_does_not_filter_out_any_critical_tool():
-    """Artifact 022 must receive every tool that can reach the filesystem.
+def test_matcher_is_exactly_the_empty_string():
+    """The approved matcher is ``""`` — asserted exactly, not permissively.
 
-    An empty matcher matches all tools, which is the form this environment's
-    own settings use. If a future edit narrows it, the narrowed matcher must
-    still name each critical tool — otherwise that path silently loses its
-    guard, which is the one failure this test exists to catch.
+    ``""`` matches every tool, which is what the resolved contract requires:
+    Artifact 022 must receive the full ``PreToolUse`` surface, Bash included.
+
+    This is deliberately strict. ``None``, ``"*"`` and ``".*"`` are rejected
+    even though some would behave the same, because a matcher that merely
+    "looks broad" is how the excluding form gets in later. Narrowing to
+    ``Write|Edit|MultiEdit|NotebookEdit`` was proven to leave a Bash redirect
+    into ``canon/**`` completely unguarded — the hook is never invoked, so
+    Artifact 022's own logic never gets to run.
+    """
+    (entry,) = canon_deny_entries("PreToolUse")
+
+    assert entry["matcher"] == "", f"matcher is {entry['matcher']!r}, must be ''"
+
+
+@needs_registration
+def test_no_critical_tool_is_filtered_out():
+    """The reason the empty matcher is required, stated as its own check.
+
+    Every tool here can reach the filesystem, so each must cross the boundary.
+    If a future edit replaces ``""`` with a named matcher, this fails unless
+    that matcher still names all five.
     """
     (entry,) = canon_deny_entries("PreToolUse")
     matcher = entry["matcher"]
 
-    if matcher in ("", None):
+    if matcher == "":
         return
     for tool in CRITICAL_TOOLS:
         assert tool in matcher, f"matcher {matcher!r} excludes {tool}"
@@ -202,6 +229,81 @@ def test_settings_encode_no_canonical_policy():
 
     for forbidden in ("canon/", "zones.json", "world", "epistemic", "registry"):
         assert forbidden not in raw, forbidden
+
+
+@needs_registration
+def test_registered_command_runs_the_hook_and_denies_a_canonical_write():
+    """Integration — the registered command really is an executable guard.
+
+    Runs the command exactly as registered, resolving ``CLAUDE_PROJECT_DIR``
+    the way Claude Code does, and feeds it a synthetic ``PreToolUse`` payload.
+    Proves the registration string is not merely well-formed but wired to a
+    hook that denies. Artifact 022 owns *what* is denied and proves it across
+    158 cases; this asserts only that registration did not disconnect it.
+
+    No canonical file is touched — the payload is synthetic and the hook
+    writes nothing.
+    """
+    (entry,) = canon_deny_entries("PreToolUse")
+    command = entry["command"].replace("${CLAUDE_PROJECT_DIR:-.}", str(REPO_ROOT))
+    payload = {
+        "tool_name": "Write",
+        "tool_input": {"file_path": "canon/world/registration_probe.md"},
+    }
+
+    result = subprocess.run(
+        command,
+        shell=True,
+        input=json.dumps(payload),
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        check=False,
+    )
+
+    assert result.returncode == 2, result.stderr
+    assert not (REPO_ROOT / "canon/world/registration_probe.md").exists()
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "python -m pytest -q",
+        "git status --short",
+        "git branch --show-current",
+        "git diff",
+        "ruff check .",
+        "sed -n '1,5p' file.txt",
+    ],
+)
+@needs_registration
+def test_registration_does_not_reinstate_the_conflict_d_failure(command):
+    """Integration — the failure that blocked this artifact must stay gone.
+
+    Each of these was denied when the hook was registered broadly over the
+    pre-resolution Artifact 022, which is what made CONFLICT-D blocking. None
+    names a canonical path, so under the resolved contract none may be denied
+    merely for being opaque.
+
+    This is the regression guard for the whole conflict: if a future change
+    reinstates blanket opacity denial, the build breaks here rather than
+    silently at the next session's first command.
+    """
+    (entry,) = canon_deny_entries("PreToolUse")
+    registered = entry["command"].replace("${CLAUDE_PROJECT_DIR:-.}", str(REPO_ROOT))
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    result = subprocess.run(
+        registered,
+        shell=True,
+        input=json.dumps(payload),
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        check=False,
+    )
+
+    assert result.returncode == 0, f"{command} denied: {result.stderr}"
 
 
 @needs_registration
