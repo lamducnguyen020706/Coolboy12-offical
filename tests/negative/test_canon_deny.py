@@ -197,7 +197,6 @@ def test_shell_mutation_of_canon_is_denied(command, workspace):
     [
         "cd canon && echo x > world/f.md",
         "( cd canon/world && touch f.md )",
-        "perl -e 'open(F,\">canon/world/f\")'",
         "git checkout canon/world",
         "git rm canon/world/test.md",
     ],
@@ -210,10 +209,9 @@ def test_shell_bypass_attempts_are_denied(command, workspace):
     name the destination positionally after a subcommand that is not
     read-only. Each is caught by shell-level position, not by pattern.
 
-    The ``perl`` case is caught by redirect detection — the ``>`` inside its
-    quoted source is read as a shell redirect. That is incidental rather than
-    principled, and errs to the safe side; the equivalent interpreter forms
-    that use no ``>`` are residual, and are asserted as such directly below.
+    ``git checkout``/``git rm`` name their destination positionally after a
+    subcommand that rewrites working-tree files, which is why those two are
+    read as targets while ``git commit -m '… canon/world'`` is not.
     """
     payload = {"tool_name": "Bash", "tool_input": {"command": command}}
 
@@ -226,6 +224,7 @@ def test_shell_bypass_attempts_are_denied(command, workspace):
         "python3 -c \"open('canon/world/f.md','w').write('x')\"",
         "ruby -e 'File.write(\"canon/world/f\", 1)'",
         "node -e 'fs.writeFileSync(\"canon/world/f\")'",
+        "perl -e 'open(F,\">canon/world/f\")'",
     ],
 )
 def test_interpreter_source_naming_canon_is_residual_risk(command, workspace):
@@ -242,6 +241,11 @@ def test_interpreter_source_naming_canon_is_residual_risk(command, workspace):
     access, and I-83 already scopes that: "execution-substrate guard rails are
     defence-in-depth, never constitutional authority". The constitutional
     guarantee is artifact 152 plus the Human Gate.
+
+    The ``perl`` case joined this set when redirect detection became
+    quote-aware. Its ``>`` sits inside the quoted program, so it was only ever
+    caught by reading program text as shell syntax — the same confusion that
+    made ``echo 'a > b'`` look like a write.
 
     Asserted as ALLOW deliberately. If a future change denies these, that is
     an improvement — re-point this test rather than deleting it.
@@ -401,45 +405,147 @@ def test_opaque_execution_naming_no_canonical_path_is_allowed(command, workspace
 @pytest.mark.parametrize(
     "command",
     [
-        "python3 script.py canon/world/test.md",
-        "make install canon/world/out",
         "sed -i s/a/b/ canon/world/test.md",
         "dd if=src/a of=canon/world/a",
+        "chmod 644 canon/world/test.md",
+        "chown root canon/world/test.md",
+        "install src/a canon/world/test.md",
+        "ln -s src/a canon/world/test.md",
+        "truncate -s 0 canon/world/test.md",
+        "python3 build.py > canon/world/out.txt",
+        "python3 build.py 1>canon/world/out.txt",
+        "some-tool --output=canon/world/out.txt",
+        "some-tool -o canon/world/out.txt",
     ],
 )
-def test_opaque_execution_naming_a_canonical_path_is_still_denied(command, workspace):
-    """The other half of the inversion — the half that must not move.
+def test_opaque_command_writing_to_canon_is_denied(command, workspace):
+    """The half that must not move: opaque, but the destination is visible.
 
-    An opaque command that names a path under ``canon/**`` establishes
-    canonical reachability even though its option grammar is not modelled
-    here. Without this, dropping the blanket opaque denial would have let
-    ``sed -i``, ``dd of=`` and ``chmod`` write canon unchallenged.
+    Each of these hands a canonical path to a command in a position that
+    makes it a destination — a positional argument of a command that writes
+    where it is pointed, a redirect, or a modelled output option. Dropping
+    the blanket opaque denial must not let ``sed -i``, ``dd of=`` or
+    ``chmod`` write canon unchallenged, and it does not.
+
+    Their option grammars are still not modelled; only the destination is
+    read. That is the difference from the commands below, whose positional
+    paths are inputs.
     """
     payload = {"tool_name": "Bash", "tool_input": {"command": command}}
 
     assert invoke(payload, workspace).returncode == DENY, command
 
 
-def test_reads_stay_allowed_and_the_asymmetry_is_narrower_now(workspace):
-    """``cat canon/…`` is allowed; ``python3 reader.py`` is now allowed too.
+@pytest.mark.parametrize(
+    "command",
+    [
+        "echo x > canon/world/f.md",
+        "echo x >> canon/world/f.md",
+        "echo x 1> canon/world/f.md",
+        "echo x 1>> canon/world/f.md",
+        "echo x 1>canon/world/f.md",
+        "echo x 1>>canon/world/f.md",
+        "echo x &> canon/world/f.md",
+        "echo x > canon/world/f.md 2>&1",
+        "cat a | tee -a canon/world/f.md",
+    ],
+)
+def test_stdout_redirect_into_canon_is_denied(command, workspace):
+    """The numeric-redirect bypass, fixed and pinned.
 
-    Artifact 017 restricts *writing* canon, not reading it. Under the retired
-    policy an opaque command was denied even when it only read. What survives
-    is a much narrower asymmetry: an opaque command that *names* a canonical
-    path is denied whether it reads or writes, because the hook cannot tell
-    which — while a recognized read-only command is allowed against the same
-    path.
+    The retired stderr pattern was ``\\d+>\\s*\\S+``. It matched
+    ``1>canon/world/f.md`` exactly as readily as ``2>/dev/null`` and stripped
+    it from the command before the write scan ran, so an explicit stdout
+    redirect into canon returned ALLOW. A real bypass, and the reason
+    descriptor handling is now explicit rather than pattern-matched.
     """
-    read = {"tool_name": "Bash", "tool_input": {"command": "cat canon/PURPOSE.md"}}
-    opaque = {"tool_name": "Bash", "tool_input": {"command": "python3 reader.py"}}
-    opaque_naming_canon = {
-        "tool_name": "Bash",
-        "tool_input": {"command": "python3 reader.py canon/PURPOSE.md"},
-    }
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
 
-    assert invoke(read, workspace).returncode == ALLOW
-    assert invoke(opaque, workspace).returncode == ALLOW
-    assert invoke(opaque_naming_canon, workspace).returncode == DENY
+    assert invoke(payload, workspace).returncode == DENY, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "echo x 1> docs/f.md",
+        "echo x 1>> docs/f.md",
+        "echo x 1>docs/f.md",
+        "echo x &> docs/f.md",
+        "echo x > docs/out 2>&1",
+        "cat canon/world/f.md 2>/dev/null",
+        "cat canon/world/f.md 2>&1",
+        "cat canon/world/f.md 2>&-",
+        "grep x canon/world/f.md 2>/dev/null",
+        "grep x canon/world/f.md 2>>/dev/null",
+        "ls canon/world >&2",
+    ],
+)
+def test_descriptor_handling_does_not_over_or_under_deny(command, workspace):
+    """The counterpart: descriptor 2 and duplications are not destinations.
+
+    Fixing the bypass must not make every ``2>/dev/null`` on a canonical read
+    look like a canonical write. Descriptor 2 is diagnostics; ``>&1``,
+    ``>&2`` and ``2>&-`` duplicate or close a descriptor and name no file at
+    all. Stdout redirects that point outside canon stay allowed regardless of
+    how they are spelled.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "pytest canon/world",
+        "pytest --rootdir=canon",
+        "python3 canon/world/script.py",
+        "python3 script.py canon/world/test.md",
+        "node canon/world/s.js",
+        "ruby canon/world/s.rb",
+        "make install canon/world/out",
+        "cargo run canon/world",
+    ],
+)
+def test_opaque_command_reading_a_canonical_path_is_allowed(command, workspace):
+    """A path handed to a command is not thereby a place it writes.
+
+    This is the false-positive class that a bare "any positional argument is
+    a target" rule produced: a test path, a script to execute, a directory to
+    search. None of them is a destination, and denying them would block
+    ordinary work on the repository for no protective gain.
+
+    The distinction is which command receives the path, not how the path
+    looks. ``sed -i canon/world/f`` writes where it is pointed and is denied
+    one test above; ``python3 canon/world/f`` executes what it is pointed at
+    and is allowed here.
+    """
+    payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+
+    assert invoke(payload, workspace).returncode == ALLOW, command
+
+
+def test_reads_of_canon_stay_allowed_however_they_are_spelled(workspace):
+    """Artifact 017 restricts *writing* canon, not reading it.
+
+    The retired policy denied an opaque command even when it only read, and
+    an interim one denied any opaque command that merely named a canonical
+    path — which came to the same thing for a reader. Both are gone: reading
+    canon is allowed whether the reader is recognized (``cat``) or not
+    (``python3``), and whether the path is an argument or the program itself.
+
+    What still denies is a canonical *destination*, which is asserted in the
+    two tests above rather than repeated here.
+    """
+    for command in (
+        "cat canon/PURPOSE.md",
+        "python3 reader.py",
+        "python3 reader.py canon/PURPOSE.md",
+        "python3 canon/world/reader.py",
+        "cat canon/PURPOSE.md 2>/dev/null",
+    ):
+        payload = {"tool_name": "Bash", "tool_input": {"command": command}}
+        assert invoke(payload, workspace).returncode == ALLOW, command
 
 
 def test_mutation_denied_when_any_of_several_targets_is_canonical(workspace):

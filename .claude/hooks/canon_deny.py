@@ -140,22 +140,27 @@ What counts as a write target
 A path earns target status from its **shell-level position**, never from
 appearing somewhere in the text:
 
-* a redirect destination — ``> canon/world/f.md``;
-* a positional argument of one of the seven mutators;
-* the value of a modelled write-producing option — ``-o``, ``--output``,
-  ``-t``, ``--target-directory``, in either spelling;
-* a **bare positional** word of an opaque command, including the right-hand
-  side of an unprefixed ``key=value``, which is how ``dd if=… of=…`` names
-  its destination. This is what keeps ``sed -i … canon/world/f.md``,
-  ``chmod … canon/world/f.md`` and ``install src/a canon/world/f.md``
-  denied without modelling any of their option grammars;
+* a **redirect destination** — ``>``, ``>>``, ``1>``, ``1>>``, ``&>``. File
+  descriptor 2 is diagnostics, and ``>&1`` duplicates a descriptor, so
+  neither is a destination;
+* a **positional argument of one of the seven mutators**;
+* the value of a **modelled write-producing option** — ``-o``, ``--output``,
+  ``-t``, ``--target-directory``, in either spelling — on any command;
+* a **positional argument of a command known to write where it is pointed**:
+  :data:`POSITIONAL_WRITERS` (``sed``, ``ln``, ``install``, ``dd``,
+  ``chmod``, ``chown``, ``truncate``) and git's working-tree subcommands
+  (:data:`GIT_WRITE_SUBCOMMANDS`). Their option grammars stay unmodelled and
+  they stay opaque; only the destination is read;
 * any of the above resolved against a working directory inside canon.
 
-A **quoted** word never counts, and neither does an unmodelled option or a
-value joined to one. ``python3 -c "print('canon/world/x.md')"``,
-``echo "canon/world/x.md"``, ``grep -e 'canon/world/x.md' f`` and
-``pytest --rootdir=canon`` all mention a canonical path and none of them
-writes one. Quote-tracking spans whitespace, so the path inside
+Everything else is an input, not a destination. A positional path given to a
+command that is **not** on those lists is not a target: ``pytest
+canon/world``, ``python3 canon/world/script.py`` and ``node
+canon/world/s.js`` all name a canonical path and none of them writes one. A
+**quoted** word never counts, nor does an unmodelled option or a value joined
+to one — ``python3 -c "print('canon/world/x.md')"``, ``echo
+"canon/world/x.md"``, ``grep -e 'canon/world/x.md' f`` and ``pytest
+--rootdir=canon``. Quote tracking spans whitespace, so the path inside
 ``git commit -m 'deny writes to canon/world'`` stays part of the message.
 
 Residual risk, stated rather than papered over
@@ -324,8 +329,104 @@ OPAQUE = "opaque"
 
 _ENV_VAR = re.compile(r"\$\{(\w+)\}|\$(\w+)")
 _COMMAND_SUB = re.compile(r"\$\(|`")
-_STDERR_REDIRECT = re.compile(r"\d*>&\d+|\d+>\s*\S+")
-_WRITE_REDIRECT = re.compile(r">>?\s*(\"[^\"]*\"|'[^']*'|[^\s;&|]+)")
+POSITIONAL_WRITERS = frozenset(
+    {"sed", "ln", "install", "dd", "chmod", "chown", "truncate"}
+)
+"""Opaque commands that write to the paths they are handed positionally.
+
+Deliberately **not** promoted into :data:`SIMPLE_MUTATORS`: their option
+grammars stay unmodelled and they remain in the opaque class. This set says
+only that a positional path given to one of them is a destination, which is
+what keeps ``sed -i … canon/world/f.md`` and ``chmod … canon/world/f.md``
+denied while ``pytest canon/world`` and ``python3 canon/world/s.py`` — whose
+positional paths are inputs — are not.
+"""
+
+GIT_WRITE_SUBCOMMANDS = frozenset({"rm", "mv", "checkout", "restore", "clean", "apply"})
+"""Git subcommands that rewrite working-tree files at the paths they name."""
+
+
+def extract_write_redirect_targets(command: str) -> tuple[list[str], str]:
+    """Pull file-write redirect destinations out of a command.
+
+    :returns: ``(destinations, remainder)`` — the remainder is the command
+        with those redirects removed, so a destination is never also read as
+        a positional argument.
+
+    Replaces two regexes that could not tell a file descriptor from a
+    destination. The old stderr pattern was ``\\d+>\\s*\\S+``, which matched
+    ``1>canon/world/f.md`` as readily as ``2>/dev/null`` and stripped it
+    before the write scan ran — a real bypass, not a false positive.
+
+    What counts here is the descriptor being redirected:
+
+    * ``>`` ``>>`` ``1>`` ``1>>`` ``&>`` — a file destination;
+    * ``2>`` ``2>>`` — diagnostics, not a destination this hook guards;
+    * ``>&1`` ``2>&1`` ``2>&-`` — descriptor duplication or close, no file.
+
+    Quote-aware, so a ``>`` inside a quoted argument is text, not syntax.
+    Not a shell parser: it understands redirection and nothing else.
+    """
+    targets: list[str] = []
+    kept: list[str] = []
+    quote: str | None = None
+    index = 0
+    length = len(command)
+
+    while index < length:
+        char = command[index]
+
+        if quote:
+            kept.append(char)
+            if char == quote:
+                quote = None
+            index += 1
+        elif char == "\\" and index + 1 < length:
+            kept.extend(command[index : index + 2])
+            index += 2
+        elif char in "\"'":
+            quote = char
+            kept.append(char)
+            index += 1
+        elif char == ">":
+            descriptor = ""
+            while kept and kept[-1].isdigit():
+                descriptor = kept.pop() + descriptor
+            if kept and kept[-1] == "&":  # &> — both streams to one file
+                kept.pop()
+            index += 1
+            if index < length and command[index] == ">":
+                index += 1
+            while index < length and command[index] in " \t":
+                index += 1
+            if index < length and command[index] == "&":
+                index += 1  # >&1, 2>&1, 2>&- : a descriptor, never a file
+                while index < length and (command[index].isdigit() or command[index] == "-"):
+                    index += 1
+                continue
+            target, inner = [], None
+            while index < length:
+                char = command[index]
+                if inner:
+                    if char == inner:
+                        inner = None
+                    else:
+                        target.append(char)
+                elif char in "\"'":
+                    inner = char
+                elif char.isspace() or char in ";|&()":
+                    break
+                else:
+                    target.append(char)
+                index += 1
+            destination = "".join(target)
+            if destination and descriptor != "2":
+                targets.append(destination)
+        else:
+            kept.append(char)
+            index += 1
+
+    return targets, "".join(kept)
 
 _SEGMENT_SEPARATORS = ";|&`()"
 
@@ -404,6 +505,14 @@ def identify_canonical_write_targets(tokens: list[tuple[str, bool]]) -> list[str
       --rootdir=canon`` selects a directory to search, not one to write.
     """
     targets: list[str] = []
+    if not tokens:
+        return targets
+
+    head = os.path.basename(tokens[0][0]).lower()
+    arguments = [text for text, _ in tokens[1:] if not text.startswith("-")]
+    writes_positionally = head in POSITIONAL_WRITERS or (
+        head == "git" and arguments and arguments[0] in GIT_WRITE_SUBCOMMANDS
+    )
     expect_value = False
 
     for text, was_quoted in tokens[1:]:  # [0] is the program name
@@ -416,7 +525,7 @@ def identify_canonical_write_targets(tokens: list[tuple[str, bool]]) -> list[str
             targets.append(text.split("=", 1)[1])
         elif was_quoted or text.startswith("-"):
             continue
-        else:
+        elif writes_positionally:
             targets.append(text.split("=", 1)[-1])
 
     return targets
@@ -559,8 +668,7 @@ def classify_bash(
     directory later segments act in, which is why ``cd canon && touch f`` is
     caught even though ``touch f`` names nothing canonical.
     """
-    scrubbed = _STDERR_REDIRECT.sub(" ", command)
-    targets = [_unquote(m.group(1)) for m in _WRITE_REDIRECT.finditer(scrubbed)]
+    targets, remainder = extract_write_redirect_targets(command)
     kind = SIMPLE_MUTATION if targets else READ_ONLY
     effective_cwd = cwd
     opaque = False
@@ -570,7 +678,7 @@ def classify_bash(
     # early on the first opaque head would abandon the rest of the command, so
     # `python3 build.py && touch canon/world/f` would have its canonical target
     # collected only if the interpreter came second.
-    for segment in _split_segments(_WRITE_REDIRECT.sub(" ", scrubbed)):
+    for segment in _split_segments(remainder):
         tokens = _tokenize(segment)
         words = [text for text, _ in tokens]
         if not words:
