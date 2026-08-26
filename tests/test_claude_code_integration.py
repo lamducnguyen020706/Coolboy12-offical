@@ -173,6 +173,14 @@ class ClaudeCodeIntegrationTests(unittest.TestCase):
             env = {**os.environ, "CLAUDE_PROJECT_DIR": str(temp), "PYTHONDONTWRITEBYTECODE": "1"}
             state_path = temp / "reports/progress.json"
 
+            # Artifact 022 now exists in the real repository, so the fixture
+            # copy carries it as tracked evidence. Remove and commit that
+            # removal first, so the fixture genuinely starts with no evidence
+            # for the next artifact — otherwise this test asserts nothing.
+            (temp / ".claude/hooks/canon_deny.py").unlink(missing_ok=True)
+            subprocess.run(["git", "add", "-A"], cwd=temp, check=True)
+            subprocess.run(["git", "commit", "-qm", "remove 022 evidence"], cwd=temp, check=True)
+
             # Untracked file at Artifact 022's planned path, never staged.
             (temp / ".claude/hooks/canon_deny.py").write_text("# untracked\n", encoding="utf-8")
             payload = {"event_id": "untracked", "prompt": "Freeze and commit Artifact 022", "prompt_received_at": "2026-08-26T10:00:00+07:00"}
