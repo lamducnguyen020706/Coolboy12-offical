@@ -11,9 +11,9 @@
 | Source-of-truth class | DEV-ENV (non-authoritative) |
 | Roadmap artifact | **none** — this is not a numbered artifact of the 490-artifact manifest |
 | Build state at issue | Artifact 001 complete · Artifact 002 complete · Artifact 003 not started |
-| Primary findings | **12** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K |
+| Primary findings | **13** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K · GAP-L |
 | Sub-resolution | **GAP-D.1**, under GAP-D |
-| Open items | **CONFLICT-C** — SoT class count, unresolved at source; non-blocking for 016/017/020, potentially blocking for 050 |
+| Open items | **CONFLICT-C** — SoT class count, unresolved at source; non-blocking for 016/017/020, potentially blocking for 050. **GAP-L** — progress-sync system's Roadmap standing, unresolved, disclosed not resolved |
 | Revolving | Yes. Superseded by any formal amendment to Blueprint, RMS or Roadmap |
 
 > **Placement note.** This file sits in `docs/conventions/` because that is the smallest
@@ -61,11 +61,11 @@ Verified against the working tree, not from prior context.
 
 | Item | Verified state |
 |---|---|
-| HEAD | `32e407f` Artifact 021 — patch to final form |
-| Artifacts complete | 001 … 019 · 020 · **021 COMPLETE / PASS** |
-| Next artifact | **022 — NOT CREATED** (canon write-deny hook, `H: 017,021`) |
+| HEAD | `8e98eba` Record UserPromptSubmit activity from live Claude Code session |
+| Artifacts complete | 001 … 021 · **022 FROZEN / FREEZE-READY** (`.claude/hooks/canon_deny.py`, canon write-deny hook) |
+| Next artifact | **023 — NOT CREATED** (zone permission configuration, `.claude/hooks/zones.json`, `H: 017,022`) |
 | Working tree | clean |
-| Tracked files | 93 |
+| Tracked files | 134 |
 | Directories | 69 — 68 matching Roadmap PART I exactly, plus `docs/sources/` (GAP-K, not a PART I directory) |
 | Purpose-file coverage | 69 / 69 directories |
 | Purpose-file name in tree | **`PURPOSE.md`** (uppercase) × 69 · lowercase `purpose.md` × 0 · `purpose.txt` × 0 |
@@ -77,7 +77,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 12** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K.
+**Primary resolution entries: 13** — CONFLICT-A · CONFLICT-B · CONFLICT-C · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K · GAP-L.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -718,6 +718,56 @@ replaces the file here (`Delete: supersede only`) and this entry should be updat
 new revision.
 
 **Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
+
+---
+
+### GAP-L — Progress-Sync System Arrived Outside the Artifact Process
+
+**The finding.** Between the Artifact 021 patch and the Artifact 022 build, three commits
+(`480584b`, `dfadd18`, `84272be`, later followed by `49458f4`, `bd50991`) landed on
+`claude/coolboy12-build-31qwm0` from outside this session — pulled after an explicit
+authorization check per commit, not authored here. They add: `.claude/settings.json`,
+`.claude/hooks/coolboy12_prompt_log.py`, `.claude/commands/coolboy12-update.md`,
+`.claude/skills/coolboy12-update/SKILL.md`, `docs/COOLBOY12_GPT_HARD_AUDIT_QUICKSTART.md`,
+`reports/**` (`HTML_UPDATE_CONTRACT.md`, `progress.json`, `implement-log.json`,
+`progressreport.html`), `scripts/update_progress.py`, `scripts/validate_progressreport.py`,
+`tests/test_progress_report.py`, `tests/test_claude_code_integration.py`,
+`tests/coolboy12-progress-sync/**`, and `.gitignore`.
+
+**Why this is a finding, not silently absorbed.** None of these paths carries a Roadmap artifact
+ID. `scripts/`, `reports/`, `.claude/hooks/`, `.claude/commands/`, and `.claude/skills/` are not
+among the 68 Roadmap PART I directories. CLAUDE.md's artifact-first build discipline states that
+new repository infrastructure enters through a numbered artifact off the Roadmap manifest, and
+this system entered through direct commits instead.
+
+**What was done about it.** Not reverted — the user authorized each pull after an explicit
+sync-diagnosis exchange, and reverting authorized work is not this note's role. A full adversarial
+audit was run against it (separately from the Artifact 022 work): one **CRITICAL** defect
+(`scripts/update_progress.py` had a `SyntaxError` on this repository's own declared Python floor,
+`>=3.11`, breaking the publisher and silently disabling the hook's completion-gate path) and one
+**HIGH** defect (the completion gate accepted an *untracked* file as evidence, letting a single
+prompt fabricate a completion with no commit) were found, fixed, and regression-tested. Both fixes
+and the audit trail are recorded in git history, not in this note, since they patch code outside
+any Roadmap artifact's scope.
+
+**Standing rule for future sessions.** `.claude/hooks/coolboy12_prompt_log.py` is a live
+`UserPromptSubmit` hook: it logs one activity event per prompt to `reports/implement-log.json` and
+may advance `reports/progress.json`'s declared frontier only under a strict evidence gate (see the
+audit trail in git history for what that gate now requires). **It has never advanced the frontier
+in this repository** — every event recorded so far carries `completion_recorded: false` — and its
+presence does not change how artifacts are built: the nine-phase artifact-first workflow in
+CLAUDE.md remains the only route by which an artifact is built and accepted. `reports/**` is
+descriptive telemetry about session activity, not an authority source, and is never cited as one.
+
+**What this is not.** Not a fourth authority. Not a Roadmap artifact — no artifact ID is claimed
+or should be assigned to it retroactively without an authorial ruling. Not a change to the
+authority order.
+
+**Open item.** Whether this system should be formally admitted to the Roadmap as one or more
+numbered artifacts, relocated, or removed is an authorial decision this note does not make.
+Flagged here so it is not mistaken for governed build output in a future session.
+
+**Status:** DISCLOSED, NOT RESOLVED · **Constitutional change:** NONE
 
 ---
 
