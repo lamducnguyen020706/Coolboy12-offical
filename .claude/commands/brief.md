@@ -17,9 +17,8 @@ dormancy.
 (`src/coolboy12/operations/return_briefing.py`, P17) is the Return Briefing, and its validation
 fixes both what it draws on and what it may not do: it *reconstructs where the author left off
 from Creative Memory + Context Builder + canon — **never from a stored summary treated as
-truth**.* The capability is not available until the briefing and the capabilities it
-reconstructs through are, so this surface stays refused for as long as any of them is
-outstanding.
+truth**.* The Return Briefing capability is not yet available, so this surface refuses; a
+reconstruction source arriving on its own does not make the command runnable.
 
 Blueprint §7 P-11: the system is resumable after a dormancy of up to three years — *"Dormancy is
 expected, not failure."*
@@ -37,12 +36,11 @@ unresolved — never resolved to *the last session* or *everything since the beg
 Refuse, and say why.
 
 1. State that the Return Briefing capability is not available.
-2. Give the reason: **the Return Briefing and the capabilities it reconstructs through are
-   unbuilt.** Artifact 456 reconstructs from Creative Memory, the Context Builder and canon; the
-   first two are Artifacts 433 and 437 and the briefing itself is 456, and the capability is not
-   available until all three are. The reason is that unavailability, not the contents of
-   `canon/**` — a populated canon would not make a briefing reconstructible while the capability
-   that reconstructs one is still outstanding.
+2. Give the reason: **the Return Briefing capability is not yet available.** Artifact 456
+   reconstructs from Creative Memory (Artifact 433), the Context Builder (437) and canon. The
+   reason is that unavailability, not the contents of `canon/**` — a populated canon, and the
+   reconstruction sources alongside it, would still leave nothing that reconstructs a briefing
+   from them.
 3. Name what would unlock it: **Phase P17 — SURFACES · ORCHESTRATION · DORMANCY ·
    EXTENSIBILITY (artifacts 440–462)**.
 4. Stop.

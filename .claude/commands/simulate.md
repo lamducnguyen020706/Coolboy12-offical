@@ -16,8 +16,9 @@ The invocation surface for running a declared simulation model over world state.
 (`docs/models/world/simulation.md`, P9) is the simulation architecture, and it settles the shape
 of this capability: *no Simulation Record Model; simulation is definition + consumption.*
 **Artifact 250** (`docs/constitution/sim_runtime.md`) draws the line this surface sits on —
-*defining a model ≠ running it.* The capability is not available until the definition and the
-runtime boundary both are, so this surface stays refused for as long as either is outstanding.
+*defining a model ≠ running it.* The simulation capability they constitute is not yet
+available, so this surface refuses; a part of it arriving on its own does not make the command
+runnable.
 
 Blueprint §7 P-16: simulation is a temporal reasoning system *"and its output is always
 provisional until gated."*
@@ -36,11 +37,11 @@ surface would run declared models, not authored ones.
 Refuse, and say why.
 
 1. State that the simulation capability is not available.
-2. Give the reason: **the simulation layer is unbuilt.** The capability is constituted by the
-   World State Vector (Artifact 232), the simulation architecture (241) and the runtime boundary
-   (250), and it is not available until they are. The reason is that absence, not today's world
-   state — world state arriving first would give a model something to read and still leave
-   nothing declared to run against it, so a partly built P9 does not make this command runnable.
+2. Give the reason: **the simulation capability is not yet available.** It is constituted by
+   the World State Vector (Artifact 232), the simulation architecture (241) and the runtime
+   boundary (250). The reason is that unavailability, not today's world state — world state
+   arriving first would give a model something to read and still leave nothing declared to run
+   against it, so a partly built P9 does not make this command runnable.
 3. Name what would unlock it: **Phase P9 — WORLD STATE + SIMULATION (artifacts 231–252)**.
 4. Stop.
 

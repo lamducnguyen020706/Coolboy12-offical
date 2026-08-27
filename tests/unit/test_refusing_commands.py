@@ -51,6 +51,32 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 COMMANDS = REPO_ROOT / ".claude/commands"
+ROADMAP = REPO_ROOT / "docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md"
+
+
+def roadmap_phases() -> dict[str, tuple[str, str]]:
+    """``{phase id: (name, artifact range)}``, read from the Roadmap itself.
+
+    These were hand-copied into the table below, and P17's name was copied
+    short — *"SURFACES · ORCHESTRATION · DORMANCY"*, dropping *"·
+    EXTENSIBILITY"*. Nothing caught it: the assertion checked the metadata
+    against the document, so a truncated mapping proved itself correct, and
+    the surface with the longest phase name had the weakest traceability
+    proof of the four.
+
+    A copy of source data cannot verify itself, so the copy is gone. The
+    Roadmap is the source of the mapping and is now read as one.
+    """
+    header = re.compile(r"^## PHASE (P\d+) — (.+?) \((\d+–\d+)\)", re.MULTILINE)
+    found = {
+        phase: (name.strip(), artifact_range)
+        for phase, name, artifact_range in header.findall(ROADMAP.read_text(encoding="utf-8"))
+    }
+    assert len(found) == 19, f"expected 19 phases, parsed {len(found)}"
+    return found
+
+
+PHASES = roadmap_phases()
 
 # Roadmap row 028 names four commands and unlocks four phases, in order. The
 # pairing is not positional guesswork: each command has a namesake artifact
@@ -59,31 +85,18 @@ COMMANDS = REPO_ROOT / ".claude/commands"
 # in P17. Row 028 gives the directory, and the repository's own convention
 # (025 propose.md, 026 validate.md, 027 rebuild.md) gives the filename.
 SURFACES = {
-    "gate": {
-        "phase": "P5",
-        "phase_name": "MUTATION / WRITE BOUNDARY",
-        "range": "145–166",
-        "waits_on": ("150", "152"),
-    },
-    "simulate": {
-        "phase": "P9",
-        "phase_name": "WORLD STATE + SIMULATION",
-        "range": "231–252",
-        "waits_on": ("241", "250"),
-    },
-    "render": {
-        "phase": "P13",
-        "phase_name": "ISSUE",
-        "range": "361–380",
-        "waits_on": ("361", "379"),
-    },
-    "brief": {
-        "phase": "P17",
-        "phase_name": "SURFACES · ORCHESTRATION · DORMANCY",
-        "range": "440–462",
-        "waits_on": ("456",),
-    },
+    "gate": {"phase": "P5", "waits_on": ("150", "152")},
+    "simulate": {"phase": "P9", "waits_on": ("241", "250")},
+    "render": {"phase": "P13", "waits_on": ("361", "379")},
+    "brief": {"phase": "P17", "waits_on": ("456",)},
 }
+
+
+def phase_of(name: str) -> tuple[str, str, str]:
+    """``(phase id, name, range)`` for a surface, name and range from source."""
+    phase = SURFACES[name]["phase"]
+    return (phase, *PHASES[phase])
+
 
 NAMES = sorted(SURFACES)
 
@@ -196,25 +209,31 @@ def test_refusal_names_the_unlocking_phase(name):
     what the refusal has to name — by ID, by name, and by artifact range, so
     the reader can find it without the Roadmap open.
     """
-    expected = SURFACES[name]
+    phase, phase_name, artifact_range = phase_of(name)
     behavior = section(name, "Behavior")
 
     assert states(name, r"unlock", r"until .* exists", where="Behavior")
-    assert expected["phase"] in behavior
-    assert expected["phase_name"] in behavior
-    assert expected["range"] in behavior
+    assert phase in behavior
+    assert artifact_range in behavior
+
+    # Segment by segment, against the name the Roadmap states. A plain
+    # substring check would accept a document that dropped a trailing segment
+    # of a multi-part phase name; matching each part independently catches
+    # that while still letting the document wrap or reflow the name.
+    for segment in (part.strip() for part in phase_name.split("·")):
+        assert segment in behavior, f"{name}: phase name missing {segment!r}"
 
 
 @pytest.mark.parametrize("name", NAMES)
 def test_each_command_names_its_own_phase_and_no_other(name):
     """Four surfaces, four distinct phases. A copied file would fail here."""
     body = flowed(name)
-    mine = SURFACES[name]
 
-    for other, spec in SURFACES.items():
+    for other in SURFACES:
         if other != name:
-            assert spec["range"] not in body, f"{name} claims {other}'s phase range"
-    assert mine["range"] in body
+            _, _, other_range = phase_of(other)
+            assert other_range not in body, f"{name} claims {other}'s phase range"
+    assert phase_of(name)[2] in body
 
 
 @pytest.mark.parametrize("name", NAMES)
@@ -517,10 +536,11 @@ def test_brief_will_not_pass_a_summary_off_as_a_briefing():
 
 
 CAPABILITY_CLAIMS = {
-    "gate": (r"approval capability is not available", r"human gate capability is not available"),
-    "simulate": (r"simulation capability is not available",),
-    "render": (r"rendering capability is not available",),
-    "brief": (r"return briefing capability is not available",),
+    "gate": (r"approval capability is not (yet )?available",
+             r"human gate capability is not (yet )?available"),
+    "simulate": (r"simulation capability is not (yet )?available",),
+    "render": (r"rendering capability is not (yet )?available",),
+    "brief": (r"return briefing capability is not (yet )?available",),
 }
 
 # Claims that every blocking artifact is absent. Each was actually written
@@ -548,6 +568,19 @@ STALE_CLAIMS = (
     "nothing to reconstruct from",
     "does not exist yet",
     "is unbuilt, and none of it",
+    # Build-state wording. "Unbuilt" describes the repository at a moment;
+    # what makes these commands refuse is that a capability is not available,
+    # which stays true through a partial build. The "until both/all are"
+    # family is the same mistake in conjunction form — it reads as *refuse
+    # while every part is missing*, when the rule is *refuse while any part
+    # is*.
+    "is unbuilt",
+    "are unbuilt",
+    "until both are",
+    "until both exist",
+    "until all three are",
+    "until they are",
+    "until they exist",
 )
 
 

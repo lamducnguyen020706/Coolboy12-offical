@@ -16,8 +16,8 @@ The invocation surface for rendering a composed publication artifact into its ph
 (`docs/models/issue/rendering.md`, P13) is the rendering / physicality boundary, and it states
 the distinction this surface depends on — *composing ≠ rendering.* Composition belongs to the
 Issue Record Model (Artifact 361); rendering is what happens to something already composed. The
-capability is not available until composition and the rendering boundary both are, so this
-surface stays refused for as long as either is outstanding.
+rendering capability they constitute is not yet available, so this surface refuses; a part of it
+arriving on its own does not make the command runnable.
 
 Blueprint §7 P-5: *"Publishing reads canon and derives output. It never writes canon."*
 
@@ -33,10 +33,10 @@ target will be reported as unresolved — never resolved to *every issue* or *wh
 Refuse, and say why.
 
 1. State that the rendering capability is not available.
-2. Give the reason: **the Issue layer is unbuilt.** The capability
-   depends on the Issue Record Model (Artifact 361) and the rendering boundary (379), and is not
-   available until they exist. Rendering has no input until composition produces one, so an
-   Issue Record Model arriving on its own would not make this command runnable.
+2. Give the reason: **the rendering capability is not yet available.** It depends on the Issue
+   Record Model (Artifact 361) and the rendering boundary (379). Rendering has no input until
+   composition produces one, so an Issue Record Model arriving on its own does not make this
+   command runnable.
 3. Name what would unlock it: **Phase P13 — ISSUE (artifacts 361–380)**.
 4. Stop.
 

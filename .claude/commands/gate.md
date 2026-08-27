@@ -15,8 +15,8 @@ The invocation surface for putting a validated proposal to the one Authority for
 `/gate` does not define what approval means. **Artifact 150** (`docs/governance/human_gate.md`,
 P5) is the Human Gate specification — *one Authority; a position, not a person; approval mode
 recorded* — and **Artifact 152** (`src/coolboy12/mutation/coordinator.py`) is the only component
-that writes `canon/**`. The capability is not available until both are, so this surface stays
-refused for as long as either is outstanding.
+that writes `canon/**`. The approval capability they constitute is not yet available, so this
+surface refuses; a part of it arriving on its own does not make the command runnable.
 
 Blueprint §7 P-2: *"Canon changes only through a single gated, transactional path, and only a
 human commits. No exceptions."*
@@ -34,9 +34,10 @@ working state*, and never to *everything pending*.
 Refuse, and say why.
 
 1. State that the approval capability is not available.
-2. Give the reason: **the Human Gate is unbuilt.** Artifact 150 specifies it and Artifact 152
-   implements the only component that may write `canon/**`; the capability is not available
-   until both exist, so a specification landing on its own would not make this command runnable.
+2. Give the reason: **the approval capability is not yet available.** Artifact 150 specifies
+   the Human Gate and Artifact 152 implements the only component that may write `canon/**`; a
+   proposal has nowhere to be carried until that capability is available, and a part of it
+   arriving on its own does not make this command runnable.
 3. Name what would unlock it: **Phase P5 — MUTATION / WRITE BOUNDARY (artifacts 145–166)**.
 4. Stop.
 
