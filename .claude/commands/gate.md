@@ -1,8 +1,8 @@
 # /gate
 
-**This command refuses.** The Human Gate does not exist yet, so `/gate` says so and stops.
-Roadmap row 028 fixes all four of these surfaces the same way — *Val: each refuses with a reason
-and the unlocking phase · Done: four refusals present · Why: RULE G3 — one responsibility,
+**This command refuses.** The approval capability is not available, so `/gate` says so and
+stops. Roadmap row 028 fixes all four of these surfaces the same way — *Val: each refuses with
+a reason and the unlocking phase · Done: four refusals present · Why: RULE G3 — one responsibility,
 "refuse until licensed", four files.*
 
 The entry point exists now so it is present and honest. It is not here so that anything can be
@@ -15,7 +15,8 @@ The invocation surface for putting a validated proposal to the one Authority for
 `/gate` does not define what approval means. **Artifact 150** (`docs/governance/human_gate.md`,
 P5) is the Human Gate specification — *one Authority; a position, not a person; approval mode
 recorded* — and **Artifact 152** (`src/coolboy12/mutation/coordinator.py`) is the only component
-that writes `canon/**`. Neither is built.
+that writes `canon/**`. The capability is not available until both are, so this surface stays
+refused for as long as either is outstanding.
 
 Blueprint §7 P-2: *"Canon changes only through a single gated, transactional path, and only a
 human commits. No exceptions."*
@@ -40,10 +41,11 @@ Refuse, and say why.
 4. Stop.
 
 **An approval given to this surface is not an approval.** Saying *yes*, *approved*, or *do it
-anyway* to `/gate` authorises nothing: the Authority this command would carry a decision to does
-not exist yet, so there is nothing for consent to reach. A surface that accepted consent and then
-acted would *be* the gate — built here, unspecified, unrecorded — which is the substitution
-Blueprint §10 Spine 3 forbids.
+anyway* to `/gate` authorises nothing: there is no gate here to carry a decision to the
+Authority, so there is nothing for consent to reach. The Authority is not the missing piece —
+Artifact 150 defines it as *a position, not a person* — the gate that would reach it is. A
+surface that accepted consent and then acted would *be* that gate, built here, unspecified and
+unrecorded, which is the substitution Blueprint §10 Spine 3 forbids.
 
 Do not partially run. Do not stage, queue, or hold a decision for later. Refusing is this
 command's correct behaviour, so the refusal is reported as a refusal, never as a failure and
@@ -77,7 +79,7 @@ Stop at the refusal.
 /gate → REFUSAL ┊ (proposal → preflight → Authority → commit → changelog)
                 ┊
      this command stops here; everything right of the line
-     is unbuilt, and none of it is reachable from here
+     is not reachable from here
 ```
 
 Do not chain onward into checking, approval, or any write, and do not treat a request to proceed

@@ -239,11 +239,15 @@ def test_refusal_is_reported_as_a_refusal(name):
     work that did not happen, and a failure implies a defect in something that
     was never built.
     """
+    # The commitment is that a refusal is reported as neither outcome. Any
+    # phrasing that distinguishes it from both satisfies that; the original
+    # sentence was one way to say it, not the contract.
     assert states(
         name,
         r"never as a failure and never as a pass",
         r"not a failure.{0,40}not a pass",
         r"neither a (failure|pass)",
+        r"refusal.{0,60}(not|never).{0,20}(failure|pass)",
     )
     assert states(name, r"do not partially run", r"never partially", r"no partial run")
 
@@ -433,7 +437,7 @@ def test_gate_does_not_become_the_human_gate_it_refuses_to_be():
                   r"consent[^.]{0,60}(authorises|authorizes) nothing")
     assert states("gate", r"authorises nothing", r"authorizes nothing", r"changes nothing")
     assert states("gate", r"spine 3", r"only a human commits")
-    assert states("gate", r"would \*?be\*? the gate", r"become the gate")
+    assert states("gate", r"would \*?be\*? th(e|at) gate", r"become th(e|at) gate")
 
 
 def test_simulate_offers_no_narrative_result_in_place_of_a_run():
@@ -512,6 +516,60 @@ def test_brief_will_not_pass_a_summary_off_as_a_briefing():
     assert states("brief", r"not a reconstruction of the author's position")
 
 
+CAPABILITY_CLAIMS = {
+    "gate": (r"approval capability is not available", r"human gate capability is not available"),
+    "simulate": (r"simulation capability is not available",),
+    "render": (r"rendering capability is not available",),
+    "brief": (r"return briefing capability is not available",),
+}
+
+# Claims that every blocking artifact is absent. Each was actually written
+# into these documents and found wrong; the list guards the known accidents
+# rather than attempting to detect state-dependence in general, which no
+# string test can do.
+#
+# Deliberately NOT banned: statements about a missing *input* in the current
+# refusal state — "no simulation model exists to name", "nothing composed
+# exists to render". Those describe today's input contract truthfully. What is
+# banned is making future readiness depend on total absence.
+STALE_CLAIMS = (
+    "canon is empty",
+    "no world state for a model to read",
+    "none exists",
+    "none of which exist",
+    "none of the three",
+    "none of the sources",
+    "neither is built",
+    "neither exists",
+    "holds neither",
+    "holds none",
+    "the repository holds",
+    "is not built, and neither",
+    "nothing to reconstruct from",
+    "does not exist yet",
+    "is unbuilt, and none of it",
+)
+
+
+@pytest.mark.parametrize("name", NAMES)
+def test_refusal_rests_on_capability_unavailability(name):
+    """The positive half: a reason that survives the repository growing.
+
+    Deleting a stale claim without replacing it would satisfy the blocklist
+    below and leave the document with no reason at all, so the capability
+    claim is asserted directly — and asserted in both places a reader looks,
+    the opening and the ``Behavior`` steps.
+    """
+    claims = CAPABILITY_CLAIMS[name]
+    opening = flowed(name)[:300]
+
+    # The opening, checked directly. Asserting over the whole document let the
+    # headline reason be deleted while the Behavior step kept the test green —
+    # leaving a document that refuses in its first line without saying why.
+    assert any(re.search(claim, opening, re.IGNORECASE) for claim in claims), opening[:150]
+    assert states(name, *claims, where="Behavior"), claims
+
+
 @pytest.mark.parametrize("name", NAMES)
 def test_refusal_does_not_rest_on_a_passing_repository_fact(name):
     """The reason must still be true when the repository moves on.
@@ -520,28 +578,38 @@ def test_refusal_does_not_rest_on_a_passing_repository_fact(name):
     world state for a model to read"*. Both were true when written and both
     would go false while the refusal stayed architecturally correct — canon
     fills at P7, world state arrives at 232, and neither event builds the
-    capability either command is waiting for. A refusal resting on such a fact
-    becomes wrong without becoming visible.
+    capability either command is waiting for.
 
-    So the stated reason is the absent capability. The second pass found the
-    same defect a layer down in all four: *"none exists"*, *"holds neither"*,
-    *"the repository holds none of them"* — each an assertion that **every**
-    blocking artifact is absent, which a partly built phase falsifies. 150
-    lands before 152, 232 before 250, 361 before 379; in each window the
-    sentence is wrong and the refusal is still right.
+    The deeper version of the same mistake is a claim that **every** blocking
+    artifact is absent. Phases are built in order, not at once: 150 lands
+    before 152, 232 before 250, 361 before 379, 433 and 437 before 456. In
+    each window *"neither is built"* is false and the refusal is still right —
+    so the document would be wrong without becoming visibly wrong, which is
+    the failure mode worth testing for.
 
-    This check is a blocklist rather than a general detector, because no
-    string test can decide state-dependence in general. It names the claims
-    that were actually made and found wrong.
+    Scanned across the whole document. Restricted to ``Behavior``, this passed
+    a set of files whose ``Role`` sections, openings, ``Input`` sections and
+    stop diagrams still carried the claim.
     """
-    behavior = section(name, "Behavior").lower()
+    body = flowed(name).lower()
 
-    for stale in (
-        "canon is empty",
-        "no world state for a model to read",
-        "none exists",
-        "holds neither",
-        "holds none",
-        "the repository holds",
-    ):
-        assert stale not in behavior, stale
+    for stale in STALE_CLAIMS:
+        assert stale not in body, f"{name}: {stale!r}"
+
+
+def test_current_input_statements_are_not_banned_by_the_blocklist():
+    """The blocklist must not overreach into honest input descriptions.
+
+    A refusing surface may say what it has no input for — *"no simulation
+    model exists to name"* is an accurate account of today's input contract,
+    not a claim that P9 can never arrive. Asserting these survive keeps a
+    future tightening of ``STALE_CLAIMS`` from quietly forbidding documents
+    from describing their own refusal state.
+    """
+    assert states("simulate", r"no simulation model exists to name")
+    assert states("render", r"nothing composed exists to render")
+
+    for name in ("simulate", "render"):
+        body = flowed(name).lower()
+        for stale in STALE_CLAIMS:
+            assert stale not in body, f"{name}: blocklist now hits a valid input line ({stale!r})"

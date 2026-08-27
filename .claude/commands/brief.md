@@ -1,7 +1,7 @@
 # /brief
 
-**This command refuses.** The Return Briefing has nothing to reconstruct from, so `/brief` says
-so and stops. Roadmap row 028 fixes all four of these surfaces the same way — *Val: each refuses
+**This command refuses.** The Return Briefing capability is not available, so `/brief` says so
+and stops. Roadmap row 028 fixes all four of these surfaces the same way — *Val: each refuses
 with a reason and the unlocking phase · Done: four refusals present · Why: RULE G3 — one
 responsibility, "refuse until licensed", four files.*
 
@@ -17,14 +17,16 @@ dormancy.
 (`src/coolboy12/operations/return_briefing.py`, P17) is the Return Briefing, and its validation
 fixes both what it draws on and what it may not do: it *reconstructs where the author left off
 from Creative Memory + Context Builder + canon — **never from a stored summary treated as
-truth**.* It is not built, and neither are its inputs.
+truth**.* The capability is not available until the briefing and the capabilities it
+reconstructs through are, so this surface stays refused for as long as any of them is
+outstanding.
 
 Blueprint §7 P-11: the system is resumable after a dormancy of up to three years — *"Dormancy is
 expected, not failure."*
 
 ## Input
 
-Nothing yet, because none of the sources a briefing reconstructs from exist.
+Nothing yet, because the capability that would consume an input is not available.
 
 When the capability exists, the input is the dormancy to return from; the briefing is
 reconstructed rather than retrieved. An absent or ambiguous target will be reported as
@@ -37,9 +39,10 @@ Refuse, and say why.
 1. State that the Return Briefing capability is not available.
 2. Give the reason: **the Return Briefing and the capabilities it reconstructs through are
    unbuilt.** Artifact 456 reconstructs from Creative Memory, the Context Builder and canon; the
-   first two are Artifacts 433 and 437 and the briefing itself is 456, none of which exists. The
-   reason is the absent capability, not the current contents of `canon/**` — a populated canon
-   would not make a briefing reconstructible, because nothing exists to reconstruct it with.
+   first two are Artifacts 433 and 437 and the briefing itself is 456, and the capability is not
+   available until all three are. The reason is that unavailability, not the contents of
+   `canon/**` — a populated canon would not make a briefing reconstructible while the capability
+   that reconstructs one is still outstanding.
 3. Name what would unlock it: **Phase P17 — SURFACES · ORCHESTRATION · DORMANCY ·
    EXTENSIBILITY (artifacts 440–462)**.
 4. Stop.
@@ -83,7 +86,7 @@ Stop at the refusal.
 /brief → REFUSAL ┊ (Creative Memory + Context Builder + canon → reconstruction → briefing)
                  ┊
       this command stops here; everything right of the line
-      is unbuilt, and none of it is reachable from here
+      is not reachable from here
 ```
 
 Do not chain onward into checking, approval, or any write, and do not treat a request to proceed

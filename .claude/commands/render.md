@@ -1,6 +1,6 @@
 # /render
 
-**This command refuses.** There is no composed publication to render, so `/render` says so and
+**This command refuses.** The rendering capability is not available, so `/render` says so and
 stops. Roadmap row 028 fixes all four of these surfaces the same way — *Val: each refuses with a
 reason and the unlocking phase · Done: four refusals present · Why: RULE G3 — one responsibility,
 "refuse until licensed", four files.*
@@ -15,8 +15,9 @@ The invocation surface for rendering a composed publication artifact into its ph
 `/render` does not define what rendering means. **Artifact 379**
 (`docs/models/issue/rendering.md`, P13) is the rendering / physicality boundary, and it states
 the distinction this surface depends on — *composing ≠ rendering.* Composition belongs to the
-Issue Record Model (Artifact 361); rendering is what happens to something already composed.
-Neither exists.
+Issue Record Model (Artifact 361); rendering is what happens to something already composed. The
+capability is not available until composition and the rendering boundary both are, so this
+surface stays refused for as long as either is outstanding.
 
 Blueprint §7 P-5: *"Publishing reads canon and derives output. It never writes canon."*
 
@@ -32,7 +33,7 @@ target will be reported as unresolved — never resolved to *every issue* or *wh
 Refuse, and say why.
 
 1. State that the rendering capability is not available.
-2. Give the reason: **the Issue layer is unbuilt, so nothing is composed.** The capability
+2. Give the reason: **the Issue layer is unbuilt.** The capability
    depends on the Issue Record Model (Artifact 361) and the rendering boundary (379), and is not
    available until they exist. Rendering has no input until composition produces one, so an
    Issue Record Model arriving on its own would not make this command runnable.
@@ -82,7 +83,7 @@ Stop at the refusal.
 /render → REFUSAL ┊ (Issue Record → composition → render → physical artifact)
                   ┊
        this command stops here; everything right of the line
-       is unbuilt, and none of it is reachable from here
+       is not reachable from here
 ```
 
 Do not chain onward into checking, approval, or any write, and do not treat a request to proceed

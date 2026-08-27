@@ -1,9 +1,9 @@
 # /simulate
 
-**This command refuses.** There is no world state to simulate over and no simulation model to
-run, so `/simulate` says so and stops. Roadmap row 028 fixes all four of these surfaces the same
-way — *Val: each refuses with a reason and the unlocking phase · Done: four refusals present ·
-Why: RULE G3 — one responsibility, "refuse until licensed", four files.*
+**This command refuses.** The simulation capability is not available, so `/simulate` says so
+and stops. Roadmap row 028 fixes all four of these surfaces the same way — *Val: each refuses
+with a reason and the unlocking phase · Done: four refusals present · Why: RULE G3 — one
+responsibility, "refuse until licensed", four files.*
 
 The entry point exists now so it is present and honest. It is not here so that something can be
 simulated today.
@@ -16,7 +16,8 @@ The invocation surface for running a declared simulation model over world state.
 (`docs/models/world/simulation.md`, P9) is the simulation architecture, and it settles the shape
 of this capability: *no Simulation Record Model; simulation is definition + consumption.*
 **Artifact 250** (`docs/constitution/sim_runtime.md`) draws the line this surface sits on —
-*defining a model ≠ running it.* Neither is built.
+*defining a model ≠ running it.* The capability is not available until the definition and the
+runtime boundary both are, so this surface stays refused for as long as either is outstanding.
 
 Blueprint §7 P-16: simulation is a temporal reasoning system *"and its output is always
 provisional until gated."*
@@ -78,7 +79,7 @@ Stop at the refusal.
 /simulate → REFUSAL ┊ (world state → declared model → run → provisional result)
                     ┊
          this command stops here; everything right of the line
-         is unbuilt, and none of it is reachable from here
+         is not reachable from here
 ```
 
 Do not chain onward into checking, approval, or any write, and do not treat a request to proceed
