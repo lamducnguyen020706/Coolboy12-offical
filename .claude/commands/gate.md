@@ -33,8 +33,9 @@ working state*, and never to *everything pending*.
 Refuse, and say why.
 
 1. State that the approval capability is not available.
-2. Give the reason: **the Human Gate is unbuilt.** Artifacts 150 and 152 specify and implement
-   it; the repository holds neither, and nothing may write `canon/**` before 152 exists.
+2. Give the reason: **the Human Gate is unbuilt.** Artifact 150 specifies it and Artifact 152
+   implements the only component that may write `canon/**`; the capability is not available
+   until both exist, so a specification landing on its own would not make this command runnable.
 3. Name what would unlock it: **Phase P5 — MUTATION / WRITE BOUNDARY (artifacts 145–166)**.
 4. Stop.
 

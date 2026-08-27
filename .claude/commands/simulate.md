@@ -35,9 +35,11 @@ surface would run declared models, not authored ones.
 Refuse, and say why.
 
 1. State that the simulation capability is not available.
-2. Give the reason: **the world state and the simulation layer are unbuilt.** The World State
-   Vector is Artifact 232, the simulation architecture is 241, and the runtime boundary is 250;
-   the repository holds none of them, and there is no world state for a model to read.
+2. Give the reason: **the simulation layer is unbuilt.** The capability is constituted by the
+   World State Vector (Artifact 232), the simulation architecture (241) and the runtime boundary
+   (250), and it is not available until they are. The reason is that absence, not today's world
+   state — world state arriving first would give a model something to read and still leave
+   nothing declared to run against it, so a partly built P9 does not make this command runnable.
 3. Name what would unlock it: **Phase P9 — WORLD STATE + SIMULATION (artifacts 231–252)**.
 4. Stop.
 

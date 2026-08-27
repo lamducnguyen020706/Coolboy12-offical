@@ -32,9 +32,10 @@ target will be reported as unresolved — never resolved to *every issue* or *wh
 Refuse, and say why.
 
 1. State that the rendering capability is not available.
-2. Give the reason: **the Issue Record Model is unbuilt, so nothing is composed.** The Issue
-   Record Model is Artifact 361 and the rendering boundary is 379; the repository holds neither,
-   and rendering has no input until composition produces one.
+2. Give the reason: **the Issue layer is unbuilt, so nothing is composed.** The capability
+   depends on the Issue Record Model (Artifact 361) and the rendering boundary (379), and is not
+   available until they exist. Rendering has no input until composition produces one, so an
+   Issue Record Model arriving on its own would not make this command runnable.
 3. Name what would unlock it: **Phase P13 — ISSUE (artifacts 361–380)**.
 4. Stop.
 
@@ -48,14 +49,22 @@ failure and never as a pass.
 Reading `canon/**` is permitted; publication is a projection *of* canon. Changing it is not.
 
 `/render` must never edit or write a canonical Record, Relationship Record, History Record, WSV,
-WSV-H, Registry definition, epoch baseline, or published artifact — and never repair, normalise,
-migrate or regenerate any of them. There is no `--fix` here. **A rendered artifact references
-canon one-directionally and never becomes canon** — the Publishing Firewall, Blueprint §10 Spine
-5. A render that failed against available canon would be an architectural finding, never
-something to correct by editing canon so the render succeeds.
+WSV-H, Registry definition, or epoch baseline — and never repair, normalise, migrate or
+regenerate any of them. There is no `--fix` here. A render that failed against available canon
+would be an architectural finding, never something to correct by editing canon so the render
+succeeds.
 
-It creates no directory, no output area, and no state of its own. It writes no rendered file,
-mints no identifier, and persists nothing.
+**A rendered artifact is not one of those things, and producing one is what this surface is
+for.** Blueprint §10 Spine 5 — the Publishing Firewall — puts it outside canon by construction:
+*"Published artifacts are in-world manifestations. They reference canon one-directionally; they
+never become canon."* So the boundary here is not *write nothing*. It is that nothing this
+surface produces enters canon, by any route and however authoritative the output looks; and that
+an artifact already published is never rewritten, which §12.12 relies on when it holds that a
+retconned artifact *"stays exactly as published."*
+
+Today it writes nothing at all — no directory, no output area, no state of its own, no rendered
+file, no identifier, nothing persisted. That is the refusal doing its work, not a standing limit
+on the capability: when P13 exists, this surface produces the rendered publication artifact.
 
 It holds `Auth: none`. Never treat a git commit as approval: version control records file
 changes and carries no canonical authority.

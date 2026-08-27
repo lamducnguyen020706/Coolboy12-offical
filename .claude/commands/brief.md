@@ -35,9 +35,11 @@ unresolved — never resolved to *the last session* or *everything since the beg
 Refuse, and say why.
 
 1. State that the Return Briefing capability is not available.
-2. Give the reason: **the sources a briefing is reconstructed from do not exist.** Artifact 456
-   builds it from Creative Memory, the Context Builder and canon; the repository holds none of
-   the three, and canon is empty.
+2. Give the reason: **the Return Briefing and the capabilities it reconstructs through are
+   unbuilt.** Artifact 456 reconstructs from Creative Memory, the Context Builder and canon; the
+   first two are Artifacts 433 and 437 and the briefing itself is 456, none of which exists. The
+   reason is the absent capability, not the current contents of `canon/**` — a populated canon
+   would not make a briefing reconstructible, because nothing exists to reconstruct it with.
 3. Name what would unlock it: **Phase P17 — SURFACES · ORCHESTRATION · DORMANCY ·
    EXTENSIBILITY (artifacts 440–462)**.
 4. Stop.
