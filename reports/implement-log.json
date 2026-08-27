@@ -304,6 +304,38 @@
       "type": "prompt",
       "source": "UserPromptSubmit",
       "completion_recorded": false
+    },
+    {
+      "event_id": "6e8cd4a98bf24c660d4dafdb",
+      "timestamp": "2026-08-27T22:12:35+07:00",
+      "summary": "Prompt received",
+      "artifact": null,
+      "phase": null,
+      "type": "prompt",
+      "source": "UserPromptSubmit",
+      "completion_recorded": false
+    },
+    {
+      "event_id": "authored-2026-08-27T22:13:41+07:00",
+      "timestamp": "2026-08-27T22:13:41+07:00",
+      "summary": "Frontier advanced 022 → 028 on authorial instruction",
+      "artifact": "028",
+      "phase": "P0",
+      "type": "authored_advance",
+      "source": "authorial instruction",
+      "completion_recorded": true,
+      "completed_before": 22,
+      "completed_after": 28,
+      "frontier_after": "028",
+      "artifacts_recorded": [
+        "023",
+        "024",
+        "025",
+        "026",
+        "027",
+        "028"
+      ],
+      "basis": "repository evidence: a commit declaring each artifact and a tracked file at its Roadmap path"
     }
   ]
 }

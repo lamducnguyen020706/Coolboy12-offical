@@ -1,9 +1,9 @@
 {
   "version": 1,
   "roadmap_total": 490,
-  "current_frontier": "022",
+  "current_frontier": "028",
   "current_phase": "P0",
-  "next_artifact": "023",
+  "next_artifact": "029",
   "completed_artifacts": [
     "001",
     "002",
@@ -26,13 +26,19 @@
     "019",
     "020",
     "021",
-    "022"
+    "022",
+    "023",
+    "024",
+    "025",
+    "026",
+    "027",
+    "028"
   ],
   "phases": {
     "P0": {
       "start": "001",
       "end": "030",
-      "completed": 22
+      "completed": 28
     },
     "P1": {
       "start": "031",
@@ -125,14 +131,14 @@
       "completed": 0
     }
   },
-  "last_updated_at": "2026-08-27T22:00:11+07:00",
-  "updated_by": "declared project frontier",
+  "last_updated_at": "2026-08-27T22:13:41+07:00",
+  "updated_by": "authorial instruction, verified against repository evidence",
   "current_activity": {
-    "timestamp": "2026-08-27T22:00:11+07:00",
-    "summary": "Prompt received",
+    "timestamp": "2026-08-27T22:13:41+07:00",
+    "summary": "Frontier advanced 022 → 028 on authorial instruction",
     "artifact": "028",
     "phase": "P0",
-    "event_id": "76da1583ce1ddd0555c828b0",
-    "completion_recorded": false
+    "event_id": "authored-2026-08-27T22:13:41+07:00",
+    "completion_recorded": true
   }
 }
