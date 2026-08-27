@@ -224,6 +224,16 @@
       "type": "prompt",
       "source": "UserPromptSubmit",
       "completion_recorded": false
+    },
+    {
+      "event_id": "bde75916f80b520341fe2ade",
+      "timestamp": "2026-08-27T13:47:25+07:00",
+      "summary": "Prompt received",
+      "artifact": "024",
+      "phase": "P0",
+      "type": "prompt",
+      "source": "UserPromptSubmit",
+      "completion_recorded": false
     }
   ]
 }
