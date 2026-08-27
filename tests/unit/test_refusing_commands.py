@@ -228,12 +228,15 @@ def test_refusal_names_the_unlocking_phase(name):
 def test_each_command_names_its_own_phase_and_no_other(name):
     """Four surfaces, four distinct phases. A copied file would fail here."""
     body = flowed(name)
+    own_phase, _, own_range = phase_of(name)
 
     for other in SURFACES:
         if other != name:
-            _, _, other_range = phase_of(other)
+            other_phase, _, other_range = phase_of(other)
             assert other_range not in body, f"{name} claims {other}'s phase range"
-    assert phase_of(name)[2] in body
+            assert not re.search(rf"\b{other_phase}\b", body), f"{name} names {other}'s phase {other_phase}"
+    assert own_range in body
+    assert re.search(rf"\b{own_phase}\b", body)
 
 
 @pytest.mark.parametrize("name", NAMES)
@@ -242,10 +245,31 @@ def test_refusal_is_temporary_not_a_permanent_verdict(name):
 
     Downstream phases are expected to replace these surfaces with real
     behaviour, so the document must read as *not yet*, never as *not ever*.
+
+    Two things are proved together, because either alone is weak: the refusal
+    is temporary, **and** it is the correct phase that ends it. A document
+    saying "this will be possible one day" names nothing; one naming P5 with
+    no sense of ending reads as a permanent verdict with a citation.
+
+    The accepted constructions are a family, not a sentence. *"until P5"*,
+    *"pending P5"*, *"unlocked by P5"*, *"available after P5"*, *"P5 enables
+    this"* all say the same thing, and pinning the one this document happens
+    to use would make a rewrite a test failure rather than a rewrite.
     """
     phase = SURFACES[name]["phase"]
 
-    assert states(name, rf"until {phase}\b", rf"when {phase}\b", rf"{phase} exists")
+    assert states(
+        name,
+        rf"until {phase}\b",
+        rf"when {phase}\b",
+        rf"{phase} exists",
+        rf"pending {phase}\b",
+        rf"(after|once) {phase}\b",
+        rf"(unlocked|enabled|licensed|made available) by {phase}\b",
+        rf"{phase}\b[^.]{{0,50}}?(unlocks|enables|licenses|makes .{{0,30}}available)",
+        rf"(unlocks?|enables?|licenses?|available)[^.]{{0,50}}?\b{phase}\b",
+    ), f"{name}: no temporary refusal tied to {phase}"
+
     for permanent in (r"must never exist", r"will never exist", r"cannot ever", r"never be built"):
         assert not states(name, permanent), permanent
 
@@ -543,45 +567,49 @@ CAPABILITY_CLAIMS = {
     "brief": (r"return briefing capability is not (yet )?available",),
 }
 
-# Claims that every blocking artifact is absent. Each was actually written
-# into these documents and found wrong; the list guards the known accidents
-# rather than attempting to detect state-dependence in general, which no
-# string test can do.
+# Claims that a capability is absent because the repository has not built it,
+# or that every blocking artifact is missing at once. Each was actually written
+# into these documents and found wrong.
 #
-# Deliberately NOT banned: statements about a missing *input* in the current
+# Patterns, not bare vocabulary. An earlier version listed the substring
+# "is unbuilt", which is both too broad — it would fire on legitimate future
+# prose that happens to contain the words — and too narrow: it missed *"the
+# gate, which is itself unbuilt"*, because two words sat between the ones
+# being matched. Matching the shape of the claim catches the variants and
+# leaves the vocabulary alone.
+#
+# Deliberately NOT matched: statements about a missing *input* in the current
 # refusal state — "no simulation model exists to name", "nothing composed
 # exists to render". Those describe today's input contract truthfully. What is
-# banned is making future readiness depend on total absence.
+# caught is making future readiness depend on total absence.
 STALE_CLAIMS = (
-    "canon is empty",
-    "no world state for a model to read",
-    "none exists",
-    "none of which exist",
-    "none of the three",
-    "none of the sources",
-    "neither is built",
-    "neither exists",
-    "holds neither",
-    "holds none",
-    "the repository holds",
-    "is not built, and neither",
-    "nothing to reconstruct from",
-    "does not exist yet",
-    "is unbuilt, and none of it",
-    # Build-state wording. "Unbuilt" describes the repository at a moment;
-    # what makes these commands refuse is that a capability is not available,
-    # which stays true through a partial build. The "until both/all are"
-    # family is the same mistake in conjunction form — it reads as *refuse
-    # while every part is missing*, when the rule is *refuse while any part
-    # is*.
-    "is unbuilt",
-    "are unbuilt",
-    "until both are",
-    "until both exist",
-    "until all three are",
-    "until they are",
-    "until they exist",
+    # A named capability described as unbuilt rather than unavailable.
+    r"\b(capabilit(y|ies)|gate|layer|briefing|boundary|model|coordinator)\b[^.]{0,40}?\b(is|are)\b[^.]{0,20}?\bunbuilt\b",
+    # Every blocker absent at once, in its several forms.
+    r"\b(neither|none)\b[^.]{0,30}?\b(exists?|is built|are built|of which exists?)",
+    r"\bholds (neither|none)\b",
+    r"\bthe repository holds\b",
+    r"\bnone of the (three|sources)\b",
+    r"\ball [^.]{0,40}?(do not exist|are absent|are missing)\b",
+    r"\buntil (both|all three|they)\b[^.]{0,20}?\b(are|exist)\b",
+    r"\bis not built, and neither\b",
+    r"\bis unbuilt, and none of it\b",
+    # Specific historical claims, kept by name.
+    r"\bcanon is empty\b",
+    r"\bno world state for a model to read\b",
+    r"\bnothing to reconstruct from\b",
+    r"\bdoes not exist yet\b",
 )
+
+
+def stale_hits(name: str) -> list[str]:
+    """Stale-state claims in a document, as matched text."""
+    body = flowed(name)
+    return [
+        match.group(0)
+        for pattern in STALE_CLAIMS
+        for match in re.finditer(pattern, body, re.IGNORECASE)
+    ]
 
 
 @pytest.mark.parametrize("name", NAMES)
@@ -624,10 +652,7 @@ def test_refusal_does_not_rest_on_a_passing_repository_fact(name):
     a set of files whose ``Role`` sections, openings, ``Input`` sections and
     stop diagrams still carried the claim.
     """
-    body = flowed(name).lower()
-
-    for stale in STALE_CLAIMS:
-        assert stale not in body, f"{name}: {stale!r}"
+    assert not stale_hits(name), f"{name}: {stale_hits(name)}"
 
 
 def test_current_input_statements_are_not_banned_by_the_blocklist():
@@ -643,6 +668,6 @@ def test_current_input_statements_are_not_banned_by_the_blocklist():
     assert states("render", r"nothing composed exists to render")
 
     for name in ("simulate", "render"):
-        body = flowed(name).lower()
-        for stale in STALE_CLAIMS:
-            assert stale not in body, f"{name}: blocklist now hits a valid input line ({stale!r})"
+        assert not stale_hits(name), (
+            f"{name}: the blocklist now matches valid prose — {stale_hits(name)}"
+        )

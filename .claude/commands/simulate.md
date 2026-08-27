@@ -59,7 +59,7 @@ Reading `canon/**` is permitted; a simulation reads world state. Changing it is 
 WSV, WSV-H, Registry definition, epoch baseline, or published artifact — and never repair,
 normalise, migrate or regenerate any of them. There is no `--fix` here. **A simulation result is
 provisional and never becomes canon by being produced** (§7 P-3); the route from any result to
-canon runs through the gate, which is itself unbuilt.
+canon runs through the gate, whose capability is not yet available either.
 
 It creates no directory, no output area, and no state of its own. It stores no run, mints no
 identifier, and persists nothing.
