@@ -4,6 +4,8 @@ import copy
 import importlib.util
 import json
 import re
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -23,13 +25,26 @@ BASE_STATE = json.loads(STATE_PATH.read_text(encoding="utf-8"))
 
 
 def render_for_completed(last_id: int, current_phase: str | None = None) -> str:
-    state = copy.deepcopy(BASE_STATE)
-    state["completed_artifacts"] = [f"{number:03d}" for number in range(1, last_id + 1)]
-    state["current_frontier"] = f"{last_id:03d}"
-    state["next_artifact"] = f"{last_id + 1:03d}"
-    state["current_phase"] = current_phase or next(a["phase"] for a in ARTIFACTS if a["id"] == f"{last_id:03d}")
-    state = publisher.repo_facts(state)
-    return publisher.render_html(state, {"version": 1, "timezone": "Asia/Ho_Chi_Minh", "events": []}, PHASES, ARTIFACTS, EVIDENCE)
+    """Render the report as if artifacts 001..last_id were complete.
+
+    Completion now reaches the renderer through the derived-evidence dict
+    rather than through ``progress.json``, so the synthetic completion set is
+    passed there. The intent of these tests is unchanged — drive the renderer
+    with a chosen completion set and check what it produces — and driving it
+    through the real parameter is what keeps them honest.
+    """
+    state = publisher.repo_facts(copy.deepcopy(BASE_STATE))
+    completed = [f"{number:03d}" for number in range(1, last_id + 1)]
+    derived = {
+        "completed": completed,
+        "frontier": f"{last_id:03d}",
+        "next": f"{last_id + 1:03d}",
+        "reasons": {},
+        "evidenced_out_of_sequence": [],
+    }
+    phase_of = {a["id"]: a["phase"] for a in ARTIFACTS}
+    derived["phase"] = current_phase or phase_of.get(derived["frontier"], "P0")
+    return publisher.render_html(state, [], PHASES, ARTIFACTS, EVIDENCE, derived)
 
 
 class ProgressReportTests(unittest.TestCase):
@@ -148,6 +163,147 @@ class ProgressReportTests(unittest.TestCase):
         self.assertNotIn("Critical path", html)
         self.assertNotIn(" today", html)
         self.assertNotIn("today</", html)
+
+
+class EvidenceDerivationTests(unittest.TestCase):
+    """The two complaints this system was revised to fix.
+
+    The Implement Log showed *"Prompt received"* and nothing else, and the
+    frontier sat at the declared 022 while 023–027 were built and frozen. Both
+    came from one cause — reading declared state and prompt telemetry instead
+    of the repository — so both are locked down here.
+    """
+
+    def setUp(self):
+        self.commits = publisher.artifact_commits()
+        self.derived = publisher.derive_completion(ARTIFACTS, TRACKED, self.commits)
+
+    def test_a_commit_alone_is_not_completion(self):
+        """One signal never suffices — the predicate is composite.
+
+        Fed a commit subject for an artifact with nothing tracked at its path,
+        the deriver must record *why* it refused rather than count it.
+        """
+        unbuilt = next(a for a in ARTIFACTS if a["id"] not in self.derived["completed"])
+        forged = dict(self.commits)
+        forged[unbuilt["id"]] = [{
+            "sha": "0" * 40, "short": "0000000",
+            "subject": f'Artifact {unbuilt["id"]} — forged subject',
+            "date": "2026-08-27T00:00:00+07:00",
+        }]
+        derived = publisher.derive_completion(ARTIFACTS, set(), forged)
+
+        self.assertNotIn(unbuilt["id"], derived["completed"])
+        self.assertIn("no tracked file", derived["reasons"][unbuilt["id"]])
+
+    def test_a_tracked_file_alone_is_not_completion(self):
+        """The other half. Every path tracked, no commit declaring it."""
+        derived = publisher.derive_completion(ARTIFACTS, TRACKED, {})
+
+        self.assertEqual(derived["completed"], [])
+        self.assertIn("no commit declares", derived["reasons"]["001"])
+
+    def test_only_the_commit_subject_declares_an_artifact(self):
+        """A body that quotes the Roadmap must not build anything.
+
+        Not hypothetical: searching whole commit messages matched a body
+        quoting row 031 and reported an unbuilt artifact as finished.
+
+        Driven against a real repository holding exactly that trap, because
+        the protection is the ``git log`` format string — bodies never reach
+        the pattern at all — and asserting on the pattern alone proves
+        nothing: ``re.match`` anchors whether or not the pattern says so.
+        """
+        with tempfile.TemporaryDirectory(prefix="coolboy12-subject-") as raw:
+            temp = Path(raw)
+            (temp / "f.txt").write_text("x\n", encoding="utf-8")
+            for command in (
+                ["git", "init", "-q"],
+                ["git", "config", "user.email", "audit@example.invalid"],
+                ["git", "config", "user.name", "COOLBOY12 audit"],
+                ["git", "add", "."],
+                ["git", "commit", "-qm",
+                 "Publish report\n\nQuotes the Roadmap: Artifact 031 is next."],
+            ):
+                subprocess.run(command, cwd=temp, check=True)
+            subprocess.run(["git", "commit", "-q", "--allow-empty", "-m",
+                            "Artifact 027 — /rebuild refusing stub"], cwd=temp, check=True)
+
+            original = publisher.ROOT
+            try:
+                publisher.ROOT = temp
+                found = publisher.artifact_commits()
+            finally:
+                publisher.ROOT = original
+
+        self.assertIn("027", found)
+        self.assertNotIn("031", found, "a commit body declared an artifact")
+
+    def test_evidence_beyond_a_gap_never_advances_the_frontier(self):
+        """The frontier is the longest unbroken run from 001, not a maximum."""
+        gapped = {aid: rows for aid, rows in self.commits.items() if aid != "003"}
+        derived = publisher.derive_completion(ARTIFACTS, TRACKED, gapped)
+
+        self.assertEqual(derived["frontier"], "002")
+        self.assertNotIn("004", derived["completed"])
+        self.assertIn("004", derived["evidenced_out_of_sequence"])
+
+    def test_file_attribution_is_scoped_to_the_declaring_commits(self):
+        """Files come from the commits that declare the artifact, nothing else.
+
+        These files are the second half of the completion predicate, so a
+        commit that merely mentions an artifact in its body must not lend its
+        files to it. Borrowed evidence is not evidence.
+        """
+        with tempfile.TemporaryDirectory(prefix="coolboy12-attrib-") as raw:
+            temp = Path(raw)
+
+            def commit(message: str, filename: str) -> None:
+                (temp / filename).write_text("x\n", encoding="utf-8")
+                subprocess.run(["git", "add", filename], cwd=temp, check=True)
+                subprocess.run(["git", "commit", "-qm", message], cwd=temp, check=True)
+
+            for command in (
+                ["git", "init", "-q"],
+                ["git", "config", "user.email", "audit@example.invalid"],
+                ["git", "config", "user.name", "COOLBOY12 audit"],
+            ):
+                subprocess.run(command, cwd=temp, check=True)
+            commit("Artifact 027 — the real one", "owned.txt")
+            commit("Unrelated work\n\nSee Artifact 027 for context.", "borrowed.txt")
+
+            original = publisher.ROOT
+            try:
+                publisher.ROOT = temp
+                declaring = [c["sha"] for c in publisher.artifact_commits()["027"]]
+                tracked = set(publisher.tracked_files())
+                files = publisher.artifact_commit_files("027", tracked, declaring)
+            finally:
+                publisher.ROOT = original
+
+        self.assertEqual(files, ["owned.txt"])
+
+    def test_the_log_records_builds_and_never_prompt_events(self):
+        events = publisher.build_events(ARTIFACTS, self.commits, self.derived, TRACKED)
+        html = publisher.timeline_html(events, self.derived)
+
+        self.assertTrue(events)
+        self.assertNotIn("Prompt received", html)
+        for event in events:
+            self.assertRegex(event["artifact"], r"^\d{3}$")
+            self.assertTrue(event["commit"])
+        self.assertIn("event-files", html)
+
+    def test_file_chips_have_their_own_styling(self):
+        """Added markup without styling is a redesign by omission.
+
+        The contract protects typography and spacing, so the classes the log
+        emits must be defined rather than inheriting whatever is nearest.
+        """
+        html = render_for_completed(27)
+
+        for rule in (".event-files{", ".event-files .more{", ".log-event code{"):
+            self.assertIn(rule, html, rule)
 
 
 if __name__ == "__main__":

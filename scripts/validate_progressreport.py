@@ -10,12 +10,62 @@ CONTRACT=ROOT/'reports/HTML_UPDATE_CONTRACT.md'
 html=HTML.read_text(encoding='utf-8')
 state=json.loads(STATE.read_text(encoding='utf-8'))
 log=json.loads(LOG.read_text(encoding='utf-8'))
+def _one(pattern):
+    """The single match for a pattern that must appear exactly once."""
+    found = re.findall(pattern, html)
+    return found[0] if len(found) == 1 else None
+
+
+def frontier_consistent():
+    """The report's frontier agrees with itself and with its own next artifact.
+
+    Pinning an expected frontier here is what made this check go stale: it was
+    written against 021 and could never be right again. The frontier is derived
+    from repository evidence (HTML_UPDATE_CONTRACT.md, "The completion
+    predicate"), so what is checkable without re-deriving it is *coherence* —
+    every place the report states the frontier states the same one, the next
+    artifact is the one after it, and the phase named is a real phase.
+    """
+    masthead = _one(r'<span>Frontier · Artifact (\d{3})</span>')
+    body = re.findall(
+        r'Current frontier là <strong>Artifact (\d{3})</strong>; '
+        r'artifact kế tiếp là <strong>(\d{3})</strong>', html)
+    phase = _one(r'COOLBOY12 đang ở Phase (P\d+) —')
+    if not masthead or len(body) != 1 or not phase:
+        return False
+    frontier, following = body[0]
+    return (masthead == frontier
+            and int(following) == int(frontier) + 1
+            and f'<details class="phase-card current" id="{phase}"' in html)
+
+
+def progress_math_consistent():
+    """Percentages are recomputed from the counts the report itself prints.
+
+    Same reasoning as above: a literal "4.3%" only ever validated one day's
+    numbers. Checking the arithmetic catches the failure the literal was there
+    to catch — a percentage that has drifted from its count — on every day.
+    One decimal place is the contract's rounding; two would be a redesign.
+    """
+    overall = _one(r'<span class="n blue">(\d+) / 490</span>')
+    phase_stat = re.findall(
+        r'<span class="n amber">P\d+ · (\d+) / (\d+)</span><small>[^<]*· ([\d.]+)%</small>', html)
+    if not overall or len(phase_stat) != 1:
+        return False
+    done, total, phase_pct = phase_stat[0]
+    if f'{int(overall)/490*100:.1f}%' not in html:
+        return False
+    if phase_pct != f'{int(done)/int(total)*100:.1f}':
+        return False
+    return not re.search(r'\d+\.\d\d%', html)
+
+
 checks={
- 'contract_v1': 'HTML_UPDATE_CONTRACT_VERSION = 1.0' in CONTRACT.read_text(encoding='utf-8'),
+ 'contract_v1': 'HTML_UPDATE_CONTRACT_VERSION = 1.1' in CONTRACT.read_text(encoding='utf-8'),
  'canonical_path': HTML.exists(),
  'progress_schema': state.get('version')==1 and state.get('roadmap_total')==490,
- 'frontier': state.get('current_frontier')=='021' and state.get('next_artifact')=='022' and state.get('current_phase')=='P0',
- 'progress_math': '21 / 490' in html and '4.3%' in html and 'P0 · 21 / 30' in html and '70.0%' in html and '4.29%' not in html and '70.00%' not in html,
+ 'frontier': frontier_consistent(),
+ 'progress_math': progress_math_consistent(),
  'phase_ids_19': len(re.findall(r'class="phase-dot',html))==19 and len(re.findall(r'class="phase-card',html))==19,
  'artifact_ids_490': len(re.findall(r'id="artifact-\d{3}"',html))==490,
  'ranges': all(x in html for x in ['001–030','031–038','039–059','060–124','125–144','145–166','167–174','175–218','219–230','231–252','253–295','296–342','343–360','361–380','381–396','397–413','414–439','440–462','463–490']),

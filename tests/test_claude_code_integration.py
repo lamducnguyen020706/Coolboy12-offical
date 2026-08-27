@@ -22,6 +22,34 @@ def run(command: list[str], cwd: Path, *, stdin: str | None = None, env: dict[st
     return subprocess.run(command, cwd=cwd, input=stdin, text=True, capture_output=True, env=env or os.environ.copy())
 
 
+# The declared frontier every fixture starts from. Chosen once, here, so the
+# tests below read as "021 does not advance to 022 on a prompt alone" no
+# matter how far the real build has got.
+BASELINE_COMPLETED = 21
+
+
+def pin_declared_frontier(temp: Path, last_id: int) -> None:
+    """Rewrite the fixture's progress.json to a fixed declared baseline.
+
+    Declared state only — the repository evidence in the fixture is whatever
+    the fixture's own commits and tracked files make it, and this does not
+    touch that. The two are meant to be independent; the publisher reports
+    where they diverge.
+    """
+    state_path = temp / "reports/progress.json"
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    completed = [f"{number:03d}" for number in range(1, last_id + 1)]
+    state["completed_artifacts"] = completed
+    state["current_frontier"] = f"{last_id:03d}"
+    state["next_artifact"] = f"{last_id + 1:03d}"
+    state["current_phase"] = "P0"
+    for phase in state["phases"].values():
+        phase["completed"] = sum(
+            1 for aid in completed if int(phase["start"]) <= int(aid) <= int(phase["end"])
+        )
+    state_path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+
+
 def build_fixture_repo(temp: Path) -> None:
     """Copy the system into an isolated git repository.
 
@@ -32,8 +60,16 @@ def build_fixture_repo(temp: Path) -> None:
     implement-log.json is reset to an empty events list rather than copied
     live: the real file accumulates genuine UserPromptSubmit activity as the
     session runs, so a test asserting an exact event count against the copied
-    file is not deterministic across time. progress.json is copied as-is —
-    the declared build frontier is fixture input, not activity history.
+    file is not deterministic across time.
+
+    progress.json is pinned to a fixed declared baseline for the same reason.
+    It used to be copied as-is, which made every assertion in these tests a
+    hostage to whatever the live declared frontier happened to be: the hook
+    advanced it 021 -> 022 in a real session and three tests went red without
+    anything under test having changed. What these tests are about is the
+    hook's advance gate — that a prompt alone does not move the frontier —
+    so the baseline it moves from is fixture input and belongs here, stated,
+    not inherited.
     """
     shutil.copytree(ROOT / ".claude", temp / ".claude")
     shutil.copytree(ROOT / "reports", temp / "reports")
@@ -41,6 +77,7 @@ def build_fixture_repo(temp: Path) -> None:
         json.dumps({"version": 1, "timezone": "Asia/Ho_Chi_Minh", "events": []}, indent=2) + "\n",
         encoding="utf-8",
     )
+    pin_declared_frontier(temp, BASELINE_COMPLETED)
     (temp / "scripts").mkdir()
     shutil.copy2(PUBLISHER, temp / "scripts/update_progress.py")
     (temp / "docs/sources").mkdir(parents=True)
@@ -62,8 +99,14 @@ class ClaudeCodeIntegrationTests(unittest.TestCase):
             result = run(["python3", str(temp / "scripts/update_progress.py"), "--render"], temp)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(before, {path: sha256(path) for path in protected})
-            self.assertIn("Overall: 21 / 490 · 4.3%", result.stdout)
             self.assertIn("No commit created.", result.stdout)
+            # The fixture's one commit declares no artifact, so the repository
+            # carries no completion evidence and the report says 0 — even
+            # though the pinned progress.json declares 21. That gap is the
+            # point: the published number comes from evidence, and the
+            # declared frontier is reported alongside it, never obeyed.
+            self.assertIn("Overall: 0 / 490 · 0.0%", result.stdout)
+            self.assertIn(f"declares frontier {BASELINE_COMPLETED:03d}", result.stdout)
 
     def test_suite_never_rewrites_the_tracked_canonical_report(self):
         """The canonical report is a committed deliverable, not test output.
@@ -94,12 +137,17 @@ class ClaudeCodeIntegrationTests(unittest.TestCase):
             state_path = temp / "reports/progress.json"
             for field, value in (("next_artifact", "099"), ("current_phase", "P7")):
                 state = json.loads(state_path.read_text())
+                # Restore what the fixture declared, not what the live file
+                # declares: reading the real progress.json here reintroduced a
+                # value the fixture never had, and the *next* iteration then
+                # failed on the leftover rather than on the field under test.
+                original = state[field]
                 state[field] = value
                 state_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
                 result = run(["python3", str(temp / "scripts/update_progress.py"), "--render"], temp)
                 self.assertNotEqual(result.returncode, 0, f"{field}={value} was accepted")
                 self.assertIn(field, result.stderr)
-                state[field] = json.loads((ROOT / "reports/progress.json").read_text())[field]
+                state[field] = original
                 state_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
     def test_publisher_rejects_missing_render_and_noncanonical_output(self):
@@ -125,6 +173,8 @@ class ClaudeCodeIntegrationTests(unittest.TestCase):
                 json.dumps({"version": 1, "timezone": "Asia/Ho_Chi_Minh", "events": []}, indent=2) + "\n",
                 encoding="utf-8",
             )
+
+            pin_declared_frontier(temp, BASELINE_COMPLETED)
 
             subprocess.run(["git", "init", "-q"], cwd=temp, check=True)
             subprocess.run(["git", "config", "user.email", "audit@example.invalid"], cwd=temp, check=True)
