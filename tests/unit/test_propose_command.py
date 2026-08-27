@@ -61,11 +61,15 @@ def test_command_declares_itself_as_propose():
 
 
 def test_command_establishes_the_six_required_elements():
-    """Role, input, behavior, constraint, output, stop condition.
+    """Implementation-shape check — these exact headings are 025's own choice.
 
-    These are the elements a command surface needs to be unambiguous about
-    what it takes, what it does, and — the part that matters here — where it
-    stops.
+    No source names them. The Roadmap fixes the path and the ``Val``; the
+    Blueprint fixes what a proposal is and where it stops. This structure is
+    the shape chosen to make those unambiguous, and the test keeps it stable
+    so a later edit cannot quietly drop the section that says where the
+    command ends.
+
+    Kept as a quality contract, not promoted to a source requirement.
     """
     headings = {line.strip("# ").lower() for line in text().splitlines() if line.startswith("## ")}
 
@@ -186,19 +190,25 @@ def test_command_assigns_no_severity():
 # --------------------------------------------------------------------------
 
 
-def test_command_invents_no_proposal_persistence():
-    """No proposal area exists yet, and this artifact does not create one.
+def test_command_defers_proposal_persistence_to_artifact_146():
+    """025 does not define proposal storage; 146 does.
 
-    §26.8 anticipates one; the repository has none. Artifact 146 owns the
-    proposal record. The surface must say so rather than inventing a
-    directory, a schema or a file format — and the directory must genuinely
-    not exist, or the disclaimer is stale.
+    The invariant is about what *this artifact* does, not about what the
+    repository may ever contain. An earlier version of this test asserted
+    that ``proposals/`` must not exist, which would have made a legitimate
+    future artifact into a test failure — §26.8 anticipates a proposal area
+    and Artifact 146 owns the proposal record, so both are expected to arrive.
+
+    So the checks are on the surface's own content: it defers, and it defines
+    no directory, schema or format of its own.
     """
     body = flowed().lower()
 
     assert "no proposal staging area in this repository yet" in body
     assert "artifact 146" in body
-    assert not (REPO_ROOT / "proposals").exists()
+
+    for defining in ("proposal schema", "proposal id", "proposal status", "mkdir"):
+        assert defining not in body, defining
 
 
 def test_command_does_not_fake_a_basis_stamp():
@@ -214,20 +224,52 @@ def test_command_does_not_fake_a_basis_stamp():
     assert "do not fabricate a basis stamp" in body
 
 
-def test_artifact_025_creates_no_downstream_artifact():
-    """025 is the surface alone — 026-028, 127, 146 and 152 stay unbuilt."""
-    assert not (REPO_ROOT / "docs/constitution/proposal.md").exists()
-    for sibling in ("validate.md", "simulate.md", "render.md", "rebuild.md"):
-        assert not (REPO_ROOT / ".claude/commands" / sibling).exists(), sibling
+def test_command_builds_no_downstream_stage():
+    """025 is the surface alone; the stages after it stay unimplemented here.
 
+    Checked as *this document's* behaviour rather than as the absence of
+    sibling files. ``validate.md`` and ``docs/constitution/proposal.md`` are
+    artifacts 026-028 and 146 — they are supposed to exist eventually, so
+    asserting their non-existence would make this suite fail on correct future
+    work. What must stay true is that the proposal surface does not carry the
+    next stage inside it.
 
-def test_artifact_025_does_not_touch_its_dependencies():
-    """The surface consumes 022/023/024; it does not re-implement them.
-
-    A reference to the hook, the zone file or the settings would mean policy
-    had migrated into a command surface that holds no authority.
+    Note what is *not* banned: ``TRANSACTION`` and ``PROPAGATE`` appear in the
+    §12.6 diagram, and must — the surface has to name the stages it stops
+    short of. Mention is not implementation, so the terms checked here are
+    ones that would only appear if machinery had been built.
     """
-    body = flowed()
+    body = flowed().lower()
 
-    for owned_elsewhere in ("canon_deny.py", "zones.json", "settings.json", "PreToolUse"):
-        assert owned_elsewhere not in body, owned_elsewhere
+    for downstream in (
+        "workflow graph",
+        "capability routing",
+        "context builder",
+        "proposal record schema",
+        "severity classifier",
+    ):
+        assert downstream not in body, downstream
+
+
+def test_command_restates_no_policy_owned_by_its_dependencies():
+    """The surface consumes 022/023/024; it does not re-declare their policy.
+
+    Naming a dependency is not scope creep — a sentence like "registration is
+    handled elsewhere" would be perfectly legitimate, and an earlier version
+    of this test banned the words themselves, which would have blocked honest
+    documentation. What would be creep is this surface *defining* the zones,
+    the enforcement rules, or the registration, since it holds ``Auth: none``.
+
+    So the check is for definitions: no configuration block, no zone
+    enumeration, no allow/deny rule.
+    """
+    body = flowed().lower()
+
+    configuration = [lang for lang, _ in fenced_blocks(text()) if lang in ("json", "yaml", "toml")]
+    assert not configuration, configuration
+
+    for zone in ("world", "epistemic", "production", "registry", "visual", "issue"):
+        assert f"canon/{zone}" not in body, zone
+
+    for rule in ("matcher", "exit 2", "allowlist", "denylist", "permission rule", "pretooluse"):
+        assert rule not in body, rule
