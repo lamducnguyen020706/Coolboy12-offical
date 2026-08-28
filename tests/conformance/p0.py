@@ -23,11 +23,21 @@ exist, or that simulation, rendering, search or any adapter provider works.
 Those belong to later phases, and asserting them here would turn the exit-P0
 gate into a claim the repository cannot support.
 
-**Not-yet-testable is not a pass.** Two of the seven gated requirements have
-no P0 artifact to test — see ``test_br03`` and ``test_br05`` — and they are
-reported through Artifact 011's harness as skips carrying a reason, never as
-green checks. Artifact 011 exists for exactly this: *"an unavailable check is
-never represented as a successful proof."*
+**Not-yet-testable is not a pass, and the gate now behaves accordingly.** Two
+of the seven gated requirements have no P0 artifact to test — see
+``test_br03`` and ``test_br05`` — and they are reported through Artifact 011's
+harness as skips carrying a reason, never as green checks. Artifact 011 exists
+for exactly this: *"an unavailable check is never represented as a successful
+proof."*
+
+But a pytest skip does not change an exit status, so this suite once said that
+sentence and then exited 0 with both requirements unproven.
+``test_exit_p0_gate_is_not_green_while_a_gated_requirement_is_unresolved``
+carries the consequence: while anything in BR-01…BR-07 is unresolved, the gate
+fails. **It fails today.** That is the truthful state and not a defect in the
+repository — the Roadmap assigns no P0 artifact to BR-03, and BR-05's only
+carrier is artifact 062 in P3. Closing that gap is an authorial act. This
+suite may report it; it may not assume it away.
 
 **Collection.** The Roadmap fixes this file at ``p0.py``, which does not match
 pytest's ``test_*.py`` discovery pattern, so a bare ``pytest`` run does not
@@ -56,7 +66,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-BLUEPRINT = REPO_ROOT / "docs/sources/COOLBOY12_MASTER_BLUEPRINT_v0.7.03.md"
+ROADMAP = REPO_ROOT / "docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md"
 REGISTER = REPO_ROOT / "tests/constitutional/register.md"
 ADAPTERS = REPO_ROOT / "src/coolboy12/adapters"
 CLAUDE_DIR = REPO_ROOT / ".claude"
@@ -181,6 +191,82 @@ def missing(paths: dict[str, tuple[str, str]]) -> list[str]:
 # ---------------------------------------------------------------------------
 # Val — tree.
 # ---------------------------------------------------------------------------
+
+
+def test_p0_frozen_expectations_still_match_the_roadmap():
+    """Drift guard for the tables above.
+
+    Those tables are a frozen P0 contract, which is fine — but frozen against
+    what? If the Roadmap changed and this file did not, every check would keep
+    passing against a stale expectation and the gate would be quietly
+    meaningless. So the few numbers that define the contract's *shape* are
+    re-read from the Roadmap rows they were transcribed from.
+
+    Deliberately not a Roadmap parser. It checks the counts and identifiers
+    that would reveal drift, not the content of 490 rows — that would make
+    Artifact 030 a second source of truth, which it must never be.
+    """
+    roadmap = ROADMAP.read_text(encoding="utf-8")
+
+    row_028 = re.search(r"^\*\*028\*\*.*$", roadmap, re.MULTILINE)
+    row_029 = re.search(r"^\*\*029\*\*.*$", roadmap, re.MULTILINE)
+    row_030 = re.search(r"^\*\*030\*\*.*$", roadmap, re.MULTILINE)
+    assert row_028 and row_029 and row_030, "Roadmap rows 028–030 not found"
+
+    # Row 030 gates BR-01…BR-07. If that range moves, the seven explicit
+    # requirement tests below are gating the wrong thing.
+    assert "Req: BR-01…BR-07" in row_030.group(0), (
+        f"Roadmap row 030 no longer gates BR-01…BR-07: {row_030.group(0)[:200]}"
+    )
+
+    # Row 028 names the four refusing commands.
+    for command in REFUSING_COMMANDS:
+        assert f"`{command}`" in row_028.group(0), (
+            f"Roadmap row 028 no longer names the {command!r} command"
+        )
+    assert len(REFUSING_COMMANDS) == 4
+
+    # Row 029 fixes eleven adapter boundary shells.
+    assert "eleven adapter boundary shells" in row_029.group(0), (
+        "Roadmap row 029 no longer declares eleven adapter boundary shells"
+    )
+    numbers = sorted(int(identifier.split("-")[1]) for identifier in ADAPTER_SHELLS.values())
+    assert numbers == list(range(1, 12)), f"adapter identifiers are not A-01…A-11: {numbers}"
+
+    # Every P0 artifact appears in exactly one table.
+    tables = (DOC_ARTIFACTS, CONFIG_ARTIFACTS, CODE_ARTIFACTS, TEST_ARTIFACTS, COMMAND_ARTIFACTS)
+    identifiers = [artifact for table in tables for artifact in table]
+    duplicates = sorted({a for a in identifiers if identifiers.count(a) > 1})
+    assert not duplicates, f"artifact declared in more than one table: {duplicates}"
+
+    # And each path this suite expects is the path its Roadmap row declares.
+    #
+    # Rows whose declared path is `/` are exempt, and the exemption is the
+    # Roadmap's own doing: 002, 005, 006, 007, 008 and 009 place their
+    # artifact at the repository root without naming a file, because the
+    # concrete filename is an implementation choice recorded elsewhere —
+    # `uv.lock` is an author ruling at GAP-G, not a Roadmap declaration.
+    # Asserting a filename the source never states would be inventing one.
+    unverifiable: list[str] = []
+    for table in tables:
+        for artifact, (relative, _) in table.items():
+            row = re.search(rf"^\*\*{artifact}\*\* · [^·]+· `([^`]+)`", roadmap, re.MULTILINE)
+            assert row, f"Roadmap row {artifact} not found, or its path field changed shape"
+            declared = row.group(1)
+            if declared == "/":
+                unverifiable.append(f"{artifact} ({relative})")
+                continue
+            assert declared.lstrip("/") == relative or relative.endswith(declared.lstrip("/")), (
+                f"Artifact {artifact}: this suite expects {relative}, "
+                f"but Roadmap row {artifact} declares {declared}"
+            )
+
+    # Recorded, not silently ignored: these are the rows whose filename this
+    # gate cannot verify against the source.
+    assert sorted(unverifiable) == ["002 (README.md)", "005 (pyproject.toml)", "006 (uv.lock)"], (
+        "the set of rows declaring a bare `/` path has changed; "
+        f"this gate now cannot verify: {sorted(unverifiable)}"
+    )
 
 
 def test_p0_repository_foundation_exists():
@@ -613,11 +699,63 @@ RETIRED_TERMS = (
     r"nine-domain",
 )
 
-# Current-architecture surface. Deliberately excludes docs/sources/** — those
-# are the constitution itself, and the Blueprint's own historical and
-# amendment material is exactly what must not be flagged — and reports/**,
-# which is generated.
-CURRENT_ARCHITECTURE = ("CLAUDE.md", "docs/boundaries", "docs/conventions", "src", ".claude")
+# Two of these are retired outright and one is retired *in a specific use*,
+# and the Roadmap says which is which in one sentence (line 29):
+#
+#   "Semantic ownership runs on W · E · P · R · V · I only. The nine-domain
+#    taxonomy is retired **as an ownership axis**. Canon Object Model is
+#    retired. CO/COR/COH appear only in historical notes."
+#
+# So "Canon Object Model", COM, COR, COH and "universal Canon Object" are
+# forbidden as current architecture in any use. The nine-domain vocabulary is
+# forbidden only where it is doing the retired job — owning records, or
+# standing as the current axis, taxonomy or architecture. The Blueprint's own
+# §9.5 layer diagram enumerates "the nine domains, six partitions, two
+# primitives, ten laws" and assigns ownership to the partitions in the same
+# breath; that is a structural enumeration, not an ownership claim, and the
+# scoped rule lets it stand on its own merits rather than on a whitelist.
+_OWNERSHIP_SCOPED_TERMS = (r"nine domains", r"nine-domain")
+
+# The retired job, in the Roadmap's own words: an *ownership axis*. Note what
+# is deliberately not here — "partition". The §9.5 diagram reads "the nine
+# domains, six partitions, two primitives, ten laws", and the partitions
+# beside it are what make the line an enumeration; treating that word as
+# evidence of an ownership claim would fail the very line the scoping exists
+# to judge fairly.
+_OWNERSHIP_USE = re.compile(
+    r"\b(?:own|owns|owned|owning|ownership|axis|taxonomy|architecture|"
+    r"semantic\s+ownership|records?)\b",
+    re.IGNORECASE,
+)
+
+# The current-architecture surface: everything in this repository that states
+# what coolboy12 *is* today.
+#
+#   CLAUDE.md    Artifact 004, governing session conduct.
+#   docs/        every subdirectory except sources/ — the boundaries and
+#                conventions are AUTHORITATIVE contracts, and the rest
+#                (constitution/, models/, registry/, governance/, …) are
+#                empty scaffolds now that fill with current architecture from
+#                P2 on. Scanning them while empty costs nothing and means the
+#                surface does not silently miss them later; naming only the
+#                two populated ones would have.
+#   src/         the implementation.
+#   .claude/     the execution environment.
+#
+# Excluded, each for a stated reason rather than by convenience:
+#
+#   docs/sources/  verbatim reference copies of the three governing
+#                  documents — its own PURPOSE.md says so, and says the
+#                  directory "does not interpret them, summarize them, or
+#                  amend them". The Blueprint's §36 amendment history and the
+#                  Roadmap's "not inherited from the old roadmap" line
+#                  preserve retired vocabulary deliberately; flagging the
+#                  constitution for recording its own history would be wrong.
+#   reports/       generated output, no architectural authority.
+#   tests/         DEV-ENV proof, and this file itself necessarily names every
+#                  retired term it forbids.
+CURRENT_ARCHITECTURE = ("CLAUDE.md", "docs", "src", ".claude")
+EXCLUDED_FROM_SCAN = ("docs/sources",)
 
 # Prohibition constructions that BIND TO ONE OCCURRENCE.
 #
@@ -640,8 +778,14 @@ CURRENT_ARCHITECTURE = ("CLAUDE.md", "docs/boundaries", "docs/conventions", "src
 
 # Directly after the term: "COM is retired", "COR must not be used".
 _PROHIBITED_AFTER = re.compile(
-    r"^\s*(?:terminology\s+|vocabulary\s+)?"
-    r"(?:(?:is|are|was|were)\s+(?:now\s+)?(?:retired|forbidden|prohibited|no longer\b)"
+    r"^\s*"
+    # The terms are often retired together — "CO/COR/COH are historical
+    # terms" — so a slash- or comma-joined continuation may sit between this
+    # occurrence and the verb that retires the whole list.
+    r"(?:[/,]\s*[\w-]+\s*)*"
+    r"(?:terminology\s+|vocabulary\s+|terms?\s+)?"
+    r"(?:(?:is|are|was|were)\s+(?:now\s+)?"
+    r"(?:retired|forbidden|prohibited|historical|deprecated|no longer\b)"
     r"|must not\b|may not\b|cannot\b|shall not\b)",
     re.IGNORECASE,
 )
@@ -679,8 +823,31 @@ def architecture_files() -> list[Path]:
                 if child.is_file()
                 and child.suffix in (".md", ".py", ".json")
                 and "__pycache__" not in child.parts
+                and not any(
+                    child.is_relative_to(REPO_ROOT / excluded)
+                    for excluded in EXCLUDED_FROM_SCAN
+                )
             )
     return files
+
+
+def test_p0_com_scan_covers_the_current_architecture_surface():
+    """The scan reaches what it claims to, and skips only what it declares.
+
+    A scope that quietly stopped covering a directory would make the firewall
+    pass by not looking, which is the failure mode a scan cannot report about
+    itself.
+    """
+    scanned = {path.relative_to(REPO_ROOT).as_posix() for path in architecture_files()}
+
+    for required in ("CLAUDE.md", "docs/boundaries/environment.md",
+                     "docs/conventions/artifact_conventions.md",
+                     ".claude/hooks/canon_deny.py",
+                     "src/coolboy12/adapters/a01_deconstruction.py"):
+        assert required in scanned, f"current architecture file not scanned: {required}"
+
+    assert not [path for path in scanned if path.startswith("docs/sources/")], \
+        "docs/sources/ is verbatim constitutional source and must not be scanned"
 
 
 def normalize(line: str) -> str:
@@ -688,21 +855,13 @@ def normalize(line: str) -> str:
     return " ".join(line.split())
 
 
-def blueprint_lines() -> frozenset[str]:
-    """The Blueprint's own lines, normalized, as a set for exact matching.
-
-    Not a flattened blob. The quotation allowance used ``line in
-    blueprint_flat`` — a substring test against the whole document — so any
-    line whose text happened to occur anywhere inside the Blueprint was
-    exempt, including a fragment lifted out of a longer sentence. A
-    constitutional quotation is a *whole line* reproduced; anything else is
-    the repository's own prose and answers for itself.
-    """
-    return frozenset(
-        normalized
-        for line in BLUEPRINT.read_text(encoding="utf-8").splitlines()
-        if (normalized := normalize(line))
-    )
+# There is deliberately no Blueprint-comparison helper here any more. The
+# quotation allowance — first ``line in blueprint_flat``, then an exact
+# whole-line set — is gone in both forms. Neither proved that *this* use is
+# historical: text can be reproduced from the constitution and still be
+# asserted as current. Classification is from local evidence only, and the
+# nine-domain vocabulary is judged against the retired use the Roadmap names
+# rather than against a list of quotable lines.
 
 
 def is_prohibited_occurrence(lines: list[str], index: int, start: int, end: int) -> bool:
@@ -746,29 +905,44 @@ def is_prohibited_occurrence(lines: list[str], index: int, start: int, end: int)
     return False
 
 
-def com_findings(text: str, known_blueprint_lines: frozenset[str]) -> list[str]:
+def com_findings(text: str) -> list[str]:
     """Retired-term occurrences in ``text`` that are current-architecture use.
 
-    Split out so the classification can be exercised directly on in-memory
-    strings — the adversarial cases below run against this, never against the
-    repository, so proving the firewall never requires planting a violation in
-    a real file.
+    Classification is from local evidence only. There is no whitelist: the
+    allowance used to be "this line also appears somewhere in the Blueprint",
+    which proved string duplication and nothing about whether *this* use is
+    historical. A sentence can reproduce constitutional wording and still
+    assert it as current.
+
+    Two rules, both from the Roadmap's own scoping (line 29):
+
+    * ``Canon Object Model``, ``COM``, ``COR``, ``COH`` and ``universal Canon
+      Object`` are retired outright — allowed only where the local text says
+      so, per :func:`is_prohibited_occurrence`;
+    * the nine-domain vocabulary is retired **as an ownership axis**, so it is
+      a finding only where it is doing that job.
+
+    Split out so the classification runs on in-memory strings: a conformance
+    gate that must damage the repository to prove itself is not read-only.
     """
     lines = text.splitlines()
     findings: list[str] = []
 
     for index, line in enumerate(lines):
-        quoted = normalize(line) in known_blueprint_lines
         for term in RETIRED_TERMS:
             for match in re.finditer(term, line):
                 if is_prohibited_occurrence(lines, index, match.start(), match.end()):
                     continue
-                # Exact constitutional quotation, whole line. Checked after the
-                # per-occurrence rule so it can only excuse a faithful
-                # reproduction, never a sentence built around a fragment.
-                if quoted:
-                    continue
-                findings.append(f"{index + 1} — {match.group(0)!r} — {normalize(line)[:110]}")
+                if term in _OWNERSHIP_SCOPED_TERMS:
+                    # Judged in a window around the occurrence rather than over
+                    # the whole line, so an ownership word in a distant clause
+                    # is not read as this occurrence's meaning.
+                    window = line[max(0, match.start() - 90):match.end() + 90]
+                    if not _OWNERSHIP_USE.search(window):
+                        continue
+                findings.append(
+                    f"line {index + 1} — term {match.group(0)!r} — {normalize(line)[:110]}"
+                )
 
     return findings
 
@@ -792,12 +966,10 @@ def test_p0_current_architecture_contains_no_retired_com_vocabulary():
 
     Anything else using retired vocabulary is a current-architecture claim.
     """
-    known = blueprint_lines()
     findings = [
-        f"current COM term found in current architecture file: "
-        f"{path.relative_to(REPO_ROOT)}:{finding}"
+        f"current COM term found: path {path.relative_to(REPO_ROOT)} — {finding}"
         for path in architecture_files()
-        for finding in com_findings(path.read_text(encoding="utf-8"), known)
+        for finding in com_findings(path.read_text(encoding="utf-8"))
     ]
 
     assert not findings, "\n  ".join(["retired vocabulary used as current architecture:"] + findings)
@@ -816,8 +988,6 @@ def test_com_firewall_rejects_current_use_and_allows_prohibition():
     retirement clause excuse a current-use claim in the same sentence. Both
     are here.
     """
-    known = blueprint_lines()
-
     must_fail = (
         "The current architecture uses COM.",
         "No semantic migration is required.\nThe current architecture uses COM.",
@@ -834,7 +1004,7 @@ def test_com_firewall_rejects_current_use_and_allows_prohibition():
         "The nine domains, six partitions, two primitives, ten laws are the current axis.",
     )
     for case in must_fail:
-        assert com_findings(case, known), f"current COM use was not caught: {case!r}"
+        assert com_findings(case), f"current COM use was not caught: {case!r}"
 
     must_pass = (
         "COM is retired.",
@@ -849,29 +1019,40 @@ def test_com_firewall_rejects_current_use_and_allows_prohibition():
         "MUST NOT use as **current** architecture:\nCanon Object Model · COM · universal Canon Object",
     )
     for case in must_pass:
-        assert not com_findings(case, known), (
-            f"prohibition or retirement wrongly rejected: {case!r} — {com_findings(case, known)}"
+        assert not com_findings(case), (
+            f"prohibition or retirement wrongly rejected: {case!r} — {com_findings(case)}"
         )
 
 
-def test_com_firewall_quotation_allowance_is_whole_line_only():
-    """An exact Blueprint line is exempt; a sentence containing one is not.
+def test_com_firewall_scopes_nine_domain_to_the_retired_ownership_use():
+    """The nine-domain rule follows the Roadmap's own scoping, not a whitelist.
 
-    The allowance was ``line in blueprint_flat`` — a substring test against
-    the flattened document — so any text occurring anywhere inside the
-    Blueprint escaped. ``docs/boundaries/environment.md`` legitimately
-    reproduces the §9.5 layer diagram, and that must keep working, but only
-    as the whole line it is.
+    The exemption here used to be *"this line also appears somewhere in the
+    Blueprint"*, which proved string duplication and nothing about whether the
+    use is historical — a sentence can reproduce constitutional wording and
+    still assert it as current. It is gone.
+
+    What replaces it is the Roadmap's own sentence (line 29): *"The
+    nine-domain taxonomy is retired **as an ownership axis**."* Retired in a
+    named use, so a finding is a use of it in that job. The §9.5 layer diagram
+    enumerates the system's parts and assigns ownership to the partitions in
+    the same line; it stands on that, not on being quotable.
     """
-    known = blueprint_lines()
-    quoted = "↓  the nine domains, six partitions, two primitives, ten laws"
+    enumeration = "↓  the nine domains, six partitions, two primitives, ten laws"
+    assert not com_findings(enumeration), "a structural enumeration was read as an ownership claim"
 
-    assert normalize(quoted) in known, "the §9.5 diagram line is no longer found in the Blueprint"
-    assert not com_findings(quoted, known), "an exact Blueprint line was rejected"
+    for ownership_claim in (
+        "The nine-domain architecture owns the records.",
+        "The nine domains are the current ownership axis.",
+        "Records are owned along the nine-domain taxonomy.",
+    ):
+        assert com_findings(ownership_claim), (
+            f"nine-domain used as an ownership axis was not caught: {ownership_claim!r}"
+        )
 
-    extended = quoted + " — and that remains the current axis."
-    assert normalize(extended) not in known
-    assert com_findings(extended, known), "a sentence built around a Blueprint line was exempted"
+    # And the outright-retired terms are not scoped this way: no ownership
+    # word is needed for them to be a finding.
+    assert com_findings("The system uses COM."), "COM is retired outright and must not be scoped"
 
 
 def test_p0_record_model_axis_is_the_six_sovereign_models():
@@ -1006,6 +1187,78 @@ def test_br07_canonical_write_deny_foundation_is_present_and_wired():
 # ---------------------------------------------------------------------------
 # The gate itself.
 # ---------------------------------------------------------------------------
+
+
+def unresolved_gated_requirements() -> dict[str, str]:
+    """Gated requirements with no P0 artifact to prove them, read from source.
+
+    Derived from the Roadmap rather than from a constant in this file, and
+    derived independently of whether the ``test_brNN`` tests ran — so the gate
+    below is order-independent and is not proving its own assumption.
+
+    A requirement is unresolved when no P0 artifact (001–030) carries it in a
+    ``Req:`` field. Nothing here interprets what any requirement *means*; the
+    authoritative register is unavailable (GAP-C) and inventing text for it
+    would be worse than reporting the gap.
+    """
+    roadmap = ROADMAP.read_text(encoding="utf-8")
+    rows = re.findall(r"^\*\*(\d{3})\*\*.*?Req: ([^·]+)·", roadmap, re.MULTILINE)
+
+    carried_in_p0: dict[str, set[str]] = {}
+    carried_anywhere: dict[str, set[str]] = {}
+    for artifact, requirements in rows:
+        for requirement in re.findall(r"BR-\d+", requirements):
+            carried_anywhere.setdefault(requirement, set()).add(artifact)
+            if artifact <= "030":
+                carried_in_p0.setdefault(requirement, set()).add(artifact)
+
+    unresolved: dict[str, str] = {}
+    for number in range(1, 8):
+        requirement = f"BR-{number:02d}"
+        if carried_in_p0.get(requirement):
+            continue
+        elsewhere = sorted(carried_anywhere.get(requirement, ()))
+        unresolved[requirement] = (
+            f"carried only by artifact(s) {', '.join(elsewhere)}, none in P0"
+            if elsewhere else
+            "no Roadmap artifact carries it, and the requirement register is unavailable (GAP-C)"
+        )
+    return unresolved
+
+
+def test_exit_p0_gate_is_not_green_while_a_gated_requirement_is_unresolved():
+    """The gate itself. ``G: exit-P0`` — and a skip is not a proof.
+
+    ``test_br03`` and ``test_br05`` report their state truthfully through
+    Artifact 011's harness, which makes them pytest *skips*. Skips do not
+    change pytest's exit status, so before this check the command
+
+        pytest tests/conformance/p0.py
+
+    exited 0 while two of the seven gated requirements had no proof at all.
+    The suite said "not-yet-testable is not a pass" and the gate then behaved
+    as though it were.
+
+    So the truthful reporting stays exactly as it is — an unresolved
+    requirement is still surfaced as unresolved, never as a failure of the
+    repository — and this test carries the consequence: while anything in
+    BR-01…BR-07 is unresolved, exit-P0 is **not green**.
+
+    This fails today. That is the correct state: the repository is not at
+    fault, the Roadmap has no P0 artifact for these two, and the gap belongs
+    to the source. Resolving it is an authorial act, not something this suite
+    may assume away.
+    """
+    unresolved = unresolved_gated_requirements()
+
+    assert not unresolved, "\n  ".join(
+        ["exit-P0 cannot be GREEN — gated requirements are unresolved:"]
+        + [
+            f"{requirement} unresolved: {reason}; no P0 proof exists"
+            for requirement, reason in sorted(unresolved.items())
+        ]
+        + ["(BR-01…BR-07 is the range row 030 gates; see test_br03 / test_br05)"]
+    )
 
 
 def test_p0_canon_holds_no_canonical_data_yet():
