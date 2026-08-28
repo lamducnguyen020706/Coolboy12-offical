@@ -803,19 +803,50 @@ EXCLUDED_FROM_SCAN = ("docs/sources",)
 # Words that mark the term itself as no longer current.
 _RETIREMENT_WORD = r"(?:retired|deprecated|historical|obsolete|superseded|forbidden|prohibited)"
 
-# Verbs that name *use of the term*. A modal binds only when it forbids one of
-# these. Generic impossibility is not retirement, and some of it asserts the
-# opposite — "COM cannot be removed from the current model" and "COM shall not
-# be replaced" both say COM is still here.
+# Verbs that name *use of the term*, in the imperative voice a prohibition
+# uses when the term is its object: "do not use COM", "never introduce COR".
 _USE_VERB = (
     r"(?:use|used|using|introduce|introduced|introducing|adopt|adopted|"
     r"revive|revived|reviving|reference|referenced|relied\s+on|rely\s+on|treat|treated)"
 )
 
-# The terms are often retired together — "CO/COR/COH are historical terms" —
-# so a slash- or comma-joined continuation may sit between this occurrence and
-# the verb that retires the whole list.
-_LIST_CONTINUATION = r"(?:[/,]\s*[\w-]+\s*)*(?:terminology\s+|vocabulary\s+|terms?\s+)?"
+# The same verbs as past participles, which is the only voice in which a modal
+# prohibition can be about *this term*. The distinction is grammatical and it
+# decides the answer:
+#
+#     COM cannot be used.              COM is the object — prohibited.
+#     The current COM cannot use X.    COM is the subject — current architecture.
+#
+# An active verb after the term means the term is doing something, which is a
+# statement that it exists and acts. Only the passive is a prohibition on it.
+_USE_PARTICIPLE = r"(?:used|introduced|adopted|revived|referenced|relied\s+on|treated)"
+
+# The terms are often retired together, so a joined list may sit between this
+# occurrence and the verb that retires the whole list:
+#
+#     CO/COR/COH are historical terms.
+#     COM, COR, and COH are historical terms.
+#     Canon Object Model and COM are retired.
+#
+# A list member has to look like a *term*: an optional article, then a word
+# beginning with a capital — case-sensitively, hence the scoped ``(?-i:)``
+# against this module's IGNORECASE. Every term in play qualifies (COM, COR,
+# COH, Canon Object Model), and the restriction is what keeps the run from
+# crossing out of the list into the next clause:
+#
+#     The current architecture uses COM, although COM is retired.
+#                                      ^ a comma, but "although" opens a
+#                                        clause — not a list member, so the
+#                                        retirement belongs to the *other*
+#                                        occurrence and this one is a finding.
+#
+# It closes the appositive shape for the same reason: in "COM, which is
+# retired, is used by the current system", ``which`` is not a term either.
+_LIST_JOINER = r"(?:\s*[/,]\s*|\s*,?\s+(?:and|or)\s+)"
+_LIST_MEMBER = r"(?:the\s+|an?\s+)?(?-i:[A-Z])[\w-]*(?:\s+[\w-]+){0,2}"
+_LIST_CONTINUATION = (
+    rf"(?:{_LIST_JOINER}{_LIST_MEMBER})*\s*(?:terminology\s+|vocabulary\s+|terms?\s+)?"
+)
 
 # 1. "COM is retired", "COH is a historical term", "CO/COR/COH are historical".
 _RETIRED_PREDICATE_AFTER = re.compile(
@@ -832,21 +863,36 @@ _NO_LONGER_AFTER = re.compile(
 )
 _LIFTS_RETIREMENT = re.compile(rf"^{_RETIREMENT_WORD}$", re.IGNORECASE)
 
-# 3. "COM must not be used", "COR must not be introduced" — the modal must
-#    govern a use verb.
+# 3. "COM must not be used", "COR shall not be introduced" — the modal must
+#    govern a *passive* use verb, so that the term is the thing whose use is
+#    forbidden. "The current COM cannot use external references" shares the
+#    modal and is the opposite claim: COM is the subject there, acting, which
+#    only a current architecture does.
 _PROHIBITED_USE_AFTER = re.compile(
     rf"^\s*{_LIST_CONTINUATION}"
-    rf"(?:must not|may not|shall not|cannot|can not|is not to be|are not to be)\s+"
-    rf"(?:be\s+)?{_USE_VERB}\b",
+    rf"(?:(?:must not|may not|shall not|cannot|can not)|(?:is|are)\s+not\s+to)\s+"
+    rf"be\s+{_USE_PARTICIPLE}\b",
     re.IGNORECASE,
 )
 
 # Directly before the term, with no sentence break in between:
 #   "do not use COM", "must not use as current architecture: … COM".
-# This one already required a use verb and needed no repair.
+#
+# ``no longer`` is deliberately absent from this list. It is the one phrase
+# here that describes a *state* rather than issuing a prohibition, so it can
+# sit in one clause while the use verb belongs to the next:
+#
+#     COM is no longer deprecated, and we use COM.
+#                                          ^^^ exempted by the clause before it
+#
+# A comma is not a sentence break, so the backward search crossed it and the
+# second occurrence — plain current use — inherited the first clause's
+# allowance. The legitimate form it was meant to cover, "COM is no longer
+# used", sits *after* the term and is handled by _NO_LONGER_AFTER, which reads
+# the construction properly.
 _PROHIBITED_BEFORE = (
     re.compile(
-        r"\b(?:do not|does not|must not|may not|shall not|cannot|never|no longer)\b"
+        r"\b(?:do not|does not|must not|may not|shall not|cannot|never)\b"
         rf"[^.;]{{0,60}}?\b{_USE_VERB}\b"
         r"[^.;]{0,40}$",
         re.IGNORECASE,
@@ -1092,6 +1138,27 @@ def test_com_firewall_rejects_current_use_and_allows_prohibition():
         "COM is no longer historical.",
         "COM is no longer forbidden.",
         "COM is no longer prohibited.",
+        # …and a lifted retirement in one clause must not carry into the use
+        # claim in the next.
+        "COM is no longer deprecated, and we use COM.",
+        "COM is no longer historical, and the current system uses COM.",
+        "COM is no longer forbidden; the current architecture uses COM.",
+        "COM is no longer prohibited, but the system still uses COM.",
+        "The system says COM is no longer deprecated, and COM remains the active model.",
+        # The retired term as the *subject* of a modal. Same modals as the
+        # legitimate prohibitions, opposite meaning: a thing that acts, or is
+        # protected from modification, is a thing the architecture still has.
+        "The current COM cannot use external references.",
+        "The current COM may not reference external state.",
+        "The current COM shall not adopt the new registry mechanism.",
+        "The current COR cannot rely on the new registry.",
+        "The current COH shall not be replaced by the new history mechanism.",
+        "The current Canon Object Model may not be modified.",
+        # A joined retirement covers the terms it lists — not a later
+        # occurrence making a current-use claim.
+        "COM and COR are retired, but the current system uses COM.",
+        "COM and COR are historical, and the current architecture still uses COR.",
+        "Canon Object Model and COM are retired, but COM remains the active model.",
     )
     for case in must_fail:
         assert com_findings(case), f"current COM use was not caught: {case!r}"
@@ -1122,6 +1189,19 @@ def test_com_firewall_rejects_current_use_and_allows_prohibition():
         "COH is a historical term.",
         "CO/COR/COH are historical terms.",
         "The Canon Object Model is retired.",
+        # Passive prohibitions — the term is the object, which is what makes
+        # them prohibitions on *it*.
+        "COM cannot be used.",
+        "COM may not be used.",
+        "COR shall not be introduced.",
+        "COH cannot be referenced.",
+        "The Canon Object Model may not be introduced.",
+        # Terms retired together, in the joined shapes English actually uses.
+        "COM and COR are retired.",
+        "COM and COH are historical.",
+        "COM, COR, and COH are historical terms.",
+        "COM and COR are deprecated.",
+        "Canon Object Model and COM are retired.",
     )
     for case in must_pass:
         assert not com_findings(case), (
@@ -1157,22 +1237,34 @@ def test_com_firewall_reads_the_no_longer_construction_in_both_directions():
             f"a lifted retirement was read as a retirement: {lifts!r}"
         )
 
+    # And a lifted retirement does not license what follows it.
+    for carried in (
+        "COM is no longer deprecated, and we use COM.",
+        "COM is no longer forbidden; the current architecture uses COM.",
+        "COM is no longer prohibited, but the system still uses COM.",
+    ):
+        assert com_findings(carried), f"a lifted retirement licensed a later use: {carried!r}"
+
 
 def test_com_firewall_requires_a_prohibition_to_forbid_use_of_the_term():
     """A modal binds only when it forbids *using* the term.
 
     ``cannot``, ``may not`` and ``shall not`` are not retirement words. What
-    they govern decides: forbidding *use* retires the term, while forbidding
-    its removal or replacement asserts the opposite — that it is still here
-    and staying. The pairs share a modal and differ only in the verb.
+    they govern decides, and it decides in two ways. The verb must be about
+    use — forbidding a term's *removal* asserts it is staying. And the voice
+    must be passive, because only then is the term the thing being forbidden:
+
+        COM cannot be used.              object — a prohibition on COM
+        The current COM cannot use X.    subject — COM acts, so COM is here
+
+    Each pair below shares a modal and differs only in what it governs.
     """
-    pairs = (
+    same_verb_wrong_target = (
         ("COM must not be used.", "COM cannot be removed from the current model."),
         ("COR must not be introduced.", "COM shall not be replaced in the current architecture."),
         ("COM may not be used.", "COM cannot be avoided."),
     )
-
-    for forbids_use, forbids_removal in pairs:
+    for forbids_use, forbids_removal in same_verb_wrong_target:
         assert not com_findings(forbids_use), (
             f"a use prohibition was rejected: {forbids_use!r} — {com_findings(forbids_use)}"
         )
@@ -1180,6 +1272,70 @@ def test_com_firewall_requires_a_prohibition_to_forbid_use_of_the_term():
             f"a modal that forbids nothing about use was treated as retirement: "
             f"{forbids_removal!r}"
         )
+
+    passive_versus_active = (
+        ("COM cannot be used.", "The current COM cannot use external references."),
+        ("COH cannot be referenced.", "The current COM may not reference external state."),
+        ("COR shall not be introduced.", "The current COM shall not adopt the new registry."),
+        ("The Canon Object Model may not be introduced.",
+         "The current Canon Object Model may not be modified."),
+    )
+    for passive, active in passive_versus_active:
+        assert not com_findings(passive), (
+            f"a passive use prohibition was rejected: {passive!r} — {com_findings(passive)}"
+        )
+        assert com_findings(active), (
+            f"the retired term was the subject of the modal, not its object, and the "
+            f"sentence was still read as a prohibition: {active!r}"
+        )
+
+
+def test_com_firewall_binds_each_occurrence_separately_within_one_sentence():
+    """Per-occurrence verdicts, asserted one occurrence at a time.
+
+    The sentence-level lists cannot prove this on their own. *"COM is no
+    longer deprecated, and we use COM."* has a finding either way — its first
+    occurrence is a lifted retirement — so a second occurrence wrongly
+    inheriting that clause's allowance stays invisible to any test that only
+    asks whether the sentence produced findings. It did exactly that until
+    this patch: ``no longer`` sat in the backward search, a comma is not a
+    sentence break, and the allowance carried into the next clause.
+
+    So these assert the verdict for each span, which is the property the
+    firewall actually claims: *this* occurrence, judged on its own.
+    """
+    def verdicts(sentence: str, term: str) -> list[bool]:
+        return [
+            is_prohibited_occurrence([sentence], 0, match.start(), match.end())
+            for match in re.finditer(term, sentence)
+        ]
+
+    # A lifted retirement, then plain use. Neither occurrence is exempt: the
+    # first because "no longer deprecated" un-retires it, the second because
+    # nothing in its own clause forbids anything.
+    assert verdicts("COM is no longer deprecated, and we use COM.", r"\bCOM\b") == [False, False]
+    assert verdicts(
+        "The system says COM is no longer deprecated, and COM remains the active model.",
+        r"\bCOM\b",
+    ) == [False, False]
+
+    # A real retirement clause, and a current-use claim beside it. Here the
+    # verdicts differ *within one sentence*, which is the point: the retired
+    # occurrence is exempt and the used one is not.
+    assert verdicts(
+        "The current architecture uses COM, although COM is retired.", r"\bCOM\b"
+    ) == [False, True]
+
+    # A joined retirement covers the terms it lists and stops there.
+    assert verdicts(
+        "COM and COR are retired, but the current system uses COM.", r"\bCOM\b"
+    ) == [True, False]
+
+    # An appositive is not a list. The retirement clause belongs to the term,
+    # but the sentence still reports current use, so the occurrence stands.
+    assert verdicts(
+        "COM, which is retired, is used by the current system.", r"\bCOM\b"
+    ) == [False]
 
 
 def test_com_firewall_does_not_exempt_a_term_for_wearing_a_retirement_adjective():
@@ -1210,6 +1366,40 @@ def test_com_firewall_does_not_exempt_a_term_for_wearing_a_retirement_adjective(
         assert not com_findings(real_prohibition), (
             f"a prohibition worded around an adjective was rejected: {real_prohibition!r} "
             f"— {com_findings(real_prohibition)}"
+        )
+
+
+def test_com_firewall_reads_a_joined_retirement_as_covering_its_members():
+    """Terms retired together, and only the terms actually in the list.
+
+    The repository writes ``CO/COR/COH are historical terms``; English also
+    writes ``COM and COR are retired`` and ``COM, COR, and COH are historical
+    terms``. All name the same relation and all must pass, or the firewall
+    quietly dictates one sentence shape for retiring things.
+
+    The run has to stop at the end of the list, though, which is what the
+    contradiction cases below check: a joined retirement covers its members
+    and grants nothing to a later occurrence.
+    """
+    for joined in (
+        "COM and COR are retired.",
+        "COM and COH are historical.",
+        "COM, COR, and COH are historical terms.",
+        "COM and COR are deprecated.",
+        "Canon Object Model and COM are retired.",
+        "CO/COR/COH are historical terms.",
+    ):
+        assert not com_findings(joined), (
+            f"a joined retirement was rejected: {joined!r} — {com_findings(joined)}"
+        )
+
+    for contradiction in (
+        "COM and COR are retired, but the current system uses COM.",
+        "COM and COR are historical, and the current architecture still uses COR.",
+        "Canon Object Model and COM are retired, but COM remains the active model.",
+    ):
+        assert com_findings(contradiction), (
+            f"a joined retirement licensed a later current use: {contradiction!r}"
         )
 
 
