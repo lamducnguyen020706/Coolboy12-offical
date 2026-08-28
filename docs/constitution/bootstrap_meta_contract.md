@@ -39,9 +39,12 @@ RMS v1.0 §10.4 closes it: **CLOSED `AUTHOR-DECIDED` (closes FG-V7-05)**. That i
 resolution path, not a contradiction of the Blueprint: the Blueprint declined to close the
 question by assertion and referred it for decision, and the RMS records the decision taken.
 
-**This document exercises neither authority.** It states what the two sources establish. It does
-not amend the Blueprint, does not reopen FG-V7-05, and creates no rule that is not traceable to
-a source cited here.
+**What this artifact is authoritative for, and what it is not.** Artifact 031 is the
+AUTHORITATIVE statement of the bootstrap minimum: a reader needing to know what a Record must
+have to be a Record at all reads this document. It is not the source of that decision — the
+Blueprint established the six elements and the RMS ruled on the non-Record status — and it
+neither amends nor overrides either. Every requirement below is traceable to a source cited with
+it.
 
 ## 3. Bootstrap Position
 
@@ -85,18 +88,15 @@ Roadmap row 031 states the same requirement in its `Val` field; that field's ele
 truncated after `partition` by the Roadmap's own `·` field separator, and the Blueprint and RMS
 supply it in full.
 
-**Document sections are presentation structure and are not contract elements.** The normative
-elements of this contract are exactly §4.1 through §4.6. No other section of this document —
-including this preamble, the status table in §2, and the boundaries in §5 through §7 — adds a
-seventh.
+The contract's elements are §4.1 through §4.6. No other section states one.
 
 ### 4.1 Partition
 
 Every Record MUST have a **partition**.
 
-There are exactly six partitions, one per sovereign Record Model — **W** World · **E** Epistemic ·
-**P** Production · **R** Registry · **V** Visual · **I** Issue (RMS §2). A seventh MUST NOT be
-created here or anywhere.
+There are six partitions, one per sovereign Record Model — **W** World · **E** Epistemic ·
+**P** Production · **R** Registry · **V** Visual · **I** Issue. RMS §2 fixes the models at
+*"exactly six sovereign Record Models"*; this artifact records that count and does not set it.
 
 > **I-101** — *Every partition owns exactly one sovereign Record Model. No Record Model is a
 > specialization of another, and no Record Model is the template for another.*
@@ -152,19 +152,15 @@ Blueprint §13.7 fixes the custody of that envelope before it fixes its contents
 and, where the two appear to conflict, *"the Record Model Schema governs on fields and the
 Blueprint governs on properties."*
 
-**Boundary.** The universal envelope's field-level contract is **Artifact 033**, and its fields
-MUST NOT be enumerated here as though they were elements of this contract. The core envelope is
-**one** of the six elements; it is not a second contract nested inside this one.
-
-Blueprint §13.7a states the outer limit that keeps this element small: **No Universal Record
+**Boundary.** The core envelope is one of the six elements, not a second contract nested inside
+this one. Its field-level contract is **Artifact 033**, and its fields are not enumerated here.
+Blueprint §13.7a states the outer limit that keeps the element small: **No Universal Record
 Base** — *"The shared layer is the bootstrap contract of §13.7 and nothing above it"* — and **No
 universal Record schema.**
 
-> **Outstanding source condition, recorded and not resolved here.** The companion **Record Model
-> Schema** — the document holding field custody under §13.7 — has not been revised, leaving the
-> §13.7 lockstep in a known-outstanding state (**FG-V7-01**, Blueprint front matter and §13.7).
-> That document is not part of the supplied source set. Artifact 033 depends on it; this artifact
-> does not, because the element named here is the envelope's existence, not its fields.
+*The field-custody document named above, the Record Model Schema, has not been revised; the
+§13.7 lockstep is outstanding as **FG-V7-01**. Recorded, not resolved: it bears on Artifact 033
+and not on this element, which is the envelope's existence rather than its fields.*
 
 ### 4.5 Provenance
 
@@ -173,15 +169,12 @@ Every Record MUST have **provenance**.
 > **§13.7b** — *Provenance* answers *"Who made this, when, and **why**"*, and lives as *"an
 > envelope property on the Record."*
 
-Provenance is one of six terms §13.7b separates and forbids treating as interchangeable:
-provenance · audit · history · revision · version · derivation. **Only provenance is an element of
-this contract.** History, revision, and version are model-owned packaging (§13.7b, §13.6d, I-102),
-and the unqualified term *lineage* is retired (§13.7b).
+§13.7b separates six terms that *"are not interchangeable"* — provenance · audit · history ·
+revision · version · derivation. **Only provenance is an element of this contract.** History,
+revision, and version are model-owned packaging (§13.7b, §13.6d, I-102).
 
 **Boundary.** Provenance *capture* is shared infrastructure; **what provenance means in a model**
-is not decided by it (§13.7a). Spine law 9 binds every Record to the decision that created or last
-changed it; the mechanism that enforces it is the governed mutation path, which is Roadmap P5 and
-does not exist yet.
+is not decided by it (§13.7a).
 
 ### 4.6 Registry reference
 
@@ -191,14 +184,12 @@ Every Record MUST have a **Registry reference**.
 > configuration. Registry holds semantic authority over definitions and never semantic ownership
 > of another model's Records.*
 
-The reference is required from the first Record onward. The sufficiency claim in §1 belongs to the
-six elements together, not to this one (Blueprint §13.7).
+The sufficiency claim in §1 belongs to the six elements together, not to this one alone
+(Blueprint §13.7).
 
-**Boundary.** What Registry defines — kinds, `<kind>_type` vocabularies, field definitions,
-relationship definitions, validation rules, visual reference policies, semantic constraints
-(§13.7) — is the **Registry Kernel**, Roadmap P3. Reference *resolution* is shared infrastructure
-and decides nothing about whether a reference is semantically legal (§13.7a, §9.4). Neither is
-established here.
+**Boundary.** What Registry *defines* is the Registry Kernel's, not this contract's (§13.7,
+I-105). Reference *resolution* is shared infrastructure and decides nothing about whether a
+reference is semantically legal (§13.7a, §9.4). Neither is established here.
 
 ## 5. Non-Record Boundary
 
@@ -235,22 +226,17 @@ Neither dependency is amended by this document.
 
 ## 7. Downstream Handoff
 
-This artifact establishes the minimum and stops. The following are named so that no reader takes
-their absence here for an omission, and MUST NOT be written into this document.
+This artifact establishes the minimum and stops. What is absent here is absent by ownership, not
+by omission:
 
-| Artifact | Owns | Not defined here |
-|---|---|---|
-| **032** | Bootstrap flow specification | The bootstrap flow; §3 states position only |
-| **033** | Universal Record envelope contract | The envelope's fields |
-| **034** | Identity grammar specification | The grammar's positional specification |
-| **035** | Identity parser and formatter | Parsing, formatting, resolution |
-| **036** | Ordinal allocator and allocation record | Ordinal minting and its persistence |
-| **037** | Bootstrap structural validator | Structural validation — and this contract is not a semantic validator |
-| **038** | P1 bootstrap conformance suite | Any executable proof of this contract |
-| **P3, 060+** | Registry Kernel | What Registry defines |
-
-A downstream artifact MAY cite the six elements as a constraint. It MUST NOT restate them as its
-own contract, and no downstream artifact may add a seventh.
+| Not defined here | Owned by |
+|---|---|
+| The bootstrap flow — §3 states position only | Artifact 032 |
+| The envelope's fields | Artifact 033 |
+| The identity grammar, its parser, and ordinal allocation | Artifacts 034–036 |
+| Structural validation — and this contract is not a semantic validator | Artifact 037 |
+| Executable proof of this contract | Artifact 038 |
+| What Registry defines | Registry Kernel |
 
 ---
 
