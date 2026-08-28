@@ -50,6 +50,7 @@ import os
 import re
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -150,6 +151,24 @@ ADAPTER_SHELLS = {
 }
 
 
+# The complete set of files Artifact 001 placed under canon/: one PURPOSE.md
+# at the root and one per partition. Pinned as exact paths rather than
+# exempting the *name* ``PURPOSE.md``, which would have let arbitrary
+# canonical data pass by being called that — including at a path no partition
+# owns. No future canonical structure is anticipated here; when the Mutation
+# Coordinator (Artifact 152) makes canonical writes legal, this set is
+# expected to be revisited.
+P0_CANON_FILES = {
+    "canon/PURPOSE.md",
+    "canon/epistemic/PURPOSE.md",
+    "canon/issue/PURPOSE.md",
+    "canon/production/PURPOSE.md",
+    "canon/registry/PURPOSE.md",
+    "canon/visual/PURPOSE.md",
+    "canon/world/PURPOSE.md",
+}
+
+
 def missing(paths: dict[str, tuple[str, str]]) -> list[str]:
     """Artifacts whose declared path is absent, named for the failure text."""
     return [
@@ -195,14 +214,44 @@ def test_p0_config_artifacts_parse():
     """
     for artifact, (relative, requirement) in sorted(CONFIG_ARTIFACTS.items()):
         path = REPO_ROOT / relative
+        raw = path.read_bytes()
+
+        assert raw.strip(), f"Artifact {artifact} ({requirement}): {relative} is empty"
+
         if path.suffix == ".json":
             try:
-                json.loads(path.read_text(encoding="utf-8"))
-            except json.JSONDecodeError as error:
-                pytest.fail(f"Artifact {artifact} ({requirement}): {relative} is not valid JSON — {error}")
+                json.loads(raw.decode("utf-8"))
+            except (json.JSONDecodeError, UnicodeDecodeError) as error:
+                pytest.fail(
+                    f"Artifact {artifact} ({requirement}): {relative} is not valid JSON — {error}")
+        elif path.suffix in (".toml", ".lock"):
+            try:
+                tomllib.loads(raw.decode("utf-8"))
+            except (tomllib.TOMLDecodeError, UnicodeDecodeError) as error:
+                pytest.fail(
+                    f"Artifact {artifact} ({requirement}): {relative} is invalid TOML — {error}")
         else:
-            assert path.read_text(encoding="utf-8").strip(), \
-                f"Artifact {artifact} ({requirement}): {relative} is empty"
+            pytest.fail(
+                f"Artifact {artifact} ({requirement}): {relative} has no parser in this suite — "
+                "add one rather than letting the file pass unparsed")
+
+
+def test_p0_pyproject_declares_the_project_and_its_tooling():
+    """Parsed structure, not a substring.
+
+    Artifacts 005, 007 and 008 all live inside this one file, so the gate
+    reads it as data: a ``[tool.ruff]`` heading sitting inside a comment
+    would satisfy a text search and configure nothing.
+    """
+    config = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    tools = config.get("tool", {})
+
+    assert config.get("project", {}).get("name") == "coolboy12", \
+        f"Artifact 005 (BR-06): [project].name is {config.get('project', {}).get('name')!r}"
+    assert isinstance(tools.get("pytest", {}).get("ini_options"), dict), \
+        "Artifact 007 (BR-06): [tool.pytest.ini_options] missing from pyproject.toml"
+    assert "ruff" in tools, \
+        "Artifact 008 (BR-06): [tool.ruff] missing from pyproject.toml"
 
 
 # ---------------------------------------------------------------------------
@@ -257,21 +306,53 @@ def test_p0_canon_deny_hook_is_registered():
     Existence of the hook proves nothing on its own: an unregistered hook
     denies nothing. The chain is what P0 has to establish.
     """
-    settings_path = CLAUDE_DIR / "settings.json"
-    settings = json.loads(settings_path.read_text(encoding="utf-8"))
+    settings = json.loads((CLAUDE_DIR / "settings.json").read_text(encoding="utf-8"))
+    all_events = settings.get("hooks", {})
 
-    groups = settings.get("hooks", {}).get("PreToolUse")
-    assert groups, "Artifact 024: canon deny hook not registered in .claude/settings.json — no PreToolUse group"
-
-    commands = [
-        entry.get("command", "")
+    # Where the hook is registered, across every event, so a registration in
+    # the wrong place is reported as wrong rather than as absent. Searching
+    # only PreToolUse for the filename proved that *a* string mentioning the
+    # hook exists somewhere — not that it is attached where it fires before
+    # the tool runs, and not under what applicability.
+    placements = [
+        (event, group.get("matcher"))
+        for event, groups in all_events.items()
         for group in groups
         for entry in group.get("hooks", [])
+        if "canon_deny.py" in entry.get("command", "")
     ]
-    registered = [command for command in commands if "canon_deny.py" in command]
-    assert registered, (
+
+    assert placements, (
         "Artifact 024: canon deny hook not registered in .claude/settings.json — "
-        f"PreToolUse commands are {commands}"
+        f"no hook command references canon_deny.py under any event (events: {sorted(all_events)})"
+    )
+
+    pre_tool_use = [matcher for event, matcher in placements if event == "PreToolUse"]
+    assert pre_tool_use, (
+        "Artifact 024: canon deny hook registered under an unexpected event — found at "
+        f"{[event for event, _ in placements]}, must be PreToolUse. A hook that runs after "
+        "the tool cannot prevent the write."
+    )
+
+    # ``matcher: ""`` — every tool event reaches the hook. Artifact 024 fixed
+    # this value deliberately and its own suite asserts it exactly: a matcher
+    # that filtered any tool out was experimentally shown to let a Bash
+    # redirect through. Read from that artifact, not invented here.
+    assert "" in pre_tool_use, (
+        f"Artifact 024: canon deny hook registered under an unexpected matcher {pre_tool_use!r}, "
+        'expected "" (all tools). A narrower matcher lets a write path escape the hook.'
+    )
+
+    # The registration must point at the hook that exists.
+    registered_commands = [
+        entry.get("command", "")
+        for group in all_events.get("PreToolUse", [])
+        for entry in group.get("hooks", [])
+        if "canon_deny.py" in entry.get("command", "")
+    ]
+    assert any(".claude/hooks/canon_deny.py" in command for command in registered_commands), (
+        "Artifact 024: registration does not reference .claude/hooks/canon_deny.py — "
+        f"commands are {registered_commands}"
     )
 
     hook = CLAUDE_DIR / "hooks/canon_deny.py"
@@ -320,25 +401,37 @@ def test_p0_deny_hook_refuses_a_canonical_write_without_touching_canon():
         )
         return finished.returncode, finished.stderr.strip()
 
-    absent = "canon/world/p0-conformance-probe-does-not-exist.md"
+    inside = "canon/world/p0-conformance-probe-does-not-exist.md"
+    outside = "derived/p0-conformance-probe-does-not-exist.md"
 
-    for label, payload in (
-        ("a direct Write", {"tool_name": "Write",
-                            "tool_input": {"file_path": absent, "content": "x"}}),
-        ("a shell redirect", {"tool_name": "Bash",
-                              "tool_input": {"command": f"echo x > {absent}"}}),
-    ):
-        code, reason = decide(payload)
-        assert code == 2, (
-            f"Artifact 022: {label} into canon/ exited {code}, expected 2 (deny). "
-            f"stderr: {reason[:200]!r}"
-        )
-        assert "DENIED" in reason, f"Artifact 022: {label} denied without a stated reason"
-
-    code, _ = decide({"tool_name": "Read", "tool_input": {"file_path": absent}})
-    assert code == 0, (
-        f"Artifact 022: reading canon/ exited {code}, expected 0 — Artifact 017 permits reads"
+    # The matrix, both directions. Denies alone prove nothing about the
+    # boundary: a hook that denied *everything* would satisfy every deny case
+    # and would have broken the environment rather than protected canon. The
+    # allow rows are what make this a boundary proof instead of a deny proof.
+    matrix = (
+        ("Write", "inside canon/", 2,
+         {"tool_name": "Write", "tool_input": {"file_path": inside, "content": "x"}}),
+        ("Bash redirect", "inside canon/", 2,
+         {"tool_name": "Bash", "tool_input": {"command": f"echo x > {inside}"}}),
+        ("Read", "inside canon/", 0,
+         {"tool_name": "Read", "tool_input": {"file_path": inside}}),
+        ("Write", "outside canon/", 0,
+         {"tool_name": "Write", "tool_input": {"file_path": outside, "content": "x"}}),
+        ("Bash redirect", "outside canon/", 0,
+         {"tool_name": "Bash", "tool_input": {"command": f"echo x > {outside}"}}),
     )
+
+    for operation, location, expected, payload in matrix:
+        code, reason = decide(payload)
+        verdict = {0: "allow", 2: "deny"}
+        assert code == expected, (
+            f"Artifact 022: {operation} {location} exited {code}, expected {expected} "
+            f"({verdict.get(expected, '?')}). stderr: {reason[:200]!r}"
+        )
+        if expected == 2:
+            assert "DENIED" in reason, (
+                f"Artifact 022: {operation} {location} denied without a stated reason"
+            )
 
     # The probe must leave the canonical tree exactly as it found it.
     residue = [
@@ -526,14 +619,26 @@ RETIRED_TERMS = (
 # which is generated.
 CURRENT_ARCHITECTURE = ("CLAUDE.md", "docs/boundaries", "docs/conventions", "src", ".claude")
 
-# A block is a prohibition when it tells you not to use the term. A
-# prohibition necessarily contains the words it prohibits, and every current
-# occurrence in this repository is one. `\bno\b` is broad on purpose: a false
-# *failure* on the repository's own prohibition sections would be worse than
-# the narrow risk that a violation happens to sit in a block containing "no",
-# and the term list is small enough to keep that risk small.
+# Prohibition *constructions*, not prohibition words.
+#
+# This was a block-wide test over a word list that included a bare `no`, and
+# it was a false-pass path: any paragraph containing the word "no" anywhere
+# exempted every retired term in it, so a real current-architecture claim
+# could sit two sentences below an unrelated "no" and pass. The rule is now
+# per-occurrence, and each pattern is a phrase that only appears when the term
+# is being forbidden or described as retired — never a word that can turn up
+# in ordinary prose.
+#
+# The two `no` forms are the repository's actual constructions, matched
+# tightly: a section heading that forbids the vocabulary, and a compliance
+# table cell answering "No".
 PROHIBITION = re.compile(
-    r"\b(?:must not|do not|does not|never|retired|retire|no longer|forbidden|prohibited|no)\b",
+    r"(?:"
+    r"\bmust not\b|\bdo not\b|\bdoes not\b|\bnever\b|\bno longer\b"
+    r"|\bforbidden\b|\bprohibited\b|\bretired\b|\bretire\b|\bnot use\b"
+    r"|\bno\b[^.]{0,60}\bterminology\b"      # "No COM Terminology as Current Architecture"
+    r"|\|\s*\*{0,2}no\b"                      # "| Introduces COM terminology | **No** |"
+    r")",
     re.IGNORECASE,
 )
 
@@ -554,23 +659,28 @@ def architecture_files() -> list[Path]:
     return files
 
 
-def blocks(lines: list[str]) -> list[tuple[int, list[str]]]:
-    """Blank-line-separated blocks, with the 1-based line number of each.
+def is_prohibited_here(lines: list[str], index: int) -> bool:
+    """Is the retired term on this line being forbidden rather than used?
 
-    Blocks rather than lines because a prohibition's verb often sits above the
-    list it forbids — CLAUDE.md's retired-terminology section is written that
-    way — and a line-by-line reading would call the list a violation.
+    Scoped to the occurrence, with exactly one line of lookback, and that
+    lookback is gated: the previous line must both carry a prohibition
+    construction **and** end in a colon introducing a list. That is the one
+    real continuation shape in this repository — CLAUDE.md writes
+
+        MUST NOT use as **current** architecture:
+        Canon Object Model · COM · universal Canon Object · …
+
+    so the terms sit on a line with no verb of their own.
+
+    The gate matters. Without the colon requirement any prohibition anywhere
+    above would exempt the line below it, which is the block-wide loophole in
+    a smaller disguise.
     """
-    found: list[tuple[int, list[str]]] = []
-    start = 0
-    for index, line in enumerate(lines):
-        if not line.strip():
-            if index > start:
-                found.append((start, lines[start:index]))
-            start = index + 1
-    if start < len(lines):
-        found.append((start, lines[start:]))
-    return found
+    if PROHIBITION.search(lines[index]):
+        return True
+
+    previous = lines[index - 1].rstrip() if index > 0 else ""
+    return bool(previous.endswith(":") and PROHIBITION.search(previous))
 
 
 def test_p0_current_architecture_contains_no_retired_com_vocabulary():
@@ -581,7 +691,7 @@ def test_p0_current_architecture_contains_no_retired_com_vocabulary():
     and Artifact 003 both carry prohibitions that name what they prohibit.
     Two narrow, mechanical allowances instead of a language classifier:
 
-    * the block is a prohibition; or
+    * the occurrence itself is being prohibited; or
     * the line reproduces Blueprint text, so the repository is quoting its own
       constitution — ``docs/boundaries/environment.md`` reproduces the §9.5
       layer diagram, which says *"the nine domains"* in the Blueprint's own
@@ -594,22 +704,22 @@ def test_p0_current_architecture_contains_no_retired_com_vocabulary():
 
     for path in architecture_files():
         lines = path.read_text(encoding="utf-8").splitlines()
-        for offset, block in blocks(lines):
-            block_text = "\n".join(block)
-            is_prohibition = bool(PROHIBITION.search(block_text))
-            for inner, line in enumerate(block):
-                hits = [term for term in RETIRED_TERMS if re.search(term, line)]
-                if not hits:
-                    continue
-                if is_prohibition:
-                    continue
-                flat = " ".join(line.split())
-                if flat and flat in blueprint_flat:
-                    continue
-                findings.append(
-                    f"current COM term found in current architecture file: "
-                    f"{path.relative_to(REPO_ROOT)}:{offset + inner + 1} — {hits} — {flat[:110]}"
-                )
+        for index, line in enumerate(lines):
+            hits = [term for term in RETIRED_TERMS if re.search(term, line)]
+            if not hits:
+                continue
+            if is_prohibited_here(lines, index):
+                continue
+            flat = " ".join(line.split())
+            # Quotation of the constitution, matched as a whole line. A
+            # substring rule would let a violation pass by embedding any
+            # fragment the Blueprint happens to contain.
+            if flat and flat in blueprint_flat:
+                continue
+            findings.append(
+                f"current COM term found in current architecture file: "
+                f"{path.relative_to(REPO_ROOT)}:{index + 1} — {hits} — {flat[:110]}"
+            )
 
     assert not findings, "\n  ".join(["retired vocabulary used as current architecture:"] + findings)
 
@@ -757,12 +867,17 @@ def test_p0_canon_holds_no_canonical_data_yet():
     exact condition Artifact 022 exists to prevent, and a far more serious
     finding than a missing file.
     """
-    canonical_data = [
+    present = {
         path.relative_to(REPO_ROOT).as_posix()
         for path in (REPO_ROOT / "canon").rglob("*")
-        if path.is_file() and path.name != "PURPOSE.md"
-    ]
+        if path.is_file()
+    }
 
-    assert not canonical_data, (
-        "canon/ holds data before the Mutation Coordinator exists: " f"{canonical_data}"
+    unexpected = sorted(present - P0_CANON_FILES)
+    assert not unexpected, (
+        "canon/ holds data before the Mutation Coordinator (Artifact 152) exists: "
+        f"{unexpected}"
     )
+
+    absent = sorted(P0_CANON_FILES - present)
+    assert not absent, f"Artifact 001: canonical zone scaffold missing: {absent}"
