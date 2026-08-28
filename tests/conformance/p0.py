@@ -953,16 +953,22 @@ def test_p0_current_architecture_contains_no_retired_com_vocabulary():
     A repository-wide substring search would be wrong: the Blueprint's own
     amendment history preserves this vocabulary deliberately, and CLAUDE.md
     and Artifact 003 both carry prohibitions that name what they prohibit.
-    Two narrow, mechanical allowances instead of a language classifier:
 
-    * the occurrence itself is being prohibited — bound to that span, not to
-      the line, so a correct retirement clause cannot excuse a current-use
-      claim beside it; or
-    * the whole line is, exactly, a line of the Blueprint — the repository
-      quoting its own constitution. ``docs/boundaries/environment.md``
-      reproduces the §9.5 layer diagram, which says *"the nine domains"* in
-      the Blueprint's own words. Exact, because a substring rule let any text
-      occurring anywhere inside the Blueprint escape.
+    Classification is from **local evidence only**, through the single
+    classifier :func:`com_findings`, which the adversarial tests below drive
+    as well. Blueprint text duplication is not an exemption and no Blueprint
+    content is read here: a line can reproduce constitutional wording and
+    still assert it as current, so quotability never excused anything.
+
+    Two rules, both from the Roadmap's own scoping:
+
+    * a retired term is allowed where *that occurrence* is being prohibited or
+      retired — bound to the span, so a correct retirement clause cannot
+      excuse a current-use claim beside it;
+    * the nine-domain vocabulary is retired *as an ownership axis*, so it is a
+      finding only where it does that job. ``docs/boundaries/environment.md``
+      reproduces the §9.5 layer diagram and passes on being an enumeration
+      that assigns ownership to the partitions, not on being quotable.
 
     Anything else using retired vocabulary is a current-architecture claim.
     """
@@ -999,8 +1005,9 @@ def test_com_firewall_rejects_current_use_and_allows_prohibition():
         "The system still relies on COR.",
         "COH is used by the current architecture.",
         "The current domain model is the Canon Object Model.",
-        # A Blueprint phrase embedded in the repository's own sentence is not
-        # a quotation of the Blueprint.
+        # The §9.5 enumeration turned into an ownership claim. Nothing about
+        # resembling Blueprint text protects it; the added clause is what
+        # makes it a finding.
         "The nine domains, six partitions, two primitives, ten laws are the current axis.",
     )
     for case in must_fail:
