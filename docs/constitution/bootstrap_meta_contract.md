@@ -158,9 +158,11 @@ Blueprint §13.7a states the outer limit that keeps the element small: **No Univ
 Base** — *"The shared layer is the bootstrap contract of §13.7 and nothing above it"* — and **No
 universal Record schema.**
 
-*The field-custody document named above, the Record Model Schema, has not been revised; the
-§13.7 lockstep is outstanding as **FG-V7-01**. Recorded, not resolved: it bears on Artifact 033
-and not on this element, which is the envelope's existence rather than its fields.*
+*Blueprint §13.7 assigns field custody to a companion Record Model Schema and records that
+document as unrevised (**FG-V7-01**). It is not in the supplied source set, and RMS v1.0 does not
+reference it: the universal envelope's fields are carried by **RMS §4**, which is the field
+source Roadmap row 033 cites. Noted because §13.7's custody sentence is quoted above; it does
+not affect this element, whose subject is the envelope's existence rather than its fields.*
 
 ### 4.5 Provenance
 
