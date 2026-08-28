@@ -619,28 +619,52 @@ RETIRED_TERMS = (
 # which is generated.
 CURRENT_ARCHITECTURE = ("CLAUDE.md", "docs/boundaries", "docs/conventions", "src", ".claude")
 
-# Prohibition *constructions*, not prohibition words.
+# Prohibition constructions that BIND TO ONE OCCURRENCE.
 #
-# This was a block-wide test over a word list that included a bare `no`, and
-# it was a false-pass path: any paragraph containing the word "no" anywhere
-# exempted every retired term in it, so a real current-architecture claim
-# could sit two sentences below an unrelated "no" and pass. The rule is now
-# per-occurrence, and each pattern is a phrase that only appears when the term
-# is being forbidden or described as retired — never a word that can turn up
-# in ordinary prose.
+# Two false-pass paths lived here and both are closed below. The first was a
+# block-wide test whose word list included a bare `no`: any paragraph
+# containing that word exempted every retired term in it. The second was
+# subtler and survived the first repair — testing the whole *line* meant a
+# single prohibition anywhere on it exempted every occurrence, so
 #
-# The two `no` forms are the repository's actual constructions, matched
-# tightly: a section heading that forbids the vocabulary, and a compliance
-# table cell answering "No".
-PROHIBITION = re.compile(
-    r"(?:"
-    r"\bmust not\b|\bdo not\b|\bdoes not\b|\bnever\b|\bno longer\b"
-    r"|\bforbidden\b|\bprohibited\b|\bretired\b|\bretire\b|\bnot use\b"
-    r"|\bno\b[^.]{0,60}\bterminology\b"      # "No COM Terminology as Current Architecture"
-    r"|\|\s*\*{0,2}no\b"                      # "| Introduces COM terminology | **No** |"
-    r")",
+#     The current system uses COM; COM must not be used.
+#     The current architecture uses COM, although COM is retired.
+#
+# both passed. The retirement clause is real; it simply does not license the
+# other occurrence, and a line that makes a current-use claim must fail on
+# that claim however correct its other half is.
+#
+# So the question asked is always: *is THIS occurrence the thing being
+# forbidden?* — and the binder must sit immediately against the term, with no
+# sentence boundary between them.
+
+# Directly after the term: "COM is retired", "COR must not be used".
+_PROHIBITED_AFTER = re.compile(
+    r"^\s*(?:terminology\s+|vocabulary\s+)?"
+    r"(?:(?:is|are|was|were)\s+(?:now\s+)?(?:retired|forbidden|prohibited|no longer\b)"
+    r"|must not\b|may not\b|cannot\b|shall not\b)",
     re.IGNORECASE,
 )
+
+# Directly before the term, with no sentence break in between:
+#   "do not use COM", "must not use as current architecture: … COM",
+#   "retired Canon Object Model terminology", "No COM Terminology".
+_PROHIBITED_BEFORE = (
+    re.compile(
+        r"\b(?:do not|does not|must not|may not|shall not|cannot|never|no longer)\b"
+        r"[^.;]{0,60}?\b(?:use|used|using|introduce|adopt|revive|rely on|reference|treat)\b"
+        r"[^.;]{0,40}$",
+        re.IGNORECASE,
+    ),
+    re.compile(r"\b(?:retired|deprecated|legacy|former)\s+(?:\w+\s+){0,2}$", re.IGNORECASE),
+)
+
+# "### No COM Terminology as Current Architecture" — `no` only in this shape.
+_PROHIBITED_HEADING_BEFORE = re.compile(r"\bno\s+(?:\w+\s+){0,2}$", re.IGNORECASE)
+_TERMINOLOGY_AFTER = re.compile(r"^\s*(?:terminology|vocabulary)\b", re.IGNORECASE)
+
+# "| Introduces COM terminology | **No** |" — a compliance row answering No.
+_TABLE_ANSWER_AFTER = re.compile(r"^[^|]*\|\s*\*{0,2}no\b", re.IGNORECASE)
 
 
 def architecture_files() -> list[Path]:
@@ -659,28 +683,94 @@ def architecture_files() -> list[Path]:
     return files
 
 
-def is_prohibited_here(lines: list[str], index: int) -> bool:
-    """Is the retired term on this line being forbidden rather than used?
+def normalize(line: str) -> str:
+    """Whitespace-collapsed line, for exact comparison against the Blueprint."""
+    return " ".join(line.split())
 
-    Scoped to the occurrence, with exactly one line of lookback, and that
-    lookback is gated: the previous line must both carry a prohibition
-    construction **and** end in a colon introducing a list. That is the one
-    real continuation shape in this repository — CLAUDE.md writes
+
+def blueprint_lines() -> frozenset[str]:
+    """The Blueprint's own lines, normalized, as a set for exact matching.
+
+    Not a flattened blob. The quotation allowance used ``line in
+    blueprint_flat`` — a substring test against the whole document — so any
+    line whose text happened to occur anywhere inside the Blueprint was
+    exempt, including a fragment lifted out of a longer sentence. A
+    constitutional quotation is a *whole line* reproduced; anything else is
+    the repository's own prose and answers for itself.
+    """
+    return frozenset(
+        normalized
+        for line in BLUEPRINT.read_text(encoding="utf-8").splitlines()
+        if (normalized := normalize(line))
+    )
+
+
+def is_prohibited_occurrence(lines: list[str], index: int, start: int, end: int) -> bool:
+    """Is *this* occurrence the thing being forbidden, rather than used?
+
+    Bound to the span, not to the line. The binder must sit immediately
+    against the term — no sentence boundary between them — which is what
+    stops a correct retirement clause from licensing a current-use claim
+    elsewhere in the same sentence.
+
+    One line of lookback survives, and it is gated twice: the previous line
+    must end in a colon *and* carry a list-introducing prohibition. That is
+    the one real continuation shape here — CLAUDE.md writes
 
         MUST NOT use as **current** architecture:
         Canon Object Model · COM · universal Canon Object · …
 
-    so the terms sit on a line with no verb of their own.
-
-    The gate matters. Without the colon requirement any prohibition anywhere
-    above would exempt the line below it, which is the block-wide loophole in
-    a smaller disguise.
+    so the terms sit on a line with no verb of their own. Ungated, the
+    lookback would be the block-wide loophole in a smaller disguise.
     """
-    if PROHIBITION.search(lines[index]):
+    line = lines[index]
+    before, after = line[:start], line[end:]
+
+    if _PROHIBITED_AFTER.match(after):
+        return True
+    if any(pattern.search(before) for pattern in _PROHIBITED_BEFORE):
+        return True
+    if _PROHIBITED_HEADING_BEFORE.search(before) and _TERMINOLOGY_AFTER.match(after):
+        return True
+    if before.lstrip().startswith("|") and _TABLE_ANSWER_AFTER.match(after):
         return True
 
-    previous = lines[index - 1].rstrip() if index > 0 else ""
-    return bool(previous.endswith(":") and PROHIBITION.search(previous))
+    if index > 0:
+        previous = lines[index - 1].rstrip()
+        introduces_a_list = previous.endswith(":") and any(
+            pattern.search(previous + " x") for pattern in _PROHIBITED_BEFORE
+        )
+        if introduces_a_list:
+            return True
+
+    return False
+
+
+def com_findings(text: str, known_blueprint_lines: frozenset[str]) -> list[str]:
+    """Retired-term occurrences in ``text`` that are current-architecture use.
+
+    Split out so the classification can be exercised directly on in-memory
+    strings — the adversarial cases below run against this, never against the
+    repository, so proving the firewall never requires planting a violation in
+    a real file.
+    """
+    lines = text.splitlines()
+    findings: list[str] = []
+
+    for index, line in enumerate(lines):
+        quoted = normalize(line) in known_blueprint_lines
+        for term in RETIRED_TERMS:
+            for match in re.finditer(term, line):
+                if is_prohibited_occurrence(lines, index, match.start(), match.end()):
+                    continue
+                # Exact constitutional quotation, whole line. Checked after the
+                # per-occurrence rule so it can only excuse a faithful
+                # reproduction, never a sentence built around a fragment.
+                if quoted:
+                    continue
+                findings.append(f"{index + 1} — {match.group(0)!r} — {normalize(line)[:110]}")
+
+    return findings
 
 
 def test_p0_current_architecture_contains_no_retired_com_vocabulary():
@@ -691,37 +781,97 @@ def test_p0_current_architecture_contains_no_retired_com_vocabulary():
     and Artifact 003 both carry prohibitions that name what they prohibit.
     Two narrow, mechanical allowances instead of a language classifier:
 
-    * the occurrence itself is being prohibited; or
-    * the line reproduces Blueprint text, so the repository is quoting its own
-      constitution — ``docs/boundaries/environment.md`` reproduces the §9.5
-      layer diagram, which says *"the nine domains"* in the Blueprint's own
-      words.
+    * the occurrence itself is being prohibited — bound to that span, not to
+      the line, so a correct retirement clause cannot excuse a current-use
+      claim beside it; or
+    * the whole line is, exactly, a line of the Blueprint — the repository
+      quoting its own constitution. ``docs/boundaries/environment.md``
+      reproduces the §9.5 layer diagram, which says *"the nine domains"* in
+      the Blueprint's own words. Exact, because a substring rule let any text
+      occurring anywhere inside the Blueprint escape.
 
     Anything else using retired vocabulary is a current-architecture claim.
     """
-    blueprint_flat = " ".join(BLUEPRINT.read_text(encoding="utf-8").split())
-    findings: list[str] = []
-
-    for path in architecture_files():
-        lines = path.read_text(encoding="utf-8").splitlines()
-        for index, line in enumerate(lines):
-            hits = [term for term in RETIRED_TERMS if re.search(term, line)]
-            if not hits:
-                continue
-            if is_prohibited_here(lines, index):
-                continue
-            flat = " ".join(line.split())
-            # Quotation of the constitution, matched as a whole line. A
-            # substring rule would let a violation pass by embedding any
-            # fragment the Blueprint happens to contain.
-            if flat and flat in blueprint_flat:
-                continue
-            findings.append(
-                f"current COM term found in current architecture file: "
-                f"{path.relative_to(REPO_ROOT)}:{index + 1} — {hits} — {flat[:110]}"
-            )
+    known = blueprint_lines()
+    findings = [
+        f"current COM term found in current architecture file: "
+        f"{path.relative_to(REPO_ROOT)}:{finding}"
+        for path in architecture_files()
+        for finding in com_findings(path.read_text(encoding="utf-8"), known)
+    ]
 
     assert not findings, "\n  ".join(["retired vocabulary used as current architecture:"] + findings)
+
+
+def test_com_firewall_rejects_current_use_and_allows_prohibition():
+    """The firewall's own adversarial cases, run on in-memory strings.
+
+    Exercised against the classifier rather than by planting violations in
+    real files: a conformance gate that has to damage the repository to prove
+    itself is not read-only, and a fixture left behind would be worse than the
+    defect it tested for.
+
+    The rejected cases are the ones that used to pass. A block-wide rule let
+    an unrelated "no" excuse anything nearby; a line-wide rule let a correct
+    retirement clause excuse a current-use claim in the same sentence. Both
+    are here.
+    """
+    known = blueprint_lines()
+
+    must_fail = (
+        "The current architecture uses COM.",
+        "No semantic migration is required.\nThe current architecture uses COM.",
+        "The current architecture uses COM, although COM is retired.",
+        "COM is retired, but the current implementation still uses COM.",
+        "The current architecture uses COM even though the Blueprint says COM is retired.",
+        "The current architecture has no dependency on X.\nIt uses COM as the object model.",
+        "The current system uses COM; COM must not be used.",
+        "The system still relies on COR.",
+        "COH is used by the current architecture.",
+        "The current domain model is the Canon Object Model.",
+        # A Blueprint phrase embedded in the repository's own sentence is not
+        # a quotation of the Blueprint.
+        "The nine domains, six partitions, two primitives, ten laws are the current axis.",
+    )
+    for case in must_fail:
+        assert com_findings(case, known), f"current COM use was not caught: {case!r}"
+
+    must_pass = (
+        "COM is retired.",
+        "COM is retired and must not be used.",
+        "Do not use COM in the current architecture.",
+        "COR must not be used.",
+        "Do not introduce COR.",
+        "Do not use retired Canon Object Model terminology as current architecture.",
+        "### No COM Terminology as Current Architecture",
+        "| Introduces COM terminology | **No** |",
+        # The list-continuation shape CLAUDE.md actually uses.
+        "MUST NOT use as **current** architecture:\nCanon Object Model · COM · universal Canon Object",
+    )
+    for case in must_pass:
+        assert not com_findings(case, known), (
+            f"prohibition or retirement wrongly rejected: {case!r} — {com_findings(case, known)}"
+        )
+
+
+def test_com_firewall_quotation_allowance_is_whole_line_only():
+    """An exact Blueprint line is exempt; a sentence containing one is not.
+
+    The allowance was ``line in blueprint_flat`` — a substring test against
+    the flattened document — so any text occurring anywhere inside the
+    Blueprint escaped. ``docs/boundaries/environment.md`` legitimately
+    reproduces the §9.5 layer diagram, and that must keep working, but only
+    as the whole line it is.
+    """
+    known = blueprint_lines()
+    quoted = "↓  the nine domains, six partitions, two primitives, ten laws"
+
+    assert normalize(quoted) in known, "the §9.5 diagram line is no longer found in the Blueprint"
+    assert not com_findings(quoted, known), "an exact Blueprint line was rejected"
+
+    extended = quoted + " — and that remains the current axis."
+    assert normalize(extended) not in known
+    assert com_findings(extended, known), "a sentence built around a Blueprint line was exempted"
 
 
 def test_p0_record_model_axis_is_the_six_sovereign_models():
