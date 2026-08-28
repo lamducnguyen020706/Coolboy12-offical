@@ -63,11 +63,11 @@ the governed process that produced RMS §4 — never by addition at the point of
 | 3 | `object_id` | Carries the object identity component | Identity grammar, parsing, allocation |
 | 4 | `slug` | Decoration only | Canonical identity |
 | 5 | `provenance` | Captures provenance | What provenance means in a model |
-| 6 | `registry_ref` | References the governing Registry definition | The definition's content |
+| 6 | `registry_ref` | Carries the Record's reference into the Registry | What it resolves to; resolution |
 | 7 | `sot_class` | Carries the source-of-truth class | Canonicality |
 
-Each field's **existence** is established by RMS §4 and row 033. Each field's **role** below is
-stated only as far as the sources establish it.
+Each field's **existence and universality** is established by RMS §4 and RMS Appendix B, for all
+seven alike (§9). Each field's **role** below is stated only as far as the sources establish it.
 
 ### 5.1 `partition`
 
@@ -116,12 +116,22 @@ provenance is an envelope field. History packaging is model-owned, and §13.7a p
 
 ### 5.6 `registry_ref`
 
-References the Registry definition governing the Record.
+Carries the Record's reference into the Registry — the definitional layer holding reusable
+semantics (§9.4). The field's existence in the universal envelope is RMS §4's, `FROZEN`, and
+Blueprint §13.7 names *"a Registry reference"* among what a record must have to be a record at
+all.
 
-**Does not own.** I-105: Registry *"holds semantic authority over definitions and never semantic
-ownership of another model's Records."* Reference **resolution** is shared infrastructure and
-decides *"whether the reference is semantically legal"* not at all (§13.7a, §9.4). No Registry
-definition, kind or vocabulary is stated here.
+**Does not own — and the referent is deliberately not stated here.**
+
+> **Blueprint §9.4** — **Reference resolution is not Registry work.** What an `_ref` field
+> *resolves to*, and the mechanics of resolving it, belong to a Record resolver. The Registry
+> defines the reference *field*; it does not perform or own resolution.
+
+So this contract states that the envelope carries the field, and states no referent, no
+resolution rule and no legality rule. Resolution is shared infrastructure, and §13.7a is
+explicit that it does not decide whether a reference is semantically legal. I-105 holds the
+outer bound: Registry *"holds semantic authority over definitions and never semantic ownership
+of another model's Records."* No Registry definition, kind or vocabulary is stated here.
 
 ### 5.7 `sot_class`
 
@@ -207,17 +217,26 @@ through Registry (I-105), and does not enter the envelope by being needed.
 
 ## 9. Source Traceability
 
-| Element | Source |
+**Field existence and universality** — one source for all seven, and it is the same one each
+time: **RMS §4**, which names them inside *"The universal envelope is the bootstrap set and no
+more"* `FROZEN`, and **RMS Appendix B**, whose Field Catalog lists them under
+*"Universal (7):"* and in the same breath sorts `tier` · `status` · mutation-class fields under
+*"World-owned, not universal:"* Roadmap row 033's `Val` restates the same seven; it records the contract and does
+not originate it.
+
+The rows below cite what establishes each field's **role and boundary**. They are not the
+authority for its existence, and must not be read as such.
+
+| Element | Role / boundary source |
 |---|---|
-| The seven fields, frozen and ordered | RMS §4; Roadmap row 033 `Val` |
-| `partition` | RMS §2, I-82, I-101 |
-| `kind` | Blueprint §13.7a, §13.11, I-105, I-106 |
-| `object_id` | Blueprint §13.7a (AD-1), I-82 |
-| `slug` | RMS §5, I-82 |
-| `provenance` | Blueprint §13.7a, §13.7b |
-| `registry_ref` | Blueprint §13.7a, §9.4, I-105 |
-| `sot_class` | Blueprint §29.6a, RMS §4, Artifact 016 §2–§3, I-104 |
-| `tier` and `status` excluded | RMS §4 (`AUTHOR-DECIDED`, closes FG-V7-03); Roadmap row 033 |
+| `partition` | RMS §2 (six models), I-82 (partition-first), I-101 (partition ↔ sovereign model) |
+| `kind` | Blueprint §13.7a (no universal Kind taxonomy), §13.11, I-105, I-106 |
+| `object_id` | Blueprint §13.7a (AD-1: grammar universal, composition model-owned), I-82 |
+| `slug` | RMS §5 (*"slug is decoration only"*), I-82 |
+| `provenance` | Blueprint §13.7b (envelope property; the six-term separation), §13.7a (capture ≠ meaning) |
+| `registry_ref` | Blueprint §13.7 (*"a Registry reference"* in the meta-contract), §9.4 (Registry is the definitional layer; *"the Registry defines the reference field; it does not perform or own resolution"*), §13.7a, I-105 |
+| `sot_class` | Blueprint §29.6a (five classes), Artifact 016 §2–§3 (record-level vs repository-artifact), I-104 (not canonicality) |
+| `tier` and `status` excluded | RMS §4 (`AUTHOR-DECIDED`, closes FG-V7-03); RMS Appendix B; Roadmap row 033 |
 | No eighth field; no universalized semantic | Blueprint §13.7a, RMS §4 nine prohibitions, I-103, I-87 |
 | Envelope ≠ complete Record | I-87, I-103 |
 
