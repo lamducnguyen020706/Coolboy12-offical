@@ -36,11 +36,18 @@ reproduces both and adds no step to either.
 
 ## 3. Preconditions
 
-Bootstrap presupposes exactly one artifact: **Artifact 031**, the Bootstrap Meta-Contract, which
-states the six-element minimum. Those six elements are not restated here; 031 owns them.
+Two things precede the flow, and they are different in kind.
 
-Nothing else is a precondition of the flow. In particular, no Record, no Registry definition and
-no validator exists before the flow begins — that is the condition the flow exists to resolve.
+**The declared artifact dependency is Artifact 031**, the Bootstrap Meta-Contract, which states
+the six-element minimum. Row 032 declares it and no other (`H: 031`, `S: —`). Those six elements
+are not restated here; 031 owns them.
+
+**The Constitution is the pre-existing governing context** in which bootstrap occurs — it is the
+first step of the chain in §4 and is not produced by the flow. It is not an additional artifact
+dependency of row 032, and naming it here adds none.
+
+No Record, no Registry definition and no validator exists before the flow begins — that is the
+condition the flow exists to resolve.
 
 ## 4. Bootstrap Sequence
 
@@ -85,10 +92,10 @@ distinction the whole flow turns on: the step that admits the first Record is pr
 something that is not one, which is why no Record is required in order for the first Record to
 become possible.
 
-Its position is the first application of the meta-contract. Its content is not specified here —
-not its kind, its identity value, its fields, or its payload. *Not established by the supplied
-authoritative sources*, and Registry's own roster and categories are §13.6/§13.6e and Roadmap
-P3, not this artifact.
+It is the first Record-creation step enabled by the Bootstrap Meta-Contract. Its content is not
+specified here — not its kind, its identity value, its fields, or its payload. *Not established
+by the supplied authoritative sources*, and Registry's own roster and categories are
+§13.6/§13.6e and Roadmap P3, not this artifact.
 
 ### 4.4 Registry definitions
 
@@ -188,17 +195,21 @@ canonical data.
 
 ## 7. Completion Condition
 
-The source establishes one transition and no finer predicate:
+Two different questions, and the sources answer only the first.
+
+**The conceptual endpoint of the sequence is normal Record creation**, as named by row 032's
+`Val`. It is where the chain in §4 stops: from that point Record creation is ordinary, and
+nothing in this document governs it.
 
 > **RMS §10.4** — *"Once Registry exists, its definitions follow normal Record semantics."*
 
-Bootstrap is complete when the chain in §4 has reached **normal Record creation** — the last step
-of row 032's `Val`. From that point Record creation is ordinary, and nothing in this document
-governs it.
+**The supplied authoritative sources do not define an additional checkable predicate for
+declaring bootstrap complete** — a condition naming what must exist and hold, evaluable against
+a repository. None is invented here: no readiness flag, no bootstrap state, no checklist. An
+executable statement of P1 completion is Artifact 038's, and structural checking is Artifact
+037's; neither is stated by this artifact.
 
-**No precise completion predicate — a checkable condition naming what must exist and hold — is
-established by the supplied authoritative sources.** None is invented here. An executable
-statement of P1 completion is Artifact 038's, and structural checking is Artifact 037's.
+An endpoint is not a predicate, and this document supplies only the endpoint.
 
 **Bootstrap complete does not mean the system is complete.** Blueprint §13.7 bounds the
 meta-contract as *"sufficient to create the first Registry entry and the first Record, and … not
