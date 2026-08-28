@@ -23,21 +23,25 @@ exist, or that simulation, rendering, search or any adapter provider works.
 Those belong to later phases, and asserting them here would turn the exit-P0
 gate into a claim the repository cannot support.
 
-**Not-yet-testable is not a pass, and the gate now behaves accordingly.** Two
-of the seven gated requirements have no P0 artifact to test — see
-``test_br03`` and ``test_br05`` — and they are reported through Artifact 011's
-harness as skips carrying a reason, never as green checks. Artifact 011 exists
-for exactly this: *"an unavailable check is never represented as a successful
-proof."*
+**What exit-P0 gates: row 030's ``Val``, not its ``Req``.** ``Val`` names
+*tree, boundaries, hooks, 108-register present, zero current COM terms*, and
+``test_exit_p0_gate_covers_its_val_and_carries_no_unresolved_check`` holds each
+clause to a test that must exist.
 
-But a pytest skip does not change an exit status, so this suite once said that
-sentence and then exited 0 with both requirements unproven.
-``test_exit_p0_gate_is_not_green_while_a_gated_requirement_is_unresolved``
-carries the consequence: while anything in BR-01…BR-07 is unresolved, the gate
-fails. **It fails today.** That is the truthful state and not a defect in the
-repository — the Roadmap assigns no P0 artifact to BR-03, and BR-05's only
-carrier is artifact 062 in P3. Closing that gap is an authorial act. This
-suite may report it; it may not assume it away.
+``Req: BR-01…BR-07`` is artifact 030's own citation, exactly as row 022's
+``Req: BR-07`` is 022's — a citation, not a list of things the artifact gates.
+The requirement text lives in a matrix that is not part of the supplied source
+set, so GAP-C's standing rule applies to all seven as it does to every ``Req:``
+in the build: *carried forward unverified and labelled as such*. An earlier
+version of this suite instead treated the range as a gating obligation and
+failed while BR-03 and BR-05 lacked a P0 carrier — an obligation the Roadmap
+never states, which is the invention GAP-C exists to prevent. Corrected on an
+authorial ruling, recorded in the Revolving Resolution Note.
+
+**Not-yet-testable is still not a pass.** The principle survives where it
+belongs: a check *this suite owns* and cannot run is recorded in
+``UNRESOLVED_OWNED_CHECKS`` and fails the gate, because a pytest skip does not
+change an exit status. That register is empty today.
 
 **Collection.** The Roadmap fixes this file at ``p0.py``, which does not match
 pytest's ``test_*.py`` discovery pattern, so a bare ``pytest`` run does not
@@ -1109,22 +1113,43 @@ def test_br02_readme_declares_the_project():
         "Artifact 002 (BR-02): README.md is empty"
 
 
-def test_br03_has_no_p0_artifact_to_gate():
-    """BR-03 — nothing to check, and that is reported rather than passed.
+def test_br03_citation_is_carried_forward_unverified():
+    """BR-03 — carried, preserved, and explicitly not verified. That is the state.
 
-    ``BR-03`` appears nowhere in the Roadmap: no artifact in any phase carries
-    it, and the authoritative requirement register is unavailable (GAP-C), so
-    its text cannot be read either. Row 030 gates the range ``BR-01…BR-07``,
-    which includes it.
+    ``BR-03`` appears in **no** source document: not the Blueprint, not the
+    RMS, not the Roadmap. Its text lives in
+    ``COOLBOY12_OS_FILE_BUILD_ROADMAP_DEFINITIVE_REQUIREMENT_MATRIX.md``,
+    which GAP-C records as *"not part of the supplied source set"*.
 
-    Marked not-yet-testable through Artifact 011's harness rather than
-    asserted, because a green check here would claim proof of something this
-    repository cannot currently express.
+    This test previously reported BR-03 as not-yet-testable, which read as
+    though P0 owed a proof it could not give. It does not. GAP-C's operational
+    rule is the one every artifact in the build already runs under: *"its
+    ``Req:`` citation is carried forward unverified and labelled as such"* —
+    Artifact 001 carries BR-98 that way, 022 carries BR-07 that way, and
+    nothing blocks on it. Row 030's ``Req:`` field is its own citation, like
+    every other row's; row 030's ``Val`` is what row 030 gates, and it names
+    tree, boundaries, hooks, the register and the COM firewall — no BR.
+
+    So what is verifiable here is exactly what GAP-C asks: the citation is
+    preserved as written, and no verification is claimed. Both are checked.
+    Inventing a semantic for BR-03 to assert instead is the one thing GAP-C
+    forbids outright.
     """
-    harness.not_yet_testable(
-        "BR-03",
-        "no Roadmap artifact carries BR-03 and the requirement register is "
-        "unavailable (GAP-C), so there is no P0 obligation to verify",
+    row = re.search(r"^\*\*030\*\*.*$", ROADMAP.read_text(encoding="utf-8"), re.MULTILINE)
+    assert row, "Roadmap row 030 not found"
+
+    # Preserved exactly as written — never paraphrased or renumbered.
+    assert "Req: BR-01…BR-07" in row.group(0), (
+        f"BR-03: row 030's requirement citation has changed: {row.group(0)[:200]}"
+    )
+
+    # And no verification is claimed: nothing in the build carries BR-03, so
+    # there is no artifact against which this suite could check its text.
+    carriers = re.findall(r"^\*\*(\d{3})\*\*.*?Req: [^·]*\bBR-03\b",
+                          ROADMAP.read_text(encoding="utf-8"), re.MULTILINE)
+    assert not carriers, (
+        f"BR-03 now has Roadmap carrier(s) {carriers} — the GAP-C carried-forward-unverified "
+        "treatment no longer describes it, and this test should be rewritten against them"
     )
 
 
@@ -1136,16 +1161,27 @@ def test_br04_canonical_and_source_of_truth_boundaries_exist():
     assert not absent, "BR-04 unsatisfied:\n  " + "\n  ".join(absent)
 
 
-def test_br05_has_no_p0_artifact_to_gate():
-    """BR-05 — carried by artifact 062, which is P3.
+def test_br05_citation_is_carried_forward_unverified():
+    """BR-05 — carried by artifact 062 (P3), and unverified for the same reason.
 
-    The only Roadmap row carrying ``BR-05`` is 062 (Registry kernel, P3), so
-    there is no P0 artifact for the exit-P0 gate to check. Reported rather
-    than passed, for the same reason as BR-03.
+    The only Roadmap row carrying ``BR-05`` is 062, in P3. That is not a P0
+    gap: an artifact in a later phase carrying a requirement is the ordinary
+    shape of the build, and row 030 gates its own ``Val``, not the requirement
+    coverage of phases that have not started.
+
+    Verified the same way as BR-03: the citation is preserved, and the carrier
+    is where the Roadmap puts it. No requirement text is read, because none is
+    available (GAP-C).
     """
-    harness.not_yet_testable(
-        "BR-05",
-        "the only artifact carrying BR-05 is 062 (P3); no P0 artifact is assigned to it",
+    roadmap = ROADMAP.read_text(encoding="utf-8")
+    carriers = re.findall(r"^\*\*(\d{3})\*\*.*?Req: [^·]*\bBR-05\b", roadmap, re.MULTILINE)
+
+    assert carriers == ["062"], (
+        f"BR-05: expected artifact 062 as its only carrier, Roadmap now shows {carriers}"
+    )
+    assert not [artifact for artifact in carriers if artifact <= "030"], (
+        f"BR-05 now has a P0 carrier {carriers} — this suite should verify it directly "
+        "rather than carrying the citation forward"
     )
 
 
@@ -1196,75 +1232,70 @@ def test_br07_canonical_write_deny_foundation_is_present_and_wired():
 # ---------------------------------------------------------------------------
 
 
-def unresolved_gated_requirements() -> dict[str, str]:
-    """Gated requirements with no P0 artifact to prove them, read from source.
+# Checks this suite owns that could not run. A check that cannot execute is
+# not a passing check, and a pytest skip does not change an exit status — so
+# anything set aside here fails the gate below rather than vanishing into a
+# green run. Empty today; it is a tripwire for future checks, not a claim.
+UNRESOLVED_OWNED_CHECKS: dict[str, str] = {}
 
-    Derived from the Roadmap rather than from a constant in this file, and
-    derived independently of whether the ``test_brNN`` tests ran — so the gate
-    below is order-independent and is not proving its own assumption.
 
-    A requirement is unresolved when no P0 artifact (001–030) carries it in a
-    ``Req:`` field. Nothing here interprets what any requirement *means*; the
-    authoritative register is unavailable (GAP-C) and inventing text for it
-    would be worse than reporting the gap.
+def mark_unresolved(check: str, reason: str) -> None:
+    """Record a check this suite owns but cannot run, then skip it.
+
+    Routes through Artifact 011's harness for the reporting semantics — *"an
+    unavailable check is never represented as a successful proof"* — and
+    additionally records it, so the exit-P0 gate can refuse to be green.
     """
-    roadmap = ROADMAP.read_text(encoding="utf-8")
-    rows = re.findall(r"^\*\*(\d{3})\*\*.*?Req: ([^·]+)·", roadmap, re.MULTILINE)
-
-    carried_in_p0: dict[str, set[str]] = {}
-    carried_anywhere: dict[str, set[str]] = {}
-    for artifact, requirements in rows:
-        for requirement in re.findall(r"BR-\d+", requirements):
-            carried_anywhere.setdefault(requirement, set()).add(artifact)
-            if artifact <= "030":
-                carried_in_p0.setdefault(requirement, set()).add(artifact)
-
-    unresolved: dict[str, str] = {}
-    for number in range(1, 8):
-        requirement = f"BR-{number:02d}"
-        if carried_in_p0.get(requirement):
-            continue
-        elsewhere = sorted(carried_anywhere.get(requirement, ()))
-        unresolved[requirement] = (
-            f"carried only by artifact(s) {', '.join(elsewhere)}, none in P0"
-            if elsewhere else
-            "no Roadmap artifact carries it, and the requirement register is unavailable (GAP-C)"
-        )
-    return unresolved
+    UNRESOLVED_OWNED_CHECKS[check] = reason
+    harness.not_yet_testable(check, reason)
 
 
-def test_exit_p0_gate_is_not_green_while_a_gated_requirement_is_unresolved():
+# Row 030's Val, clause by clause, paired with the test that proves it. This
+# is what exit-P0 actually gates: the Roadmap states 030's obligation in its
+# Val field, and BR requirements are not in it.
+VAL_CLAUSES = {
+    "tree": "test_p0_repository_foundation_exists",
+    "boundaries": "test_p0_environment_boundary_states_the_execution_ordering",
+    "hooks": "test_p0_canon_deny_hook_is_registered",
+    "108-register present": "test_p0_invariant_register_has_exactly_108_invariants",
+    "zero current COM terms": "test_p0_current_architecture_contains_no_retired_com_vocabulary",
+}
+
+
+def test_exit_p0_gate_covers_its_val_and_carries_no_unresolved_check():
     """The gate itself. ``G: exit-P0`` — and a skip is not a proof.
 
-    ``test_br03`` and ``test_br05`` report their state truthfully through
-    Artifact 011's harness, which makes them pytest *skips*. Skips do not
-    change pytest's exit status, so before this check the command
+    **What this gates, and a correction.** An earlier version derived a list
+    of "gated requirements" from row 030's ``Req: BR-01…BR-07`` and failed
+    while any of them lacked a P0 carrier, which made BR-03 and BR-05 block
+    exit-P0. That was an over-reach of mine, and the Roadmap does not support
+    it: every row's ``Req:`` is that artifact's own citation — row 022's
+    ``Req: BR-07`` does not mean 022 gates BR-07 — and row 030's ``Val``,
+    which is what 030 gates, names *tree, boundaries, hooks, 108-register
+    present, zero current COM terms* and no requirement at all. GAP-C already
+    fixes the treatment for every ``Req:`` in the build: carried forward
+    unverified and labelled. Blocking on it invented an obligation, which is
+    the thing GAP-C exists to prevent.
 
-        pytest tests/conformance/p0.py
+    **What survives is the real principle.** A check this suite owns and
+    cannot run must not leave the gate green. That is what
+    ``UNRESOLVED_OWNED_CHECKS`` records, and it is empty today.
 
-    exited 0 while two of the seven gated requirements had no proof at all.
-    The suite said "not-yet-testable is not a pass" and the gate then behaved
-    as though it were.
-
-    So the truthful reporting stays exactly as it is — an unresolved
-    requirement is still surfaced as unresolved, never as a failure of the
-    repository — and this test carries the consequence: while anything in
-    BR-01…BR-07 is unresolved, exit-P0 is **not green**.
-
-    This fails today. That is the correct state: the repository is not at
-    fault, the Roadmap has no P0 artifact for these two, and the gap belongs
-    to the source. Resolving it is an authorial act, not something this suite
-    may assume away.
+    So two things are asserted, and neither is self-passing: every Val clause
+    still maps to a test that exists in this module — so deleting the register
+    check or the COM firewall is caught rather than silently reducing what
+    exit-P0 means — and nothing this suite owns was set aside unrun.
     """
-    unresolved = unresolved_gated_requirements()
+    absent = [
+        f"Val clause {clause!r} has no test: {name}() is missing from this module"
+        for clause, name in sorted(VAL_CLAUSES.items())
+        if name not in globals()
+    ]
+    assert not absent, "\n  ".join(["exit-P0 gate is incomplete:"] + absent)
 
-    assert not unresolved, "\n  ".join(
-        ["exit-P0 cannot be GREEN — gated requirements are unresolved:"]
-        + [
-            f"{requirement} unresolved: {reason}; no P0 proof exists"
-            for requirement, reason in sorted(unresolved.items())
-        ]
-        + ["(BR-01…BR-07 is the range row 030 gates; see test_br03 / test_br05)"]
+    assert not UNRESOLVED_OWNED_CHECKS, "\n  ".join(
+        ["exit-P0 cannot be GREEN — checks this suite owns could not run:"]
+        + [f"{check}: {reason}" for check, reason in sorted(UNRESOLVED_OWNED_CHECKS.items())]
     )
 
 

@@ -382,6 +382,36 @@ supplied and each artifact's `Req:` citation is checked against it.
 **Status:** NON-BLOCKING — UNVERIFIED · **Type:** INFORMATION / VERIFICATION GAP ·
 **Constitutional change:** NONE
 
+#### GAP-C.1 — `Req:` on row 030 is a citation, not a gating obligation · AUTHORIAL RULING
+
+**What happened.** Artifact 030's first implementation read row 030's `Req: BR-01…BR-07` as
+seven requirements the exit-P0 gate must *prove*, and failed the gate while BR-03 and BR-05
+lacked a P0 carrier. BR-03 is carried by no Roadmap row at all; BR-05's only carrier is
+artifact 062, in P3.
+
+**Why that was wrong.** Every row's `Req:` is that artifact's own citation — row 022's
+`Req: BR-07` does not mean 022 gates BR-07 — and row 030's `Val`, which states what 030
+validates, names *tree, boundaries, hooks, 108-register present* plus a fifth clause requiring
+that current architecture carry none of the retired object-model vocabulary. It names no
+requirement at all. Treating the range as a gating obligation invented a requirement the
+Roadmap never states, which is precisely what GAP-C's operational rule forbids.
+
+**Ruling (author, this session).** All seven citations on row 030 are carried forward
+unverified and labelled, exactly as GAP-C already directs for every `Req:` in the build.
+Artifact 030 gates its `Val`. BR-03 and BR-05 are not P0 obligations and do not block exit-P0.
+
+**What this does not do.** It invents no text for BR-03 or BR-05, closes nothing, and changes
+no source document. GAP-C remains open and unverified for all 113 requirements; this only
+settles how row 030's own citation is read. The verification dependency is still discharged
+only by supplying the requirement matrix.
+
+**Retained.** The principle that an unavailable check is never a pass survives where it
+belongs: Artifact 030 records any check *it owns* and cannot run, and fails the gate on it,
+because a pytest skip does not change an exit status.
+
+**Status:** RESOLVED FOR BUILD · **Type:** READING OF AN EXISTING FIELD ·
+**Constitutional change:** NONE · **Supersedes:** nothing — refines GAP-C's application
+
 ---
 
 ### GAP-D — Purpose File Convention
