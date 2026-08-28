@@ -758,8 +758,16 @@ _OWNERSHIP_USE = re.compile(
 #   reports/       generated output, no architectural authority.
 #   tests/         DEV-ENV proof, and this file itself necessarily names every
 #                  retired term it forbids.
+#
+# And within those directories the scan reads three extensions — .md, .py and
+# .json — plus __pycache__, which is bytecode this suite's own imports create.
+# Stating that here because the scope must be exactly what runs: every current
+# architecture file in the repository today is one of those three, and
+# ``test_p0_com_scan_covers_the_current_architecture_surface`` asserts that,
+# so a .toml or .yaml arriving later is reported rather than silently unread.
 CURRENT_ARCHITECTURE = ("CLAUDE.md", "docs", "src", ".claude")
 EXCLUDED_FROM_SCAN = ("docs/sources",)
+SCANNED_SUFFIXES = (".md", ".py", ".json")
 
 # Prohibition constructions that BIND TO ONE OCCURRENCE.
 #
@@ -890,13 +898,42 @@ _PROHIBITED_USE_AFTER = re.compile(
 # allowance. The legitimate form it was meant to cover, "COM is no longer
 # used", sits *after* the term and is handled by _NO_LONGER_AFTER, which reads
 # the construction properly.
+#
+# The gap between the verb and the term is clause-tight for the same reason.
+# Only `.` and `;` counted as breaks, so one prohibition reached across a
+# comma into the next clause and exempted a plain current-use occurrence:
+#
+#     Do not use COM, but the current architecture uses COM.
+#                                                       ^^^ exempt, wrongly
+#
+# In every prohibition this has to recognise, the term follows its verb almost
+# immediately — "do not use COM", "never introduce legacy COR", "do not use
+# retired Canon Object Model terminology" — so nothing legitimate needs to
+# cross a comma, colon, dash or bracket to reach the term it forbids.
+_CLAUSE_TIGHT = r"[^.;:,()\[\]–—]{0,40}$"
 _PROHIBITED_BEFORE = (
     re.compile(
         r"\b(?:do not|does not|must not|may not|shall not|cannot|never)\b"
         rf"[^.;]{{0,60}}?\b{_USE_VERB}\b"
-        r"[^.;]{0,40}$",
+        rf"{_CLAUSE_TIGHT}",
         re.IGNORECASE,
     ),
+)
+
+# The one multi-line continuation, tied to the exact construction CLAUDE.md
+# uses and nothing else: a prohibition that ends in a colon, introducing the
+# terms it forbids on the line below.
+#
+#     MUST NOT use as **current** architecture:
+#     Canon Object Model · COM · universal Canon Object · …
+#
+# It needs its own pattern rather than reusing _PROHIBITED_BEFORE, whose gap
+# is now clause-tight and would reject the colon this shape depends on. Kept
+# separate so that loosening one cannot silently loosen the other.
+_LIST_INTRODUCTION = re.compile(
+    r"\b(?:do not|does not|must not|may not|shall not|cannot|never)\b"
+    rf"[^.;]{{0,80}}?\b{_USE_VERB}\b[^.;]*:$",
+    re.IGNORECASE,
 )
 
 # "### No COM Terminology as Current Architecture" — `no` only in this shape.
@@ -917,7 +954,7 @@ def architecture_files() -> list[Path]:
             files.extend(
                 child for child in sorted(path.rglob("*"))
                 if child.is_file()
-                and child.suffix in (".md", ".py", ".json")
+                and child.suffix in SCANNED_SUFFIXES
                 and "__pycache__" not in child.parts
                 and not any(
                     child.is_relative_to(REPO_ROOT / excluded)
@@ -944,6 +981,27 @@ def test_p0_com_scan_covers_the_current_architecture_surface():
 
     assert not [path for path in scanned if path.startswith("docs/sources/")], \
         "docs/sources/ is verbatim constitutional source and must not be scanned"
+
+    # The extension filter must be a description of this repository, not a
+    # silent exclusion. Every current architecture file is .md, .py or .json
+    # today; a file of any other kind appearing in those directories would be
+    # skipped without a word, so it is reported here instead.
+    unread = sorted(
+        child.relative_to(REPO_ROOT).as_posix()
+        for entry in CURRENT_ARCHITECTURE
+        for child in (REPO_ROOT / entry).rglob("*")
+        if (REPO_ROOT / entry).is_dir()
+        and child.is_file()
+        and child.suffix not in SCANNED_SUFFIXES
+        and "__pycache__" not in child.parts
+        and not any(
+            child.is_relative_to(REPO_ROOT / excluded) for excluded in EXCLUDED_FROM_SCAN
+        )
+    )
+    assert not unread, (
+        "current architecture holds files the COM scan does not read — either add the "
+        f"extension to SCANNED_SUFFIXES or state why it is excluded: {unread}"
+    )
 
 
 def normalize(line: str) -> str:
@@ -1002,15 +1060,10 @@ def is_prohibited_occurrence(lines: list[str], index: int, start: int, end: int)
     if before.lstrip().startswith("|") and _TABLE_ANSWER_AFTER.match(after):
         return True
 
-    if index > 0:
-        previous = lines[index - 1].rstrip()
-        introduces_a_list = previous.endswith(":") and any(
-            pattern.search(previous + " x") for pattern in _PROHIBITED_BEFORE
-        )
-        if introduces_a_list:
-            return True
-
-    return False
+    # The one continuation across a line, and the last word on this
+    # occurrence: the previous line must itself be a prohibition that ends in
+    # the colon introducing these terms.
+    return index > 0 and bool(_LIST_INTRODUCTION.search(lines[index - 1].rstrip()))
 
 
 def com_findings(text: str) -> list[str]:
@@ -1110,6 +1163,20 @@ def test_com_firewall_rejects_current_use_and_allows_prohibition():
         "The current architecture uses COM even though the Blueprint says COM is retired.",
         "The current architecture has no dependency on X.\nIt uses COM as the object model.",
         "The current system uses COM; COM must not be used.",
+        # A real prohibition and a current-use claim in one sentence. The
+        # prohibition is not in question; what it does not do is license the
+        # other occurrence.
+        "Do not use COM, but the current architecture uses COM.",
+        "Do not use COM; the current architecture still uses COM.",
+        "Never introduce COR, while the current architecture still references COR.",
+        "COM is historical, and the current architecture still uses COM.",
+        # Clause separators other than a full stop.
+        "COM is retired: the current architecture uses COM.",
+        "COM is retired — the current architecture uses COM.",
+        "COM is retired (historically); the current architecture uses COM.",
+        # Across a line break, which is not a continuation.
+        "Do not use COM.\nThe current architecture uses COM.",
+        "COM is retired.\nThe current architecture uses COM.",
         "The system still relies on COR.",
         "COH is used by the current architecture.",
         "The current domain model is the Canon Object Model.",
@@ -1336,6 +1403,50 @@ def test_com_firewall_binds_each_occurrence_separately_within_one_sentence():
     assert verdicts(
         "COM, which is retired, is used by the current system.", r"\bCOM\b"
     ) == [False]
+
+    # A prohibition and a current-use claim in one sentence. The prohibition
+    # is real and the first occurrence is exempt on it; the second is not,
+    # because the exemption belongs to the occurrence, not to the sentence.
+    assert verdicts(
+        "Do not use COM, but the current architecture uses COM.", r"\bCOM\b"
+    ) == [True, False]
+
+    # Punctuation is not a loophole either way: whatever separates the two
+    # clauses, the second occurrence is judged on its own clause.
+    for separator in (":", " —", " (historically);", ",", ";"):
+        sentence = f"COM is retired{separator} the current architecture uses COM."
+        assert verdicts(sentence, r"\bCOM\b") == [True, False], (
+            f"clause separator {separator!r} changed the verdicts: {sentence!r}"
+        )
+
+
+def test_com_firewall_does_not_carry_a_prohibition_across_a_line_break():
+    """A prohibition on one line does not bless the next line's occurrence.
+
+    The single multi-line allowance is CLAUDE.md's list construction — a
+    prohibition ending in a colon, with the terms it forbids on the line
+    below. Everything else stops at the line it is written on, or the firewall
+    would be a block-wide rule again in a smaller disguise.
+    """
+    for carried in (
+        "Do not use COM.\nThe current architecture uses COM.",
+        "COM is retired.\nThe current architecture uses COM.",
+        "COM must not be used.\nIt remains the active model.\nThe system uses COM.",
+    ):
+        findings = com_findings(carried)
+        assert findings, f"a prohibition carried across a line break: {carried!r}"
+        assert len(findings) == 1, (
+            f"expected only the current-use line to be a finding: {carried!r} — {findings}"
+        )
+
+    # The one construction that does continue, and it needs the colon.
+    listed = "MUST NOT use as **current** architecture:\nCanon Object Model · COM"
+    assert not com_findings(listed), f"the documented list construction was rejected: {listed!r}"
+
+    without_colon = "MUST NOT use as **current** architecture\nCanon Object Model · COM"
+    assert com_findings(without_colon), (
+        "the multi-line allowance fired without the colon that defines the construction"
+    )
 
 
 def test_com_firewall_does_not_exempt_a_term_for_wearing_a_retirement_adjective():
@@ -1618,15 +1729,27 @@ def mark_unresolved(check: str, reason: str) -> None:
     harness.not_yet_testable(check, reason)
 
 
-# Row 030's Val, clause by clause, paired with the test that proves it. This
-# is what exit-P0 actually gates: the Roadmap states 030's obligation in its
-# Val field, and BR requirements are not in it.
+# Row 030's Val, clause by clause, paired with the proof that establishes it.
+# This is what exit-P0 actually gates: the Roadmap states 030's obligation in
+# its Val field, and BR requirements are not in it.
+#
+# The values are the **function objects**, not their names. A name is a string
+# the gate can only look up, which proves that something is called that — not
+# that the proof ran, and not that it is still the proof for this clause. A
+# reference cannot drift: delete the function and this module stops importing;
+# rename it and the reference follows; leave a stale alias behind and the
+# identity check below catches it. The gate then calls each one, so a Val
+# clause cannot be a dead declaration while exit-P0 reports green.
+#
+# Everything else in this file is a supporting conformance test. Supporting
+# tests fail on their own merits and should; they are deliberately *not*
+# constituents of exit-P0, which gates these five clauses and no more.
 VAL_CLAUSES = {
-    "tree": "test_p0_repository_foundation_exists",
-    "boundaries": "test_p0_environment_boundary_states_the_execution_ordering",
-    "hooks": "test_p0_canon_deny_hook_is_registered",
-    "108-register present": "test_p0_invariant_register_has_exactly_108_invariants",
-    "zero current COM terms": "test_p0_current_architecture_contains_no_retired_com_vocabulary",
+    "tree": test_p0_repository_foundation_exists,
+    "boundaries": test_p0_environment_boundary_states_the_execution_ordering,
+    "hooks": test_p0_canon_deny_hook_is_registered,
+    "108-register present": test_p0_invariant_register_has_exactly_108_invariants,
+    "zero current COM terms": test_p0_current_architecture_contains_no_retired_com_vocabulary,
 }
 
 
@@ -1649,17 +1772,64 @@ def test_exit_p0_gate_covers_its_val_and_carries_no_unresolved_check():
     cannot run must not leave the gate green. That is what
     ``UNRESOLVED_OWNED_CHECKS`` records, and it is empty today.
 
-    So two things are asserted, and neither is self-passing: every Val clause
-    still maps to a test that exists in this module — so deleting the register
-    check or the COM firewall is caught rather than silently reducing what
-    exit-P0 means — and nothing this suite owns was set aside unrun.
+    **How the gate proves its Val, rather than asserting that it could.** The
+    mapping used to hold function *names* and check them against ``globals()``,
+    which established only that something of that name existed. It did not
+    establish that the proof ran, that it still proved that clause, or that
+    exit-P0 depended on it at all — a clause could be rewired to a stale name
+    and the gate would still report green.
+
+    So the gate now **calls** each proof. Three things follow, and each closes
+    one of those holes: the clause names are read back from row 030's own
+    ``Val`` field, so the mapping cannot quietly stop describing the Roadmap;
+    each proof is checked to be this module's live definition, so a reference
+    cannot detach from the function it names; and each is executed here, so a
+    failing clause fails exit-P0 whatever else the suite does.
+
+    Running them a second time is deliberate and cheap — every P0 check is
+    deterministic, offline and read-only, so a second call is the same call.
+    No pytest runs inside pytest and nothing is shelled out; these are plain
+    functions, invoked as functions.
+
+    **What is not gated.** Only these five. The other tests in this file are
+    supporting conformance checks: they fail on their own merits, and exit-P0
+    does not silently acquire them for living in the same module.
     """
-    absent = [
-        f"Val clause {clause!r} has no test: {name}() is missing from this module"
-        for clause, name in sorted(VAL_CLAUSES.items())
-        if name not in globals()
+    val = re.search(r"^\*\*030\*\*.*?· Val: (.*?) · Done:", ROADMAP.read_text(encoding="utf-8"),
+                    re.MULTILINE)
+    assert val, "Roadmap row 030 not found, or its Val field changed shape"
+
+    undeclared = [clause for clause in VAL_CLAUSES if clause not in val.group(1)]
+    assert not undeclared, (
+        f"exit-P0 gates clauses row 030's Val does not state: {undeclared} — "
+        f"Val reads: {val.group(1)!r}"
+    )
+
+    # Each proof must be this module's live definition of the name it carries.
+    # A reference that has detached — a stale alias, a shadowed function, one
+    # imported from elsewhere — would run something other than the check the
+    # clause names.
+    detached = [
+        f"Val clause {clause!r} → {proof!r} is not this module's definition of {proof.__name__}"
+        for clause, proof in sorted(VAL_CLAUSES.items())
+        if getattr(proof, "__module__", None) != __name__ or globals().get(proof.__name__) is not proof
     ]
-    assert not absent, "\n  ".join(["exit-P0 gate is incomplete:"] + absent)
+    assert not detached, "\n  ".join(["exit-P0 gate is miswired:"] + detached)
+
+    assert len(set(VAL_CLAUSES.values())) == len(VAL_CLAUSES), (
+        "two Val clauses share one proof — a clause is not independently gated: "
+        f"{sorted(proof.__name__ for proof in VAL_CLAUSES.values())}"
+    )
+
+    # Execute them. This is the gate.
+    failed = []
+    for clause, proof in sorted(VAL_CLAUSES.items()):
+        try:
+            proof()
+        except AssertionError as error:
+            failed.append(f"{clause} — {proof.__name__} failed: {error}")
+
+    assert not failed, "\n  ".join(["exit-P0 cannot be GREEN — a Val clause is unproven:"] + failed)
 
     assert not UNRESOLVED_OWNED_CHECKS, "\n  ".join(
         ["exit-P0 cannot be GREEN — checks this suite owns could not run:"]
