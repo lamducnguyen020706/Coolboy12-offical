@@ -137,6 +137,11 @@ of another model's Records."* No Registry definition, kind or vocabulary is stat
 
 Carries the Record's source-of-truth class.
 
+**This artifact declares the field. It does not create the vocabulary.** The applicable
+record-level classification is established by the Blueprint and by Artifact 016, which is the
+artifact that governs source-of-truth classification in this repository. Nothing below is
+authored here, and 033 adds no class, renames none, and holds no authority to.
+
 At the record level the classes are the Blueprint's **five** — AUTHORITATIVE · DERIVED · CACHED ·
 TEMPORARY · EXTERNAL (§29.6a; RMS §4: *"Source-of-truth classification | §29.6a — five classes |
 Constitutional"*). Artifact 016 governs which set applies: *"Where a record-level class is
@@ -234,8 +239,8 @@ authority for its existence, and must not be read as such.
 | `object_id` | Blueprint §13.7a (AD-1: grammar universal, composition model-owned), I-82 |
 | `slug` | RMS §5 (*"slug is decoration only"*), I-82 |
 | `provenance` | Blueprint §13.7b (envelope property; the six-term separation), §13.7a (capture ≠ meaning) |
-| `registry_ref` | Blueprint §13.7 (*"a Registry reference"* in the meta-contract), §9.4 (Registry is the definitional layer; *"the Registry defines the reference field; it does not perform or own resolution"*), §13.7a, I-105 |
-| `sot_class` | Blueprint §29.6a (five classes), Artifact 016 §2–§3 (record-level vs repository-artifact), I-104 (not canonicality) |
+| `registry_ref` | Blueprint §13.7 (*"a Registry reference"* in the meta-contract), §9.4 (Registry is the definitional layer; *"The Registry defines the reference **field**; it does not perform or own resolution"*), §13.7a, I-105 |
+| `sot_class` | **Vocabulary authority, not this artifact's:** Blueprint §29.6a (the five classes), Artifact 016 §2–§3 (record-level vs repository-artifact, and which set applies). Boundary: I-104 (not canonicality) |
 | `tier` and `status` excluded | RMS §4 (`AUTHOR-DECIDED`, closes FG-V7-03); RMS Appendix B; Roadmap row 033 |
 | No eighth field; no universalized semantic | Blueprint §13.7a, RMS §4 nine prohibitions, I-103, I-87 |
 | Envelope ≠ complete Record | I-87, I-103 |
