@@ -301,20 +301,46 @@ class Context:
     git_diff: str
     head: str
     hashes: dict[str, str] = field(default_factory=dict)
+    inputs: dict[str, str] = field(default_factory=dict)
     fingerprint: str = ""
 
-    def freeze(self) -> None:
-        payload = json.dumps(
-            {
-                "target": self.target["id"],
+    def canonical(self) -> dict:
+        """Every datum :meth:`render` puts in front of an auditor, and nothing else.
+
+        Excluded on purpose: the credential, any model output, the wall clock, and the
+        report path. None of them is audit input, and including any would make the
+        fingerprint of one run incomparable with the next.
+        """
+        return {
+            "target": {
+                "id": self.target["id"],
+                "name": self.target["name"],
+                "declared_path": self.target["declared_path"],
+                "row": self.target["row"],
                 "files": sorted(self.artifact_text),
-                "artifact_text": self.artifact_text,
-                "requirements": sorted(self.requirements),
-                "head": self.head,
             },
-            sort_keys=True,
-        )
-        self.fingerprint = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+            "artifact_text": self.artifact_text,
+            "artifact_digests": self.hashes,
+            "requirements": self.requirements,
+            "dependencies": self.dependencies,
+            "input_digests": self.inputs,
+            "git": {"head": self.head, "status": self.git_status, "diff": self.git_diff},
+        }
+
+    def freeze(self) -> None:
+        """Fingerprint the whole context, then prove it covers what was rendered.
+
+        The digest is taken over :meth:`canonical`, and the rendered text is folded in
+        as well: the guarantee wanted here is *same audit input, same fingerprint;
+        different audit input, different fingerprint*, and rendering is the only thing
+        the auditors actually see. Hashing both means a change that reaches an auditor
+        but not the canonical structure still moves the fingerprint.
+        """
+        payload = json.dumps(self.canonical(), sort_keys=True, ensure_ascii=False)
+        rendered = self.render()
+        self.fingerprint = hashlib.sha256(
+            (payload + "\n\x1e\n" + rendered).encode("utf-8")
+        ).hexdigest()
 
     def render(self) -> str:
         parts = [f"# AUDIT TARGET\n\nArtifact {self.target['id']} — {self.target['name']}\n",
@@ -363,15 +389,26 @@ def build_context(target: dict) -> Context:
         )
 
     dependencies = {}
+    dependency_files: list[Path] = []
     rows = roadmap_rows()
     for dependency in re.findall(r"\d{3}", fields.get("H", "") or ""):
         row = rows.get(dependency)
         if not row:
             continue
         for path in declared_paths(row)[:1]:
+            dependency_files.append(path)
             dependencies[f"Artifact {dependency} — {path.relative_to(REPO_ROOT)}"] = (
                 path.read_text(encoding="utf-8", errors="replace")
             )
+
+    # Every file the context was built from, not only the target. The Blueprint and
+    # RMS are hashed whole: the requirement sections are slices of them, so a change
+    # anywhere in either can move the text an auditor was shown. The Roadmap supplies
+    # the target's identity row and the dependency rows.
+    inputs: dict[str, str] = {}
+    for path in [*target["files"], *dependency_files, BLUEPRINT, RMS, ROADMAP]:
+        if path.is_file():
+            inputs[str(path.relative_to(REPO_ROOT))] = digest(path) or ""
 
     relative_paths = [str(p.relative_to(REPO_ROOT)) for p in target["files"]]
     context = Context(
@@ -383,9 +420,22 @@ def build_context(target: dict) -> Context:
         git_diff=git("diff", "HEAD", "--", *relative_paths).strip(),
         head=git("rev-parse", "HEAD").strip() or "(no HEAD)",
         hashes=hashes,
+        inputs=inputs,
     )
     context.freeze()
     return context
+
+
+def input_state(context: Context) -> dict[str, str | None]:
+    """Re-read the digests of every audit input, plus the git state that was rendered."""
+    state: dict[str, str | None] = {
+        name: digest(REPO_ROOT / name) for name in context.inputs
+    }
+    relative_paths = [str(p.relative_to(REPO_ROOT)) for p in context.target["files"]]
+    state["\x00git:head"] = git("rev-parse", "HEAD").strip() or "(no HEAD)"
+    state["\x00git:status"] = git("status", "--short").strip()
+    state["\x00git:diff"] = git("diff", "HEAD", "--", *relative_paths).strip()
+    return state
 
 
 # ---------------------------------------------------------------------------
@@ -453,18 +503,12 @@ ROLES = {
         "Discipline: an attack you cannot evidence is UNVERIFIED, not a finding. Do not "
         "promote speculation to a violation."
     ),
-    "judge": (
-        "You are the FINAL JUDGE. Three auditors worked the same frozen context "
-        "independently. You are not counting votes: a single evidenced finding outranks "
-        "two unevidenced agreements. Verify each finding against the quoted evidence, "
-        "separate fact from interpretation, collapse duplicates, reject unsupported "
-        "findings, and resolve disputes on the evidence. Then decide.\n\n"
-        "PASS only if no P0 and no P1 finding survives verification and the mandatory "
-        "requirements are positively evidenced. FAIL if evidence establishes a violation. "
-        "BLOCKED if compliance cannot be determined from the material available. "
-        "Unverified is never a pass."
-    ),
 }
+
+# There is deliberately no fourth model. A judge defaulting to one of the three
+# auditors would let that auditor rule on its own findings, and a model asked to
+# weigh evidence it produced is not an independent check. The verdict is decided
+# by `deterministic_verdict` from the findings and the fail-closed rules below.
 
 
 def call_bai(model: str, system: str, user: str, api_key: str) -> dict:
@@ -582,51 +626,74 @@ def normalize(auditor: str, report: dict) -> list[dict]:
     return normalized
 
 
-def signature(finding: dict) -> str:
-    text = f"{finding['requirement']} {finding['source_reference']}".lower()
-    return re.sub(r"[^a-z0-9§. ]+", "", text).strip()[:90]
+def source_key(finding: dict) -> str:
+    """The source reference alone, normalised — an index, never an identity."""
+    return re.sub(r"[^a-z0-9§.]+", "", finding["source_reference"].lower())
 
 
 def cross_compare(findings: list[dict]) -> dict[str, list[dict]]:
-    buckets: dict[str, list[dict]] = {}
-    for finding in findings:
-        buckets.setdefault(signature(finding) or finding["finding_id"], []).append(finding)
+    """Classify conservatively. Nothing is merged and nothing is called agreement.
 
-    classified = {k: [] for k in
-                  ("AGREED", "SINGLE_AUDITOR", "DISPUTED", "FALSE_POSITIVE_CANDIDATE", "UNVERIFIED")}
-    for group in buckets.values():
-        auditors = {f["auditor"] for f in group}
-        verified = [f for f in group if f["verification_status"] == "VERIFIED"]
-        entry = {"finding": group[0], "group": group, "auditors": sorted(auditors)}
-        if not verified:
+    Two auditors citing one requirement have not necessarily found one violation:
+    GLM may report a missing validation and Qwen an incorrect failure behaviour under
+    the same clause. Collapsing those on a string signature would hide a finding and
+    manufacture a corroboration that nobody made.
+
+    So every finding stays whole, keeps its auditor and its own evidence, and is
+    reported on its own. Where several findings cite the same source they are marked
+    POTENTIAL_OVERLAP — an observation for a human, not a merge and not a vote.
+    """
+    classified: dict[str, list[dict]] = {
+        "SINGLE_AUDITOR": [], "POTENTIAL_OVERLAP": [], "UNVERIFIED": [],
+    }
+    by_source: dict[str, set[str]] = {}
+    for finding in findings:
+        key = source_key(finding)
+        if key:
+            by_source.setdefault(key, set()).add(finding["auditor"])
+
+    for finding in findings:
+        entry = {"finding": finding, "auditors": [finding["auditor"]]}
+        if finding["verification_status"] != "VERIFIED" or not finding["evidence"]:
             classified["UNVERIFIED"].append(entry)
-        elif not any(f["evidence"] for f in verified):
-            classified["FALSE_POSITIVE_CANDIDATE"].append(entry)
-        elif len(auditors) >= 2:
-            severities = {f["severity"] for f in group}
-            classified["DISPUTED" if len(severities) > 1 else "AGREED"].append(entry)
+            continue
+        key = source_key(finding)
+        others = by_source.get(key, set()) - {finding["auditor"]}
+        if others:
+            entry["also_cited_by"] = sorted(others)
+            classified["POTENTIAL_OVERLAP"].append(entry)
         else:
             classified["SINGLE_AUDITOR"].append(entry)
     return classified
 
 
-def local_verdict(classified: dict[str, list[dict]]) -> tuple[str, list[dict]]:
-    """The tool's own fail-closed reading, independent of the judge model."""
+def deterministic_verdict(
+    classified: dict[str, list[dict]], reports: dict, blocked: list[str], mutation: str | None
+) -> tuple[str, list[dict]]:
+    """The verdict, decided here and by nothing else.
+
+    Fail-closed and in this order: an incomplete audit or a mutated input blocks
+    outright; a verified P0/P1 fails; a P0/P1 that could not be verified blocks,
+    because unproven is never a pass. P2, P3 and INFO are reported and decide nothing.
+    No vote is counted anywhere — a single evidenced finding is enough.
+    """
     mandatory = [
         entry["finding"]
-        for key in ("AGREED", "SINGLE_AUDITOR", "DISPUTED")
+        for key in ("SINGLE_AUDITOR", "POTENTIAL_OVERLAP")
         for entry in classified[key]
         if entry["finding"]["severity"] in BLOCKING
-        and entry["finding"]["verification_status"] == "VERIFIED"
     ]
-    if mandatory:
-        return "FAIL", mandatory
     unverified_blocking = [
         entry["finding"] for entry in classified["UNVERIFIED"]
         if entry["finding"]["severity"] in BLOCKING
     ]
+
+    if mutation or blocked or len(reports) < len(AUDITORS):
+        return "BLOCKED", mandatory
+    if mandatory:
+        return "FAIL", mandatory
     if unverified_blocking:
-        return "BLOCKED", unverified_blocking
+        return "BLOCKED", mandatory
     return "PASS", []
 
 
@@ -648,8 +715,8 @@ def finding_block(finding: dict) -> str:
 
 
 def write_report(context: Context, reports: dict, classified: dict, verdict: str,
-                 judge: dict | None, models: dict, blocked: list[str],
-                 mutation: str | None) -> Path:
+                 models: dict, blocked: list[str], mutation: str | None,
+                 mandatory: list[dict]) -> Path:
     target = context.target
     stamp = dt.datetime.now(dt.UTC).strftime("%Y%m%dT%H%M%SZ")
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
@@ -710,8 +777,9 @@ def write_report(context: Context, reports: dict, classified: dict, verdict: str
         state = "completed" if name in reports else "BLOCKED"
         lines.append(f"| {role} | `{models[name]}` | {state} |")
     lines += [
-        (f"| final judge | `{models.get('JUDGE', '—')}` | "
-         f"{'completed' if judge else 'not reached'} |"),
+        "",
+        ("There is no fourth model and no judge: the verdict below is decided by this "
+         "tool from the findings, not by any auditor."),
         "",
         f"Endpoint: `{ENDPOINT}` · credential: `BAI_API_KEY` (value never recorded).",
         "",
@@ -728,46 +796,47 @@ def write_report(context: Context, reports: dict, classified: dict, verdict: str
         lines += [finding_block(f) for f in normalized] or ["_no findings_", ""]
         lines.append("")
 
-    lines += ["## 7. Cross-Auditor Findings", ""]
-    for key in ("AGREED", "SINGLE_AUDITOR"):
-        lines += [f"### {key}", ""]
-        entries = classified.get(key, [])
-        lines += [finding_block(e["finding"]) for e in entries] or ["_none_", ""]
-        lines.append("")
-
-    lines += ["## 8. Disputed Findings", ""]
-    lines += [finding_block(e["finding"]) for e in classified.get("DISPUTED", [])] or ["_none_", ""]
-    lines += ["", "## 9. Unverified Findings", ""]
-    lines += [finding_block(e["finding"]) for e in classified.get("UNVERIFIED", [])] or ["_none_", ""]
-    lines += ["", "### False-positive candidates", ""]
-    lines += [finding_block(e["finding"]) for e in
-              classified.get("FALSE_POSITIVE_CANDIDATE", [])] or ["_none_", ""]
-
-    mandatory = [
-        e["finding"] for key in ("AGREED", "SINGLE_AUDITOR", "DISPUTED")
-        for e in classified.get(key, [])
-        if e["finding"]["severity"] in BLOCKING and e["finding"]["verification_status"] == "VERIFIED"
+    lines += [
+        "## 7. Cross-Auditor Observations",
+        "",
+        ("Findings are reported one by one, exactly as their auditor stated them. "
+         "Nothing is merged: two auditors citing one requirement have not necessarily "
+         "found one violation, and no count of auditors is treated as corroboration."),
+        "",
+        "### Cited by one auditor only",
+        "",
     ]
+    lines += [finding_block(e["finding"]) for e in
+              classified.get("SINGLE_AUDITOR", [])] or ["_none_", ""]
+
+    lines += ["", "## 8. Potential Overlap", "",
+              ("Distinct findings that cite the same source reference. Recorded for a "
+               "human reader; neither merged nor treated as agreement."), ""]
+    overlap = classified.get("POTENTIAL_OVERLAP", [])
+    for entry in overlap:
+        lines.append(finding_block(entry["finding"]))
+        lines.append(f"  - same source also cited by: {', '.join(entry.get('also_cited_by', []))}\n")
+    if not overlap:
+        lines += ["_none_", ""]
+
+    lines += ["", "## 9. Unverified Findings", "",
+              ("Reported without quotable evidence. Unverified is never a pass; where one "
+               "carries P0 or P1 severity it blocks the audit."), ""]
+    lines += [finding_block(e["finding"]) for e in classified.get("UNVERIFIED", [])] or ["_none_", ""]
+
     lines += ["", "## 10. Mandatory Violations (P0/P1, verified)", ""]
     lines += [finding_block(f) for f in mandatory] or ["_none_", ""]
 
-    lines += ["", "## 11. Final Verdict", "", f"# {verdict}", ""]
+    lines += [
+        "", "## 11. Final Verdict", "", f"# {verdict}", "",
+        ("Final verdict is the deterministic tool verdict, based on verified findings "
+         "and fail-closed conditions. No model decided it."),
+        "",
+    ]
     if blocked:
         lines += ["Blocking conditions:", ""] + [f"- {b}" for b in blocked] + [""]
     if mutation:
         lines += [f"- **{mutation}**", ""]
-    if judge:
-        lines += ["### Final judge", "", f"Judge verdict: **{judge['verdict']}**", "",
-                  judge["summary"] or "_no summary_", ""]
-        if judge["verdict"] != verdict:
-            lines += [
-                (f"> The judge returned **{judge['verdict']}** while this tool's "
-                 f"fail-closed reading of the evidence is **{verdict}**. The stricter "
-                 f"of the two is reported as the verdict; the disagreement is recorded "
-                 f"rather than resolved silently."),
-                "",
-            ]
-
     lines += ["## 12. Minimal Required Corrections", ""]
     if mandatory:
         lines += [
@@ -805,7 +874,6 @@ def write_report(context: Context, reports: dict, classified: dict, verdict: str
 
 def resolve_models() -> dict[str, str]:
     models = {name: os.environ.get(env, default) for name, env, default, _ in AUDITORS}
-    models["JUDGE"] = os.environ.get("BAI_FINAL_MODEL", models["GLM"])
     empty = [name for name, value in models.items() if not value or not value.strip()]
     if empty:
         raise Blocked("MODEL_UNAVAILABLE", f"model name is empty for: {', '.join(empty)}")
@@ -821,14 +889,14 @@ def run(argument: str | None, dry_run: bool) -> int:
     print(f"  discovery   {target['discovery']}")
 
     context = build_context(target)
-    before = dict(context.hashes)
+    before = input_state(context)
     print(f"  context     frozen, fingerprint {context.fingerprint[:16]}…")
     print(f"  sources     {len(context.requirements)} cited section(s)")
+    print(f"  inputs      {len(context.inputs)} file(s) under integrity check")
 
     models = resolve_models()
     for name, _, _, role in AUDITORS:
         print(f"  {role:<12}{models[name]}")
-    print(f"  judge       {models['JUDGE']}")
 
     if dry_run:
         print("\n--dry-run: context assembled and frozen, no API call made.")
@@ -864,45 +932,28 @@ def run(argument: str | None, dry_run: bool) -> int:
 
     findings = [f for name, report in reports.items() for f in normalize(name, report)]
     classified = cross_compare(findings)
-    verdict, _ = local_verdict(classified)
 
-    judge = None
-    if reports and not blocked:
-        judge_input = (
-            rendered
-            + "\n\n# AUDITOR REPORTS\n\n"
-            + json.dumps({name: reports[name] for name in reports}, indent=2)
-            + "\n\n# NORMALIZED FINDINGS\n\n"
-            + json.dumps(findings, indent=2)
-            + "\n\n# CROSS-AUDITOR CLASSIFICATION\n\n"
-            + json.dumps({k: len(v) for k, v in classified.items()}, indent=2)
-        )
-        try:
-            judge = call_bai(models["JUDGE"], f"{ROLES['judge']}\n\n{SCHEMA}", judge_input, api_key)
-            print(f"    JUDGE  {judge['verdict']}")
-        except Blocked as error:
-            blocked.append(f"JUDGE: {error.code} — {error.detail}")
-            print(f"    JUDGE  BLOCKED  {error.code}")
-
-    # Fail closed: any auditor that did not complete blocks the audit, and the
-    # stricter of (tool reading, judge verdict) is the verdict that stands.
-    if blocked or len(reports) < len(AUDITORS):
-        verdict = "BLOCKED"
-    elif judge and judge["verdict"] == "FAIL":
-        verdict = "FAIL"
-    elif judge and judge["verdict"] == "BLOCKED" and verdict == "PASS":
-        verdict = "BLOCKED"
-
-    after = {name: digest(REPO_ROOT / name) for name in before}
+    # Integrity of the whole audit input, not just the target: if anything the context
+    # was built from moved while the auditors were running, the context was not frozen
+    # and the findings describe material that no longer exists. Reported, never repaired
+    # — restoring a hash would destroy the evidence that something changed.
+    after = input_state(context)
     mutation = None
     if after != before:
-        changed = [name for name in before if before[name] != after[name]]
-        mutation = f"UNEXPECTED_MUTATION_DETECTED — target file(s) changed during the audit: {changed}"
-        verdict = "BLOCKED"
+        changed = sorted(
+            name.removeprefix("\x00") for name in before | after
+            if before.get(name) != after.get(name)
+        )
+        mutation = (
+            "UNEXPECTED_INPUT_MUTATION_DETECTED — audit input changed during the audit: "
+            + ", ".join(changed)
+        )
         print(f"\n  {mutation}")
 
-    report_path = write_report(context, reports, classified, verdict, judge, models,
-                               blocked, mutation)
+    verdict, mandatory = deterministic_verdict(classified, reports, blocked, mutation)
+
+    report_path = write_report(context, reports, classified, verdict, models,
+                               blocked, mutation, mandatory)
     print(f"\n  report      {report_path.relative_to(REPO_ROOT)}")
     print(f"  VERDICT     {verdict}")
     return {"PASS": 0, "FAIL": 1, "BLOCKED": 2}[verdict]
@@ -913,7 +964,7 @@ def main() -> int:
         prog="coolboy12-audit",
         description="Hard-audit a COOLBOY12 artifact with three independent B.AI auditors.",
         epilog=(
-            "Environment: BAI_API_KEY (required) · BAI_AUDIT_MODEL_1/2/3 · BAI_FINAL_MODEL · "
+            "Environment: BAI_API_KEY (required) · BAI_AUDIT_MODEL_1/2/3 · "
             "BAI_ENDPOINT · BAI_TIMEOUT.  Read-only: never patches, stages or commits. "
             "Exit 0 PASS, 1 FAIL, 2 BLOCKED."
         ),
