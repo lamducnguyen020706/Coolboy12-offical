@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+# coolboy12-audit — Termux launcher.
+#
+#   pkg install python git
+#   export BAI_API_KEY=...
+#   export PATH="$PATH:/path/to/Coolboy12-offical/bin"
+#   coolboy12-audit 033
+#
+# Resolves its own repository root from this script's location, so it runs from
+# any working directory. Passes every argument through unchanged.
+set -eu
+
+self=$0
+# Follow symlinks without readlink -f, which Termux's busybox may not provide.
+while [ -L "$self" ]; do
+    link=$(ls -ld -- "$self" | sed 's/.*-> //')
+    case $link in
+        /*) self=$link ;;
+        *)  self=$(dirname -- "$self")/$link ;;
+    esac
+done
+here=$(cd -- "$(dirname -- "$self")" && pwd)
+root=$(dirname -- "$here")
+
+for python in python3 python; do
+    if command -v "$python" >/dev/null 2>&1; then
+        exec "$python" "$root/scripts/coolboy12_audit.py" "$@"
+    fi
+done
+
+echo "coolboy12-audit: no python3 or python on PATH (Termux: pkg install python)" >&2
+exit 2
