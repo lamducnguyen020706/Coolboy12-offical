@@ -240,6 +240,16 @@ records that no source establishes a character set for any element."""
 _OBJECT_ID_PATTERN: Final = re.compile(r"\A[0-9]{6}\Z")
 """035 DECISION: exactly six ASCII decimal digits, zero-padded."""
 
+_SLUG_PATTERN: Final = re.compile(r"\A[A-Za-z0-9_]+\Z")
+"""035 DECISION: ASCII letters, ASCII digits, and the word separator.
+
+Written as an explicit range for the same reason as the two classes above.
+Python's word-character class admits every Unicode word character, and
+``str.isalnum()`` is true of letters and digits in any script, so either would
+quietly widen a set the author fixed at ASCII. Artifact 034 §6 records that no
+*source* establishes a character set for any element; this one is 035's.
+"""
+
 _SLUG_FORBIDDEN_RUN: Final = SLUG_WORD_SEPARATOR * 2
 
 
@@ -280,8 +290,8 @@ class IdentityErrorCode(StrEnum):
     """The reserved singleton marker appeared outside the singleton."""
 
     INVALID_SLUG = "INVALID_SLUG"
-    """Empty, whitespace-bearing, or an underscore used as anything but a
-    separator between two slug words."""
+    """Empty, whitespace-bearing, outside the ASCII slug character set, or an
+    underscore used as anything but a separator between two slug words."""
 
 
 class IdentityParseError(Exception):
@@ -477,21 +487,24 @@ def _check_singleton_marker(partition: str, kind: str, object_id: str) -> None:
 
 
 def _check_slug(slug: object) -> None:
-    """035 DECISION: non-empty words, joined by ``_``, and nothing else.
+    """035 DECISION: ASCII words, joined by ``_``, and nothing else.
 
-    Four refusals, one rule each: a slug must exist; it may not carry the
+    Five refusals, one rule each: a slug must exist; it may not carry the
     structural separator; it may not carry whitespace, because a space between
     words is written ``_`` and internal whitespace is never trimmed away for
-    the caller; and the underscore separates two words, so it may not lead,
-    trail, or double.
+    the caller; the underscore separates two words, so it may not lead, trail,
+    or double; and every remaining character is ASCII ``A-Z``, ``a-z``,
+    ``0-9`` or ``_``.
+
+    The character set is an operational decision of this artifact, not a
+    Blueprint or RMS fact — Artifact 034 §6 records that no source establishes
+    one for any element. It is decided now, and the parser holds to it exactly:
+    a character outside the set is refused, never transliterated, escaped, or
+    approximated into one that fits.
 
     Case is preserved exactly. ``Maximus``, ``MAXIMUS`` and ``maximus`` are
     three slugs, and no folding, transliteration or normalization happens
     anywhere in this module.
-
-    Beyond these rules the slug is left alone. No source and no 035 decision
-    establishes a slug character set (Artifact 034 §6), so none is invented
-    here — refusing more than was decided would be this module writing policy.
     """
     text = _check_text(slug, "slug")
 
@@ -527,6 +540,14 @@ def _check_slug(slug: object) -> None:
             IdentityErrorCode.INVALID_SLUG,
             f"{SLUG_WORD_SEPARATOR!r} separates two slug words and may not lead, "
             f"trail, or repeat",
+            value=text,
+            component="slug",
+        )
+    if _SLUG_PATTERN.match(text) is None:
+        raise IdentityParseError(
+            IdentityErrorCode.INVALID_SLUG,
+            f"slug must be ASCII letters, ASCII digits and "
+            f"{SLUG_WORD_SEPARATOR!r} only",
             value=text,
             component="slug",
         )

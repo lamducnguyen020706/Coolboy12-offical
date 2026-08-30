@@ -48,9 +48,11 @@ TREE = ast.parse(SOURCE)
 def test_parsing_allocates_nothing_and_carries_no_state():
     """Parsing an identity brings nothing into existence.
 
-    The same call, a thousand times, yields the same object identity and never
-    advances a counter — because there is no counter. Which ordinal comes
-    next, and how non-reuse survives a restart, is Artifact 036's.
+    The same call, a thousand times, yields an equal Identity result and never
+    advances a counter — because there is no counter. Equality here is value
+    equality, which is what the assertion below tests; two parses are not
+    required to be the same Python object. Which ordinal comes next, and how
+    non-reuse survives a restart, is Artifact 036's.
     """
     first = parse_identity("W-CH-000001-Maximus")
     for _ in range(1000):

@@ -158,6 +158,19 @@ def test_well_formed_slugs_survive_verbatim(slug, why):
     assert parse_identity(f"W-XX-000001-{slug}").slug == slug, why
 
 
+@pytest.mark.parametrize(
+    "slug",
+    ["Maximus", "Maximus_The_Great", "maximus", "MAXIMUS", "Record123", "A1_B2"],
+)
+def test_the_ascii_slug_character_set_is_accepted(slug):
+    """035 DECISION: ASCII ``A-Z``, ``a-z``, ``0-9`` and ``_``.
+
+    Letters in either case, digits, and the word separator — the whole set,
+    and the slug comes back exactly as written.
+    """
+    assert parse_identity(f"W-XX-000001-{slug}").slug == slug
+
+
 def test_slug_case_is_never_folded():
     """035 DECISION: the slug is case-sensitive; three slugs, not one."""
     slugs = {

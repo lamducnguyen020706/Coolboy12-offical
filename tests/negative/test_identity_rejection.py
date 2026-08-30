@@ -199,6 +199,33 @@ def test_internal_whitespace_is_refused_not_trimmed(value):
     assert _refusal(value).code is IdentityErrorCode.INVALID_SLUG
 
 
+@pytest.mark.parametrize(
+    "slug",
+    [
+        "Maximus!",
+        "Maximus@Great",
+        "Maximus#1",
+        "Maximus/Great",
+        "Maximus\\Great",
+        "Maximus:Great",
+        "Maximus;Great",
+        "Maximus,Great",
+        "Maximus=Great",
+        "Maximus?Great",
+        "Nguyễn",  # Unicode letters are outside the decided ASCII set
+        "😀",
+    ],
+)
+def test_a_character_outside_the_ascii_slug_set_is_refused(slug):
+    """035 DECISION: the set is ASCII ``A-Z``, ``a-z``, ``0-9`` and ``_``.
+
+    Punctuation is refused rather than stripped, and a Unicode letter is
+    refused rather than transliterated into an ASCII lookalike — either repair
+    would hand back a slug the caller never wrote.
+    """
+    assert _refusal(f"W-CH-000001-{slug}").code is IdentityErrorCode.INVALID_SLUG
+
+
 def test_trimming_reaches_the_outside_only():
     """The two halves of the rule, side by side."""
     assert (
