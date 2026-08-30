@@ -53,15 +53,16 @@ Everything below is **syntax**. The distinction is the point of the artifact and
 > ```
 
 Four elements, in that order, separated by `-`. **The first element is always the partition**
-(§13.9a): identity declares which side of a boundary a Record sits on, and therefore which
-Record Model owns it, before it says anything else.
+(§13.9a); the partition identifies the Record Model partition of the Record (§4.3).
 
 > **Blueprint §13.9a** — **This grammar is universal across all six Record Models (AD-1,
 > resolved v0.7.0).** A World Record, an Epistemic Record, a Production Record, a Registry
 > Record, a Visual Record, and an Issue Record all bear an identity of this form.
 
-The grammar, its element order, its parsing and resolution contract, and its uniqueness
-contract are shared infrastructure and constitutional (§13.7a, I-82).
+The grammar and its element order are shared constitutional infrastructure (§13.7a, I-82).
+Artifacts 035–037 operationalise parsing, formatting, resolution, allocation and structural
+validation without changing this grammar; RMS §5 lists those mechanisms as universal, and
+this artifact owns none of them (§7).
 
 ### 4.2 Components
 
@@ -112,12 +113,14 @@ The Blueprint records why: single-character codes were considered and rejected b
 not disambiguate — *"`C` would serve both Character and Concept, `L` both Lineage and
 Location."*
 
-**The rule is frozen in the Blueprint; the roster is not this artifact's.**
+**The rule is frozen in the Blueprint; the Registry owns the authoritative kind-code mapping.**
 
 > **Blueprint §13.11** — **The Registry owns the authoritative kind-code mapping** (`R`
 > partition, §9.4). Codes for the E, P, R, V, and I partitions follow the same two-character
-> rule and are Registry entries like any other — the *rule* is frozen here; the *roster*
-> extends through ordinary Registry change (§14 below).
+> rule and are Registry entries like any other …
+
+*(The sentence continues in the Blueprint with a cross-reference internal to that document;
+it is elided here rather than reproduced, because it does not resolve inside this artifact.)*
 
 No kind roster is enumerated in this document, and none is frozen by it. A universal kind
 taxonomy is prohibited (§13.7a); each Record Model owns its own (§13.11, I-106).
@@ -170,14 +173,9 @@ here.
 > **I-82** — *"A rename never creates a new canonical identity, and an internal machine
 > identifier never replaces or contradicts the canonical one."*
 
-Because the slug is decoration (§4.6), changing it changes no identity. A rename is not an
-identity operation.
+Because the slug is decoration (§4.6), changing it changes no identity.
 
-*Scope note, stated rather than widened.* §13.9a continues *"Identity changes only through the
-four identity operations (Section 13.8)"*, and §13.8 is scoped at v0.7.0 as **World Record
-Model semantics**, its gated-act mechanism shared infrastructure available to any Record Model
-while its meaning is World's. This artifact therefore carries the rename rule, which §13.9a and
-I-82 state universally, and does not extend §13.8's four operations to the other five models.
+What *does* change an identity is model-owned and is not stated here.
 
 ### 5.4 Internal identifiers
 
