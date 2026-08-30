@@ -26,9 +26,10 @@ Record in it.
 | Soft dependency | **Artifact 033** (`S: 033`) |
 | Unlocks | 035–037 |
 
-The grammar is not established here. Blueprint §13.9a states it and RMS §5 freezes it
-(`FROZEN`, AD-1, I-82). This document is the AUTHORITATIVE statement of the contract for
-readers and for Artifacts 035–037; it amends neither source and adds no rule to either.
+**Two layers of authority, and they are not the same.** The grammar is *established* by
+Blueprint §13.9a and *frozen* by RMS §5 (`FROZEN`, AD-1, I-82). This document is the
+authoritative repository statement of that existing contract, for readers and for Artifacts
+035–037; it neither amends either source nor adds an independent grammar rule of its own.
 
 ## 3. Scope
 
@@ -188,11 +189,17 @@ What *does* change an identity is model-owned and is not stated here.
 **Not semantics.** The grammar fixes the syntax of a name and decides nothing about the thing
 named. Blueprint §13.9a: *"Two Records may be identically well-formed and have nothing else in
 common — a `W-CH-…` and an `R-…` share a shape, not a lifecycle, an authority, a temporal
-architecture, or a package."* RMS §5 divides it explicitly:
+architecture, or a package."*
 
-| Universal | Model-owned |
+| This artifact establishes | Model-owned |
 |---|---|
-| syntax · positions · parsing · resolution · uniqueness · minting infrastructure | Kind meaning · Kind taxonomy · semantic interpretation · lifecycle meaning · authority meaning · identity-specific constraints |
+| syntax · positions · grammar-level invariants | Kind meaning · Kind taxonomy · semantic interpretation · lifecycle meaning · authority meaning · identity-specific constraints |
+
+The right column is RMS §5's **Model-owned** list, verbatim. RMS §5's matching **Universal**
+list is broader than this artifact — *"syntax · positions · parsing · resolution · uniqueness ·
+minting infrastructure"* — because it enumerates the universal *mechanisms* of the Record
+System, not the contents of this contract. Of those, 034 establishes syntax and positions;
+parsing, resolution and minting are operationalised by Artifacts 035–036 (§7).
 
 Blueprint §13.7a prohibits a universal identity **composition**: what constitutes the identity
 of a Record *in a model* stays model-owned. Two identities matching this grammar are two
