@@ -114,7 +114,8 @@ The Blueprint records why: single-character codes were considered and rejected b
 not disambiguate — *"`C` would serve both Character and Concept, `L` both Lineage and
 Location."*
 
-**The rule is frozen in the Blueprint; the Registry owns the authoritative kind-code mapping.**
+**The rule is frozen in the governing sources; the Registry owns the authoritative kind-code
+mapping.**
 
 > **Blueprint §13.11** — **The Registry owns the authoritative kind-code mapping** (`R`
 > partition, §9.4). Codes for the E, P, R, V, and I partitions follow the same two-character
