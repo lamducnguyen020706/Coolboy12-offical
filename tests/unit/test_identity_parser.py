@@ -151,7 +151,7 @@ def test_the_singleton_marker_is_not_the_integer_zero():
         ("Maximus_The_Great", "spaces written as underscores"),
         ("MAXIMUS", "case preserved as given"),
         ("maximus", "case preserved as given"),
-        ("Maximus2", "digits are not refused; no character set is established"),
+        ("Maximus2", "ASCII digits are inside the 035 slug character set"),
     ],
 )
 def test_well_formed_slugs_survive_verbatim(slug, why):

@@ -502,9 +502,11 @@ def _check_slug(slug: object) -> None:
     a character outside the set is refused, never transliterated, escaped, or
     approximated into one that fits.
 
-    Case is preserved exactly. ``Maximus``, ``MAXIMUS`` and ``maximus`` are
-    three slugs, and no folding, transliteration or normalization happens
-    anywhere in this module.
+    035 DECISION: the slug is case-sensitive, and supplied case is preserved
+    exactly. ``Maximus``, ``MAXIMUS`` and ``maximus`` are three slugs, not one
+    written three ways. No source states a case rule for any element (Artifact
+    034 §6), so this too is decided here — and no folding, transliteration or
+    normalization happens anywhere in this module.
     """
     text = _check_text(slug, "slug")
 
