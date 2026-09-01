@@ -132,6 +132,23 @@ an error, not an allocation of ``000001``. The pair is read from
 the kind code exists in exactly one place in the repository.
 """
 
+_DIRECTORY_SYNC_ENFORCED: Final = os.name == "posix"
+"""Whether the containing directory is synchronised, and therefore claimed.
+
+036 DECISION, and a capability question rather than a preference. Flushing the
+directory entry is what makes the *replacement* durable as opposed to the
+file's contents; POSIX provides it by opening the directory and syncing that
+descriptor, and a platform that does not permit opening a directory cannot
+offer it at all.
+
+So the guarantee is stated conditionally and honestly: where this is true the
+step is required and any failure refuses the allocation, and where it is false
+the step is neither attempted nor claimed. No source names an operating
+system — Artifact 014 fixes the environment boundary without naming one — so
+this module does not narrow the supported platform by failing closed on a
+capability the platform never had.
+"""
+
 _ALLOCATION_FLOOR: Final = MIN_ORDINAL - 1
 """The frontier of a namespace that has never allocated.
 
@@ -556,15 +573,40 @@ class OrdinalAllocator:
     def _write(self, state: dict[str, Any]) -> None:
         """Replace the record atomically, and make it durable before returning.
 
-        **036 DECISION — write to a sibling temporary file, flush it to disk,
-        then rename over the record, then flush the directory.** ``os.replace``
-        is atomic, so a reader sees the old record or the new one and never a
-        half-written one; the flushes are what make "written" mean "survives
-        the machine losing power" rather than "is in a buffer".
+        **What the source requires.** Row 036's ``Done`` is *allocation record
+        durable*, and Artifact 019 §5 fixes the operational level: a restart is
+        one in which *"the previous in-memory or runtime process state is
+        assumed gone"* and the system is re-established *"from durable,
+        persisted project state"*. That is survival of the loss of process
+        memory, and no more. The words *power loss*, *fsync* and
+        *crash-consistent* appear in no source, and Blueprint §12 states of the
+        History Record that the constitution *"deliberately specifies no
+        storage form, no schema, no serialization, no indexing, and no
+        persistence strategy — those belong to implementation stages"*.
 
-        A failure anywhere here raises, and the allocation that called it never
-        returns an ordinal. The record keeps the previous frontier and the
-        candidate ordinal is simply never issued.
+        **036 DECISION — this goes further than that, deliberately.** Write a
+        sibling temporary file, flush and fsync it, replace atomically, then
+        synchronise the containing directory. ``os.replace`` is atomic, so a
+        reader sees the old record or the new one and never a half-written one.
+        Non-reuse is constitutional and a torn or lost record is the one
+        failure that cannot be repaired afterwards, so the stronger guarantee
+        earns its cost.
+
+        **What is claimed is exactly what is enforced.** Every step above
+        raises on failure, none is swallowed, and a failure reaches the caller
+        as ``PERSISTENCE_FAILURE`` with no ordinal returned. The one step that
+        is conditional is the directory synchronisation, which is required
+        where the platform offers it and neither attempted nor claimed where it
+        does not — see :data:`_DIRECTORY_SYNC_ENFORCED`.
+
+        **A late failure consumes the candidate, and that is correct.** If the
+        replacement succeeds and the directory synchronisation then fails, the
+        record on disk already carries the new frontier while the caller
+        receives ``PERSISTENCE_FAILURE`` and no ordinal. The candidate is
+        permanently consumed and becomes a gap. It is not rolled back: lowering
+        a frontier to avoid a gap is the one repair that could reissue an
+        ordinal after a crash, and a permanent gap is always preferable to
+        that.
         """
         directory = self._record_path.parent
         temporary = self._record_path.with_name(self._record_path.name + ".writing")
@@ -578,6 +620,8 @@ class OrdinalAllocator:
             os.replace(temporary, self._record_path)
             self._fsync_directory(directory)
         except OSError as error:
+            # Safe after a successful replace too: the temporary path no longer
+            # exists, so this is a no-op and never touches the record itself.
             temporary.unlink(missing_ok=True)
             raise OrdinalAllocationError(
                 OrdinalErrorCode.PERSISTENCE_FAILURE,
@@ -586,20 +630,27 @@ class OrdinalAllocator:
 
     @staticmethod
     def _fsync_directory(directory: Path) -> None:
-        """Flush the directory entry, so the rename itself survives a crash.
+        """Flush the directory entry, so the replacement itself is durable.
 
-        Not every platform permits opening a directory; where it does not, the
-        rename is already atomic and this is the weaker guarantee that is
-        simply unavailable, not an error to fail the allocation over.
+        Syncing the file makes its *contents* durable; syncing the directory is
+        what makes the *rename* durable. Where the platform offers this the
+        step is required, and every failure propagates to :meth:`_write` and
+        reaches the caller as ``PERSISTENCE_FAILURE`` — nothing here is caught
+        and discarded. An earlier revision swallowed these errors while the
+        surrounding documentation claimed the guarantee they were meant to
+        provide, which is the specific mismatch this method now exists to not
+        have.
+
+        Where :data:`_DIRECTORY_SYNC_ENFORCED` is false the platform cannot
+        offer the step, so it is not attempted and the docstrings above do not
+        claim it.
         """
-        try:
-            descriptor = os.open(directory, os.O_RDONLY)
-        except OSError:
+        if not _DIRECTORY_SYNC_ENFORCED:
             return
+
+        descriptor = os.open(directory, os.O_RDONLY)
         try:
             os.fsync(descriptor)
-        except OSError:
-            pass
         finally:
             os.close(descriptor)
 

@@ -16,6 +16,7 @@ import json
 
 import pytest
 
+from coolboy12.bootstrap import ordinal as ordinal_module
 from coolboy12.bootstrap.identity import MAX_ORDINAL
 from coolboy12.bootstrap.ordinal import (
     OrdinalAllocationError,
@@ -456,6 +457,123 @@ def test_a_failed_write_leaves_no_partial_record_behind(record, monkeypatch):
     assert json.loads(record.read_text(encoding="utf-8"))["namespaces"] == [
         {"partition": "W", "kind": "CH", "highest_allocated": 1}
     ]
+
+
+def _fail_directory_sync(monkeypatch):
+    """Make ``os.fsync`` fail for a directory descriptor and nothing else.
+
+    This exercises the real path rather than a stand-in: the temporary file is
+    written and synced for real, ``os.replace`` genuinely runs, and only the
+    final directory synchronisation fails. Monkeypatching ``os.replace``
+    instead would test a different, earlier failure point — which is why the
+    pre-replace test above is kept separate.
+    """
+    import os
+    import stat
+
+    real_fsync = os.fsync
+
+    def selective(descriptor):
+        if stat.S_ISDIR(os.fstat(descriptor).st_mode):
+            raise OSError("directory synchronisation failed")
+        return real_fsync(descriptor)
+
+    monkeypatch.setattr(os, "fsync", selective)
+
+
+@pytest.mark.skipif(
+    not ordinal_module._DIRECTORY_SYNC_ENFORCED,
+    reason="this platform does not offer directory synchronisation, so the "
+    "module neither attempts nor claims it",
+)
+def test_a_failed_directory_sync_refuses_after_the_replacement(record, monkeypatch):
+    """The durability step that used to fail silently now refuses.
+
+    An earlier revision caught this error and carried on while the surrounding
+    documentation claimed the guarantee. Now the caller learns that the
+    allocation was not made durable, and receives no ordinal.
+    """
+    allocator = OrdinalAllocator.create(record)
+    assert allocator.allocate("W", "CH") == 1
+
+    _fail_directory_sync(monkeypatch)
+    error = _refusal(allocator.allocate, "W", "CH")
+
+    assert error.code is OrdinalErrorCode.PERSISTENCE_FAILURE
+
+
+@pytest.mark.skipif(
+    not ordinal_module._DIRECTORY_SYNC_ENFORCED,
+    reason="this platform does not offer directory synchronisation",
+)
+def test_a_candidate_lost_to_a_late_failure_is_never_reissued(record, monkeypatch):
+    """The invariant that outranks tidiness.
+
+    The replacement succeeded before the synchronisation failed, so ``2`` is
+    already recorded and the caller never received it. It is permanently
+    consumed. The next allocation is ``3`` — never ``2`` — because reissuing it
+    is reuse, and a permanent gap is always the better failure.
+    """
+    allocator = OrdinalAllocator.create(record)
+    allocator.allocate("W", "CH")
+
+    _fail_directory_sync(monkeypatch)
+    _refusal(allocator.allocate, "W", "CH")
+    monkeypatch.undo()
+
+    # A genuinely reopened allocator, reading the record from disk.
+    reopened = OrdinalAllocator(record)
+    assert reopened.highest_allocated("W", "CH") == 2
+    assert reopened.allocate("W", "CH") == 3
+
+
+@pytest.mark.skipif(
+    not ordinal_module._DIRECTORY_SYNC_ENFORCED,
+    reason="this platform does not offer directory synchronisation",
+)
+def test_a_late_failure_leaves_the_record_intact_and_no_temporary_behind(
+    record, monkeypatch
+):
+    """Cleanup after a replace must not touch the authoritative record."""
+    allocator = OrdinalAllocator.create(record)
+    allocator.allocate("W", "CH")
+
+    _fail_directory_sync(monkeypatch)
+    _refusal(allocator.allocate, "W", "CH")
+    monkeypatch.undo()
+
+    assert record.exists()
+    assert list(record.parent.glob("*.writing")) == []
+    assert json.loads(record.read_text(encoding="utf-8")) == {
+        "version": 1,
+        "namespaces": [{"partition": "W", "kind": "CH", "highest_allocated": 2}],
+    }
+
+
+def test_no_durability_failure_is_caught_and_discarded():
+    """Static guard on the mismatch this patch removed.
+
+    Neither writing method may contain a bare ``except OSError: pass`` or an
+    ``except`` that returns — a swallowed persistence error is precisely how
+    documentation comes to claim more than the code enforces.
+    """
+    import ast
+    import inspect
+    import textwrap
+
+    for method in (OrdinalAllocator._write, OrdinalAllocator._fsync_directory):
+        tree = ast.parse(textwrap.dedent(inspect.getsource(method)))
+        for handler in [n for n in ast.walk(tree) if isinstance(n, ast.ExceptHandler)]:
+            body = handler.body
+            assert not all(isinstance(node, ast.Pass) for node in body), (
+                f"{method.__name__} discards an exception"
+            )
+            assert not any(isinstance(node, ast.Return) for node in body), (
+                f"{method.__name__} returns from an exception handler"
+            )
+            assert any(isinstance(node, ast.Raise) for node in body), (
+                f"{method.__name__} has a handler that does not re-raise"
+            )
 
 
 def test_an_error_names_its_code_and_namespace(allocator):
