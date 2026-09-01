@@ -682,6 +682,88 @@ def _fail_directory_sync(monkeypatch):
     monkeypatch.setattr(os, "fsync", selective)
 
 
+def test_a_failed_temporary_write_refuses_and_leaves_the_record_alone(
+    record, monkeypatch
+):
+    """The earliest persistence failure point: the temporary file itself.
+
+    Distinct from the ``os.replace`` failure below — this one happens before
+    anything could have reached the authoritative record, so the frontier must
+    be untouched and no candidate consumed.
+    """
+    from pathlib import Path
+
+    allocator = OrdinalAllocator.create(record)
+    allocator.allocate("W", "CH")
+
+    real_open = Path.open
+
+    def refuse_the_temporary(self, *args, **kwargs):
+        if self.name.endswith(".writing"):
+            raise OSError("no space to stage the record")
+        return real_open(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", refuse_the_temporary)
+    error = _refusal(allocator.allocate, "W", "CH")
+    monkeypatch.undo()
+
+    assert error.code is OrdinalErrorCode.PERSISTENCE_FAILURE
+    assert allocator.highest_allocated("W", "CH") == 1
+    assert allocator.allocate("W", "CH") == 2
+
+
+def test_a_failed_file_sync_refuses_before_the_replacement(record, monkeypatch):
+    """The second failure point: the record's own bytes never reached disk.
+
+    Fails ``fsync`` on the regular file rather than on the directory, so the
+    replacement never happens and the candidate is not consumed — the mirror
+    image of the late failure below, and the reason the two are separate tests.
+    """
+    import os
+    import stat
+
+    allocator = OrdinalAllocator.create(record)
+    allocator.allocate("W", "CH")
+
+    real_fsync = os.fsync
+
+    def refuse_regular_files(descriptor):
+        if stat.S_ISREG(os.fstat(descriptor).st_mode):
+            raise OSError("file synchronisation failed")
+        return real_fsync(descriptor)
+
+    monkeypatch.setattr(os, "fsync", refuse_regular_files)
+    error = _refusal(allocator.allocate, "W", "CH")
+    monkeypatch.undo()
+
+    assert error.code is OrdinalErrorCode.PERSISTENCE_FAILURE
+    assert allocator.highest_allocated("W", "CH") == 1
+    assert list(record.parent.glob("*.writing")) == []
+    assert allocator.allocate("W", "CH") == 2
+
+
+def test_a_losing_allocator_never_removes_the_winners_lock(allocator, record):
+    """The lock belongs to whoever took it, and only to them.
+
+    ``_locked`` raises ``CONCURRENT_ALLOCATION`` *before* entering its
+    try/finally, so a caller that never held the lock cannot release it. If it
+    could, the loser's cleanup would free the winner's lock and two allocators
+    could read the same frontier — which is the reuse the lock exists to
+    prevent.
+    """
+    lock = record.with_name(record.name + ".lock")
+    lock.touch()
+
+    for _ in range(3):
+        assert _refusal(allocator.allocate, "W", "CH").code is (
+            OrdinalErrorCode.CONCURRENT_ALLOCATION
+        )
+        assert lock.exists(), "a losing allocator deleted the holder's lock"
+
+    lock.unlink()
+    assert allocator.allocate("W", "CH") == 1
+
+
 @pytest.mark.skipif(
     not ordinal_module._DIRECTORY_SYNC_ENFORCED,
     reason="this platform does not offer directory synchronisation, so the "
