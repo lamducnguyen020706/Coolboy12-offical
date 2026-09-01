@@ -348,14 +348,73 @@ def test_a_held_lock_refuses_rather_than_races(allocator, record):
     assert allocator.allocate("W", "CH") == 1
 
 
-def test_the_lock_is_released_after_a_refused_allocation(allocator, record):
-    """A refusal inside the lock must not leave the allocator wedged."""
-    _refusal(allocator.allocate, "W", "WS")
-    assert not record.with_name(record.name + ".lock").exists()
+def test_a_refusal_before_the_lock_leaves_no_lock_behind(allocator, record):
+    """The singleton is refused before the lock is ever taken.
 
-    OrdinalAllocator.create(record.with_name("other.json"))
+    Named for what it actually covers. The singleton check runs above ``with
+    self._locked()``, so this proves the early-exit path takes no lock — not
+    that an in-lock failure releases one, which is the test below.
+    """
+    _refusal(allocator.allocate, "W", "WS")
+
+    assert not record.with_name(record.name + ".lock").exists()
     assert allocator.allocate("W", "CH") == 1
     assert not record.with_name(record.name + ".lock").exists()
+
+
+def test_every_failure_inside_the_lock_still_releases_it(tmp_path, monkeypatch):
+    """The three refusals that happen while the lock is held.
+
+    ``EXHAUSTED``, ``STATE_CORRUPTION`` and ``PERSISTENCE_FAILURE`` are all
+    raised after ``with self._locked()`` has been entered. A lock left behind
+    by any of them would wedge the namespace permanently — and because
+    contention fails closed rather than waiting, a stale lock is not something
+    a later call recovers from on its own.
+    """
+    import os
+
+    def lock_of(record):
+        return record.with_name(record.name + ".lock")
+
+    # EXHAUSTED — raised after the record is read, inside the lock.
+    exhausted = tmp_path / "exhausted.json"
+    OrdinalAllocator.create(exhausted)
+    allocator = _at_frontier(exhausted, MAX_ORDINAL)
+    assert _refusal(allocator.allocate, "W", "CH").code is OrdinalErrorCode.EXHAUSTED
+    assert not lock_of(exhausted).exists()
+
+    # STATE_CORRUPTION — raised by the read itself, inside the lock.
+    corrupt = tmp_path / "corrupt.json"
+    OrdinalAllocator.create(corrupt)
+    allocator = OrdinalAllocator(corrupt)
+    corrupt.write_text("{ not json", encoding="utf-8")
+    assert _refusal(allocator.allocate, "W", "CH").code is (
+        OrdinalErrorCode.STATE_CORRUPTION
+    )
+    assert not lock_of(corrupt).exists()
+
+    # PERSISTENCE_FAILURE — raised by the write, inside the lock.
+    unwritable = tmp_path / "unwritable.json"
+    allocator = OrdinalAllocator.create(unwritable)
+    monkeypatch.setattr(os, "replace", _raises(OSError("device is full")))
+    assert _refusal(allocator.allocate, "W", "CH").code is (
+        OrdinalErrorCode.PERSISTENCE_FAILURE
+    )
+    monkeypatch.undo()
+    assert not lock_of(unwritable).exists()
+
+    # And the namespace is still usable afterwards, which a stale lock would
+    # have made impossible.
+    assert allocator.allocate("W", "CH") == 1
+
+
+def _raises(error):
+    """A stand-in that raises ``error`` whatever it is called with."""
+
+    def refuse(*args, **kwargs):
+        raise error
+
+    return refuse
 
 
 def test_concurrent_allocators_never_hand_out_the_same_ordinal(record, tmp_path):

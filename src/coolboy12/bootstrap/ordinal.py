@@ -180,21 +180,38 @@ class OrdinalErrorCode(StrEnum):
     """The allocation record is missing, unreadable, or not what it claims."""
 
     PERSISTENCE_FAILURE = "PERSISTENCE_FAILURE"
-    """The allocation could not be made durable, so it was not made."""
+    """A durability step failed, so no ordinal was returned.
+
+    Whether the candidate is still available depends on which step failed:
+    before the record is replaced it is untouched, and after the replacement it
+    is already recorded and permanently consumed. Either way the caller
+    received nothing and must not assume otherwise.
+    """
 
     CONCURRENT_ALLOCATION = "CONCURRENT_ALLOCATION"
     """Another allocation holds the record; this one refused rather than raced."""
 
 
 class OrdinalAllocationError(Exception):
-    """An allocation was refused, and no ordinal was issued.
+    """An allocation was refused, and no ordinal was returned.
 
     Carries an :class:`OrdinalErrorCode` and the namespace it concerns, so a
     caller can branch on the code rather than on message text.
 
-    The guarantee that matters is what this exception means: when it is
-    raised, the allocation did **not** happen and no ordinal left this module.
-    A caller that sees it has not consumed anything.
+    **What this exception guarantees, exactly.** No ordinal reached the caller.
+    That much holds for every code, without exception, and it is what a caller
+    can rely on: nothing was handed out, so nothing may be used.
+
+    **What it does not guarantee.** That the candidate is still available. A
+    ``PERSISTENCE_FAILURE`` raised *after* the record was replaced leaves the
+    new frontier on disk, so the candidate is already recorded and is
+    permanently consumed — see :meth:`OrdinalAllocator._write`. It becomes a
+    gap, and the next allocation advances past it.
+
+    The two are not in tension once the priority is stated: **non-reuse
+    outranks gaplessness.** Lowering the frontier to reclaim such a candidate
+    is the one repair that could hand the same ordinal out twice after a crash,
+    so this module never performs it, and this exception never implies it did.
     """
 
     def __init__(
@@ -374,7 +391,9 @@ class OrdinalAllocator:
         :raises OrdinalAllocationError: with the code naming the refusal —
             ``INVALID_NAMESPACE``, ``NON_ALLOCATABLE_SINGLETON``,
             ``EXHAUSTED``, ``STATE_CORRUPTION``, ``PERSISTENCE_FAILURE`` or
-            ``CONCURRENT_ALLOCATION``. In every case no ordinal was issued.
+            ``CONCURRENT_ALLOCATION``. In every case no ordinal is returned;
+            whether the candidate remains available is the separate question
+            :class:`OrdinalAllocationError` answers.
 
         **036 DECISION — the ordinal is durable before it is returned.** The
         order is: take the lock, read the record, compute the next ordinal,
@@ -625,7 +644,9 @@ class OrdinalAllocator:
             temporary.unlink(missing_ok=True)
             raise OrdinalAllocationError(
                 OrdinalErrorCode.PERSISTENCE_FAILURE,
-                f"the allocation could not be made durable, so it was not made: {error}",
+                f"a durability step failed, so no ordinal was returned. If the record "
+                f"had already been replaced, the candidate is recorded and permanently "
+                f"consumed rather than available again: {error}",
             ) from error
 
     @staticmethod
