@@ -213,6 +213,148 @@ def test_one_namespace_exhausting_does_not_touch_another(record):
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Initialization — exactly one winner, and never an overwrite
+# ---------------------------------------------------------------------------
+
+
+def test_creation_cannot_overwrite_a_record_even_if_the_existence_check_lies(
+    record, monkeypatch
+):
+    """The TOCTOU window, closed at the only place it can be closed.
+
+    An earlier revision checked ``path.exists()`` and then wrote through
+    ``os.replace``, which overwrites unconditionally. Two steps with a gap: a
+    second initializer could pass the check while the first was still writing,
+    and then reset a record that already held allocations — reissuing ordinals
+    that had been handed out.
+
+    This forces the gap wide open by making the existence check always report
+    "absent". Creation must still refuse, because it no longer asks: the
+    exclusive open is what decides, and the kernel decides it atomically.
+    """
+    allocator = OrdinalAllocator.create(record)
+    assert [allocator.allocate("W", "CH") for _ in range(3)] == [1, 2, 3]
+
+    from pathlib import Path
+
+    monkeypatch.setattr(Path, "exists", lambda self: False)
+    error = _refusal(OrdinalAllocator.create, record)
+    monkeypatch.undo()
+
+    assert error.code is OrdinalErrorCode.STATE_CORRUPTION
+    assert OrdinalAllocator(record).highest_allocated("W", "CH") == 3
+    assert OrdinalAllocator(record).allocate("W", "CH") == 4
+
+
+def test_creation_does_not_go_through_the_overwriting_write_path():
+    """``_write`` replaces unconditionally, which is wrong for creation.
+
+    Correct for advancing a frontier over a record that already exists, and
+    precisely wrong for bringing one into existence. Creation must not reach
+    it, or the exclusive open above would be decorative.
+    """
+    import ast
+    import inspect
+    import textwrap
+
+    tree = ast.parse(textwrap.dedent(inspect.getsource(OrdinalAllocator.create)))
+    called = {
+        node.func.attr
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+    }
+
+    assert "_write" not in called
+    assert "replace" not in called
+    assert "O_EXCL" in inspect.getsource(OrdinalAllocator.create)
+
+
+def test_concurrent_creation_has_exactly_one_winner(tmp_path):
+    """Eight real processes, one target path, one record.
+
+    Not a sequential stand-in: initialization safety is a property of the
+    filesystem call, so the test has to make the filesystem call from separate
+    processes. Whichever the kernel admits creates the record; every other must
+    refuse and change nothing.
+    """
+    import subprocess
+    import sys
+    import textwrap
+    from concurrent.futures import ThreadPoolExecutor
+    from pathlib import Path
+
+    import coolboy12.bootstrap.ordinal as module
+
+    record = tmp_path / "contested.json"
+    script = tmp_path / "create_once.py"
+    script.write_text(
+        textwrap.dedent(
+            """
+            import sys
+            sys.path.insert(0, sys.argv[1])
+            from coolboy12.bootstrap.ordinal import (
+                OrdinalAllocationError, OrdinalAllocator,
+            )
+            try:
+                OrdinalAllocator.create(sys.argv[2])
+                print("CREATED")
+            except OrdinalAllocationError as error:
+                print(error.code.value)
+            """
+        ),
+        encoding="utf-8",
+    )
+    source_root = str(Path(module.__file__).parents[3])
+
+    def contend(_):
+        finished = subprocess.run(
+            [sys.executable, str(script), source_root, str(record)],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return finished.stdout.strip()
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(contend, range(8)))
+
+    assert results.count("CREATED") == 1, f"not exactly one winner: {results}"
+    assert set(results) == {"CREATED", OrdinalErrorCode.STATE_CORRUPTION.value}
+
+    # The record is the untouched empty state — no loser wrote over the winner.
+    assert json.loads(record.read_text(encoding="utf-8")) == {
+        "version": 1,
+        "namespaces": [],
+    }
+    assert OrdinalAllocator(record).allocate("W", "CH") == 1
+
+
+def test_creation_over_a_populated_record_preserves_every_frontier(record):
+    """Kept conceptually separate from the fresh-path race above.
+
+    That one starts from nothing and tests who wins. This one starts from
+    allocations already made and tests that a second initializer destroys none
+    of them.
+    """
+    allocator = OrdinalAllocator.create(record)
+    allocator.allocate("W", "CH")
+    allocator.allocate("W", "CH")
+    allocator.allocate("E", "CH")
+    before = record.read_text(encoding="utf-8")
+
+    for _ in range(3):
+        assert _refusal(OrdinalAllocator.create, record).code is (
+            OrdinalErrorCode.STATE_CORRUPTION
+        )
+
+    assert record.read_text(encoding="utf-8") == before
+    reopened = OrdinalAllocator(record)
+    assert reopened.highest_allocated("W", "CH") == 2
+    assert reopened.allocate("W", "CH") == 3
+    assert reopened.allocate("E", "CH") == 2
+
+
 def test_a_missing_record_is_a_failure_not_a_fresh_start(record):
     """The most dangerous silent reset there is.
 

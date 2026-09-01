@@ -358,26 +358,80 @@ class OrdinalAllocator:
         """Write a new, empty allocation record and bind to it.
 
         The one operation that may begin a frontier at zero, and it is
-        deliberate, explicit, and refuses to run twice: if a record already
-        exists at the path it raises rather than truncating, because
-        overwriting an allocation record is indistinguishable in effect from
-        resetting every namespace to ``000001``.
+        deliberate, explicit, and refuses to run twice. Overwriting an
+        allocation record is indistinguishable in effect from resetting every
+        namespace to ``000001`` and releasing every ordinal it held, so this
+        never overwrites — not on a second call, and not on a concurrent one.
 
         :raises OrdinalAllocationError: ``STATE_CORRUPTION`` if a record is
             already there; ``PERSISTENCE_FAILURE`` if it cannot be written.
+
+        **036 DECISION — the record is created exclusively, in one step.** The
+        file is opened with ``O_CREAT | O_EXCL``, which creates it only if it
+        does not exist and fails otherwise, and the kernel decides that
+        atomically. There is no separate existence check, because a check
+        followed by a write is two steps with a gap between them: a second
+        initializer could pass the check while the first was still writing, and
+        then replace a record that already held allocations. That is a reset,
+        and a reset is reuse.
+
+        Concurrent initialization therefore has exactly one winner. Whichever
+        caller the kernel admits creates the record; every other receives
+        ``STATE_CORRUPTION`` and changes nothing.
+
+        This deliberately does **not** go through :meth:`_write`, whose
+        ``os.replace`` overwrites unconditionally — correct for advancing a
+        frontier, and precisely wrong for creating one.
+
+        No source requires this. Nothing in the Blueprint, the RMS or the
+        Roadmap speaks to concurrent initialization; the only concurrency
+        statement anywhere is single-*authority*, which is about who commits
+        canon. It is enforced because this method already promised it, and
+        because the failure it prevents is the constitutional one.
+
+        A crash between the create and the write leaves an empty file, which
+        every later read refuses as ``STATE_CORRUPTION``. That is the intended
+        direction: a fresh record holds no allocations, so nothing is lost by
+        requiring a human to remove it, and no path here can silently turn a
+        half-made record into a working one.
         """
         path = Path(record_path)
-        if path.exists():
+        allocator = cls.__new__(cls)
+        allocator._record_path = path
+        allocator._lock_path = path.with_name(path.name + ".lock")
+
+        try:
+            descriptor = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        except FileExistsError as error:
             raise OrdinalAllocationError(
                 OrdinalErrorCode.STATE_CORRUPTION,
                 f"an allocation record already exists at {path}; refusing to overwrite it, "
                 f"because replacing a record resets every frontier and releases every "
                 f"ordinal it held",
-            )
-        allocator = cls.__new__(cls)
-        allocator._record_path = path
-        allocator._lock_path = path.with_name(path.name + ".lock")
-        allocator._write({"version": RECORD_VERSION, "namespaces": []})
+            ) from error
+        except OSError as error:
+            raise OrdinalAllocationError(
+                OrdinalErrorCode.PERSISTENCE_FAILURE,
+                f"the allocation record at {path} could not be created: {error}",
+            ) from error
+
+        payload = json.dumps(
+            {"version": RECORD_VERSION, "namespaces": []}, indent=2, sort_keys=True
+        )
+        try:
+            with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+                handle.write(payload + "\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            cls._fsync_directory(path.parent)
+        except OSError as error:
+            raise OrdinalAllocationError(
+                OrdinalErrorCode.PERSISTENCE_FAILURE,
+                f"the new allocation record at {path} could not be made durable. It is "
+                f"left in place and unreadable rather than silently completed; remove it "
+                f"deliberately to try again: {error}",
+            ) from error
+
         return allocator
 
     def allocate(self, partition: str, kind: str) -> int:
