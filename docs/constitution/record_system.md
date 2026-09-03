@@ -7,11 +7,11 @@ Req: BR-17,RR-01 · BP: §13 · RMS: §§2,3 · H: 031,033 · S: — · LS: — 
 
 ## 1. Constitutional Status
 
-This document is the governing statement of the Record System architecture. It is
-AUTHORITATIVE about that architecture and about nothing else. It establishes no new
-architecture; it states what the Master Blueprint and the Record Model System have already
-established, in one place, so that Artifacts 040–059 can build without redefining the
-foundation.
+This document is authoritative as the consolidated statement of the Record System
+architecture, within its own boundary and nowhere else. It **derives** that architecture
+from the Master Blueprint and the Record Model System; it does not amend, supersede, or
+outrank either. It establishes no new architecture, and Artifacts 040–059 may not read it
+as permission to create any.
 
 Five constitutional facts, each stated at source and restated here without amendment:
 
@@ -26,8 +26,7 @@ Five constitutional facts, each stated at source and restated here without amend
    current architecture"*, and that the Record System governs in its place.
 5. **No model is a superclass of another. World is not a template** (RMS §2, I-101).
 
-This document does not amend the Blueprint, the Record Model System, or the Roadmap. Where it
-and they differ, **they are right and this document is wrong.**
+Where this document and the sources differ, **they are right and this document is wrong.**
 
 ## 2. Purpose
 
@@ -109,8 +108,8 @@ concluded that no seventh is required.
 | Primitives / capabilities | System capabilities that operate on Records | RMS §6.1 |
 | Bootstrap Meta-Contract | Constitutional, and not a Record at all | RMS §10.4, §8 below |
 
-A seventh Record Model is an architectural change at source. It is not something an
-implementation, a downstream artifact, or a session may introduce.
+Introducing a seventh Record Model would be an architectural change, and cannot be
+established by a downstream artifact.
 
 ## 5. Semantic Sovereignty
 
@@ -118,18 +117,16 @@ Each Record Model is sovereign over its own semantic domain.
 
 - Each is **partition-owned** — one partition, one sovereign Record Model (I-16, I-101).
 - Each **answers a distinct class of question** (RMS §6, §4 above).
-- Each **owns its own semantics**. RMS §6: a Record Model owns *"its Kind taxonomy, identity
-  semantics, state and lifecycle, relationship packaging, temporal architecture, provenance
-  meaning, canonicality meaning (if any), semantic validation, and package composition."*
+- Each **owns its own semantics** — its kinds, its lifecycle, its temporal and relationship
+  architecture, its validation. RMS §6 enumerates that ownership; **Artifact 041** binds it.
 - **No model is a superclass of another** (RMS §2, I-101).
 - **World is not a template** (RMS §2). RMS §30 states the consequence: *"Nothing inherits from
   World."*
 
-That is the constitutional principle and the whole of what 039 establishes about it. **Artifact
-041** is the six-model sovereignty contract; it states the detailed rules, and this document
-does not anticipate them. Detailed inheritance rules, cross-model dependency rules, the
-publishing firewall, manifestation-blindness, relationship legality, and per-model ownership
-matrices are **not** stated here — each belongs to the artifact named in §11.
+That is the constitutional principle and the whole of what 039 establishes about it.
+**Artifact 041** is the six-model sovereignty contract and states the detailed rules.
+Inheritance rules, cross-model dependency rules, relationship legality, and per-model
+ownership matrices are **not** stated here — each belongs to the artifact named in §11.
 
 ## 6. Shared Mechanisms
 
@@ -145,17 +142,11 @@ Each is a facility. None of them is a claim about what a Record means.
 > *a mechanism may be shared; a semantic may not be shared without evidence in each model that
 > carries it.*
 
-**Sharing an implementation mechanism does not merge semantic ownership.** RMS §4 states the
-split for each mechanism, and the pattern is constant: structural validation is universal while
-**semantic validation is model-owned**; provenance *capture* is universal while provenance
-*meaning* is model-owned; reference *resolution* is mechanical while reference *legality* is
-model- or Registry-owned; storage contracts are universal while storage *shape* is model-owned
-within them.
-
-Blueprint §13.7a states the test to apply whenever something new is proposed for sharing:
-*"Is this a facility, or a claim? A facility may be shared on convenience. A claim must be
-proven in each model that carries it, and a claim proven in one model and asserted in six is the
-exact error v0.7.0 exists to retire."*
+**Sharing an implementation mechanism does not merge semantic ownership.** The split is
+constant across the mechanisms — structural validation is universal while **semantic
+validation is model-owned** — and RMS §4 states it for each. Blueprint §13.7a gives the
+question to ask of anything newly proposed for sharing: *"Is this a facility, or a claim?"*
+**Artifact 043** owns the split mechanism by mechanism, and binds it.
 
 This section names the mechanisms. It defines no API, no class, no schema, and no storage
 layout. **Artifact 043** owns the mechanism/semantics boundary as a binding contract.
@@ -189,18 +180,14 @@ separation that keeps them statable.
 
 RMS §10.4 closes this `AUTHOR-DECIDED` (FG-V7-05): *"**The Bootstrap Meta-Contract is NOT a
 Record.** It is a **constitutional bootstrap contract standing outside the ordinary Registry
-Record ontology**"*, containing only the six bootstrap elements Artifact 031 states. RMS §3
-places it inside the constitution and outside the models, and RMS §30 describes the
-architecture as follows: *"A thin universal mechanism layer beneath six sovereign
-models, with a constitutional bootstrap contract that is not itself a Record."*
+Record ontology**"*. RMS §3 places it inside the constitution and outside the models, and RMS
+§30 describes the architecture as follows: *"A thin universal mechanism layer beneath six
+sovereign models, with a constitutional bootstrap contract that is not itself a Record."*
 
-It exists to establish the initial conditions of the Record System before ordinary Registry
-semantics exist. Blueprint §13.7 states its content and its deliberate smallness: it defines
-*"only what a record must have in order to be a record at all"*, and is *"sufficient to create
-the first Registry entry and the first Record, and it is not sufficient for anything more"*.
-
-**Artifact 031** is the specification. No Record type is created for it: there is no Axiom
-Record, no Constitution Record, and no seventh model holding the constitution.
+It exists because the Record System must be able to start before ordinary Registry semantics
+exist. That is its constitutional position, and it is all this document states about it:
+**Artifact 031** owns the specification. No Record type is created to hold it — RMS §10.4
+states there is no special *"axiom Record."*
 
 ## 9. What the Record System Explicitly Does Not Have
 
@@ -219,10 +206,11 @@ Two boundaries around this section, both deliberate:
 - **The identity grammar is the one deliberate exception, and it is a grammar, not a
   semantics.** Blueprint §13.7a (AD-1, resolved): the grammar
   `[PARTITION]-[KIND]-[OBJECT_ID]-[SLUG]` *"is constitutional and universal across all six
-  Record Models"*, while the semantic interpretation of what it names remains model-owned. RMS
-  §5 states the same boundary: *"UNIVERSAL IDENTITY GRAMMAR ≠ UNIVERSAL SEMANTIC MODEL."* This
-  is why the frozen prohibition reads *identity composition* and not *identity grammar*.
-  Blueprint §13's preamble list still reads *identity grammar*; §13.7a and RMS §§4–5 govern.
+  Record Models"*, while the semantic interpretation of what it names remains model-owned.
+  RMS §5 states the boundary: *"UNIVERSAL IDENTITY GRAMMAR ≠ UNIVERSAL SEMANTIC MODEL."*
+  Identity composition is not universal. **Artifact 034** owns the grammar and **Artifact
+  046** the identity semantics boundary; §13.7a and RMS §§4–5 govern, and this document
+  interprets neither.
 - **This section is a constitutional summary, not the binding test.** **Artifact 043** makes the
   nine prohibitions verbatim and testable, and owns the firewall against the retired
   architecture. Nothing here narrows, widens, or pre-empts it.
@@ -255,9 +243,9 @@ performed here."*
 
 ## 11. Downstream Boundary Documents
 
-This constitution is the starting point for the P2 kernel contracts. Each owns a boundary named
-above and specified there. **None of them is duplicated here**, and this document does not
-anticipate their content.
+This constitution is the starting point for the P2 kernel contracts. Each owns a boundary
+named above and specified there. This document states their architectural role where the
+constitution requires it and **redefines none of them**.
 
 | Artifact | Boundary it owns |
 |---|---|
@@ -283,8 +271,8 @@ anticipate their content.
 | 059 | P2 kernel conformance suite |
 
 The bootstrap layer beneath this constitution is already stated: **031** the Bootstrap
-Meta-Contract, **033** the universal envelope, **034** the identity grammar. This document
-restates none of them.
+Meta-Contract, **033** the universal envelope, **034** the identity grammar. Each owns its
+own specification, and this document replaces none of them.
 
 ## 12. Constitutional Summary
 
