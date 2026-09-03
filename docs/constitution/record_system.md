@@ -19,8 +19,9 @@ Five constitutional facts, each stated at source and restated here without amend
    architecture is the Record System."*
 2. **There are exactly six sovereign Record Models** — **W** World · **E** Epistemic ·
    **P** Production · **R** Registry · **V** Visual · **I** Issue (RMS §2).
-3. **There is no seventh Record Model.** RMS §25: *"NO SEVENTH SOVEREIGN RECORD MODEL IS
-   REQUIRED AT v1.0."*
+3. **There is no seventh Record Model.** RMS §2 states the set as *"Exactly **six sovereign
+   Record Models**"*, and RMS §25's missing-model audit concluded that no seventh is
+   required.
 4. **The Canon Object Model is retired.** RMS §2 states it *"fully superseded and retired as
    current architecture"*, and that the Record System governs in its place.
 5. **No model is a superclass of another. World is not a template** (RMS §2, I-101).
@@ -102,8 +103,8 @@ concluded that no seventh is required.
 |---|---|---|
 | Universal mechanisms | The mechanism layer of §3 | RMS §3, §4 |
 | Registry definitions | Records of the **R** model | RMS §6.1, I-105 |
-| Relationship Record | A **World** Record Model concept | I-102, Blueprint §13.9 |
-| History Record | A **World** Record Model concept | I-102, Blueprint §13.9 |
+| Relationship Record | A World Record Model concept, not a Record System primitive | I-102, Blueprint §13.9 |
+| History Record | A World Record Model concept, not a Record System primitive | I-102, Blueprint §13.9 |
 | Projections | Derived, rebuildable output; never authoritative | RMS §6.1 |
 | Primitives / capabilities | System capabilities that operate on Records | RMS §6.1 |
 | Bootstrap Meta-Contract | Constitutional, and not a Record at all | RMS §10.4, §8 below |
@@ -167,20 +168,20 @@ to prevent is a collapse of two of these four words into one."*
 | Term | What it is | What it is not |
 |---|---|---|
 | **Record** | A persistent semantic unit owned by exactly one Record Model | Not a synonym for canon; not inherently canonical |
-| **Record Model** | A partition-owned semantic architecture that owns Records, their kinds, identity, relationships, temporality, and validation | Not a schema; not a specialization of a universal model |
+| **Record Model** | The partition-owned semantic model that owns Records, their kinds, identity, relationships, temporality, and validation | Not a schema; not a specialization of a universal model |
 | **Canon** | A governance and truth concept: the committed record, and the authority that commits it | Not a data class; not the noun for the object |
 | **Canonicality** | A status property whose meaning is defined by each Record Model that has one | Not a universal boolean; not a property every Record carries |
 
 **`Record` is architectural. `Canon` is governance** (Blueprint §13.0, I-104).
 
 Three statements this constitution never makes: *every Record is Canon* · *every Record is
-canonical* · *Canon = Record*. Blueprint §13.0 records why the vocabulary must be able to refuse
-them — three of the six models hold Records that are never canonical in the world-truth sense,
-and one holds Records that are never canonical at all.
+canonical* · *Canon = Record*. The vocabulary must be able to refuse all three, which is what
+keeping the four words apart is for.
 
-Canonicality is model-defined (Blueprint §13.7c). What canonical *means* in each model, and
-which models have the property at all, is **Artifact 052**. Authority is **Artifact 051**.
-Neither framework is stated here; only the separation that keeps them statable.
+**Canonicality is model-defined** (Blueprint §13.7c, I-104). What canonical *means* in each
+model, and which models have the property at all, is **Artifact 052**. Authority is **Artifact
+051**. Neither framework is stated here, and no part of either is anticipated here; only the
+separation that keeps them statable.
 
 ## 8. Bootstrap Meta-Contract
 
@@ -188,8 +189,9 @@ Neither framework is stated here; only the separation that keeps them statable.
 
 RMS §10.4 closes this `AUTHOR-DECIDED` (FG-V7-05): *"**The Bootstrap Meta-Contract is NOT a
 Record.** It is a **constitutional bootstrap contract standing outside the ordinary Registry
-Record ontology**"*, containing only the six bootstrap elements Artifact 031 states. RMS §3 places it inside the constitution and outside the models, and RMS §30
-describes the architecture as follows: *"A thin universal mechanism layer beneath six sovereign
+Record ontology**"*, containing only the six bootstrap elements Artifact 031 states. RMS §3
+places it inside the constitution and outside the models, and RMS §30 describes the
+architecture as follows: *"A thin universal mechanism layer beneath six sovereign
 models, with a constitutional bootstrap contract that is not itself a Record."*
 
 It exists to establish the initial conditions of the Record System before ordinary Registry
@@ -220,17 +222,10 @@ Two boundaries around this section, both deliberate:
   Record Models"*, while the semantic interpretation of what it names remains model-owned. RMS
   §5 states the same boundary: *"UNIVERSAL IDENTITY GRAMMAR ≠ UNIVERSAL SEMANTIC MODEL."* This
   is why the frozen prohibition reads *identity composition* and not *identity grammar*.
+  Blueprint §13's preamble list still reads *identity grammar*; §13.7a and RMS §§4–5 govern.
 - **This section is a constitutional summary, not the binding test.** **Artifact 043** makes the
   nine prohibitions verbatim and testable, and owns the firewall against the retired
   architecture. Nothing here narrows, widens, or pre-empts it.
-
-> **Recorded source observation — not resolved here.** Blueprint §13's preamble still lists
-> *"no universal identity grammar"* among its prohibitions, which the Blueprint's own repair
-> record contradicts: §35.11 states that *"§13.7a's draft prohibition on a universal identity
-> grammar was **wrong and is removed**"*, and §13.7a carries the resolved exception instead. The
-> surviving preamble sentence is stale rather than contested — §13.7a, RMS §4's frozen wording
-> (*identity composition*), RMS §5 and I-82 all agree. This document states the resolved
-> position and repairs no source: 039 is not a Blueprint repair task. Referred to the Authority.
 
 ## 10. The Canon Object Model Is Retired
 
@@ -238,9 +233,9 @@ Two boundaries around this section, both deliberate:
 
 RMS §2 states it without qualification — the retired model is *"fully superseded and retired as
 current architecture"* and *"The **Record System** governs."* Blueprint §13 records what was
-retired and why: v0.6.1's claim that *"every record coolboy12 holds is a Canon Object"* asserted that *"a
-registry definition, a published page, a belief, and a character are the same kind of thing,
-differing by a `kind` field. **They are not.**"*
+retired and why: v0.6.1's claim that *"every record coolboy12 holds is a Canon Object"*
+asserted that *"a registry definition, a published page, a belief, and a character are the
+same kind of thing, differing by a `kind` field. **They are not.**"*
 
 The two architectures do not coexist, and four readings are prohibited. The Record System
 must not be treated as a renamed Canon Object Model. It must not be treated as COM v2.
@@ -275,7 +270,7 @@ anticipate their content.
 | 046 | identity semantics boundary |
 | 047 | provenance capture mechanism |
 | 048 | provenance meaning boundary |
-| 049 | provenance / audit / history / revision / version / lineage separation |
+| 049 | provenance/audit/history/revision/version/lineage separation |
 | 050 | source-of-truth classification mechanism |
 | 051 | authority framework |
 | 052 | canonicality framework |
