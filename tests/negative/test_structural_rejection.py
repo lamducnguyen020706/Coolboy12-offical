@@ -150,6 +150,60 @@ def test_the_singleton_marker_outside_the_singleton_is_refused(partition, kind):
     assert result.findings[0].field == "object_id"
 
 
+@pytest.mark.parametrize("component", ["partition", "kind", "object_id", "slug"])
+@pytest.mark.parametrize("value", [None, 7, ["W"], object()])
+def test_a_component_of_the_wrong_runtime_type_is_refused_by_035(component, value):
+    """037 has no type system of its own, and this proves it.
+
+    A component that is not a string is refused — but the refusal comes back
+    with Artifact 035's own code in ``origin``, because 037 asked 035 rather
+    than deciding. There is no ``isinstance`` check, no width rule and no
+    regular expression anywhere in 037 that could have produced this; if 035
+    ever changes how it refuses, 037 forwards the new answer unchanged.
+    """
+    result = validate_envelope(envelope(**{component: value}))
+
+    assert not result.valid
+    assert result.codes == (ValidationCode.INVALID_IDENTITY_STRUCTURE,)
+    assert result.findings[0].origin == "INVALID_INPUT_TYPE"
+    assert result.findings[0].field == component
+
+
+def test_the_wrong_type_refusal_reaches_the_identity_entry_point_too():
+    """Same delegation, through :func:`validate_identity`."""
+
+    class WrongTypes:
+        partition = None
+        kind = 7
+        object_id = ("000001",)  # a tuple: still not a str, and not mutable
+        slug = object()
+
+    result = validate_identity(WrongTypes())
+
+    assert result.codes == (ValidationCode.INVALID_IDENTITY_STRUCTURE,)
+    assert result.findings[0].origin == "INVALID_INPUT_TYPE"
+
+
+def test_an_object_that_only_resembles_a_mapping_is_refused():
+    """037 DECISION: the input contract is a ``Mapping``, checked as one.
+
+    The refusal is about input shape alone. It changes no rule about which
+    keys matter, and inspects no value.
+    """
+
+    class LooksLikeAMapping:
+        def keys(self):
+            return envelope().keys()
+
+        def __getitem__(self, key):
+            return envelope()[key]
+
+    result = validate_envelope(LooksLikeAMapping())
+
+    assert result.codes == (ValidationCode.INVALID_INPUT_TYPE,)
+    assert "Mapping" in result.findings[0].detail
+
+
 def test_a_malformed_identity_is_refused_on_its_own_too():
     """Not only inside an envelope — the identity entry point refuses as well."""
 

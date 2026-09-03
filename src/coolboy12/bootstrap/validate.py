@@ -90,14 +90,12 @@ copy here could only ever drift from it.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import TYPE_CHECKING, Final
+from typing import Final
 
 from coolboy12.bootstrap.identity import Identity, IdentityParseError
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping
 
 __all__ = [
     "ENVELOPE_FIELDS",
@@ -282,13 +280,20 @@ def validate_envelope(envelope: Mapping[str, object]) -> ValidationResult:
     prohibits a **Universal Record Base** and a **universal Record schema**.
     This module inspects a shape; it does not define a type for six models to
     inherit.
+
+    037 DECISION: the input contract is :class:`collections.abc.Mapping`, and
+    it is checked as one. An earlier revision probed for ``keys`` and
+    ``__getitem__`` while the annotation promised a ``Mapping``, so an object
+    that merely looked like one was accepted — the signature and the behaviour
+    disagreed. They now say the same thing. This fixes the *shape* accepted and
+    changes no rule about which keys matter or what any value may be.
     """
-    if not hasattr(envelope, "keys") or not hasattr(envelope, "__getitem__"):
+    if not isinstance(envelope, Mapping):
         return ValidationResult(
             (
                 Finding(
                     ValidationCode.INVALID_INPUT_TYPE,
-                    f"an envelope is a mapping of field name to value; "
+                    f"an envelope is a Mapping of field name to value; "
                     f"got {type(envelope).__name__}",
                 ),
             )

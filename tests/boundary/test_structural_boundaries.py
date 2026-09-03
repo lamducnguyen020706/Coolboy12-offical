@@ -30,6 +30,7 @@ from coolboy12.bootstrap import validate as validate_module
 from coolboy12.bootstrap.identity import MAX_ORDINAL, Identity, parse_identity
 from coolboy12.bootstrap.validate import (
     ENVELOPE_FIELDS,
+    ValidationCode,
     validate_envelope,
     validate_identity,
 )
@@ -152,8 +153,19 @@ def test_an_unallocated_ordinal_is_still_well_formed():
     assert validate_identity(parse_identity("W-CH-654321-Example")).valid
 
 
-def test_the_module_never_reaches_the_allocator():
-    """Static half of the 036 boundary."""
+def test_the_module_takes_no_forbidden_dependency():
+    """Static half of the architectural boundary.
+
+    This names the dependencies Artifact 037 must not acquire, rather than
+    freezing the ones it happens to have. An exact import list would fail the
+    next time a harmless standard-library import is added, which protects
+    nothing and teaches the next reader to loosen the test.
+
+    The project dependency is the one that matters: 035 and nothing else.
+    Row 037's ``S: 036`` is a *soft* dependency, and a soft dependency the
+    validator never takes is the correct outcome — asking the allocator
+    anything would make well-formedness depend on allocation history.
+    """
     imported = set()
     for node in ast.walk(TREE):
         if isinstance(node, ast.Import):
@@ -161,19 +173,29 @@ def test_the_module_never_reaches_the_allocator():
         elif isinstance(node, ast.ImportFrom) and node.module:
             imported.add(node.module)
 
-    assert imported == {"__future__", "dataclasses", "enum", "typing",
-                        "collections.abc", "coolboy12.bootstrap.identity"}  # fmt: skip
+    project = {name for name in imported if name.startswith("coolboy12")}
+    assert project == {"coolboy12.bootstrap.identity"}
+
+    forbidden_modules = (
+        "ordinal", "registry", "world", "epistemic", "production", "visual",
+        "issue", "mutation", "os", "pathlib", "json", "sqlite3", "socket",
+        "urllib", "http", "subprocess", "time", "datetime", "random",
+    )  # fmt: skip
+    assert not [
+        name
+        for name in imported
+        if any(name == m or name.startswith(f"{m}.") for m in forbidden_modules)
+    ]
 
     # The docstrings name the allocator to say it is never consulted, so the
     # check is on what the code references, not on what the prose mentions.
     referenced = {node.id for node in ast.walk(TREE) if isinstance(node, ast.Name)} | {
         node.attr for node in ast.walk(TREE) if isinstance(node, ast.Attribute)
     }
-    forbidden = ("ordinal", "allocat", "frontier", "ledger", "reuse")
+    forbidden_names = ("ordinal", "allocat", "frontier", "ledger", "reuse", "registry")
 
-    assert not [n for n in referenced if any(w in n.lower() for w in forbidden)]
+    assert not [n for n in referenced if any(w in n.lower() for w in forbidden_names)]
     assert not [t for t in _code_literals() if "ordinal" in t.lower()]
-    assert not hasattr(validate_module, "OrdinalAllocator")
 
 
 # ---------------------------------------------------------------------------
@@ -239,6 +261,32 @@ def test_no_envelope_value_beyond_the_identity_is_inspected():
         assert validate_envelope(envelope(registry_ref=value)).valid
 
 
+def test_a_valid_result_means_structure_and_nothing_else():
+    """What a successful 037 result asserts, stated as behaviour.
+
+    The envelope below is structurally impeccable and semantically absurd: a
+    provenance that records nothing, a registry reference pointing at a thing
+    no Registry defines, and a source-of-truth class that is not one of the
+    five. It validates — and that is the whole point.
+
+    A ``valid`` result means the supplied structure satisfies the envelope and
+    identity well-formedness checks this layer owns. It does **not** mean the
+    Record exists, is registered, is canonical, is active, was allocated, or
+    means anything at all. Those are six different questions with six different
+    owners, and 037 is not any of them.
+    """
+    nonsense = envelope(
+        kind="ZZ",
+        object_id="654321",
+        slug="Not_The_Name_Of_Anything",
+        provenance="nobody, never, for no reason",
+        registry_ref="R-XX-999999-Defines_Nothing",
+        sot_class="NOT-A-SOURCE-OF-TRUTH-CLASS",
+    )
+
+    assert validate_envelope(nonsense).valid
+
+
 def test_no_record_or_storage_is_reached():
     """No Record lookup, no filesystem, no network, no clock."""
     for token in (
@@ -265,6 +313,36 @@ def test_the_seven_fields_are_a_roster_not_a_schema():
     assert classes == {"ValidationCode", "Finding", "ValidationResult"}
     assert "Record" not in classes
     assert "Envelope" not in classes
+
+
+def test_the_envelope_input_contract_is_a_mapping():
+    """037 DECISION: the annotation and the runtime check say the same thing.
+
+    An earlier revision probed for ``keys`` and ``__getitem__`` while promising
+    a ``Mapping``, so an object that merely resembled one was accepted. Any
+    real ``Mapping`` is accepted; anything that is not one is refused, however
+    convincingly it imitates the interface.
+    """
+    from collections import OrderedDict
+    from collections.abc import Mapping
+    from types import MappingProxyType
+
+    class LooksLikeAMapping:
+        """Has the methods, is not a Mapping, and is refused for that reason."""
+
+        def keys(self):
+            return envelope().keys()
+
+        def __getitem__(self, key):
+            return envelope()[key]
+
+    for accepted in (envelope(), OrderedDict(envelope()), MappingProxyType(envelope())):
+        assert isinstance(accepted, Mapping)
+        assert validate_envelope(accepted).valid
+
+    imitation = LooksLikeAMapping()
+    assert not isinstance(imitation, Mapping)
+    assert validate_envelope(imitation).codes == (ValidationCode.INVALID_INPUT_TYPE,)
 
 
 # ---------------------------------------------------------------------------
