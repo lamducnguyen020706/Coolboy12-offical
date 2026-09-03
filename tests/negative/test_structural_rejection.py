@@ -68,6 +68,132 @@ def test_several_extra_fields_are_all_reported():
     assert set(result.codes) == {ValidationCode.UNKNOWN_ENVELOPE_FIELD}
 
 
+def test_heterogeneous_unknown_keys_are_all_reported_without_crashing():
+    """A ``Mapping`` may key on anything hashable; reporting must survive it.
+
+    Reporting extra keys in plain sorted order asks Python to compare an
+    ``int`` with a ``str``, which raises — so an envelope carrying two unknown
+    keys of incompatible types crashed the validator instead of refusing it. A
+    validator that raises on malformed input has not validated it, and refusing
+    is the entire job.
+
+    Note it takes *two* incompatible types to trigger: a single non-string key
+    sorts without ever comparing. That is why this uses four.
+    """
+    from collections import OrderedDict
+
+    hostile = OrderedDict(envelope())
+    hostile["tier"] = 4
+    hostile[123] = "unexpected"
+    hostile[(1, 2)] = "a tuple key"
+    hostile[4.5] = "a float key"
+
+    result = validate_envelope(hostile)
+
+    assert not result.valid
+    assert set(result.codes) == {ValidationCode.UNKNOWN_ENVELOPE_FIELD}
+    assert {f.field for f in result.findings} == {"tier", "123", "(1, 2)", "4.5"}
+
+
+def test_reporting_unknown_keys_is_deterministic_across_calls():
+    """The same mapping reports the same findings in the same order, always."""
+    hostile = dict(envelope())
+    hostile.update({"tier": 4, 123: "unexpected", (1, 2): "tuple", 4.5: "float"})
+
+    renderings = {str(validate_envelope(hostile)) for _ in range(25)}
+    orders = {
+        tuple(f.field for f in validate_envelope(hostile).findings) for _ in range(25)
+    }
+
+    assert len(renderings) == 1
+    assert len(orders) == 1
+
+
+def test_the_reporting_order_does_not_depend_on_hash_randomization():
+    """Deterministic across *processes*, not merely across calls.
+
+    The unknown keys come out of a ``set``, whose iteration order depends on
+    hash randomization and therefore differs between interpreter runs. Ordering
+    by type name alone would inherit that: stable inside one process, different
+    in the next, and only visibly so on somebody else's machine.
+
+    Two subprocesses with fixed and different ``PYTHONHASHSEED`` values must
+    report the same order, which is what a secondary key on the
+    representation buys.
+    """
+    import os
+    import subprocess
+    import sys
+    import textwrap
+    from pathlib import Path
+
+    import coolboy12.bootstrap.validate as module
+
+    script = textwrap.dedent(
+        """
+        import sys
+        sys.path.insert(0, sys.argv[1])
+        from coolboy12.bootstrap.validate import validate_envelope
+        envelope = {
+            "partition": "W", "kind": "CH", "object_id": "000001",
+            "slug": "Maximus", "provenance": None, "registry_ref": None,
+            "sot_class": None,
+            "tier": 4, "zebra": 1, "alpha": 2, 123: "x", 4.5: "y", (1, 2): "z",
+        }
+        print("|".join(str(f.field) for f in validate_envelope(envelope).findings))
+        """
+    )
+    source_root = str(Path(module.__file__).parents[3])
+
+    def run(seed):
+        environment = dict(os.environ, PYTHONHASHSEED=seed)
+        finished = subprocess.run(
+            [sys.executable, "-c", script, source_root],
+            capture_output=True,
+            text=True,
+            check=True,
+            env=environment,
+        )
+        return finished.stdout.strip()
+
+    orders = {run(seed) for seed in ("0", "1", "12345", "99999")}
+
+    assert len(orders) == 1, f"reporting order varies with hash seed: {orders}"
+
+
+def test_a_non_string_key_still_leaves_the_seven_fields_judged_normally():
+    """The hardening changed reporting order only, not any rule.
+
+    The seven fields are still required, the identity is still delegated to
+    035, and no value is inspected — an unknown key of an odd type does not
+    disturb any of that.
+    """
+    hostile = {k: v for k, v in envelope(partition="w").items() if k != "provenance"}
+    hostile[123] = "unexpected"
+    hostile["tier"] = 4
+
+    result = validate_envelope(hostile)
+    by_code = {
+        code: [f for f in result.findings if f.code is code] for code in result.codes
+    }
+
+    assert set(result.codes) == {
+        ValidationCode.MISSING_ENVELOPE_FIELD,
+        ValidationCode.UNKNOWN_ENVELOPE_FIELD,
+        ValidationCode.INVALID_IDENTITY_STRUCTURE,
+    }
+    assert [f.field for f in by_code[ValidationCode.MISSING_ENVELOPE_FIELD]] == [
+        "provenance"
+    ]
+    assert {f.field for f in by_code[ValidationCode.UNKNOWN_ENVELOPE_FIELD]} == {
+        "123",
+        "tier",
+    }
+    assert by_code[ValidationCode.INVALID_IDENTITY_STRUCTURE][0].origin == (
+        "INVALID_PARTITION"
+    )
+
+
 # ---------------------------------------------------------------------------
 # A missing field
 # ---------------------------------------------------------------------------

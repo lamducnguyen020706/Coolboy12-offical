@@ -312,7 +312,7 @@ def validate_envelope(envelope: Mapping[str, object]) -> ValidationResult:
                 )
             )
 
-    for name in sorted(present - set(ENVELOPE_FIELDS)):
+    for name in sorted(present - set(ENVELOPE_FIELDS), key=_reporting_order):
         findings.append(
             Finding(
                 ValidationCode.UNKNOWN_ENVELOPE_FIELD,
@@ -330,6 +330,29 @@ def validate_envelope(envelope: Mapping[str, object]) -> ValidationResult:
         )
 
     return ValidationResult(tuple(findings))
+
+
+def _reporting_order(key: object) -> tuple[str, str]:
+    """Order unknown envelope keys without comparing them to each other.
+
+    037 DECISION. The seven fields are ``str``, but a ``Mapping`` may carry a
+    key of any hashable type, and reporting them in plain sorted order asks
+    Python to compare — say — an ``int`` with a ``str``, which raises. A
+    validator that crashes on a malformed input has not validated it, and the
+    whole point of this function is to *report* the extra keys rather than to
+    be surprised by them.
+
+    Sorting by type name first and representation second means two keys of
+    different types are never compared directly, only their type names are.
+    Reporting is therefore total over any genuine ``Mapping``.
+
+    This is presentation order and nothing more: *which* keys are reported
+    never depends on it, only the sequence they appear in. Where a key's
+    representation embeds an address, ordering among several such keys follows
+    that representation — stable for a given set of objects, and unable to
+    affect completeness either way.
+    """
+    return type(key).__name__, repr(key)
 
 
 def _validate_components(components: Mapping[str, object]) -> ValidationResult:
