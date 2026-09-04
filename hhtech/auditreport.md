@@ -1,297 +1,287 @@
-# COOLBOY12 Audit Report
+# 1. Audit Identity
 
-## Audit Identity
-
-- **Report date:** 2026-09-05
-- **Target repository state:** branch `claude/coolboy12-build-31qwm0`, HEAD `91f273698a312dcc5d128f045bd563b41c99adb2`
+- **Artifact:** 042 — Record Model definition
+- **Audit mode:** Full Artifact Audit under `hhtech/standards/audit-standard.md §5.1`
 - **Auditor:** GPT-5.6, under `hhtech/standards/audit-standard.md`
-- **Procedure:** HHTECH COOLBOY12 Audit Standard, full fourteen-pass audit
+- **Repository branch:** `claude/coolboy12-build-31qwm0`
+- **HEAD:** `16ea38a3ec69b8de86af029b9d186b56e89715b8`
+- **Repository state:** Target file unchanged against HEAD; unrelated unstaged changes exist in `reports/implement-log.json` and `reports/progress.json`.
 
-## Target Artifact
+# 2. Target Artifact
 
-- **Roadmap ID:** 042
+- **ID:** 042
 - **Name:** Record Model definition
 - **Declared path:** `docs/constitution/record_model.md`
-- **Actual target path:** `docs/constitution/record_model.md`
-- **Declared scope:** one file; `glob=False`, `directory=False`
-- **Artifact type:** `T: doc`
-- **Roadmap row:** `Own: CONST · RM: all · T: doc · R: CONTRACT · SoT: AUTHORITATIVE · Auth: governing · Canon: n/a · CD: no · Ph/St: P2/2a · Req: RR-06 · BP: §13 · RMS: §6 · H: 039 · S: — · LS: — · G: — · → 040 · Val: what a Record Model owns, enumerated · Done: definition`
+- **Scope kind:** file
+- **Multi-file entry:** no; Roadmap RULE G3 context states many files may form one artifact only when explicitly declared.
+- **Target existence:** confirmed present at the declared path.
+- **Target type:** documentation artifact (`T: doc`).
+- **Target responsibility:** define what a Record Model owns, without defining any particular model's concrete interior.
 
-## Audit Mode
+# 3. Audit Mode
 
-**Full Artifact Audit**, as defined by `hhtech/standards/audit-standard.md §5.1`.
+**Full Artifact Audit** under `audit-standard.md §5.1`.
 
-The current Git state was also inspected for Diff Audit and Regression Analysis purposes.
+All fourteen mandatory passes were run independently:
 
-## Source Set
+1. Artifact Identity — PASS with one P2 finding
+2. Scope — PASS
+3. Blueprint Compliance — PASS
+4. RMS Compliance — PASS
+5. Roadmap Compliance — PASS
+6. Internal Consistency — PASS
+7. Completeness — PASS
+8. Boundary Integrity — PASS
+9. Implementation Correctness — NOT APPLICABLE
+10. Test Correctness — NOT APPLICABLE
+11. Diff Integrity — PASS for the target; unrelated working-tree changes reported as out-of-scope observations
+12. Regression Analysis — PASS
+13. Edge Cases — PASS
+14. Negative Audit — PASS
 
-The following supplied source material was read and applied:
+# 4. Source Set
 
-- `hhtech/standards/audit-standard.md`, including §§1–18 and the §14.1 report contract.
-- `hhtech/standards/patch-standard.md`, read for procedural context only and not used as architectural authority.
-- Blueprint §13, including §§13.0–13.12 as supplied.
-- RMS §6 and §6.1 as supplied.
-- Roadmap manifest row for Artifact 042.
-- Roadmap manifest row for hard dependency Artifact 039.
-- `docs/constitution/record_model.md`, complete supplied content.
-- `git status --short`.
-- `git diff --name-status`.
-- `git diff --stat`.
-- Full supplied Git diff for `reports/implement-log.json` and `reports/progress.json`.
+## Supplied and read
 
-The complete text of Artifact 003's conformance requirements `C-1` through `C-12`, the authoritative requirement register defining `RR-06`, the full invariant register, the anti-ordering table, and the full accepted content/state of Artifact 039 were not supplied.
+| Source label | Path / section | Status |
+|---|---|---|
+| Master Blueprint | `docs/sources/COOLBOY12_MASTER_BLUEPRINT_v0.7.03.md` | AVAILABLE; supplied document metadata and resolved sections read |
+| Record Model System | `docs/sources/COOLBOY12_RECORD_MODEL_SYSTEM_v1.0.md` | AVAILABLE; supplied in full and read |
+| Build Roadmap | `docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md` | AVAILABLE; relevant rows/registers supplied and read |
+| Audit standard | `hhtech/standards/audit-standard.md` | AVAILABLE; read in full |
+| Patch standard | `hhtech/standards/patch-standard.md` | AVAILABLE; read in full as procedure context |
+| CLAUDE.md | `CLAUDE.md` | AVAILABLE; read |
+| Blueprint §10 | Spine | AVAILABLE; read |
+| Blueprint §13 | Record System | AVAILABLE; read |
+| Blueprint §13.0 | Record, Record Model, and Canon | AVAILABLE; read |
+| Blueprint §13.7a | Shared Infrastructure Is Not Shared Semantics | AVAILABLE; read |
+| Blueprint §§2, 4, 6, 7 | Vision, North Star, exclusions, design principles | AVAILABLE; read |
+| RMS §§2, 6, 6.1, 30 | Constitutional status, Record Model definition, categories, summary | AVAILABLE; read |
+| Invariants I-16, I-87, I-101, I-103, I-104, I-105, I-106 | Blueprint §36 entries | AVAILABLE; read |
+| Roadmap artifact 042 row | Roadmap manifest | AVAILABLE; read |
+| Roadmap gate register | Roadmap PART VIII | AVAILABLE; read |
+| Roadmap anti-ordering register | Roadmap PART IX | AVAILABLE; read |
+| Artifact 039 row and content | `docs/constitution/record_system.md` | AVAILABLE; inspected as H-dependency context only |
+| Artifact 040 row | Roadmap manifest | AVAILABLE; read |
+| Artifact 041 row and content | `docs/constitution/sovereignty.md` | AVAILABLE; inspected as context only |
+| Artifact 052 row | Roadmap manifest | AVAILABLE; read |
+| Artifact 043 row | Roadmap manifest | AVAILABLE; read |
+| Artifact 051 row | Roadmap manifest | AVAILABLE; read |
+| Artifact 044 row | Roadmap manifest | AVAILABLE; read |
+| Artifact 059 row | Roadmap manifest | AVAILABLE; read |
+| Artifact 003 row and content | `docs/conventions/artifact_conventions.md` | AVAILABLE; read |
+| Artifact 012 row and content | `tests/constitutional/register.md` | AVAILABLE; inspected as universal conformance context only |
+| Target artifact | `docs/constitution/record_model.md` | AVAILABLE; read in full |
+| Git state and target baseline | supplied `git status`, `git diff`, and baseline evidence | AVAILABLE; inspected |
 
-## Scope
+## Not supplied and not treated as read
 
-### In scope
+| Source label | Path | Status | Audit consequence |
+|---|---|---|---|
+| Requirement RR-06 | n/a | UNAVAILABLE | Requirement ID preserved; authoritative text not inferred. Non-blocking GAP-C under `audit-standard.md §8.3`. |
+| Artifact 052 content | `docs/constitution/canonicality.md` | UNAVAILABLE | Not required to evaluate target because target explicitly defers the canonicality framework and available Blueprint/RMS authority defines the applicable boundary. |
+| Artifact 043 content | `docs/constitution/mechanism_semantics.md` | UNAVAILABLE | Not required to evaluate target's limited boundary claims; available Blueprint §13.7a and RMS authority were used. |
+| Artifact 051 content | `docs/constitution/authority.md` | UNAVAILABLE | Not required to evaluate target; target explicitly defers authority framework ownership. |
+| Artifact 044 content | `docs/constitution/categories.md` | UNAVAILABLE | Not required to evaluate target; target explicitly defers architectural categories. |
+| Artifact 059 content | `tests/conformance/p2.py` | UNAVAILABLE | No associated test is required for this `T: doc` target; Artifact 059 is a downstream conformance artifact. |
+| Artifact 004 content | `/CLAUDE.md` | UNAVAILABLE as Artifact 004 content | The supplied session-conduct `CLAUDE.md` source was read. The unavailable Artifact 004 resolution is not needed as a target compliance condition. |
+| Artifact 040 content | `docs/models/*/model.md` | NOT APPLICABLE | Not used as target evidence; Artifact 040 was treated only as roadmap context. |
 
-- Artifact 042 identity and metadata.
-- The definition of Record Model.
-- Enumeration of the ownership dimensions required by RMS §6.
-- The partition, sovereignty, mechanism/semantics, and canonicality boundaries directly touched by the artifact.
-- Artifact 042's hard dependency and downstream unlock declaration.
-- Current Git state and changed-file analysis.
-- Regression comparison against the supplied pre-diff target state.
+# 5. Scope
 
-### Out of scope
+## In scope
 
-- The internal architecture of Artifact 039; it was inspected only for existence and declared state, as required for an `H` dependency.
-- Artifact 040's model-identification responsibility.
-- Artifact 041's sovereignty contract.
-- Artifacts 043–059 and their declared responsibilities.
-- The Master Blueprint, RMS, Roadmap, and other architectural source files as modification targets.
-- Canonical data and `canon/**`; no such content is present in the target or diff.
-- The unavailable requirement-register text for `RR-06`.
-- The unavailable full Artifact 003 conformance text.
+- The complete contents of `docs/constitution/record_model.md`.
+- Artifact 042's identity and metadata against its Roadmap row.
+- The Record Model definition and nine ownership dimensions.
+- The target's explicit boundaries against six-model sovereignty, Record/Canon separation, mechanism/semantics separation, and open downstream contracts.
+- Artifact 042's declared H dependency on Artifact 039.
+- Artifact 042's declared unlock of Artifact 040.
+- Target-file diff and regression state.
 
-## Executive Verdict
+## Out of scope
 
-The target artifact matches the supplied Roadmap identity and path, defines Record Model as a partition-owned semantic architecture, enumerates all nine RMS §6 ownership dimensions, preserves the canonicality qualifier “if any,” and does not introduce a universal Record Model, seventh model, or cross-model semantic inheritance. Its stated non-goals also remain within Artifact 042's declared contract.
+- Artifact 039's independent correctness; it was inspected only as the declared H dependency and context.
+- Artifact 040's model stubs; its content was not supplied and it is a downstream unlock.
+- Artifact 041's independent correctness; it was inspected only as context.
+- Artifacts 043, 044, 051, 052, and 059 as independent targets.
+- The unavailable RR-06 requirement text.
+- The unrelated modified files `reports/implement-log.json` and `reports/progress.json` as audit targets. Their conflict markers are reported as out-of-scope observations, not findings against Artifact 042.
 
-The audit cannot establish full compliance with every mandatory Artifact 003 conformance condition because the authoritative text of `C-1` through `C-12` was not supplied. The missing `RR-06` register text is the known non-blocking GAP-C condition, but the missing Artifact 003 conformance source prevents determination of that separate mandatory coverage. Under audit-standard.md §8.2 and §13.3, this is a blocking evidence gap rather than a defect finding against the artifact.
+# 6. Executive Verdict
 
-## Requirement Coverage
+The target substantially satisfies its architectural responsibility. It correctly defines a Record Model as partition-owned semantic architecture, enumerates the nine RMS §6 ownership dimensions, preserves the canonicality qualifier “if any,” separates semantic ownership from shared mechanisms, and avoids introducing a seventh model, universal semantic base, or model inheritance.
+
+One source-supported structural defect remains: the target's metadata block omits explicit `Val`, `Done`, and `Why` fields even though Artifact 003 requires all 25 metadata fields to be stated explicitly. This is a P2 conformance finding. The audit is otherwise complete, and the resulting verdict is PATCH REQUIRED.
+
+# 7. Requirement Coverage
 
 | Requirement | Source | Applicability | Artifact Evidence | Verdict |
 |---|---|---|---|---|
-| Artifact identity, ID `042` | Roadmap row 042 | applies | `docs/constitution/record_model.md` header: `Artifact 042` | PASS |
-| Declared path | Roadmap row 042 | applies | Target exists at `docs/constitution/record_model.md` | PASS |
-| Name: Record Model definition | Roadmap row 042 | applies | Heading and content define Record Model | PASS |
-| `Own: CONST` | Roadmap row 042 | applies | Header matches `Own: CONST` | PASS |
-| `RM: all` | Roadmap row 042 | applies | Header matches `RM: all` | PASS |
-| `T: doc` | Roadmap row 042 | applies | Header matches `T: doc` | PASS |
-| `R: CONTRACT` | Roadmap row 042 | applies | Header matches `R: CONTRACT` | PASS |
-| `SoT: AUTHORITATIVE` | Roadmap row 042 | applies | Header matches `SoT: AUTHORITATIVE` | PASS |
-| `Auth: governing` | Roadmap row 042 | applies | Header matches `Auth: governing` | PASS |
-| `Canon: n/a` | Roadmap row 042 | applies | Header matches `Canon: n/a` | PASS |
-| `CD: no` | Roadmap row 042 | applies | Header matches `CD: no` | PASS |
-| `Ph/St: P2/2a` | Roadmap row 042 | applies | Header matches `Ph/St: P2/2a` | PASS |
-| `BP: §13` citation | Roadmap row 042; Blueprint §13 | applies | §3 directly quotes and applies Blueprint §13's Record Model definition and boundary | PASS |
-| `RMS: §6` citation | Roadmap row 042; RMS §6 | applies | §3 directly quotes RMS §6 | PASS |
-| `Val`: what a Record Model owns, enumerated | Roadmap row 042 | applies | §4 enumerates nine ownership dimensions in RMS order | PASS |
-| Record Model is partition-owned | RMS §6; Blueprint §13 | applies | §3: “partition-owned semantic architecture”; §11 RM-C01 | PASS |
-| Record Model answers a distinct class of question | RMS §6 | applies | §3 and §11 RM-C02 | PASS |
-| Record Model owns the nine RMS dimensions | RMS §6 | applies | §4 enumerates Kind taxonomy, identity semantics, state/lifecycle, relationship packaging, temporal architecture, provenance meaning, canonicality meaning, semantic validation, and package composition | PASS |
-| Canonicality is qualified “if any” | RMS §6; I-104 as quoted in supplied artifact | applies | §4 dimension 7 and §11 RM-C04 preserve the qualifier | PASS |
-| Shared mechanism is distinct from semantic ownership | Blueprint §13.7a; supplied artifact's quoted I-103 | applies | §7 distinguishes shared mechanisms from model-owned semantics | PASS |
-| No semantic inheritance or specialization between models | RMS §2; Blueprint §13.7a; supplied artifact §9 | applies | §9 states no model is a superclass and no model specializes this definition | PASS |
-| No universal semantic Record Model or seventh model | RMS §2; Blueprint §13; supplied artifact §11 RM-C07 | applies | §2, §9, and §11 explicitly prohibit both | PASS |
-| Semantic ownership is bounded to the model's own partition | Blueprint §13; RMS §6 | applies | §3 and §5 state “for its own partition and no other” | PASS |
-| Record and Record Model remain distinct | Blueprint §13.0; RMS §6.1 | applies | §6 distinguishes the persistent Record from the Record Model owning its semantics | PASS |
-| Record Model is not a filesystem, storage, or implementation category | Blueprint §13; RMS §6 | applies | §§1, 2, 5, and 6 expressly reject those readings | PASS |
-| Concrete model rosters remain outside this artifact | Blueprint §13.6b; RMS §6 ownership boundary | applies | §4 and §10 defer concrete rosters to model-specific work | PASS |
-| Concrete schemas and fields remain outside this artifact | Blueprint §13.7; RMS §6 | applies | §10 explicitly excludes concrete schemas and fields | PASS |
-| Concrete lifecycle state machines remain outside this artifact | RMS §6 | applies | §10 explicitly excludes lifecycle state machines | PASS |
-| `Done`: definition reached | Roadmap row 042 | applies | §§3–§4 provide the definition and enumerate ownership | PASS |
-| Hard dependency `H: 039` exists | Roadmap rows 042 and 039 | applies | Supplied dependency row identifies `docs/constitution/record_system.md` and declares architecture stated | PASS |
-| Dependency relationship is not silently changed | Roadmap row 042; Artifact 003 dependency conventions referenced by audit standard | applies | Artifact header retains `H: 039`; §12 reproduces the dependency | PASS |
-| Unlock `→ 040` is preserved | Roadmap row 042 | applies | Header and §12 retain `→ 040` | PASS |
-| `S: —`, `LS: —`, and `G: —` are preserved | Roadmap row 042 | applies | Header matches all three fields | PASS |
-| RULE G boundary | Artifact 003 / audit-standard.md §8 | applies as granularity check | Target is one contract document and contains no schema/code/test merge | PASS |
-| RULE G2 boundary | Artifact 003 / audit-standard.md §8 | N/A | `T: doc`; no associated test artifact supplied or required by the target contract | N/A — no test artifact is part of this target |
-| RULE G3 declared multi-file merge | Artifact 003 / audit-standard.md §8 | N/A | Roadmap scope is one file; no companion is declared | N/A — no multi-file artifact |
-| Spine law 1, one source of truth | Blueprint §10; directly relevant boundary in §13 | applies | §5 preserves bounded semantic ownership and does not create duplicate ownership | PASS |
-| Spine law 2, one governed mutation path | Blueprint §10; mechanism boundary in §13.7a | applies to stated mechanism boundary | §7 identifies mutation coordination as mechanism and does not create a bypass | PASS |
-| Spine law 5, Publishing Firewall | Blueprint §10 and §13.6a | N/A | Artifact 042 defines no publication or Issue behavior | N/A — no Issue semantics are defined |
-| Spine law 7, severity floor | Blueprint §10 and §13.3 | N/A | Artifact 042 defines no relationship mutation or severity behavior | N/A — no relationship operation is specified |
-| Spine law 9, traceability | Blueprint §10 and §13.7b | applies to definition boundary | §4 and §7 distinguish provenance meaning from capture and preserve temporal ownership as a model dimension | PASS |
-| Other Spine laws | Blueprint §10 | N/A or not directly implicated | No content in Artifact 042 specifies simulation, canon mutation, reader epistemics, or world-state behavior | N/A — no directly applicable obligation identified |
-| Anti-orderings X-01–X-22 | Roadmap Part IX, unavailable in supplied source set | applies to discovery check | No anti-ordering table or specific implicated row was supplied; Artifact 042 contains no implementation ordering claim beyond its declared `H`/`→` fields | UNVERIFIABLE — full anti-ordering source not supplied; no artifact failure established |
-| Artifact 003 conformance requirements C-1–C-12 | Artifact 003, unavailable in supplied source set | applies because Artifact 042 is a manifest entry with an authored metadata block | Target metadata can be compared to the Roadmap row, but the C-1–C-12 requirements themselves are unavailable | UNVERIFIABLE — mandatory conformance source unavailable |
-| `Req: RR-06` | Roadmap row 042; requirement register | applies | Header preserves `Req: RR-06`; defining register text was not supplied | UNVERIFIABLE — requirement register unavailable, GAP-C, non-blocking |
+| Artifact ID is 042 | Roadmap artifact 042 row | applies | `docs/constitution/record_model.md` header: `Artifact 042` | PASS |
+| Name is Record Model definition | Roadmap artifact 042 row | applies | Header and title identify Record Model Definition | PASS |
+| Declared path matches actual path | Roadmap artifact 042 row; Artifact 003 §3 | applies | File exists at `docs/constitution/record_model.md` | PASS |
+| `Own: CONST` | Roadmap artifact 042 row; Artifact 003 §4 | applies | Target header states `Own: CONST` | PASS |
+| `RM: all` | Roadmap artifact 042 row; Artifact 003 §5 | applies | Target header states `RM: all` | PASS |
+| `T: doc` | Roadmap artifact 042 row; Artifact 003 §6 | applies | Target header states `T: doc` | PASS |
+| `R: CONTRACT` | Roadmap artifact 042 row; Artifact 003 §7 | applies | Target header states `R: CONTRACT` | PASS |
+| `SoT: AUTHORITATIVE` | Roadmap artifact 042 row; Artifact 003 §8 | applies | Target header states `SoT: AUTHORITATIVE` | PASS |
+| `Auth: governing` | Roadmap artifact 042 row; Artifact 003 §9 | applies | Target header states `Auth: governing` | PASS |
+| `Canon: n/a` | Roadmap artifact 042 row; Artifact 003 §10 | applies | Target header states `Canon: n/a` | PASS |
+| `CD: no` | Roadmap artifact 042 row; Artifact 003 §11 | applies | Target header states `CD: no` | PASS |
+| `Ph/St: P2/2a` | Roadmap artifact 042 row; Artifact 003 §12 | applies | Target header states `Ph/St: P2/2a` | PASS |
+| `Req: RR-06` preserved exactly | Roadmap artifact 042 row; Artifact 003 §13 | applies | Target header states `Req: RR-06` | PASS, with RR-06 text UNVERIFIABLE |
+| `BP: §13` | Roadmap artifact 042 row; Artifact 003 §14 | applies | Target header states `BP: §13`; target uses Blueprint §13 | PASS |
+| `RMS: §6` | Roadmap artifact 042 row; Artifact 003 §15 | applies | Target header states `RMS: §6`; target uses RMS §6 | PASS |
+| `H: 039` | Roadmap artifact 042 row; Artifact 003 §16 | applies | Target header and §12 state hard dependency 039; Artifact 039 exists | PASS |
+| `S: —` | Roadmap artifact 042 row; Artifact 003 §17 | applies | Target header and §12 state no soft dependency | PASS |
+| `LS: —` | Roadmap artifact 042 row; Artifact 003 §18 | applies | Target header and §12 state no lockstep | PASS |
+| `G: —` | Roadmap artifact 042 row; Artifact 003 §19 | applies | Target header and §12 state no gate | PASS |
+| `→ 040` | Roadmap artifact 042 row; Artifact 003 §20 | applies | Target header and §12 state unlock of 040 | PASS |
+| All 25 metadata fields explicit | Artifact 003 C-1 and Artifact Metadata Contract | applies | Header omits explicit `Val`, `Done`, and `Why` fields | **FAIL — AUD-042-01** |
+| `Risk: medium` | Roadmap artifact 042 row; Artifact 003 §24 | applies | Target header states `Risk: medium` | PASS |
+| `∥: no` | Roadmap artifact 042 row; Artifact 003 §25 | applies | Target header states `∥: no` | PASS |
+| `Val: what a Record Model owns, enumerated` | Roadmap artifact 042 row | applies | §§3–4 formally define and enumerate nine dimensions | PASS |
+| `Done: definition` | Roadmap artifact 042 row | applies | §§3–4 provide an observable written definition and enumeration | PASS |
+| Record Model is partition-owned semantic architecture | RMS §6; Blueprint §13 | applies | §3 formal definition | PASS |
+| Record Model answers a distinct class of question | RMS §6 | applies | §3 and §9 describe distinct model questions and preserve six-model separation | PASS |
+| Nine ownership dimensions are enumerated | RMS §6 | applies | §4 lists Kind taxonomy, identity semantics, state/lifecycle, relationship packaging, temporal architecture, provenance meaning, canonicality meaning, semantic validation, package composition | PASS |
+| Canonicality is qualified “if any” | RMS §6; I-104; Blueprint §13.0 | applies | §4 dimension 7 and explicit qualifier paragraph | PASS |
+| Semantic ownership is not categorization | RMS §6 | applies | §3 states “This is semantic ownership, not categorization” | PASS |
+| Shared mechanism does not confer shared semantics | I-103; Blueprint §13.7a | applies | §7 distinguishes common mechanisms from model-owned meaning | PASS |
+| Record and Record Model remain distinct | I-87; Blueprint §13.0 | applies | §6 explicitly separates the two | PASS |
+| Record and Canon remain distinct | I-104; Blueprint §13.0 | applies | §§5–7 explicitly separate canonicality, authority, and Record semantics | PASS |
+| No model inherits semantics from another | I-101; RMS §2; RMS §30 | applies | §9 states no specialization, no parent, and no inheritance from World | PASS |
+| Exactly six sovereign models, no seventh | RMS §2; RMS §30; I-101 | applies | §9 names W/E/P/R/V/I and prohibits a seventh | PASS |
+| Open model interiors are not frozen by this artifact | I-106; target's declared boundary | applies | §4 and §10 explicitly defer concrete rosters and state machines | PASS |
+| H dependency exists | Roadmap artifact 042 row; `audit-standard.md §5.1` | applies | Artifact 039 content and row supplied; dependency exists | PASS |
+| No gate bypass | Roadmap gate register; target row `G: —` | applies | No gate is declared or bypassed | PASS |
+| No applicable anti-ordering violation | Roadmap PART IX | applies | Target is a documentation contract; no prohibited build order is asserted | PASS |
+| RULE G specification/schema boundary | Artifact 003 RULE G | applies | Target defines category architecture and explicitly defers concrete schemas | PASS |
+| RULE G2 example/test separation | Artifact 003 RULE G2 | applies | No test is embedded; conformance conditions state Artifact 059 owns tests | PASS |
+| RULE G3 multi-file declaration | Artifact 003 RULE G3 | applies | Scope is one file; no undeclared merge | PASS |
+| Implementation correctness | `audit-standard.md §6 Pass 9`; target `T: doc` | does not apply | No code or schema implementation | N/A — documentation artifact |
+| Test correctness | `audit-standard.md §6 Pass 10; §11` | does not apply | No associated test artifact is declared for 042; Artifact 059 is downstream | N/A — no paired test |
+| Diff integrity | `audit-standard.md §12` | applies | `git diff HEAD -- docs/constitution/record_model.md` reports no change | PASS |
+| Regression absence | `audit-standard.md §6 Pass 12` | applies | Target unchanged since HEAD; no prior accepted baseline supplied beyond committed state | PASS |
+| Edge cases and negative boundaries | `audit-standard.md §6 Pass 13` | applies | Target addresses canonicality “if any,” WSV singleton distinction through deferred ownership boundaries, open interiors, no seventh model, and no inheritance | PASS |
+| Negative audit | `audit-standard.md §6 Pass 14; §17` | applies | Target explicitly rejects universal semantic base, inheritance, and semantic ownership transfer | PASS |
+| RR-06 authoritative requirement text | RR-06; Artifact 003 §13; `audit-standard.md §8.3` | applies | Requirement register unavailable; ID preserved exactly | UNVERIFIABLE — GAP-C, non-blocking |
 
-## Findings
+# 8. Findings
 
-No confirmed artifact finding was established.
+| ID | Severity | Source Requirement | Evidence | Impact | Remediation Direction | Validation Condition |
+|---|---|---|---|---|---|---|
+| **AUD-042-01** | **P2** | Artifact 003 Conformance Requirement C-1: “All 25 fields are stated explicitly. None is inherited from a header or a neighbour.” Also Artifact 003 “The 25 Fields” metadata contract. | `docs/constitution/record_model.md`, header lines 3–7: the target explicitly states metadata through `Risk` and `∥`, but does not state explicit `Val:`, `Done:`, or `Why:` fields. The Roadmap artifact 042 row supplies those three fields as `Val: what a Record Model owns, enumerated`; `Done: definition`; `Why: "the place where X lives" is not a definition`. | The artifact's self-declared metadata block is incomplete against the 25-field authoring contract. Completion metadata is not explicit and could be mistaken as inherited from the Roadmap row, contrary to Artifact 003's no-inheritance rule. | Add explicit `Val`, `Done`, and `Why` metadata fields to the target's metadata block, preserving the exact Roadmap contract values or an equally explicit source-grounded rendering. Do not alter the architectural definition. | Re-read the target header and verify all 25 metadata fields are explicitly present, nonblank, and match the Roadmap row and Artifact 003 vocabularies. Confirm no metadata is being inherited implicitly. |
 
-There is no finding ID because the available evidence does not demonstrate a source-supported mismatch in Artifact 042 itself. The missing Artifact 003 conformance text and missing requirement-register text are recorded as unverifiable items and are not converted into invented artifact defects.
+# 9. Evidence
 
-## Evidence
+## Finding AUD-042-01
 
-### Artifact identity and contract
+**Authoritative requirement — Artifact 003, Artifact Metadata Contract:**
 
-- `docs/constitution/record_model.md`, header:
-  > `Artifact 042 · docs/constitution/record_model.md · Own: CONST · RM: all · T: doc · R: CONTRACT · SoT: AUTHORITATIVE · Auth: governing · Canon: n/a · CD: no · Ph/St: P2/2a · Req: RR-06 · BP: §13 · RMS: §6 · H: 039 · S: — · LS: — · G: — · → 040`
+> “Every manifest entry states **all 25 fields, explicitly**. No field is inherited from a section header, a block heading, a neighbouring entry, or a phase default.”
 
-- Roadmap row 042 declares the same path, metadata, dependency, unlock, `Val`, and `Done`.
+Artifact 003 lists `Val`, `Done`, and `Why` as fields 21–23.
 
-### Definition and ownership enumeration
+**Roadmap contract for Artifact 042:**
 
-- `docs/constitution/record_model.md:§3`:
-  > “A **Record Model** is a partition-owned semantic architecture that answers a distinct class of question and owns: its Kind taxonomy, identity semantics, state and lifecycle, relationship packaging, temporal architecture, provenance meaning, canonicality meaning (if any), semantic validation, and package composition.”
+> `Val: what a Record Model owns, enumerated · Done: definition · Why: "the place where X lives" is not a definition`
 
-- `docs/constitution/record_model.md:§4` contains all nine dimensions in the same order as RMS §6.
+**Observed target metadata:**
 
-### Canonicality qualifier
+> `Req: RR-06 · BP: §13 · RMS: §6 · H: 039 · S: — · LS: — · G: — · → 040 · Risk: medium · ∥: no`
 
-- `docs/constitution/record_model.md:§4`, dimension 7:
-  > “Canonicality meaning (if any)”
+The target header contains no explicit `Val:`, `Done:`, or `Why:` fields. The body contains corresponding explanatory material, but body prose does not make the metadata fields explicit under Artifact 003's no-inheritance rule.
 
-- `docs/constitution/record_model.md:§4`:
-  > “A Record Model owns the meaning of canonicality **if that model has canonicality**; it is not the case that every Record Model has one.”
+# 10. Regression Analysis
 
-### Boundary preservation
+**Pass 12 result: PASS.**
 
-- `docs/constitution/record_model.md:§7`:
-  > “Use of a shared mechanism creates no additional semantic ownership for the Record Model.”
+- The supplied baseline states:
+  - `docs/constitution/record_model.md: tracked=True`
+  - `on_disk=True`
+  - `changed_since_HEAD=False`
+- `git diff HEAD -- docs/constitution/record_model.md` is empty.
+- No prior audit report or earlier target version was supplied.
+- No before/after weakening can be established because the target has no current diff.
+- No MUST-to-SHOULD weakening, refusal removal, boundary narrowing, or test assertion weakening was observed in the supplied evidence.
 
-- `docs/constitution/record_model.md:§9`:
-  > “They are not specializations of this definition.”
+The P2 metadata defect is a current conformance defect, not a regression demonstrated by the available baseline.
 
-- `docs/constitution/record_model.md:§11`, RM-C07:
-  > “This definition introduces no universal semantic Record Model and no additional Record Model.”
+# 11. Diff Analysis
 
-### Diff evidence
+**Pass 11 result: PASS for the target artifact; out-of-scope working-tree observations recorded.**
 
-The supplied Git diff contains only:
+## Target file
+
+- Declared target path: `docs/constitution/record_model.md`
+- Target changed since HEAD: no
+- Target diff: empty
+- Target deletion: none
+- Target formatting churn: none
+- Target scope expansion in diff: none
+
+## Working-tree files outside target scope
+
+The supplied unstaged diff modifies:
 
 - `reports/implement-log.json`
 - `reports/progress.json`
 
-The target artifact `docs/constitution/record_model.md` is not changed in the supplied diff.
+Both files contain unresolved merge-conflict markers such as:
 
-## Regression Analysis
+> `<<<<<<< Updated upstream`  
+> `=======`  
+> `>>>>>>> Stashed changes`
 
-Pass 12 was completed against the supplied pre-diff state.
+These changes are unrelated to Artifact 042 and are outside the declared audit scope. They are therefore **OUT-OF-SCOPE OBSERVATIONS**, not findings against Artifact 042. They must not be attributed to the target or used as architectural evidence.
 
-### Compared
+No staged changes were supplied.
 
-- Current target content versus the supplied target content baseline.
-- Current target path and metadata versus Roadmap row 042.
-- Current target scope versus its declared one-file scope.
-- Current dependency and unlock declarations versus the Roadmap row.
-- Current target claims against the supplied Blueprint §13 and RMS §6 excerpts.
+# 12. Unverifiable Items
 
-### Result
+1. **RR-06 — authoritative requirement text unavailable.**  
+   The Roadmap and target preserve `RR-06`, but the requirement register defining its text was not supplied. Per `audit-standard.md §8.3`, the ID is carried exactly and the row is `UNVERIFIABLE — requirement register unavailable (GAP-C, non-blocking)`. The target was checked through its available Blueprint, RMS, Roadmap, and `Val`/`Done` contract instead.
 
-- No target-artifact regression was observed.
-- No MUST/SHOULD weakening was observed in the supplied target content.
-- No refusal, validation, authority, or boundary behavior was weakened; the artifact is a document and contains no implementation enforcement path.
-- No test assertion was changed; no associated test file appears in the diff.
-- The target artifact itself is absent from the diff, so no target-content weakening is evidenced by the current Git change.
+2. **Unavailable downstream artifact contents.**  
+   The contents of Artifacts 043, 044, 051, 052, and 059 were not supplied. Their absence does not block this audit because Artifact 042 explicitly defers those responsibilities, and target compliance with its own definition can be determined from the supplied Blueprint, RMS, Roadmap, and invariant sources. No compliance claim about those sibling or downstream artifacts is made.
 
-The two modified report files are unrelated to the target artifact and are addressed in Diff Analysis.
+# 13. False-Positive Checks
 
-## Diff Analysis
+The §10 checklist was applied to the candidate metadata finding and to all architectural suspicions.
 
-### Changed-file set
+- **Source read before finding:** confirmed. Artifact 003, the Roadmap row, the target, and the relevant Blueprint/RMS sections were supplied and read.
+- **Authoritative requirement:** confirmed. The metadata finding cites Artifact 003 C-1 and its explicit 25-field contract.
+- **In scope:** confirmed. The finding concerns the target's own metadata block, not a sibling or dependency.
+- **Preference versus violation:** confirmed. Explicit metadata fields are required by Artifact 003; this is not a stylistic preference.
+- **Deduplication:** the missing `Val`, `Done`, and `Why` fields are one metadata-completeness root cause and are reported as one finding.
+- **Evidence sufficiency:** confirmed by direct comparison of the target header with the Roadmap row and Artifact 003.
+- **Ambiguity check:** the target body contains purpose and validation prose, but Artifact 003 expressly prohibits implicit inheritance; this does not eliminate the explicit-field defect.
+- **Open-boundary check:** no finding was raised for the target's deferral of concrete model interiors, canonicality framework, authority framework, categories, or conformance tests. Those are explicitly downstream or open boundaries.
+- **Dependency wording suspicion downgraded:** the target says it relies on Artifact 041 in prose although Roadmap `S: —`. Because the wording does not expressly reclassify 041 as an H or blocking dependency, this was treated as an observation rather than a finding.
+- **Unavailable source suspicion downgraded:** unavailable downstream content was not treated as a target defect because the target does not claim to define those downstream responsibilities.
 
-```text
-M reports/implement-log.json
-M reports/progress.json
-```
+# 14. Final Verdict
 
-### Comparison with declared scope
+The audit completed with full determinable coverage of Artifact 042's mandatory target conditions. The Record Model definition is architecturally compliant with the supplied Blueprint, RMS, invariants, Roadmap contract, and dependency structure. No P0 or P1 defect was found.
 
-Artifact 042 declares exactly:
+However, **AUD-042-01**, a P2 structural conformance finding, remains unresolved. The target metadata block must explicitly state `Val`, `Done`, and `Why` rather than relying on the Roadmap row or body prose. After those fields are added and verified against the Roadmap row and Artifact 003, the target can move toward PASS, subject to confirmation that no new defect was introduced.
 
-```text
-docs/constitution/record_model.md
-```
+# 15. Re-Audit Requirements
 
-Neither changed file is within that declared scope. The target artifact itself is not changed.
-
-### Observations
-
-- `reports/implement-log.json` adds a prompt-received event with no artifact assignment.
-- `reports/progress.json` updates prompt-received timestamps and event metadata.
-- No `docs/constitution/**` file changed.
-- No `canon/**`, `derived/**`, `fixtures/**`, or build-output path changed.
-- No zone violation or canonical-data mutation is evidenced.
-- No target-file deletion or formatting churn is evidenced.
-
-These changes are recorded as an unexpected repository change set. The supplied authoritative sources do not establish that these report-state updates constitute an Artifact 042 architectural defect, so they are not promoted to a severity-bearing finding.
-
-## Unverifiable Items
-
-1. **Artifact 042 `Req: RR-06`**
-   - Status: `UNVERIFIABLE`
-   - Reason: the authoritative requirement register defining `RR-06` was not supplied.
-   - Classification: GAP-C, non-blocking, per audit-standard.md §8.3.
-   - Substitute verification performed: Blueprint §13, RMS §6, the Roadmap `Val`/`Done`, and the supplied artifact content.
-
-2. **Artifact 003 conformance requirements `C-1` through `C-12`**
-   - Status: `UNVERIFIABLE`
-   - Reason: the authoritative Artifact 003 text defining these conformance requirements was not supplied.
-   - Effect: the audit cannot determine full conformance coverage for every applicable C-condition.
-   - Verdict effect: blocking, because Artifact 042 is a manifest entry with a metadata block and the mandatory conformance requirements cannot be evaluated from the available source set.
-
-3. **Roadmap anti-ordering table `X-01` through `X-22`**
-   - Status: `UNVERIFIABLE` for the discovery check.
-   - Reason: the table was not supplied.
-   - Effect: no specific anti-ordering violation was established; Artifact 042 contains no implementation-order claim beyond its manifest dependency and unlock fields.
-
-4. **Full accepted state of hard dependency Artifact 039**
-   - Status: partially unverifiable.
-   - Reason: only Artifact 039's Roadmap row was supplied, not its complete current content or acceptance evidence.
-   - Evidence available: the dependency row identifies the artifact and declares `Done: architecture stated`.
-   - Effect: existence and declared state were checked; no recursive audit of Artifact 039 was performed.
-
-## False-Positive Checks
-
-The audit-standard.md §10 checklist was applied before deciding that no artifact finding should be issued:
-
-1. Relevant Blueprint §13, RMS §6, Roadmap row 042, and target content were read before assessment.
-2. No procedural rule was used as the architectural reason for an artifact failure.
-3. The target was kept distinct from Artifact 039, Artifact 041, Artifact 040, and other sibling/downstream artifacts.
-4. No preference for a particular model schema, lifecycle, field set, or packaging was imposed.
-5. No duplicate finding was created for the same potential issue.
-6. Missing source material was recorded as `UNVERIFIABLE`, not converted into a defect.
-7. No ambiguity in the supplied sources was resolved by auditor preference.
-8. Open or deferred model interiors were not treated as frozen requirements.
-
-### Suspicion downgraded to observation
-
-- The Git diff modifies `reports/implement-log.json` and `reports/progress.json` rather than the declared target path. This is recorded in Diff Analysis but not promoted to an artifact finding because the supplied authoritative architectural requirements do not establish a severity-bearing defect against Artifact 042.
-- The target references Artifact 041 and several artifact numbers whose full source content was not supplied. This is recorded through the source-coverage limitations rather than treated as a contradiction.
-- The target's §7 reference to shared mechanisms is supported by the supplied Blueprint §13.7a mechanism/semantics distinction; no scope-expansion finding was warranted.
-
-## Final Verdict
-
-The supplied evidence demonstrates that Artifact 042 satisfies its directly checkable Blueprint §13, RMS §6, Roadmap identity, `Val`, `Done`, dependency, unlock, and boundary requirements. No P0, P1, P2, or P3 artifact finding is open.
-
-However, the audit cannot complete the mandatory Artifact 003 conformance coverage because `C-1` through `C-12` are unavailable. Under audit-standard.md §§8.1, 8.2, and 13.3, this is a blocking unverifiable condition. The final verdict is therefore **BLOCKED**, not PASS and not PATCH REQUIRED.
-
-To move from BLOCKED to PASS:
-
-- provide the authoritative Artifact 003 conformance requirements `C-1` through `C-12`;
-- re-check each applicable conformance condition against the current Artifact 042 header and content;
-- retain the `RR-06` row as non-blocking `UNVERIFIABLE` unless the requirement register becomes available;
-- re-run the diff and regression checks against the then-current repository state.
-
-## Re-Audit Requirements
-
-Conduct a **Post-Patch Re-Audit** only if the target or its declared scope changes. Otherwise, conduct a focused **Full Artifact Audit** after the missing authority is supplied.
+Run a **Post-Patch Re-Audit** under `audit-standard.md §5.3` after remediation.
 
 The re-audit must:
 
-1. Read Artifact 003 directly and evaluate every applicable `C-1` through `C-12` condition.
-2. Reconfirm Artifact 042's header against the Roadmap row.
-3. Reconfirm the nine RMS §6 ownership dimensions and the canonicality qualifier.
-4. Reconfirm the partition, sovereignty, and mechanism/semantics boundaries.
-5. Reinspect the current `git status`, `git diff --name-status`, `git diff --stat`, and complete diff.
-6. Re-run Regression Analysis against the current pre-audit baseline.
-7. Re-evaluate the `RR-06` GAP-C row; it remains `UNVERIFIABLE` unless the requirement register is supplied.
-8. Confirm that no unrelated report or repository changes are being attributed to Artifact 042.
+1. Re-read the current `docs/constitution/record_model.md`.
+2. Re-verify **AUD-042-01** against Artifact 003 C-1 and the Artifact 042 Roadmap row.
+3. Confirm explicit presence and nonblank values for all 25 metadata fields.
+4. Confirm `Val`, `Done`, and `Why` remain consistent with the Roadmap contract.
+5. Re-run the full fourteen passes, including requirement traceability, regression analysis, and diff analysis.
+6. Inspect the fresh `git status`, `git diff`, and `git diff --check`.
+7. Ensure no unrelated file is included in the target correction.
+8. Preserve the RR-06 row as `UNVERIFIABLE — GAP-C, non-blocking`; do not invent RR-06 text.
+9. Record the prior finding ID with an outcome of `CLOSED` only if current evidence demonstrates the metadata requirement is satisfied.
 
-VERDICT: BLOCKED
+VERDICT: PATCH REQUIRED
