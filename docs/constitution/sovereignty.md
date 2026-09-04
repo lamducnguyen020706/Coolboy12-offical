@@ -53,9 +53,11 @@ Exactly six, named as RMS §2 names them:
 Each is identified, with the question it alone answers, in **Artifact 040**. This contract
 names them only to identify the six parties it binds.
 
-**There is no seventh.** A sub-model, model family, meta-model, or abstract model standing
-above, beneath, or beside these six is a seventh Record Model under another name and is
-prohibited by this contract.
+**There is no seventh.** No additional semantic Record Model MAY be introduced above, below,
+between, or alongside the six — whether described as a base model, sub-model, family,
+meta-model, abstract model, or by any other name. The test is what a construction *does*:
+a naming or grouping convention that owns no semantics is not a Record Model and is not
+prohibited here.
 
 ## 4. Sovereignty Rule
 
@@ -67,32 +69,30 @@ covers, and this contract adopts that statement without extension: what the six 
 is ontology, kind taxonomy, identity semantics, relationship packaging, temporal architecture,
 lifecycle, or canonicality."*
 
-**S-3.** No Record Model MAY derive its semantic identity from another Record Model. A model's
-semantics are its own, held on its own evidence.
+**S-3.** No Record Model MAY derive its semantic identity from another Record Model. Each
+model's semantics are its own.
 
 **S-4.** No Record Model MAY be treated as a configuration, variant, mode, profile, or
 parameterization of another Record Model. Blueprint §13 states the same in the negative: the
 six are *"sovereign, not six configurations of one model"*.
 
-**S-5.** No Record Model MAY be substituted for another. Two models answering different
-questions are not interchangeable, whatever structure they appear to share.
-
-**S-6.** Sovereignty MUST survive shared mechanism. A model that uses common identity,
+**S-5.** Sovereignty MUST survive shared mechanism. A model that uses common identity,
 validation, serialization, or storage machinery remains a distinct semantic owner (§8).
 
 ## 5. Non-Specialization Rule
 
-**S-7.** **No sovereign Record Model is a specialization of another sovereign Record Model.**
-This is I-101 and RMS §2 (*"No model is a superclass of another"*), and it holds in every
-direction and at every remove: no model is a subclass, subtype, extension, refinement,
-restriction, or derivation of any other.
+**S-6.** **No sovereign Record Model is a semantic specialization of another sovereign Record
+Model.** This is I-101 and RMS §2 (*"No model is a superclass of another"*), and it holds in
+both directions between any two models and through any chain of models. What is prohibited is
+a construction in which one model's *meaning* is a case, refinement, or restriction of
+another's; the words used to describe it do not decide the question.
 
-**S-8.** No Record Model MAY inherit semantics from another. Blueprint §13.6: *"A Record Model
+**S-7.** No Record Model MAY inherit semantics from another. Blueprint §13.6: *"A Record Model
 is not a specialization of a universal model and does not inherit from one."*
 
 ### Prohibited constructions
 
-Each of these is forbidden by S-7 and S-8, in this or any equivalent form:
+Each of these is forbidden by S-6 and S-7, in this or any equivalent form:
 
 ```
 FORBIDDEN                          FORBIDDEN                 FORBIDDEN
@@ -105,9 +105,9 @@ UniversalRecord                    World                     WorldModel
         └── IssueRecord
 ```
 
-### What S-7 does not prohibit
+### What S-6 does not prohibit
 
-**S-7 is a rule about semantic sovereignty, not about software.** Implementation reuse is not
+**S-6 is a rule about semantic sovereignty, not about software.** Implementation reuse is not
 semantic inheritance. Common utilities, shared libraries, a shared parser, a shared base class
 in code — none of these is prohibited by this contract, and none of them makes two models one
 model. What is prohibited is a claim that one model's *meaning* derives from another's.
@@ -124,13 +124,13 @@ dependency             ≠   superclass
 
 | Relation | Allowed | Basis |
 |---|---|---|
-| Any model semantically specializes any other model, in any direction | **NO** | S-7, I-101, RMS §2 |
-| World is the base, parent, or template of another model | **NO** | S-9, I-101, RMS §2, §30 |
-| A universal semantic Record Model above the six | **NO** | S-10, RMS §4, Blueprint §13 |
+| Any model semantically specializes any other model, in any direction | **NO** | S-6, I-101, RMS §2 |
+| World is the base, parent, or template of another model | **NO** | S-8, I-101, RMS §2, §30 |
+| A universal semantic Record Model above, beneath, or between the six | **NO** | S-9, RMS §4 |
 | A seventh Record Model under any name | **NO** | §3, RMS §2, §25 |
-| Two models share a mechanism | **YES**, sovereignty unaffected | S-6, I-103, Blueprint §13.7a |
-| Two models share implementation code | **YES**, sovereignty unaffected | S-7 (semantic rule only) |
-| A Record converts from one partition to another | **NO** | S-12, I-16 |
+| Two models share a mechanism | **YES**, sovereignty unaffected | S-5, I-103, Blueprint §13.7a |
+| Two models share implementation code | **YES**, unless the shared construction establishes semantic inheritance, semantic ownership, or specialization between models | S-6 |
+| A Record converts from one partition to another | **NO** | S-11, I-16 |
 | One model references another | **Deferred** — Artifacts 055 and 058 | not decided here |
 
 The deferred row is deferred deliberately. Reference legality between models is Artifact 055's
@@ -139,7 +139,7 @@ artifact MUST NOT read silence here as either answer.
 
 ## 6. World Is Not a Template
 
-**S-9.** **World is not a template.** No Record Model MAY be derived from World, shaped to
+**S-8.** **World is not a template.** No Record Model MAY be derived from World, shaped to
 World, or defaulted to World's structure. RMS §2 states it; RMS §30 states the consequence —
 *"Nothing inherits from World"*; I-101 binds it as an invariant.
 
@@ -159,7 +159,7 @@ its evidence."*
 
 ## 7. No Universal Semantic Record Model
 
-**S-10.** No universal semantic Record Model MAY exist above, beneath, or between the six.
+**S-9.** No universal semantic Record Model MAY exist above, beneath, or between the six.
 RMS §4 freezes the prohibition first among its nine: *"no Universal Record Base"*. Blueprint
 §13 states the reason in one sentence — *"The Record System is not the Record Model Schema
 under a new noun."* The nine prohibitions in full, verbatim and binding, are **Artifact 043**;
@@ -169,20 +169,15 @@ Prohibited in this or any equivalent form: a universal Record carrying the seman
 a base Record acting as semantic parent; one object whose type field selects W/E/P/R/V/I; one
 model with per-model flags, modes, or profiles; World in any of those roles.
 
-**S-11.** The prohibition is on a universal **semantic** model, and on nothing else. A universal
-**mechanism** and a universal **structural envelope** are permitted and already exist: the
-seven-field envelope of Artifact 033 is universal, and it is a bootstrap structure, not a
-semantic model. A structure common to six models makes no claim about what any of them means.
-
-```
-universal structural envelope   PERMITTED   (Artifact 033)
-universal mechanism layer       PERMITTED   (Artifact 039 §6, Artifact 043)
-universal semantic Record Model PROHIBITED  (S-10)
-```
+**S-10.** The prohibition is on a universal **semantic** model, and on nothing else. A shared
+structural envelope or a shared mechanism does not thereby constitute a universal semantic
+Record Model: a structure common to six models makes no claim about what any of them means.
+The envelope is Artifact 033's and the mechanism layer is Artifact 043's; neither is
+authorized, defined, or bounded here.
 
 ## 8. Shared Mechanisms Do Not Transfer Sovereignty
 
-**S-6** restated as its own rule, because it is the one most easily lost: **a mechanism may be
+**S-5** restated as its own rule, because it is the one most easily lost: **a mechanism may be
 shared; sovereignty is not shared with it.**
 
 > **I-103** — *a mechanism may be shared; a semantic may not be shared without evidence in each
@@ -209,15 +204,14 @@ each does not decide, and where the mechanism/semantics line falls in each case 
 one partition  ──owns──▶  exactly one sovereign Record Model
 ```
 
-**S-12.** Cross-partition conversion is prohibited (I-16). A Record of one partition does not
-become a Record of another by promotion, copying, publication, or reclassification. Blueprint
-§13.6 gives the World-Production case: *"a production record never becomes a world record by
-promotion — the author creates the world record and records the relationship."*
+**S-11.** Cross-partition conversion is prohibited (I-16). Blueprint §13.6 gives the case the
+source itself states: *"a production record never becomes a world record by promotion — the
+author creates the world record and records the relationship."* Which further operations do
+or do not constitute conversion is not decided here.
 
-**What S-1 is not.** Partition ownership is **semantic** ownership. It does not say that one
-partition is one implementation class, one schema, one file, one table, or one store. No such
-claim is source-established, and this contract makes none. Blueprint §13.6 states the opposite
-of a storage claim in the same breath — *"Six Record Models, one store, one mutation path"*.
+**What S-1 is not.** Partition ownership here is **semantic** ownership only: it makes no claim
+that a partition is one implementation class, schema, file, table, or store. The partition
+ownership contract is **Artifact 045**, and this document states only what sovereignty needs.
 
 ## 10. Conformance Conditions
 
@@ -227,12 +221,16 @@ owns the P2 kernel conformance suite, and this document implements no test.
 | ID | Condition | Basis |
 |---|---|---|
 | **C-01** | There are exactly six sovereign Record Models — W, E, P, R, V, I — and no seventh. | RMS §2, §25 |
-| **C-02** | No Record Model is a semantic specialization of another, in any direction. | S-7, I-101 |
-| **C-03** | World is not a template, base, or parent for any Record Model, and nothing inherits from World. | S-9, RMS §2, §30 |
-| **C-04** | No universal semantic Record Model exists above the six. | S-10, RMS §4 |
+| **C-02** | No Record Model is a semantic specialization of another, in any direction. | S-6, I-101 |
+| **C-03** | World is not a template, base, or parent for any Record Model, and nothing inherits from World. | S-8, RMS §2, §30 |
+| **C-04** | No universal semantic Record Model exists above, beneath, or between the six. | S-9, RMS §4 |
 | **C-05** | No Record Model derives its semantic ownership from another Record Model. | S-3 |
-| **C-06** | Shared mechanisms create no shared semantic sovereignty. | S-6, I-103 |
-| **C-07** | Every partition owns exactly one sovereign Record Model, every Record carries exactly one partition, and no Record converts between partitions. | S-1, S-12, I-16 |
+| **C-06** | Shared mechanisms create no shared semantic sovereignty. | S-5, I-103 |
+| **C-07** | Every partition owns exactly one sovereign Record Model. | S-1, I-101, I-16 |
+
+**What C-07 does not carry.** Conformance for the rest of I-16 — that every Record carries
+exactly one partition, and that no Record converts between partitions — is deferred to
+**Artifact 045**. One conformance condition must not silently import a downstream contract.
 
 A construction that satisfies every condition above is conformant **to this contract**. It is
 not thereby conformant to the Record System: the other P2 contracts carry their own conditions.
