@@ -3,7 +3,8 @@
 **Artifact 042** · `docs/constitution/record_model.md` · Own: CONST · RM: all · T: doc ·
 R: CONTRACT · SoT: AUTHORITATIVE · Auth: governing · Canon: n/a · CD: no · Ph/St: P2/2a ·
 Req: RR-06 · BP: §13 · RMS: §6 · H: 039 · S: — · LS: — · G: — ·
-→ 040 · Risk: medium · ∥: no
+→ 040 · Val: what a Record Model owns, enumerated · Done: definition ·
+Why: "the place where X lives" is not a definition · Risk: medium · ∥: no
 
 ## 1. Purpose
 
