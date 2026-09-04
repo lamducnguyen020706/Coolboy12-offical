@@ -1,127 +1,192 @@
-"""Git commit/push safety firewall tests — BUILD spec §38's "most dangerous
-case" and the surrounding staging/branch/commit-message/push guarantees.
+"""Git firewall and baseline collection.
 
-No real network remote (origin is a local bare repo); no real API key.
+The runner commits exactly two paths, never destroys working-tree work, and
+never runs a destructive git command.
 """
 
 from __future__ import annotations
 
-from audit_runner import gitops, outputs, pipeline
-from audit_runner.errors import EXIT_SUCCESS
+import pytest
+from audit_runner import gitops, gitstate, pipeline
+from audit_runner.errors import EXIT_SUCCESS, GitSafetyFailure
 
-from .conftest import LunaStub, git, make_audit_response, make_patch_prompt
+from .conftest import git, verdict_stub
 
 
-def test_most_dangerous_case_only_hhtech_files_staged(repo):
-    """A working tree with source changes, test changes, doc changes, AND
-    the two hhtech output files dirty. After the runner's commit logic
-    runs, ONLY the two hhtech files may be staged/committed — everything
-    else must remain untouched in the working tree.
-    """
-    (repo / "src_change.py").write_text("# pretend source change\nX = 1\n")
-    (repo / "tests_change_test.py").write_text("# pretend test change\n")
-    (repo / "docs_change.md").write_text("# pretend doc change\n")
-    git(repo, "add", "src_change.py", "tests_change_test.py", "docs_change.md")
-    git(repo, "commit", "-m", "unrelated prior work in progress")
-
-    # further, still-uncommitted dirt on top, exactly mirroring §38's scenario
-    (repo / "src_change.py").write_text("# pretend source change v2\nX = 2\n")
-    (repo / "tests_change_test.py").write_text("# pretend test change v2\n")
-    (repo / "docs_change.md").write_text("# pretend doc change v2\n")
-
-    stub = LunaStub([make_audit_response("042", "PASS")])
-    exit_code = pipeline.main(["042"], luna=stub)
-    assert exit_code == EXIT_SUCCESS
-
-    committed = {
-        line
-        for line in git(repo, "show", "--name-only", "--pretty=", "HEAD").splitlines()
+def _committed_paths(repo):
+    return {
+        line for line in git(repo, "show", "--name-only", "--pretty=", "HEAD").splitlines()
         if line
     }
-    assert committed == {"hhtech/auditreport.md", "hhtech/patchprompt.md"}
 
-    # the artifact/source/test/doc changes remain UNSTAGED, not committed
+
+def test_most_dangerous_case_only_the_two_outputs_are_committed(repo):
+    """A working tree dirty with source, test, doc and report changes. The
+    runner must commit only its own two outputs and leave everything else
+    exactly as the user left it."""
+    dirty = {
+        "src_change.py": "# pretend source change\nX = 1\n",
+        "tests_change_test.py": "# pretend test change\n",
+        "docs_change.md": "# pretend doc change\n",
+        "reports/progress.json": '{"progress": 1}\n',
+        "reports/implement-log.json": '{"log": []}\n',
+    }
+    (repo / "reports").mkdir(exist_ok=True)
+    for path, content in dirty.items():
+        (repo / path).write_text(content)
+    git(repo, "add", "-A")
+    git(repo, "commit", "-m", "unrelated prior work")
+
+    # now dirty them again, uncommitted
+    for path, content in dirty.items():
+        (repo / path).write_text(content.replace("1", "2") + "# v2\n")
+
+    assert pipeline.main(
+        ["042"], luna=verdict_stub("042", "PASS"), repo_root=repo
+    ) == EXIT_SUCCESS
+
+    assert _committed_paths(repo) == {"hhtech/auditreport.md", "hhtech/patchprompt.md"}
+
     status = git(repo, "status", "--short")
-    dirty_paths = {line[3:] for line in status.splitlines() if line}
-    assert "src_change.py" in dirty_paths
-    assert "tests_change_test.py" in dirty_paths
-    assert "docs_change.md" in dirty_paths
+    still_dirty = {line[3:] for line in status.splitlines() if line}
+    for path in dirty:
+        assert path in still_dirty, f"{path} lost its uncommitted change"
+        assert (repo / path).read_text().endswith("# v2\n")
 
-    staged_now = git(repo, "diff", "--cached", "--name-only")
-    assert staged_now.strip() == ""  # nothing left staged after the commit
+    assert git(repo, "diff", "--cached", "--name-only").strip() == ""
 
 
-def test_staging_firewall_unit_aborts_on_unexpected_staged_file(repo):
-    """Direct unit test of the firewall: if something unexpected ends up
-    staged, validate_staged() must abort and unstage the runner's own
-    additions rather than allow a commit.
-    """
-    (repo / "hhtech" / outputs.AUDIT_REPORT_NAME).write_text("fake report\n")
-    (repo / "sneaky.txt").write_text("should never be committed by the runner\n")
-
-    baseline = ()
+def test_firewall_aborts_and_unstages_only_its_own_paths(repo):
+    (repo / "hhtech/auditreport.md").write_text("fresh report\n")
+    (repo / "sneaky.txt").write_text("must never be committed by the runner\n")
     git(repo, "add", "--", "hhtech/auditreport.md")
-    git(repo, "add", "--", "sneaky.txt")  # simulates unexpected concurrent staging
+    git(repo, "add", "--", "sneaky.txt")
 
-    from audit_runner.errors import GitSafetyFailure
+    with pytest.raises(GitSafetyFailure) as exc:
+        gitops.validate_staged(repo)
+    assert "sneaky.txt" in str(exc.value)
 
-    try:
-        gitops.validate_staged(repo, baseline)
-        raised = False
-    except GitSafetyFailure:
-        raised = True
-    assert raised
-
-    staged_after = git(repo, "diff", "--cached", "--name-only")
-    # sneaky.txt must still be staged (untouched by the firewall — it only
-    # unstages the runner's own ALLOWED_PATHS), auditreport.md must have
-    # been unstaged by the abort path
-    assert "sneaky.txt" in staged_after
-    assert "hhtech/auditreport.md" not in staged_after
+    staged = git(repo, "diff", "--cached", "--name-only")
+    assert "sneaky.txt" in staged, "the user's staged work must be preserved"
+    assert "hhtech/auditreport.md" not in staged, "the runner must unstage its own path"
 
 
-def test_stale_patchprompt_cleared_on_subsequent_pass(repo):
-    stub1 = LunaStub([
-        make_audit_response("042", "PATCH REQUIRED"),
-        make_patch_prompt("042"),
-    ])
-    pipeline.main(["042"], luna=stub1)
-    patch_after_first = (repo / "hhtech" / outputs.PATCH_PROMPT_NAME).read_text(encoding="utf-8")
-    assert not outputs.is_cleared_patch_prompt(patch_after_first)
+def test_preflight_never_unstages_user_work(repo):
+    (repo / "user_file.py").write_text("Y = 1\n")
+    git(repo, "add", "user_file.py")
 
-    stub2 = LunaStub([make_audit_response("042", "PASS")])
-    exit_code = pipeline.main(["042"], luna=stub2)
-    assert exit_code == EXIT_SUCCESS
+    with pytest.raises(GitSafetyFailure):
+        gitops.assert_index_committable(repo)
 
-    patch_after_second = (repo / "hhtech" / outputs.PATCH_PROMPT_NAME).read_text(encoding="utf-8")
-    assert outputs.is_cleared_patch_prompt(patch_after_second)
-    assert "AUD-042-01" not in patch_after_second  # no stale finding content survives
+    assert "user_file.py" in git(repo, "diff", "--cached", "--name-only")
 
 
-def test_branch_is_detected_dynamically_not_hardcoded(repo):
-    main_before = git(repo, "rev-parse", "origin/main").strip()
-    git(repo, "checkout", "-b", "claude/some-other-branch-name")
-    git(repo, "push", "-u", "origin", "claude/some-other-branch-name")
-
-    stub = LunaStub([make_audit_response("042", "PASS")])
-    exit_code = pipeline.main(["042"], luna=stub)
-    assert exit_code == EXIT_SUCCESS
-
-    local_head = git(repo, "rev-parse", "HEAD").strip()
-    remote_head = git(repo, "rev-parse", "origin/claude/some-other-branch-name").strip()
-    assert local_head == remote_head
-
-    main_after = git(repo, "rev-parse", "origin/main").strip()
-    assert main_after == main_before  # main must be untouched by this push
+def test_allowed_paths_are_exactly_the_two_outputs():
+    assert gitops.ALLOWED_PATHS == ("hhtech/auditreport.md", "hhtech/patchprompt.md")
 
 
-def test_no_op_when_nothing_changed_still_reports_success(repo):
-    """Running the identical audit twice in a row: the second run's commit
-    is a no-op (identical file content) and must not fail or push
-    needlessly, but must still exit 0."""
-    stub1 = LunaStub([make_audit_response("042", "PASS")])
-    pipeline.main(["042"], luna=stub1)
+def test_commit_is_pathspec_limited(repo):
+    """Even with an unrelated file already staged, the pathspec-limited commit
+    itself never carries it — the second safety layer."""
+    (repo / "hhtech/auditreport.md").write_text("report\n")
+    (repo / "hhtech/patchprompt.md").write_text("prompt\n")
+    (repo / "unrelated.txt").write_text("unrelated\n")
+    git(repo, "add", "--", "hhtech/auditreport.md", "hhtech/patchprompt.md", "unrelated.txt")
 
-    stub2 = LunaStub([make_audit_response("042", "PASS")])
-    exit_code = pipeline.main(["042"], luna=stub2)
-    assert exit_code == EXIT_SUCCESS
+    commit_hash = gitops.commit(repo, "audit: refresh Artifact 042 audit outputs")
+    assert commit_hash
+    assert _committed_paths(repo) == {"hhtech/auditreport.md", "hhtech/patchprompt.md"}
+    assert "unrelated.txt" in git(repo, "diff", "--cached", "--name-only")
+
+
+def test_push_refuses_when_the_branch_changed_mid_run(repo):
+    with pytest.raises(GitSafetyFailure) as exc:
+        gitops.push_current_branch(repo, "some-other-branch")
+    assert "refusing to push" in str(exc.value)
+
+
+def test_commit_message_format():
+    assert gitops.build_commit_message("042") == "audit: refresh Artifact 042 audit outputs"
+
+
+# ---------------------------------------------------------------------------
+# Baseline collection — read-only
+# ---------------------------------------------------------------------------
+
+def test_baseline_for_tracked_unchanged_file(repo):
+    state = gitstate.collect_git_state(repo, ("docs/target/thing.md",))
+    baseline = state.baselines[0]
+    assert baseline.tracked
+    assert baseline.exists_on_disk
+    assert baseline.head_content is not None
+    assert not baseline.changed_since_head
+
+
+def test_baseline_for_modified_file_carries_the_head_diff(repo):
+    (repo / "docs/target/thing.md").write_text("# rewritten\n")
+    state = gitstate.collect_git_state(repo, ("docs/target/thing.md",))
+    baseline = state.baselines[0]
+    assert baseline.changed_since_head
+    assert "rewritten" in baseline.diff_vs_head
+    assert "Record Model definition" in (baseline.head_content or "")
+
+
+def test_baseline_for_untracked_new_artifact(repo):
+    (repo / "docs/target/new.md").write_text("# brand new\n")
+    state = gitstate.collect_git_state(repo, ("docs/target/new.md",))
+    baseline = state.baselines[0]
+    assert not baseline.tracked
+    assert baseline.exists_on_disk
+    assert baseline.head_content is None
+    assert baseline.changed_since_head, "a new artifact is not an unchanged one"
+
+
+def test_baseline_for_declared_but_absent_file(repo):
+    state = gitstate.collect_git_state(repo, ("docs/target/new.md",))
+    baseline = state.baselines[0]
+    assert not baseline.tracked
+    assert not baseline.exists_on_disk
+
+
+def test_state_collection_captures_staged_and_unstaged_separately(repo):
+    (repo / "docs/target/thing.md").write_text("# unstaged edit\n")
+    (repo / "docs/target/dep041.md").write_text("# staged edit\n")
+    git(repo, "add", "docs/target/dep041.md")
+
+    state = gitstate.collect_git_state(repo, ("docs/target/thing.md",))
+    assert "thing.md" in state.diff_name_status
+    assert "dep041.md" in state.staged_name_status
+    assert "dep041.md" not in state.diff_name_status
+
+
+def test_collecting_state_mutates_nothing(repo):
+    before_status = git(repo, "status", "--short")
+    before_head = git(repo, "rev-parse", "HEAD")
+    (repo / "docs/target/thing.md").write_text("# edited\n")
+
+    gitstate.collect_git_state(repo, ("docs/target/thing.md", "docs/target/new.md"))
+
+    assert (repo / "docs/target/thing.md").read_text() == "# edited\n"
+    assert git(repo, "rev-parse", "HEAD") == before_head
+    assert before_status != git(repo, "status", "--short")  # our own edit, nothing else
+
+
+def test_runner_never_invokes_a_destructive_git_command():
+    """No reset, clean, stash, checkout or force-push is ever passed to git.
+
+    Scans for the argument *literals*, so prose in a docstring saying the
+    runner never force-pushes does not itself trip the check.
+    """
+    from pathlib import Path
+
+    runner_dir = Path(gitops.__file__).parent
+    forbidden_arguments = (
+        "reset", "clean", "stash", "checkout", "--hard", "--force", "-f", "+HEAD",
+    )
+    for source_file in runner_dir.glob("*.py"):
+        text = source_file.read_text()
+        for argument in forbidden_arguments:
+            for literal in (f'"{argument}"', f"'{argument}'"):
+                assert literal not in text, (
+                    f"{source_file.name} passes {argument!r} to git"
+                )

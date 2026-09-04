@@ -1,7 +1,12 @@
-"""Atomic writes for the two runner output files. BUILD spec §23.
+"""Atomic writes for the two runner output files.
 
-write-temp -> fsync -> atomic rename. Never truncates the destination before
-a successful, validated response exists.
+Every audit run overwrites BOTH files. There is no "clear" state and no
+stale-output state: a patchprompt is generated for every verdict, so the two
+files are always a matched pair describing the same run.
+
+Writes are atomic — temp file in the destination directory, fsync, atomic
+rename — so a crashed run never leaves a half-written report, and neither
+destination is truncated before validated content exists to replace it.
 """
 
 from __future__ import annotations
@@ -13,12 +18,8 @@ from pathlib import Path
 AUDIT_REPORT_NAME = "auditreport.md"
 PATCH_PROMPT_NAME = "patchprompt.md"
 
-_CLEARED_PATCH_PROMPT = (
-    "# hhtech/patchprompt.md\n\n"
-    "Cleared. The most recent audit did not return VERDICT: PATCH REQUIRED, "
-    "so there is no patch prompt to generate. See hhtech/auditreport.md for "
-    "the current audit result.\n"
-)
+AUDIT_REPORT_REL = f"hhtech/{AUDIT_REPORT_NAME}"
+PATCH_PROMPT_REL = f"hhtech/{PATCH_PROMPT_NAME}"
 
 
 def atomic_write(path: Path, content: str) -> None:
@@ -49,13 +50,3 @@ def write_patch_prompt(hhtech_dir: Path, content: str) -> Path:
     path = hhtech_dir / PATCH_PROMPT_NAME
     atomic_write(path, content)
     return path
-
-
-def clear_patch_prompt(hhtech_dir: Path) -> Path:
-    path = hhtech_dir / PATCH_PROMPT_NAME
-    atomic_write(path, _CLEARED_PATCH_PROMPT)
-    return path
-
-
-def is_cleared_patch_prompt(content: str) -> bool:
-    return content.strip() == _CLEARED_PATCH_PROMPT.strip()

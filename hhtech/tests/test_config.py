@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from audit_runner import config
 from audit_runner.errors import InputError
 

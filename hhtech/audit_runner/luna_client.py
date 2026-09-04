@@ -49,7 +49,9 @@ def call_luna(config: HhtechConfig, system_prompt: str, user_content: str) -> st
         detail = ""
         try:
             detail = exc.read().decode("utf-8", errors="replace")[:500]
-        except Exception:  # noqa: BLE001 — best-effort diagnostic only
+        except Exception:  # noqa: BLE001, S110 — best-effort diagnostic only;
+            # the HTTP status below is the real error, and a body that cannot
+            # be read must never mask it or leak into the failure path.
             pass
         raise ApiFailure(
             f"HHTECH returned HTTP {exc.code}: {detail}"

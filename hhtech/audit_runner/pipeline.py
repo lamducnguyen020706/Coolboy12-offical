@@ -1,27 +1,37 @@
-"""Pipeline orchestration. BUILD spec §42.
+"""Pipeline orchestration.
 
-This module is the runner's `main()` and implements the exact required call
-order. It is orchestration only: it collects inputs and invokes Luna under
-hhtech/standards/audit-standard.md and hhtech/standards/patch-standard.md.
-It decides no architectural truth, no finding severity, no verdict (BUILD
-spec §43).
+    parse args -> validate ID -> resolve repo root -> load config
+      -> resolve Roadmap row and target scope
+      -> resolve the complete Source Set
+      -> collect git state and regression baseline
+      -> Luna audit call -> validate report -> write auditreport.md
+      -> Luna patch-prompt call (EVERY verdict) -> validate -> write patchprompt.md
+      -> pre-commit self-check -> stage exactly two files -> commit -> push
+
+The runner is not the auditor and not the implementation agent. It decides
+no architectural truth, no severity and no verdict: it resolves evidence,
+bounds the context, and validates the shape of what comes back.
+
+Both outputs are refreshed on every successful run. A patchprompt is never
+conditional on the verdict — PASS and BLOCKED get their own contracts.
 """
 
 from __future__ import annotations
 
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Optional
 
-from . import artifact_id, config, gitops, gitstate, outputs, patchcheck, prompts, repo, roadmap, sources, verdict
-from .errors import EXIT_SUCCESS, InvalidAuditResponse, PatchGenerationFailure, RunnerError
+from . import artifact_id as artifact_id_module
+from . import config, gitops, gitstate, outputs, patchcheck, prompts, repo, verdict
+from .errors import (
+    EXIT_SUCCESS,
+    InvalidAuditResponse,
+    PatchGenerationFailure,
+    RunnerError,
+)
 from .luna_client import call_luna as default_call_luna
-
-BLUEPRINT_PATH = "docs/sources/COOLBOY12_MASTER_BLUEPRINT_v0.7.03.md"
-RMS_PATH = "docs/sources/COOLBOY12_RECORD_MODEL_SYSTEM_v1.0.md"
-ROADMAP_PATH = "docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md"
-AUDIT_STANDARD_PATH = "hhtech/standards/audit-standard.md"
-PATCH_STANDARD_PATH = "hhtech/standards/patch-standard.md"
+from .sources import SourceResolver
 
 TOTAL_STEPS = 8
 
@@ -31,20 +41,28 @@ _HELP_TEXT = """\
 usage: audit <artifact-id>
 
 Runs the HHTECH audit pipeline for a single COOLBOY12 Roadmap artifact:
-  1. Collects Blueprint / RMS / Roadmap / target-file / git-state context
-     for <artifact-id>.
-  2. Calls GPT-5.6 Luna (HHTECH) to produce hhtech/auditreport.md.
-  3. If the verdict is PATCH REQUIRED, calls Luna a second time to produce
-     hhtech/patchprompt.md; otherwise clears hhtech/patchprompt.md.
-  4. Commits and pushes exactly those two files to the current branch.
+
+  1. Resolves the artifact's Roadmap row and its complete declared scope.
+  2. Resolves the Source Set — Blueprint, RMS, Roadmap, both HHTECH
+     standards, CLAUDE.md, the Spine, invariant and anti-ordering registers,
+     declared and referenced sections, dependency and neighbour context.
+  3. Reads repository state and the committed baseline of the target files.
+  4. Calls GPT-5.6 Luna (HHTECH) to produce hhtech/auditreport.md.
+  5. Calls Luna again to produce hhtech/patchprompt.md — on EVERY verdict.
+  6. Commits and pushes exactly those two files to the current branch.
 
 <artifact-id> is a Roadmap artifact number, 1-490 (e.g. "042" or "42").
 Exactly one artifact ID is accepted.
 
-The runner is orchestration only. It is not the auditor and not the
-implementation agent: it does not patch the audited artifact and does not
-commit or push anything other than hhtech/auditreport.md and
-hhtech/patchprompt.md.
+Every run overwrites both outputs:
+
+  PASS            patchprompt states NO PATCH REQUIRED
+  BLOCKED         patchprompt states DO NOT PATCH, names the evidence gap,
+                  and requires ./hhtech/audit <ID> to be re-run
+  PATCH REQUIRED  patchprompt contains actionable patch instructions
+
+The runner is orchestration only: it never patches the audited artifact and
+never commits or pushes anything but its own two outputs.
 
 Environment:
   HHTECH_API_KEY   required; the HHTECH bearer credential. Never printed,
@@ -64,64 +82,56 @@ def _progress(n: int, label: str) -> None:
     print(f"[{n}/{TOTAL_STEPS}] {label}")
 
 
-def _validate_output_files(
-    hhtech_dir: Path, artifact: str, verdict_value: str, api_key: str
+def _self_check(
+    hhtech_dir: Path, artifact_id: str, verdict_value: str, api_key: str
 ) -> None:
-    """Re-read what actually landed on disk and validate contract shape
-    only, per BUILD spec §34. Never validates Luna's semantic content.
-    """
+    """Pre-commit consistency check against what actually landed on disk."""
     report_path = hhtech_dir / outputs.AUDIT_REPORT_NAME
-    report_text = report_path.read_text(encoding="utf-8")
-    if not report_text.strip():
-        raise InvalidAuditResponse("auditreport.md is empty after writing")
-    if api_key and api_key in report_text:
-        raise InvalidAuditResponse("auditreport.md contains the HHTECH API key")
-    verdict.extract_verdict(report_text)
-    verdict.validate_artifact_identity(report_text, artifact)
-
     patch_path = hhtech_dir / outputs.PATCH_PROMPT_NAME
-    patch_text = patch_path.read_text(encoding="utf-8")
-    if not patch_text.strip():
-        raise PatchGenerationFailure("patchprompt.md is empty after writing")
-    if api_key and api_key in patch_text:
-        raise PatchGenerationFailure("patchprompt.md contains the HHTECH API key")
 
-    if verdict_value == "PATCH REQUIRED":
-        if outputs.is_cleared_patch_prompt(patch_text):
-            raise PatchGenerationFailure(
-                "patchprompt.md was not actually written for a PATCH REQUIRED verdict"
-            )
-        patchcheck.validate_patch_prompt(patch_text, artifact, api_key=api_key)
-    else:
-        if not outputs.is_cleared_patch_prompt(patch_text):
-            raise InvalidAuditResponse(
-                "patchprompt.md is not cleared even though the verdict was not "
-                "PATCH REQUIRED — refusing to commit stale patch content"
-            )
+    if not report_path.is_file():
+        raise InvalidAuditResponse("auditreport.md does not exist after writing")
+    if not patch_path.is_file():
+        raise PatchGenerationFailure("patchprompt.md does not exist after writing")
+
+    report_text = report_path.read_text(encoding="utf-8")
+    result = verdict.extract_verdict(report_text, api_key=api_key)
+    verdict.validate_artifact_identity(report_text, artifact_id)
+    if result.verdict != verdict_value:
+        raise InvalidAuditResponse(
+            f"auditreport.md on disk carries verdict {result.verdict!r} but the "
+            f"run produced {verdict_value!r}; refusing to commit an inconsistent pair"
+        )
+
+    patch_text = patch_path.read_text(encoding="utf-8")
+    patchcheck.validate_patch_prompt(patch_text, artifact_id, verdict_value, api_key=api_key)
 
 
 def _report_success(
-    artifact: str,
+    artifact_id: str,
     verdict_value: str,
-    commit_hash: Optional[str],
+    commit_hash: str | None,
     branch: str,
+    pushed: bool,
 ) -> None:
-    patch_prompt_status = (
-        f"hhtech/{outputs.PATCH_PROMPT_NAME}"
-        if verdict_value == "PATCH REQUIRED"
-        else "cleared"
-    )
-    print("")
-    print(f"Artifact:          {artifact}")
+    print()
+    print(f"Artifact:          {artifact_id}")
     print(f"Verdict:           {verdict_value}")
-    print(f"Audit report path: hhtech/{outputs.AUDIT_REPORT_NAME}")
-    print(f"Patch prompt path: {patch_prompt_status}")
+    print(f"Audit report:      {outputs.AUDIT_REPORT_REL}")
+    print(f"Patch prompt:      {outputs.PATCH_PROMPT_REL}")
     print(f"Commit hash:       {commit_hash or '(nothing to commit — outputs unchanged)'}")
     print(f"Branch:            {branch}")
-    print(f"Push:              {'SUCCESS' if commit_hash else 'SKIPPED (nothing to commit)'}")
+    print(f"Push:              {'SUCCESS' if pushed else 'SKIPPED (nothing to commit)'}")
 
 
-def main(argv: list[str], *, luna: Optional[LunaFn] = None) -> int:
+def main(
+    argv: list[str],
+    *,
+    luna: LunaFn | None = None,
+    repo_root: Path | None = None,
+) -> int:
+    """Run one audit. `repo_root` is an explicit override for tests and for
+    auditing a different checkout; it is never taken from the process CWD."""
     if argv in (["--help"], ["-h"]):
         print(_HELP_TEXT)
         return EXIT_SUCCESS
@@ -129,74 +139,69 @@ def main(argv: list[str], *, luna: Optional[LunaFn] = None) -> int:
     luna_call: LunaFn = luna if luna is not None else default_call_luna
 
     try:
-        artifact = artifact_id.parse_single_argument(argv)
-        _progress(1, f"Validating artifact {artifact}")
+        artifact_id = artifact_id_module.parse_single_argument(argv)
+        _progress(1, f"Validating artifact {artifact_id}")
 
-        repo_root = repo.find_repo_root(Path.cwd())
+        root = repo_root if repo_root is not None else repo.find_repo_root()
         cfg = config.load_config()
 
-        _progress(2, "Loading Roadmap scope")
-        roadmap_text = (repo_root / ROADMAP_PATH).read_text(encoding="utf-8")
-        row = roadmap.find_manifest_row(roadmap_text, artifact)
-        scope = roadmap.derive_target_scope(repo_root, row)
+        _progress(2, "Resolving Roadmap scope")
+        resolver = SourceResolver(root)
 
-        _progress(3, "Collecting source context")
-        source_bundle = sources.collect_sources(
-            repo_root,
-            row,
-            scope.matched_files,
-            repo_root / BLUEPRINT_PATH,
-            repo_root / RMS_PATH,
-            repo_root / AUDIT_STANDARD_PATH,
-            repo_root / PATCH_STANDARD_PATH,
-        )
-        dependency_context = sources.collect_dependency_context(
-            repo_root, roadmap_text, row.get("H")
-        )
+        _progress(3, "Resolving source set")
+        resolution = resolver.resolve(artifact_id)
 
         _progress(4, "Collecting repository state")
-        git_state = gitstate.collect_git_state(repo_root)
+        git_state = gitstate.collect_git_state(
+            root, tuple(f.path for f in resolution.scope.files)
+        )
+        # Fail closed before spending a paid call on a run that could never
+        # legally commit: the runner may only ever commit its own two paths.
+        gitops.assert_index_committable(root)
 
         _progress(5, "Running GPT-5.6 Luna audit")
-        audit_user_content = prompts.build_audit_user_content(
-            artifact, row, scope, source_bundle, git_state, dependency_context
+        audit_response = luna_call(
+            cfg,
+            prompts.AUDIT_SYSTEM_PROMPT,
+            prompts.build_audit_user_content(resolution, git_state),
         )
-        audit_response = luna_call(cfg, prompts.AUDIT_SYSTEM_PROMPT, audit_user_content)
         audit_result = verdict.extract_verdict(audit_response, api_key=cfg.api_key)
-        verdict.validate_artifact_identity(audit_result.text, artifact)
+        verdict.validate_artifact_identity(audit_result.text, artifact_id)
 
-        hhtech_dir = repo_root / "hhtech"
+        hhtech_dir = root / "hhtech"
 
-        _progress(6, "Writing auditreport.md")
+        _progress(6, f"Writing auditreport.md (verdict: {audit_result.verdict})")
         outputs.write_audit_report(hhtech_dir, audit_result.text)
 
-        if audit_result.verdict == "PATCH REQUIRED":
-            _progress(7, "Generating patchprompt.md")
-            patch_user_content = prompts.build_patch_prompt_user_content(
-                artifact, row, scope, source_bundle, git_state, audit_result.text
-            )
-            # A second-call failure must NOT touch patchprompt.md and must
-            # NOT commit/push — auditreport.md may remain as the valid
-            # result of the (already-succeeded) first call (BUILD spec §24).
-            patch_response = luna_call(cfg, prompts.PATCH_PROMPT_SYSTEM_PROMPT, patch_user_content)
-            patchcheck.validate_patch_prompt(patch_response, artifact, api_key=cfg.api_key)
-            outputs.write_patch_prompt(hhtech_dir, patch_response)
-        else:
-            _progress(7, "Clearing patchprompt.md")
-            outputs.clear_patch_prompt(hhtech_dir)
+        # Every verdict gets a fresh patchprompt. The contract differs by
+        # verdict; the existence of the file does not.
+        _progress(7, "Generating patchprompt.md")
+        patch_response = luna_call(
+            cfg,
+            prompts.PATCH_PROMPT_SYSTEM_PROMPT,
+            prompts.build_patch_prompt_user_content(
+                resolution, git_state, audit_result.text, audit_result.verdict
+            ),
+        )
+        patchcheck.validate_patch_prompt(
+            patch_response, artifact_id, audit_result.verdict, api_key=cfg.api_key
+        )
+        outputs.write_patch_prompt(hhtech_dir, patch_response)
 
-        _validate_output_files(hhtech_dir, artifact, audit_result.verdict, cfg.api_key)
+        _self_check(hhtech_dir, artifact_id, audit_result.verdict, cfg.api_key)
 
         _progress(8, "Commit + push")
-        baseline_staged = gitstate.get_staged_names(repo_root)
-        gitops.stage_outputs(repo_root)
-        gitops.validate_staged(repo_root, baseline_staged)
-        message = gitops.build_commit_message(artifact)
-        commit_hash = gitops.commit(repo_root, message)
+        gitops.stage_outputs(root)
+        gitops.validate_staged(root)
+        commit_hash = gitops.commit(root, gitops.build_commit_message(artifact_id))
+        pushed = False
         if commit_hash is not None:
-            gitops.push_current_branch(repo_root, git_state.branch)
+            gitops.push_current_branch(root, git_state.branch)
+            pushed = True
 
-        _report_success(artifact, audit_result.verdict, commit_hash, git_state.branch)
+        _report_success(
+            artifact_id, audit_result.verdict, commit_hash, git_state.branch, pushed
+        )
         return EXIT_SUCCESS
 
     except RunnerError as exc:
