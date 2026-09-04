@@ -56,9 +56,8 @@ architecture that decides what its Records mean.
 
 ## 4. The Nine Ownership Dimensions
 
-RMS §6's enumeration, in its own order. Each is a **semantic** dimension: a claim about meaning,
-not a facility. Each belongs to the Record Model because meaning cannot be shared without
-evidence in each model that carries it (I-103).
+RMS §6's enumeration, in its own order. Each is a semantic ownership dimension of the Record
+Model rather than a shared facility: a claim about meaning, not a mechanism.
 
 **What this section does and does not do.** It states *what* a Record Model owns. It does not
 state *how* any model designs that ownership — that is each model's own work, bounded by the
@@ -93,20 +92,21 @@ thereby frozen."* This document establishes ownership, and freezes nothing insid
 
 ## 5. What "Owns" Means
 
-**Ownership here is semantic authority over meaning within the model.** It is not filesystem
-ownership, source-code ownership, storage ownership, database ownership, or implementation
-ownership. Blueprint §13 fixes the boundary in one phrase: a Record Model defines these things
-**"for its own partition and no other"**.
+**Ownership here is semantic ownership: the model owns what its Records mean.** It is not
+filesystem ownership, source-code ownership, storage ownership, database ownership, or
+implementation ownership. Blueprint §13 fixes its reach in one phrase: a Record Model defines
+these things **"for its own partition and no other"**.
 
 Two consequences, both source-stated:
 
-- **Ownership is bounded by the model.** A Record Model's authority reaches its own Records and
-  stops. Registry is the case where this matters most: I-105 states that Registry *"holds
-  semantic authority over definitions and never semantic ownership of another model's Records"*.
-  A World Record that resolves a Registry definition remains World's Record, semantically.
-- **Ownership is not authority in general.** Who may commit a change, and under what ceremony,
-  is **Artifact 051**. This document says only that the semantics of a model's Records are that
-  model's.
+- **Semantic ownership is bounded by the model.** A Record Model's semantic ownership reaches
+  its own Records and stops. Registry is the case where this matters most: I-105 states that
+  Registry *"holds semantic authority over definitions and never semantic ownership of another
+  model's Records"*. A World Record that resolves a Registry definition remains World's Record,
+  semantically.
+- **Semantic ownership is not change authority.** Who may commit a change, and under what
+  ceremony, is **Artifact 051**. This document says only that the semantics of a model's
+  Records are that model's.
 
 ## 6. Record Model and Record
 
@@ -131,7 +131,7 @@ across the six; meaning is not.
 
 ## 7. Record Model and Shared Mechanism
 
-**A Record Model MUST NOT acquire semantic ownership of a mechanism merely by using it.**
+**Use of a shared mechanism creates no additional semantic ownership for the Record Model.**
 
 > **I-103** — *a mechanism may be shared; a semantic may not be shared without evidence in each
 > model that carries it.*
@@ -208,7 +208,7 @@ implements no test.
 |---|---|---|
 | **RM-C01** | A Record Model is partition-owned. | RMS §6, Blueprint §13, I-16 |
 | **RM-C02** | A Record Model answers a distinct class of question. | RMS §6 |
-| **RM-C03** | A Record Model owns all nine dimensions of §4. | RMS §6 |
+| **RM-C03** | A Record Model owns the nine dimensions enumerated in §4, with canonicality qualified *(if any)*. | RMS §6 |
 | **RM-C04** | The canonicality dimension is qualified *(if any)* and is not required of every Record Model. | RMS §6, I-104 |
 | **RM-C05** | A Record Model's semantic ownership is distinct from the mechanisms it uses. | I-103, Blueprint §13.7a |
 | **RM-C06** | A Record Model does not derive its semantic identity from another Record Model. | Artifact 041 S-3, I-101 |
@@ -225,10 +225,7 @@ implements no test.
 Upstream, this document relies on **039** for the Record System architecture and on **041** for
 the sovereignty boundary it must not evade; it restates neither.
 
-**On the unlock.** Row 042 declares `→ 040` while row 040 declares `H: 039, S: —`. The two are
-consistent under the project's own reading — an unlock is not a dependency — and the ordering
-consequence is simply that this definition governs the six stubs rather than gating them. It is
-recorded here for traceability, and this document does not reinterpret either row.
+The dependency and unlock values above reproduce the current Roadmap entry for Artifact 042.
 
 ---
 
