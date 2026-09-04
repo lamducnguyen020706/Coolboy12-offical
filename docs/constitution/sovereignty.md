@@ -15,8 +15,9 @@ Row 041 states this artifact's reason in four words: **I-101 made buildable.**
 
 Artifact 039 states sovereignty as a constitutional principle. This document states it as a
 **contract**: explicit rules, explicitly prohibited constructions, and conditions that can be
-checked. It adds no architecture. Every rule below is I-101, RMS §2, or Blueprint §13.6 in
-contract form.
+checked. It adds no architecture. The rules below are source-grounded contractual formulations of
+the sovereignty requirements established by I-101, RMS §2 and Blueprint §13/§13.6, together
+with the supporting invariants each rule cites.
 
 ## 2. Scope
 
@@ -127,15 +128,16 @@ dependency             ≠   superclass
 | Any model semantically specializes any other model, in any direction | **NO** | S-6, I-101, RMS §2 |
 | World is the base, parent, or template of another model | **NO** | S-8, I-101, RMS §2, §30 |
 | A universal semantic Record Model above, beneath, or between the six | **NO** | S-9, RMS §4 |
-| A seventh Record Model under any name | **NO** | §3, RMS §2, §25 |
+| An additional semantic Record Model, introduced under another name | **NO** | §3, RMS §2, §25 |
 | Two models share a mechanism | **YES**, sovereignty unaffected | S-5, I-103, Blueprint §13.7a |
 | Two models share implementation code | **YES**, unless the shared construction establishes semantic inheritance, semantic ownership, or specialization between models | S-6 |
-| A Record converts from one partition to another | **NO** | S-11, I-16 |
+| A Record converts from one partition to another | **Deferred** — Artifact 045 | not decided here |
 | One model references another | **Deferred** — Artifacts 055 and 058 | not decided here |
 
-The deferred row is deferred deliberately. Reference legality between models is Artifact 055's
-and Artifact 058's to decide; this contract neither permits nor forbids it, and a downstream
-artifact MUST NOT read silence here as either answer.
+The deferred rows are deferred deliberately. Reference legality between models is Artifact
+055's and Artifact 058's to decide, and partition conversion is Artifact 045's; this contract
+neither permits nor forbids either, and a downstream artifact MUST NOT read silence here as
+either answer.
 
 ## 6. World Is Not a Template
 
@@ -194,24 +196,19 @@ each does not decide, and where the mechanism/semantics line falls in each case 
 
 ## 9. Partition and Model Ownership
 
-**S-1** restated with its source, and its one consequence.
-
-> **I-16** — *"Every Record carries exactly one partition — World, Epistemic, Production,
-> Registry, Visual Library, or Issue — and every partition owns exactly one sovereign Record
-> Model. Cross-partition conversion is prohibited."*
+**S-1** restated with its source. I-16 establishes that *"every partition owns exactly one
+sovereign Record Model"*, and that clause is the whole of what sovereignty needs from it.
 
 ```
 one partition  ──owns──▶  exactly one sovereign Record Model
 ```
 
-**S-11.** Cross-partition conversion is prohibited (I-16). Blueprint §13.6 gives the case the
-source itself states: *"a production record never becomes a world record by promotion — the
-author creates the world record and records the relationship."* Which further operations do
-or do not constitute conversion is not decided here.
-
 **What S-1 is not.** Partition ownership here is **semantic** ownership only: it makes no claim
-that a partition is one implementation class, schema, file, table, or store. The partition
-ownership contract is **Artifact 045**, and this document states only what sovereignty needs.
+that a partition is one implementation class, schema, file, table, or store.
+
+**What this document does not define.** The partition ownership contract is **Artifact 045**.
+Cross-partition conversion, partition mechanics, storage, schema, and operational transitions
+are its to state — including the remainder of I-16 — and none of them is decided here.
 
 ## 10. Conformance Conditions
 
