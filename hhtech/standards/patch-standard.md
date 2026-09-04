@@ -670,6 +670,262 @@ silently resolved.
 
 ---
 
+## 22. The Eleven-Stage Patch Pipeline
+
+*(PATCH PROCEDURE.)* Sections 22–34 add obligations to the sequence of §21. They replace
+nothing: §21's eight steps and their governing sections continue to bind, and these sections
+name the stages §21 left implicit and state what each one requires.
+
+```
+READ  →  REPRODUCE  →  CLASSIFY  →  PLAN  →  PATCH  →  VALIDATE
+      →  REGRESSION  →  DIFF  →  SCOPE  →  SELF-AUDIT  →  HANDOFF
+```
+
+| Stage | Governed by | The question it answers |
+|---|---|---|
+| READ | §5, §24 | what do the sources and the target actually say? |
+| REPRODUCE | §6, §23 | does the finding exist, on my own reading? |
+| CLASSIFY | §23 | is it reproducible, contradicted, or unevidenced? |
+| PLAN | §7, §8, §25 | what is the smallest change that resolves it? |
+| PATCH | §8, §9, §10, §26, §27 | make exactly that change |
+| VALIDATE | §13, §14, §29 | does the correction hold, proportionally checked? |
+| REGRESSION | §15, §28 | what might this have broken? |
+| DIFF | §12, §30 | is every changed hunk justified? |
+| SCOPE | §3, §30, §31 | did anything outside the target move? |
+| SELF-AUDIT | §18, §32 | can I evidence each of those answers? |
+| HANDOFF | §19, §20, §34 | who closes the finding, and how? |
+
+No stage may be skipped, and no stage may be satisfied by assertion. A stage whose evidence
+cannot be produced is a failed stage, and a failed stage means the patch is incomplete (§17).
+
+---
+
+## 23. Reproduce Before Edit
+
+*(PATCH PROCEDURE.)* §6 requires findings to be validated. This section fixes the outcomes and
+the consequence of each. Before any edit, independently reproduce the finding from the sources
+and the target — not from the audit report's summary of them. Exactly one result is recorded:
+
+| Result | What it means | What follows |
+|---|---|---|
+| `FINDING REPRODUCIBLE` | the source requirement and the target evidence conflict as described | patch it |
+| `FINDING NOT REPRODUCIBLE` | the described conflict is not present | **do not patch**; report why |
+| `FINDING CONTRADICTED BY SOURCE` | the source says the opposite of the finding | **do not patch**; quote the source text |
+| `INSUFFICIENT EVIDENCE` | the material needed to judge was not available | **do not patch**; name what is missing (§16) |
+
+**Never patch merely because a prompt says so.** A generated `patchprompt.md` is an instruction
+to *examine* a finding, not an instruction to change an artifact regardless of what examination
+shows. An implementation agent that edits an artifact it could not independently fault has
+introduced an unaudited change under cover of an audit.
+
+---
+
+## 24. Direct Source Reading
+
+*(PATCH PROCEDURE.)* Before editing, read directly — not via the finding's paraphrase — every
+applicable one of: the Roadmap row, the Blueprint sections, the RMS sections, Artifact 003's
+conventions, the relevant upstream and downstream artifacts, `audit-standard.md` for vocabulary,
+the target artifact in full, and the finding itself.
+
+Do not invent a missing requirement. Do not reconstruct an unavailable register from memory.
+Do not rewrite an authority document to make the target pass, and do not modify either HHTECH
+standard during an artifact patch (§10).
+
+---
+
+## 25. Minimal Change — Stated as a Plan
+
+*(PATCH PROCEDURE.)* §8 requires minimality. Before editing, write the plan down:
+
+```
+finding  →  required correction  →  exact file  →  exact section  →  expected hunk
+```
+
+Any change beyond that plan requires an explicit necessary-consequence justification (§11),
+stated with every link. Absent that justification, the following are forbidden outright:
+cleanup · refactor · stylistic rewrite · renaming unrelated sections · formatting churn ·
+speculative future-proofing · architectural improvement unrelated to the finding.
+
+"While I am here" is not a justification. It is the failure mode this section exists to prevent.
+
+---
+
+## 26. The Forbidden Patch Escape
+
+*(PATCH PROCEDURE, protecting authoritative requirements.)* A finding must be resolved by
+repairing the artifact, never by weakening what the artifact is measured against. Each of these
+is a prohibited "fix":
+
+```
+MUST                →  SHOULD
+explicit            →  implied
+prohibition         →  recommendation
+ownership           →  suggestion
+closed boundary     →  ambiguous wording
+frozen              →  provisional
+```
+
+Softening a requirement so the artifact satisfies it is not a patch; it is an unlicensed
+amendment of the constitution by an agent with no authority to make one. **Repair the artifact,
+not the rule.**
+
+---
+
+## 27. Architectural Protection
+
+*(PATCH PROCEDURE.)* Before declaring a patch complete, verify each explicitly:
+
+- no ownership moved;
+- no new owner created;
+- no universal semantic layer introduced;
+- no inheritance introduced;
+- no dependency direction changed;
+- no downstream responsibility taken;
+- no upstream requirement modified;
+- no canonicality or authority meaning altered;
+- no schema introduced into a specification artifact;
+- no test implementation introduced into a specification artifact.
+
+Each is answered from the diff, not from intent.
+
+---
+
+## 28. Adversarial Regression
+
+*(PATCH PROCEDURE.)* §15 requires regression control. This section requires it to be attempted
+adversarially: after editing, actively try to prove the patch broke something. Ask, and answer
+from the changed text:
+
+```
+What negative rule could this patch have weakened?
+What ownership boundary could it have crossed?
+What previously forbidden interpretation could it now permit?
+What downstream artifact could it now preempt?
+```
+
+**Documentation patches are not exempt.** Adding metadata to a definition artifact must leave
+untouched its definition, its enumerated ownership dimensions, its canonicality qualifier, its
+model sovereignty statements, its no-inheritance rule, its mechanism/semantics boundary, and its
+downstream ownership. The cheapest proof is usually the strongest: show that everything outside
+the justified hunk is unchanged.
+
+---
+
+## 29. Proportional Structural Validation
+
+*(PATCH PROCEDURE.)* §13 requires validation to be executed, not described. This section fixes
+its shape by artifact type.
+
+For `T: doc`: exact field presence · required heading and section presence · required phrases
+and constraints · absence of forbidden phrases or claims · source traceability · diff
+inspection.
+
+For code, schema and test artifacts: the checks the artifact itself declares in `Val`/`Done`,
+executed, with their real output.
+
+**Do not invent code tests for a documentation artifact** merely because the repository contains
+a test suite. Validation is proportional to what the artifact is; a fabricated test is not
+evidence, and running an unrelated suite proves nothing about the change.
+
+---
+
+## 30. Diff Firewall — Required Inspection
+
+*(PATCH PROCEDURE.)* §12 governs the diff. Before completion, actually run and read:
+
+```
+git status --short
+git diff --check
+git diff -- <target>
+git diff --stat
+```
+
+Confirm: only allowed files changed · only justified hunks changed · no generated files · no
+temporary files · no unrelated formatting change.
+
+`git add .` and `git add -A` are forbidden without exception. Stage by explicit path, and read
+the staged set before committing.
+
+---
+
+## 31. Local Tracking File Protection
+
+*(PATCH PROCEDURE.)* `reports/implement-log.json` and `reports/progress.json` are local session
+tracking state. They are never modified, never staged, and never committed as part of an
+artifact patch, unless a future artifact explicitly declares them as its patch target.
+
+If they carry unrelated local changes, leave them exactly as they are. They are neither evidence
+about the artifact nor part of any finding's scope, and sweeping them into a patch commit
+destroys the diff's meaning as a record of the correction.
+
+---
+
+## 32. The Self-Audit Matrix
+
+*(PATCH PROCEDURE.)* §18 requires a post-patch self-audit. It is recorded as this matrix, with
+evidence in every row — not a claim, but the thing that supports the claim:
+
+| Check | Result | Evidence |
+|---|---|---|
+| Finding reproduced | PASS / FAIL | source + target quotation |
+| Required change applied | PASS / FAIL | diff |
+| Forbidden changes absent | PASS / FAIL | diff |
+| Authority untouched | PASS / FAIL | `git status` / diff |
+| Scope preserved | PASS / FAIL | status + diff |
+| Regression absent | PASS / FAIL | validation output |
+| Negative boundaries preserved | PASS / FAIL | source comparison |
+| Tests / validation run | PASS / FAIL / N/A | actual output |
+| Ready for independent re-audit | YES / NO | final state |
+
+**If any required row fails, the patch status is incomplete** (§17), and it is reported as
+incomplete with the failed row named. A matrix with an unevidenced row is itself a failed row.
+
+---
+
+## 33. The Three Patch-Prompt Contracts
+
+*(PATCH PROCEDURE.)* A `patchprompt.md` is generated for every audit verdict, not only for
+`PATCH REQUIRED`. Which contract it must instantiate is decided by the verdict alone, and each
+carries a phrase that makes its posture unambiguous to the agent that reads it next:
+
+| Verdict | Contract | Required statement | Forbidden |
+|---|---|---|---|
+| `PATCH REQUIRED` | actionable, minimal, source-grounded instructions for the confirmed findings | the correction, per §25 and §11 | the phrase `NO PATCH REQUIRED` |
+| `PASS` | a no-patch prompt | `NO PATCH REQUIRED` | remediation instructions; any edit to the target |
+| `BLOCKED` | a do-not-patch prompt naming the evidence gap | `DO NOT PATCH` | the phrase `NO PATCH REQUIRED`; any remediation plan |
+
+A `BLOCKED` prompt additionally states the exact blocking reason, lists each unavailable source
+by the label the audit report used, distinguishes an audit-context or source-resolution gap from
+an artifact defect, and requires the audit to be re-run once the evidence is available.
+
+**A prompt that contradicts its own verdict is malformed** and must be rejected rather than
+executed: a PASS-contract prompt issued against a `PATCH REQUIRED` audit invites an unaudited
+change, and a patch prompt issued against a `BLOCKED` audit invites exactly the substitution
+§26 forbids — editing the artifact to clear a gap in the evidence about it.
+
+No contract may instruct the creation of a `patchreport.md` (§20), the modification of an
+authority document (§10, §24), or the disclosure of any credential.
+
+---
+
+## 34. Independent Re-Audit Closes the Finding
+
+*(PATCH PROCEDURE.)* An implementation agent may state:
+
+```
+PATCH COMPLETE — READY FOR INDEPENDENT RE-AUDIT
+```
+
+It may never state `AUDIT PASSED`, `FINDING CLOSED`, or any equivalent. Those are determinations
+only an audit can make, on current evidence, under `audit-standard.md` §15 and §28. The patch
+author is the least able party to certify their own work, which is the entire reason the audit
+and the patch are separate procedures with separate standards.
+
+The handoff is complete when the working tree is in a state an independent re-audit can judge,
+and the re-audit has been requested by re-running the runner.
+
+---
+
 *This document governs patch procedure only. It carries no architectural authority, defines no
 Record Model, and amends nothing in the Master Blueprint, the Record Model System, the OS File
 Build Roadmap, or `hhtech/standards/audit-standard.md`. Where it and they differ, they are right

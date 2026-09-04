@@ -36,6 +36,10 @@ def test_most_dangerous_case_only_the_two_outputs_are_committed(repo):
         (repo / path).write_text(content)
     git(repo, "add", "-A")
     git(repo, "commit", "-m", "unrelated prior work")
+    # Push it: the runner synchronizes before auditing and refuses a
+    # local-ahead branch, so prior work must be on the remote like any real
+    # committed state. The firewall assertions below are unchanged.
+    git(repo, "push", "-q", "origin", "main")
 
     # now dirty them again, uncommitted
     for path, content in dirty.items():

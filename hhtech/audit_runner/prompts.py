@@ -163,8 +163,9 @@ reproduce the audit report. State the target, the verdict, the authority
 constraints, what is allowed, what is forbidden, the required steps, the
 validation, and the re-audit handoff.
 
-The verdict decides which of three contracts you write. Follow exactly the
-one named in the TASK block, and no other.
+The verdict decides which of three contracts you write — they are defined in
+patch-standard.md §33, supplied below. Follow exactly the one named in the
+TASK block, and no other.
 
 CONTRACT A — verdict PATCH REQUIRED
 Write actionable, minimal, source-grounded patch instructions:
@@ -347,7 +348,9 @@ def _render_baselines(git: GitState) -> str:
     return "\n".join(parts)
 
 
-def build_audit_user_content(result: ResolutionResult, git: GitState) -> str:
+def build_audit_user_content(
+    result: ResolutionResult, git: GitState, snapshot=None
+) -> str:
     scope = result.scope
     parts: list[str] = []
 
@@ -357,6 +360,17 @@ def build_audit_user_content(result: ResolutionResult, git: GitState) -> str:
         f"{scope.artifact_id} — {scope.artifact_name} — under "
         f"hhtech/standards/audit-standard.md.\n"
     )
+
+    if snapshot is not None:
+        parts.append("\n## AUDIT SNAPSHOT\n")
+        parts.append(
+            f"Branch: {snapshot.branch}\n"
+            f"Audited HEAD: {snapshot.head}\n\n"
+            "The repository was synchronized with its remote before any source "
+            "below was read, and every source, diff and status in this request "
+            "was read at this one commit. State this branch and commit in the "
+            "Audit Identity section of your report.\n"
+        )
 
     parts.append("## AUDIT SCOPE (what is being judged)\n")
     parts.append(_render_scope(scope))

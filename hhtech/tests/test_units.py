@@ -201,6 +201,38 @@ def test_extract_verdict_valid(word):
     assert verdict.extract_verdict(make_audit_response("042", word)).verdict == word
 
 
+@pytest.mark.parametrize(
+    "qualifier",
+    ["INSUFFICIENT AUTHORITATIVE EVIDENCE", "RUNNER/INFRASTRUCTURE FAILURE"],
+)
+def test_extract_verdict_accepts_documented_blocked_qualifiers(qualifier):
+    """audit-standard.md §32 splits BLOCKED by cause; the base verdict the
+    pipeline branches on is unchanged."""
+    text = make_audit_response("042", f"BLOCKED — {qualifier}")
+    result = verdict.extract_verdict(text)
+    assert result.verdict == "BLOCKED"
+    assert result.qualifier == qualifier
+    assert result.full_verdict == f"BLOCKED — {qualifier}"
+
+
+def test_extract_verdict_rejects_undocumented_qualifier():
+    text = make_audit_response("042", "BLOCKED — BECAUSE I SAID SO")
+    with pytest.raises(InvalidAuditResponse) as exc:
+        verdict.extract_verdict(text)
+    assert "qualifier" in str(exc.value)
+
+
+def test_extract_verdict_rejects_qualified_pass():
+    text = make_audit_response("042", "PASS — WITH RESERVATIONS")
+    with pytest.raises(InvalidAuditResponse) as exc:
+        verdict.extract_verdict(text)
+    assert "only BLOCKED may be qualified" in str(exc.value)
+
+
+def test_unqualified_verdicts_keep_an_empty_qualifier():
+    assert verdict.extract_verdict(make_audit_response("042", "PASS")).qualifier == ""
+
+
 def test_extract_verdict_requires_all_fifteen_sections():
     text = make_audit_response("042", "PASS").replace("## Diff Analysis\n", "")
     with pytest.raises(InvalidAuditResponse) as exc:

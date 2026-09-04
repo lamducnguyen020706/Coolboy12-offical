@@ -12,6 +12,7 @@ EXIT_API_FAILURE = 2
 EXIT_INVALID_AUDIT_RESPONSE = 3
 EXIT_PATCH_GENERATION_FAILURE = 4
 EXIT_GIT_SAFETY_FAILURE = 5
+EXIT_SYNC_FAILURE = 6
 
 
 class RunnerError(Exception):
@@ -38,3 +39,14 @@ class PatchGenerationFailure(RunnerError):
 
 class GitSafetyFailure(RunnerError):
     exit_code = EXIT_GIT_SAFETY_FAILURE
+
+
+class SyncFailure(RunnerError):
+    """Remote synchronization could not be completed safely.
+
+    Carries its own exit code so a runner/infrastructure failure is never
+    read as an artifact defect: nothing about the target artifact has been
+    judged when this is raised, and no audit was run.
+    """
+
+    exit_code = EXIT_SYNC_FAILURE

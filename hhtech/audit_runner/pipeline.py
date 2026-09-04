@@ -1,12 +1,20 @@
 """Pipeline orchestration.
 
     parse args -> validate ID -> resolve repo root -> load config
-      -> resolve Roadmap row and target scope
-      -> resolve the complete Source Set
+      -> SYNCHRONIZE with origin/<branch> and capture the audit snapshot
+      -> resolve Roadmap row and target scope        (post-sync)
+      -> resolve the complete Source Set             (post-sync)
       -> collect git state and regression baseline
+      -> verify the snapshot did not drift
       -> Luna audit call -> validate report -> write auditreport.md
       -> Luna patch-prompt call (EVERY verdict) -> validate -> write patchprompt.md
       -> pre-commit self-check -> stage exactly two files -> commit -> push
+
+Synchronization comes first and nothing is read before it: the remote branch
+carries the latest committed artifact, so auditing local state unchecked
+risks judging a superseded copy and blaming the artifact for it. Every source
+in one run is read at one commit, and the run is refused if the repository
+moves underneath it.
 
 The runner is not the auditor and not the implementation agent. It decides
 no architectural truth, no severity and no verdict: it resolves evidence,
@@ -23,7 +31,17 @@ from collections.abc import Callable
 from pathlib import Path
 
 from . import artifact_id as artifact_id_module
-from . import config, gitops, gitstate, outputs, patchcheck, prompts, repo, verdict
+from . import (
+    config,
+    gitops,
+    gitstate,
+    outputs,
+    patchcheck,
+    prompts,
+    repo,
+    sync,
+    verdict,
+)
 from .errors import (
     EXIT_SUCCESS,
     InvalidAuditResponse,
@@ -33,7 +51,7 @@ from .errors import (
 from .luna_client import call_luna as default_call_luna
 from .sources import SourceResolver
 
-TOTAL_STEPS = 8
+TOTAL_STEPS = 9
 
 LunaFn = Callable[[config.HhtechConfig, str, str], str]
 
@@ -42,6 +60,11 @@ usage: audit <artifact-id>
 
 Runs the HHTECH audit pipeline for a single COOLBOY12 Roadmap artifact:
 
+  0. Synchronizes with origin/<current branch> BEFORE reading anything, so
+     the audit never judges a superseded local copy of the artifact. Fetch
+     is non-destructive; only a provably safe fast-forward is performed.
+     Local-ahead, diverged history, and a fast-forward that would overwrite
+     uncommitted work all fail closed, untouched, with a named reason.
   1. Resolves the artifact's Roadmap row and its complete declared scope.
   2. Resolves the Source Set — Blueprint, RMS, Roadmap, both HHTECH
      standards, CLAUDE.md, the Spine, invariant and anti-ordering registers,
@@ -75,6 +98,8 @@ Exit codes:
   3  audit response invalid
   4  patch prompt generation failure
   5  git / staging / commit / push safety failure
+  6  remote synchronization failure — a runner/infrastructure failure, never
+     a statement about the artifact; no audit was run
 """
 
 
@@ -111,16 +136,19 @@ def _report_success(
     artifact_id: str,
     verdict_value: str,
     commit_hash: str | None,
-    branch: str,
+    snapshot: sync.AuditSnapshot,
+    sync_result: sync.SyncResult,
     pushed: bool,
 ) -> None:
     print()
     print(f"Artifact:          {artifact_id}")
     print(f"Verdict:           {verdict_value}")
+    print(f"Synchronization:   {sync_result.relation} — {sync_result.action}")
+    print(f"Audited HEAD:      {snapshot.head}")
     print(f"Audit report:      {outputs.AUDIT_REPORT_REL}")
     print(f"Patch prompt:      {outputs.PATCH_PROMPT_REL}")
     print(f"Commit hash:       {commit_hash or '(nothing to commit — outputs unchanged)'}")
-    print(f"Branch:            {branch}")
+    print(f"Branch:            {snapshot.branch}")
     print(f"Push:              {'SUCCESS' if pushed else 'SKIPPED (nothing to commit)'}")
 
 
@@ -145,13 +173,24 @@ def main(
         root = repo_root if repo_root is not None else repo.find_repo_root()
         cfg = config.load_config()
 
-        _progress(2, "Resolving Roadmap scope")
+        # Synchronization comes first: the remote branch is the source of the
+        # latest committed artifact, so nothing may be read from disk until
+        # the working tree provably matches it.
+        _progress(2, "Synchronizing with the remote branch")
+        sync_result = sync.synchronize(root)
+        snapshot = sync.capture_snapshot(root, sync_result)
+        print(
+            f"      branch {sync_result.branch} · {sync_result.relation} · "
+            f"{sync_result.action} · HEAD {snapshot.head[:12]}"
+        )
+
+        _progress(3, "Resolving Roadmap scope (post-sync)")
         resolver = SourceResolver(root)
 
-        _progress(3, "Resolving source set")
+        _progress(4, "Resolving source set (post-sync)")
         resolution = resolver.resolve(artifact_id)
 
-        _progress(4, "Collecting repository state")
+        _progress(5, "Collecting repository state")
         git_state = gitstate.collect_git_state(
             root, tuple(f.path for f in resolution.scope.files)
         )
@@ -159,23 +198,27 @@ def main(
         # legally commit: the runner may only ever commit its own two paths.
         gitops.assert_index_committable(root)
 
-        _progress(5, "Running GPT-5.6 Luna audit")
+        # One coherent state: every source above was read at this commit, and
+        # the audit is refused if the repository moved underneath it.
+        snapshot.verify_unchanged(root)
+
+        _progress(6, "Running GPT-5.6 Luna audit")
         audit_response = luna_call(
             cfg,
             prompts.AUDIT_SYSTEM_PROMPT,
-            prompts.build_audit_user_content(resolution, git_state),
+            prompts.build_audit_user_content(resolution, git_state, snapshot),
         )
         audit_result = verdict.extract_verdict(audit_response, api_key=cfg.api_key)
         verdict.validate_artifact_identity(audit_result.text, artifact_id)
 
         hhtech_dir = root / "hhtech"
 
-        _progress(6, f"Writing auditreport.md (verdict: {audit_result.verdict})")
+        _progress(7, f"Writing auditreport.md (verdict: {audit_result.verdict})")
         outputs.write_audit_report(hhtech_dir, audit_result.text)
 
         # Every verdict gets a fresh patchprompt. The contract differs by
         # verdict; the existence of the file does not.
-        _progress(7, "Generating patchprompt.md")
+        _progress(8, "Generating patchprompt.md")
         patch_response = luna_call(
             cfg,
             prompts.PATCH_PROMPT_SYSTEM_PROMPT,
@@ -190,17 +233,17 @@ def main(
 
         _self_check(hhtech_dir, artifact_id, audit_result.verdict, cfg.api_key)
 
-        _progress(8, "Commit + push")
+        _progress(9, "Commit + push")
         gitops.stage_outputs(root)
         gitops.validate_staged(root)
         commit_hash = gitops.commit(root, gitops.build_commit_message(artifact_id))
         pushed = False
         if commit_hash is not None:
-            gitops.push_current_branch(root, git_state.branch)
+            gitops.push_current_branch(root, snapshot.branch)
             pushed = True
 
         _report_success(
-            artifact_id, audit_result.verdict, commit_hash, git_state.branch, pushed
+            artifact_id, audit_result.verdict, commit_hash, snapshot, sync_result, pushed
         )
         return EXIT_SUCCESS
 

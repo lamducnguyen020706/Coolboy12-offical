@@ -911,6 +911,351 @@ Before submitting an audit report:
 - [ ] No placeholder text, no "TODO", no deferred section, appears anywhere in the report.
 - [ ] No requirement was invented; every `NOT SPECIFIED BY AUTHORITATIVE SOURCE` gap is recorded
       as such rather than silently treated as compliant or as a defect.
+- [ ] The audited branch and commit are stated in Audit Identity (§19).
+- [ ] All fourteen Constitutional Gate conditions were tested and recorded (§20).
+- [ ] The ownership matrix is present for an `ARCH`/`CONTRACT`/`GOV` artifact (§21).
+- [ ] Sibling collisions were checked, or recorded `UNVERIFIABLE — sibling content
+      unavailable` rather than assumed absent (§22).
+- [ ] The universalization checklist was applied, and every shared construction was classified
+      facility-or-semantic-claim (§23).
+- [ ] No downstream interior the source leaves open was frozen by this artifact (§24).
+- [ ] Every severity states why this level, why not higher, why not lower, and what would
+      change it (§25).
+- [ ] The four P0/P1 confirmations are present before any P2/P3-only verdict (§26).
+- [ ] One root cause is one finding, with affected locations enumerated; independent defects
+      were not merged (§27).
+- [ ] Every finding carries its full closure contract (§28).
+- [ ] For a patched target: minimality review (§29), regression audit (§30), and diff/scope
+      proof (§31) were all performed.
+- [ ] The verdict uses §32's vocabulary exactly, with BLOCKED qualified by cause, and contains
+      no hedging language.
+
+---
+
+## 19. The Reasoning Chain
+
+*(AUDIT PROCEDURE.)* Sections 19–32 add obligations to the passes of §6 and the evidence rules
+of §7. They replace nothing: where an earlier section already binds, it continues to bind, and
+these sections say what more is required.
+
+An auditor may not move from *"I noticed something"* to *"P2 finding"*. Every material
+conclusion travels this chain, and every link is stated:
+
+```
+source fact
+      ↓  what an authoritative document actually says
+requirement
+      ↓  the MUST / MUST NOT that fact establishes
+applicability
+      ↓  whether it binds THIS artifact, and why
+artifact evidence
+      ↓  what the target actually contains, quoted or located
+interpretation
+      ↓  how the evidence is read against the requirement
+contradiction analysis
+      ↓  whether the two genuinely conflict (§10.4, §10.7)
+finding
+      ↓  the defect, stated once (§27)
+severity
+      ↓  justified per §25, never impressionistic
+remediation
+      ↓  what must change, and what must not
+validation
+      ↓  how a corrected artifact will be checked
+closure
+         who may declare the finding closed (§28)
+```
+
+A break anywhere in the chain is itself the result: the correct output is `INSUFFICIENT
+EVIDENCE` (§7.3), `NOT SPECIFIED BY AUTHORITATIVE SOURCE` (§10.7), or `UNVERIFIABLE` (§8.2) —
+never a finding asserted across the gap.
+
+**Where this is recorded.** These sections add no top-level report section: the §14.1 contract
+stands unchanged at fifteen sections, in order. Their outputs are recorded inside it —
+§20's gate and §21's matrix under **Requirement Coverage**, §22–§24 under **Requirement
+Coverage** or **Findings** as their results dictate, §25's justification inside each row of
+**Findings**, §29's comparison under **Regression Analysis**, §31's proof under **Diff
+Analysis**, and §32's verdict under **Executive Verdict** and **Final Verdict**.
+
+**Audited state.** The Audit Identity section states the branch and the exact commit the audit
+was performed against. An audit describes one repository state; if the supplied context does not
+identify that state, say so there rather than implying currency the evidence does not support.
+
+---
+
+## 20. The Constitutional Gate
+
+*(AUDIT PROCEDURE, testing architectural requirements.)* Every Full Artifact Audit (§5.1)
+explicitly tests all fourteen conditions below, **before** ordinary P2/P3 observations are
+considered. These are P0/P1 candidate conditions: a defect found here outranks anything found
+later, and must never be reported beneath a metadata nit.
+
+| # | Condition tested | A violation looks like |
+|---|---|---|
+| 1 | Constitutional contradiction | the artifact states something the Spine (§10 BP) or a frozen invariant forbids |
+| 2 | Ownership violation | it defines what another artifact owns |
+| 3 | Forbidden inheritance | one Record Model derives from another, or from World |
+| 4 | Semantic universalization | a model-owned semantic is stated as universal (§22) |
+| 5 | Scope contamination | content belonging to a different artifact's declared scope |
+| 6 | Authority inversion | a subordinate source is treated as governing a superior one (§1) |
+| 7 | Canonicality inversion | Record treated as Canon, or canonicality universalized (I-104) |
+| 8 | Source-of-truth inversion | a DERIVED source is treated as AUTHORITATIVE |
+| 9 | Dependency-direction violation | the artifact depends on something its `H`/`S` does not declare, or that the Roadmap orders after it |
+| 10 | Gate/order violation | it does work its `G` gate or Roadmap phase has not licensed (PART IX anti-orderings) |
+| 11 | Specification/schema collision | a specification artifact carries a schema, or the reverse (RULE G) |
+| 12 | Example/test collision | worked examples and tests merged into one artifact (RULE G2) |
+| 13 | Model sovereignty violation | a seventh model, a superclass, or a shared semantic parent |
+| 14 | Downstream ownership theft | it settles a question the Roadmap assigns to a later artifact (§24) |
+
+Each is recorded as `tested → evidence → result`, with the result one of `PASS`, `FAIL`,
+`N/A + reason`, or `UNVERIFIABLE + reason`. A condition that was not tested is not `PASS`.
+
+---
+
+## 21. Ownership and Custody Matrix
+
+*(AUDIT PROCEDURE.)* Required for any artifact carrying architectural responsibility
+(`R: ARCH`, `R: CONTRACT`, or `R: GOV`). The matrix makes ownership auditable instead of
+assumed:
+
+| Responsibility | Current artifact | Upstream owner | Downstream owner | Evidence | Verdict |
+|---|---|---|---|---|---|
+
+The auditor answers all six questions explicitly:
+
+1. What does this artifact own?
+2. What does it explicitly **not** own?
+3. Is another artifact supposed to own this?
+4. Has this artifact duplicated another artifact's authority?
+5. Has it silently transferred ownership?
+6. Has it created an implicit shared owner?
+
+Ownership is read from the Roadmap's declarations and the artifact's own boundary statements —
+never inferred from file location, naming, or adjacency.
+
+---
+
+## 22. Cross-Artifact Collision Audit
+
+*(AUDIT PROCEDURE.)* For every architectural artifact, check its boundary against the siblings
+its Roadmap row and its own text name, for each of:
+
+duplicate definition · duplicate ownership · implicit override · semantic leakage · scope theft ·
+dependency inversion · premature downstream specification · upstream restatement ·
+universalization.
+
+**When a sibling's content was not supplied, the result is exactly:**
+
+```
+UNVERIFIABLE — sibling content unavailable
+```
+
+Do not assume the sibling is correct, and do not claim that no collision exists when the source
+needed to see one was never read. Stating "no collision" on unread material is a false PASS, and
+§10.1 already forbids it.
+
+---
+
+## 23. Universalization Audit
+
+*(AUDIT PROCEDURE, testing RMS and invariant requirements.)* Accidental universal semantics are
+the failure mode this architecture is most exposed to, because they read as helpful
+generalisation. Search explicitly for:
+
+Universal Record Base · Universal Relationship Record · Universal History Record · universal
+lifecycle · universal state model · universal canonicality · universal authority · universal Kind
+taxonomy · universal identity semantics · universal Record schema · inheritance from World ·
+a seventh Record Model · semantic ownership derived from shared infrastructure.
+
+For every suspicious construction, ask the one question that separates the legitimate case from
+the violation:
+
+```
+Is this a shared FACILITY?          → may be valid (I-103: mechanism ≠ semantics)
+Is this a shared SEMANTIC CLAIM?    → requires explicit constitutional authority
+```
+
+A shared mechanism never confers shared meaning. An artifact may say two models use the same
+grammar; it may not say they therefore mean the same thing.
+
+---
+
+## 24. Open-Boundary Audit
+
+*(AUDIT PROCEDURE, testing Roadmap requirements.)* Where the Roadmap or RMS marks a downstream
+interior open, `PROPOSED`, or deferred, the auditor checks that the current artifact has not
+frozen it. Check for a concrete: taxonomy · schema · field list · state machine · lifecycle
+semantics · relationship legality rule · authority semantics · canonicality implementation ·
+packaging implementation · model-specific commitment.
+
+**A boundary artifact may state ownership without defining the downstream design.** Naming who
+decides is its job; deciding for them is the violation. Conversely, §10.8 still applies in the
+other direction: a choice inside an interior the source has left open is not a defect merely for
+being one of several the source has not closed.
+
+---
+
+## 25. Severity Justification
+
+*(AUDIT PROCEDURE.)* §9 assigns severity by condition. This section requires the reasoning to be
+visible. Every finding states four things:
+
+```
+Why this severity?
+Why NOT one level higher?
+Why NOT one level lower?
+What evidence would change it?
+```
+
+Worked shape:
+
+```
+Severity: P2
+Not P1 because: no constitutional ownership or sovereignty boundary is violated.
+Not P3 because: Artifact 003 explicitly requires this condition; it is not a preference.
+Would become P1 if: the omission caused this artifact to claim ownership belonging to
+                    another sovereign artifact.
+```
+
+Severity assigned by intuition alone is not assigned. A finding whose severity cannot be
+justified against §9's conditions is an observation, not a finding.
+
+---
+
+## 26. The P0/P1 Gate
+
+*(AUDIT PROCEDURE.)* Before a verdict resting only on P2/P3 findings may be issued, the report
+explicitly confirms all four:
+
+```
+P0 constitutional contradiction        none found
+P1 architectural ownership violation   none found
+P1 semantic universalization           none found
+P1 authority inversion                 none found
+```
+
+Each confirmation names the evidence that supports it. If any exists, it is reported at its own
+severity and must not be buried beneath lower-severity findings — an audit whose headline is a
+metadata nit while a sovereignty violation sits in the same artifact has failed at its job.
+
+---
+
+## 27. Finding Deduplication
+
+*(AUDIT PROCEDURE.)* §10.5 forbids splitting one root cause across several findings. Stated
+positively: one root cause is one finding, with every affected location enumerated as evidence
+beneath it.
+
+```
+WRONG                          RIGHT
+AUD-nnn-01 missing Val         AUD-nnn-01 metadata completeness violation
+AUD-nnn-02 missing Done          affected: Val, Done, Why
+AUD-nnn-03 missing Why
+```
+
+The converse is equally binding: **do not merge genuinely independent defects to shorten the
+report.** Two constitutional violations with different root causes are two findings, even when
+they occupy the same paragraph. Brevity is not a reason to collapse them.
+
+---
+
+## 28. Finding Closure Contract
+
+*(AUDIT PROCEDURE.)* Every finding defines, at the time it is written, how it will be closed:
+
+| Element | Meaning |
+|---|---|
+| Finding ID | stable, per §14.2 |
+| Required change | what must become true |
+| Forbidden change | what must not be done in the name of fixing it |
+| Allowed target scope | the exact file(s) a patch may touch |
+| Required evidence | what a correct patch must be able to show |
+| Validation command/check | how compliance is demonstrated |
+| Closure condition | the observable state that ends the finding |
+| Independent re-audit requirement | what the re-audit must re-verify (§15) |
+
+**A finding is not closed because the patch author says it is closed.** Closure requires
+independent evidence, established by a re-audit (§5.3, §15). A patch may report itself complete;
+only an audit may report a finding closed.
+
+---
+
+## 29. Patch Minimality Review
+
+*(AUDIT PROCEDURE.)* On any audit of a patched artifact, compare the finding against the actual
+diff and determine:
+
+- every changed hunk is justified by a finding or a stated necessary consequence of one;
+- no unrelated cleanup, refactor, or formatting churn is present;
+- no architecture was rewritten where a correction would do;
+- no already-compliant content was weakened;
+- no new semantic claim was introduced;
+- no scope expansion occurred.
+
+An unjustified hunk is a finding in its own right, at the severity its content warrants.
+
+---
+
+## 30. Post-Patch Regression Audit
+
+*(AUDIT PROCEDURE.)* Every Post-Patch Re-Audit (§5.3) compares the pre-patch finding against the
+post-patch state and answers all seven:
+
+1. Is the finding actually closed, on current evidence?
+2. Was any new defect introduced?
+3. Was any boundary weakened?
+4. Was any negative rule removed (§17)?
+5. Did authority shift anywhere?
+6. Was any unrelated file changed?
+7. Did the patch merely move the defect elsewhere?
+
+**A successful patch is not automatically a successful artifact.** The re-audit judges the
+artifact as it now stands, not the patch's intentions.
+
+---
+
+## 31. Diff and Scope Proof
+
+*(AUDIT PROCEDURE.)* Every audit of a changed target states, explicitly:
+
+```
+Declared scope          from the Roadmap row
+Actual changed files    from git evidence
+Target changed hunks    within the declared scope
+Out-of-scope changes    everything else that changed
+Staged files            the index state
+```
+
+Unrelated working-tree changes are reported **separately**. They are not attributed to the
+artifact, are not used as evidence about it unless directly relevant, and are never modified —
+the auditor reads the repository and writes nothing but its own report.
+
+---
+
+## 32. Verdict Vocabulary
+
+*(AUDIT PROCEDURE.)* §13's decision procedure is unchanged. This section fixes the words in
+which its outcome is stated, and splits BLOCKED by cause so that an evidence gap is never
+confused with a broken pipeline:
+
+| Verdict | Meaning |
+|---|---|
+| `PASS` | every applicable mandatory condition has determinable evidence and no unresolved finding remains (§13.1, §13.2) |
+| `PATCH REQUIRED` | the audit completed and an unresolved P0, P1, or blocking P2 finding remains |
+| `BLOCKED — INSUFFICIENT AUTHORITATIVE EVIDENCE` | a mandatory condition cannot be determined because required authority was unavailable |
+| `BLOCKED — RUNNER/INFRASTRUCTURE FAILURE` | the audit could not be performed against a coherent repository state at all |
+
+The terminal machine-read marker remains one line, exactly as §14.1 requires, and its base value
+remains `PASS`, `PATCH REQUIRED`, or `BLOCKED`; a BLOCKED marker may carry one of the two
+qualifiers above. The distinction is not cosmetic: **a runner or infrastructure failure is never
+evidence of an artifact defect**, and a report must never let one read as the other.
+
+Forbidden in a verdict, anywhere: *"looks good"*, *"probably okay"*, *"minor concern"*,
+*"should pass"*. An audit states a determination or states that it could not make one.
+
+An unavailable source may remain a non-blocking `UNVERIFIABLE` item under a `PASS` only when the
+artifact can still be fully judged against the sources that were available — which is §13.1's
+rule, restated here so the four-verdict vocabulary cannot be read as loosening it.
 
 ---
 

@@ -41,10 +41,41 @@ REQUIRED_SECTIONS = (
 )
 
 
+# audit-standard.md §13 names two BLOCKED subtypes. The machine-read verdict
+# stays one of the three base values so the pipeline's control flow and the
+# patchprompt contracts are unchanged; the subtype is carried alongside it, so
+# an evidence gap is never confused with an infrastructure failure.
+BLOCKED_QUALIFIERS = (
+    "INSUFFICIENT AUTHORITATIVE EVIDENCE",
+    "RUNNER/INFRASTRUCTURE FAILURE",
+)
+
+_QUALIFIER_SPLIT = re.compile(r"\s*[—–-]{1,2}\s*")
+
+
 @dataclass(frozen=True)
 class AuditResult:
     text: str
     verdict: str
+    qualifier: str = ""
+
+    @property
+    def full_verdict(self) -> str:
+        return f"{self.verdict} — {self.qualifier}" if self.qualifier else self.verdict
+
+
+def _split_verdict(stated: str) -> tuple[str, str]:
+    """Split `BLOCKED — INSUFFICIENT AUTHORITATIVE EVIDENCE` into its base
+    verdict and qualifier. An unqualified verdict returns an empty qualifier."""
+    for base in VALID_VERDICTS:
+        if stated == base:
+            return base, ""
+        if stated.startswith(base):
+            remainder = stated[len(base):]
+            parts = _QUALIFIER_SPLIT.split(remainder, maxsplit=1)
+            if len(parts) == 2 and parts[0] == "":
+                return base, parts[1].strip()
+    return stated, ""
 
 
 def _terminal_line(text: str) -> str:
@@ -79,10 +110,21 @@ def extract_verdict(response_text: str, api_key: str = "") -> AuditResult:
             "from an earlier occurrence"
         )
 
-    verdict = terminal_match.group(1).strip()
+    stated = terminal_match.group(1).strip()
+    verdict, qualifier = _split_verdict(stated)
     if verdict not in VALID_VERDICTS:
         raise InvalidAuditResponse(
-            f"terminal verdict {verdict!r} is not one of {list(VALID_VERDICTS)}"
+            f"terminal verdict {stated!r} is not one of {list(VALID_VERDICTS)} "
+            f"(optionally qualified, for BLOCKED, by one of {list(BLOCKED_QUALIFIERS)})"
+        )
+    if qualifier and verdict != "BLOCKED":
+        raise InvalidAuditResponse(
+            f"terminal verdict {stated!r} carries a qualifier, but only BLOCKED "
+            "may be qualified"
+        )
+    if qualifier and qualifier not in BLOCKED_QUALIFIERS:
+        raise InvalidAuditResponse(
+            f"BLOCKED qualifier {qualifier!r} is not one of {list(BLOCKED_QUALIFIERS)}"
         )
 
     if len(markers) > 1:
@@ -98,7 +140,7 @@ def extract_verdict(response_text: str, api_key: str = "") -> AuditResult:
             f"audit report is missing required §14.1 section(s): {missing}"
         )
 
-    return AuditResult(text=response_text, verdict=verdict)
+    return AuditResult(text=response_text, verdict=verdict, qualifier=qualifier)
 
 
 def validate_artifact_identity(response_text: str, artifact_id: str) -> None:
