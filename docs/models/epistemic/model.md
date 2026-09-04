@@ -27,6 +27,9 @@ It is not a specialization of another Record Model, and no Record Model is a
 specialization of it (RMS §2, I-101). What it shares with the other five is the
 Record System's mechanism layer, not its semantics (Blueprint §13.7a, I-103).
 
+**Epistemic is authoritative over epistemic state, never over truth** (RMS §8.2):
+World holds what is true, and Epistemic holds *"every frame upon it"* (RMS §30).
+
 ## Scope of This Stub
 
 This is an identity anchor and nothing more. Artifact 040's `Why` is that *each

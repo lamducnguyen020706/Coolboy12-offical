@@ -27,6 +27,9 @@ It is not a specialization of another Record Model, and no Record Model is a
 specialization of it (RMS §2, I-101). What it shares with the other five is the
 Record System's mechanism layer, not its semantics (Blueprint §13.7a, I-103).
 
+**Issue holds what was published, which is true of nothing** (RMS §30): *"a World object
+never becomes an Issue object by being published"* (Blueprint §13.6a).
+
 ## Scope of This Stub
 
 This is an identity anchor and nothing more. Artifact 040's `Why` is that *each

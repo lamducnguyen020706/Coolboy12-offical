@@ -27,6 +27,10 @@ It is not a specialization of another Record Model, and no Record Model is a
 specialization of it (RMS §2, I-101). What it shares with the other five is the
 Record System's mechanism layer, not its semantics (Blueprint §13.7a, I-103).
 
+**Registry holds meaning as Records, never instances** (RMS §30): it holds *"semantic
+authority over definitions and never semantic ownership of another model's Records"*
+(I-105).
+
 ## Scope of This Stub
 
 This is an identity anchor and nothing more. Artifact 040's `Why` is that *each
