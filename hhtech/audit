@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+"""HHTECH audit runner entrypoint.
+
+    ./hhtech/audit <artifact-id>
+
+Thin executable wrapper: resolves its own location so it works from any
+cwd, puts hhtech/ on sys.path so `audit_runner` imports regardless of how
+the script was invoked, then delegates everything to
+audit_runner.pipeline.main(). See `./hhtech/audit --help` for usage.
+
+This script contains no pipeline logic of its own — see
+hhtech/audit_runner/pipeline.py for the actual implementation and
+hhtech/audit_runner/ for every collaborating module.
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+_HHTECH_DIR = Path(__file__).resolve().parent
+if str(_HHTECH_DIR) not in sys.path:
+    sys.path.insert(0, str(_HHTECH_DIR))
+
+from audit_runner.pipeline import main  # noqa: E402
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
