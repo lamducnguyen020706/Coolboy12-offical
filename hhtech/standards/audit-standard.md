@@ -62,9 +62,13 @@ auditor reports it rather than enforcing it as if it were source-established.**
 |---|---|---|---|
 | 1 | **Master Blueprint** (`docs/sources/COOLBOY12_MASTER_BLUEPRINT_v0.7.03.md`) | what is architecturally true | primary architectural authority, jointly with RMS |
 | 2 | **Record Model System v1.0** (`docs/sources/COOLBOY12_RECORD_MODEL_SYSTEM_v1.0.md`) | the six-model Record System architecture in detail | primary architectural authority, jointly with Blueprint |
-| 3 | **OS File Build Roadmap (REPAIRED)** (`docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md`) | build decomposition, artifact manifest, dependency/lockstep/gate structure, phase order | the target artifact's own contract (its manifest row) lives here |
-| 4 | **Target Artifact** — its declared manifest row plus its current authored content | what this specific artifact claims to be and do | the object under audit |
+| 3 | **OS File Build Roadmap (REPAIRED)** (`docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md`) | build decomposition, artifact manifest, dependency/lockstep/gate structure, phase order | the target artifact's own manifest row — `ID`/`Name`/`path`/`Val`/`Done`/`BP`/`RMS`/`H`/`S`/`LS`/`G`/`→` and every other manifest field — lives here, as Tier 3 evidence about this one artifact |
+| 4 | **Target Artifact** — its current authored content (the file or document itself) | what this specific artifact currently says and does | the object under audit, judged against Tiers 1–3 |
 | 5 | **Current Git Diff / repository state** | what has actually changed and what currently exists on disk | factual evidence of the implementation, never of what *should* be true |
+
+**Tier 3 vs Tier 4, stated precisely.** The target artifact's Roadmap manifest row is Roadmap
+content — **Tier 3** — regardless of which artifact it describes. Only the artifact's own
+current authored content is **Tier 4**. §1.4 restates this for the auditor's use.
 
 This is the project's own precedence, stated at Roadmap §0.2 (*"Blueprint + RMS govern. Where
 the prior roadmap or the old roadmap conflicts with them, they lose"*) and at Artifact 003's
@@ -127,15 +131,25 @@ is the conflict already recorded and marked NON-BLOCKING at source?
    (worked examples: Roadmap PART VIII DG-01/DG-02; RMS Appendix H PC-1..PC-4)
         ↓ yes                                    ↓ no
 treat as recorded, non-blocking;          the conflict bears on this artifact:
-proceed with the artifact audit,          report it as a finding, classify as
-citing the recorded resolution            P0 or P1 per §9, and continue only
-                                           if the target artifact is not itself
-                                           blocked by the unresolved question
+proceed with the artifact audit,          report it as a finding; classify its
+citing the recorded resolution            severity per §9's actual conditions —
+                                           P0, P1, or P2, by what the conflict
+                                           itself violates, never P2 by default
+                                           and never by auditor preference —
+                                           and continue only if the target
+                                           artifact is not itself blocked by
+                                           the unresolved question
                                                     ↓
                                            if the artifact CANNOT be evaluated
                                            without resolving the conflict →
                                            verdict = BLOCKED (§13)
 ```
+
+**A new, unrecorded conflict is not automatically P2.** Its severity follows §9's own
+conditions: P0 if it bears on a Spine law, a `FROZEN` closure, or an anti-ordering; P1 if it
+breaks the target artifact's own `Val`/`Done`/`BP`/`RMS` compliance; P2 only if its effect is
+structural drift with no compliance-breaking effect. If it prevents evaluation entirely, the
+verdict is `BLOCKED` (§13), not a severity-scored finding.
 
 **Never resolve a genuine, unrecorded source conflict by the auditor's own judgment.** The two
 worked examples of correctly recorded conflicts are Roadmap DG-01 (Blueprint §9.4 vs
@@ -218,6 +232,11 @@ target artifact's own compliance is *directly* broken by the upstream defect (in
 target artifact's own finding cites the upstream defect as its cause, and the upstream artifact
 gets its own, separately-scoped finding if and when it is itself audited).
 
+**The auditor does not recursively audit the `H` dependency's own dependency graph.** Per §5.1,
+an `H` dependency is inspected only for existence, declared state, the dependency relationship,
+and facts the target artifact directly relies upon — never given its own fourteen-pass audit
+inside this artifact's audit.
+
 The auditor does not audit: work explicitly deferred to a later phase per the artifact's own
 `Done`/`Why` (e.g., RMS-frozen boundaries whose *interiors* are stated `BOUNDARY-NAMING`,
 `PROPOSED`, or otherwise open per I-106/I-107 and Blueprint §34.1); a sibling artifact's
@@ -253,9 +272,17 @@ source state this?"*
 
 ### 5.1 Full Artifact Audit
 
-All fourteen passes (§6) run against the complete current state of the target artifact and its
-declared `H` dependencies. Used for a first audit of an artifact, or whenever a mode is not
-specified.
+All fourteen passes (§6) run against the complete current state of the target artifact. Used
+for a first audit of an artifact, or whenever a mode is not specified.
+
+**`H` dependencies are inspected, never full-audited.** A declared `H` dependency is read only
+as far as needed to establish: that it exists; its declared completion/acceptance state; the
+dependency relationship it stands in; the specific facts the target artifact directly relies
+upon; and whether the dependency's current state directly prevents the target artifact from
+satisfying its own requirements. The fourteen passes are not separately run against an `H`
+dependency's own content, and the audit does not recurse into the dependency's own dependency
+graph. A defect that belongs to the `H` dependency itself, rather than to the target artifact,
+is handled per §3.2.
 
 ### 5.2 Diff Audit
 
@@ -547,11 +574,25 @@ For every artifact audited, the auditor builds a coverage table:
 - **UNVERIFIABLE + reason** — the requirement cannot be checked with available evidence or
   available authority (state exactly why).
 
-**`UNVERIFIABLE` is never `PASS`.** An unverifiable requirement is recorded, carried into the
-report's Unverifiable Items section (§14.1), and does not contribute to a PASS verdict — but it
-also does not by itself force PATCH REQUIRED or BLOCKED unless the artifact's own compliance
-cannot be determined without it (in which case, §13, the audit is BLOCKED on that specific
-question).
+**`UNVERIFIABLE` is never `PASS`, and an `UNVERIFIABLE` row is never counted as a satisfied
+requirement.** It is recorded, carried into the report's Unverifiable Items section (§14.1), and
+does not itself contribute to a PASS verdict.
+
+**`UNVERIFIABLE` does not, by itself, make the artifact `BLOCKED`.** Two cases, and only one of
+them blocks:
+
+- **Non-blocking `UNVERIFIABLE`.** The artifact's compliance with every mandatory condition
+  (§8.1) can still be fully determined despite this row — the row is informational, listed as
+  `UNVERIFIABLE` in the traceability table, and the audit continues to a verdict under §13.3's
+  decision procedure. The `Req` (`BR-nn`) row (§8.3, GAP-C) is the standing example: it is
+  always `UNVERIFIABLE`, and it never by itself blocks an audit.
+- **Blocking `UNVERIFIABLE`.** The missing requirement or evidence is severe enough that the
+  auditor cannot determine the artifact's compliance with a mandatory condition at all. The
+  verdict is `BLOCKED` on that specific condition (§13), not `PATCH REQUIRED`.
+
+`PASS` is legal only when every mandatory condition's compliance can be determined and no
+unresolved P0/P1, or blocking-classified P2, finding remains — never merely because no defect
+was found (§13.2).
 
 ### 8.3 The requirement register gap (GAP-C)
 
@@ -580,7 +621,7 @@ finding's** weight. They are never conflated.)*
 |---|---|---|---|
 | **P0** | Constitutional / blocking | Violates a Spine law; contradicts a `FROZEN` invariant or RMS closure; violates an anti-ordering (X-01…X-22); breaches a canonical-data gate rule (Roadmap PART X); reintroduces retired Canon Object Model architecture (Roadmap §0.3, CLAUDE.md "No COM Terminology") | Verdict cannot be PASS. Blocks the artifact and anything whose own compliance depends on this one. |
 | **P1** | Artifact-breaking | The artifact's own `Val`/`Done` is not met; a cited `BP`/`RMS` clause is contradicted; a hard dependency (`H`), lockstep (`LS`), or gate (`G`) is violated; scope has expanded into a declared downstream artifact's territory | Verdict = PATCH REQUIRED. Artifact cannot be marked complete. |
-| **P2** | Structural / drift | Source-supported but non-blocking: an Artifact 003 conformance requirement (C-1…C-12) is not met; a regression against a prior-accepted artifact that does not itself violate a P0/P1 rule; an unrecorded conflict discovered between sources, not yet classified NON-BLOCKING | Verdict = PATCH REQUIRED, unless the finding is itself a recorded, source-classified non-blocking item (§1.6), in which case it is downgraded to INFO with the classification cited. |
+| **P2** | Structural / drift | Source-supported but non-blocking: an Artifact 003 conformance requirement (C-1…C-12) is not met; a regression against a prior-accepted artifact that does not itself violate a P0/P1 rule; a newly-discovered, unrecorded source conflict whose effect is structural drift only — it does not itself violate a Spine law, a `FROZEN` closure, or the artifact's own `Val`/`Done`/`BP`/`RMS` compliance (§1.6) | Verdict = PATCH REQUIRED, unless the finding is itself a recorded, source-classified non-blocking item (§1.6), in which case it is downgraded to INFO with the classification cited. |
 | **P3** | Precision / clarity | Wording imprecision; a loose but not-incorrect citation; a `Val` that is technically checkable but weak; terminology drift not yet reaching current-architecture status | Does not by itself block PASS. Three or more P3 findings against the same requirement may be escalated to P2 by the auditor, with the escalation reason stated. |
 | **INFO** | Observation | A `NOT SPECIFIED BY AUTHORITATIVE SOURCE` gap; an already-recorded non-blocking conflict; a legitimate implementation choice inside an open boundary (RMS `BOUNDARY-NAMING`/`PROPOSED`, I-106/I-107) | Never affects verdict. Recorded for traceability only. |
 
@@ -688,9 +729,9 @@ compliant.
 
 | Verdict | Meaning |
 |---|---|
-| **PASS** | The audit reached full requirement coverage (§8) for this artifact, and no unresolved P0 or P1 finding remains. Any P2 findings present are either resolved or explicitly classified as recorded, non-blocking conflicts (§1.6, downgraded to INFO). |
-| **PATCH REQUIRED** | At least one unresolved P0, P1, or blocking-classified P2 finding exists, **and** the audit has enough evidence to state what is wrong and, where determinable, a remediation direction (§16). |
-| **BLOCKED** | The audit cannot reach a reliable verdict — a required source document or section is unavailable; a declared `H` dependency does not exist or is itself unaudited/unaccepted; an unresolved source-authority conflict (§1.6) bears directly on this artifact's compliance and cannot be classified non-blocking; or the evidence needed for a mandatory pass fundamentally does not exist (e.g., Implementation Correctness requested against an artifact with no implementation). |
+| **PASS** | Every mandatory condition (§8.1) has a determinable compliance state — resolved to `PASS`, `N/A + reason`, or non-blocking `UNVERIFIABLE`/`INFO` (§8.2) — and no unresolved P0 or P1 finding remains. Any P2 findings present are either resolved or explicitly classified as recorded, non-blocking conflicts (§1.6, downgraded to INFO). |
+| **PATCH REQUIRED** | The audit completed — every mandatory condition's compliance was determinable — and at least one unresolved P0, P1, or blocking-classified P2 finding exists, **and** the audit has enough evidence to state what is wrong and, where determinable, a remediation direction (§16). |
+| **BLOCKED** | The audit cannot complete because a mandatory condition's compliance cannot be determined at all — a required source document or section is unavailable; a declared `H` dependency does not exist or is itself unaudited/unaccepted; an unresolved source-authority conflict (§1.6) bears directly on this artifact's compliance and cannot be classified non-blocking; a blocking `UNVERIFIABLE` (§8.2) exists against a mandatory condition; or the evidence needed for a mandatory pass fundamentally does not exist (e.g., Implementation Correctness requested against an artifact with no implementation). |
 
 ### 13.2 PASS is not "no findings found"
 
@@ -702,23 +743,46 @@ incomplete coverage as its own finding.
 
 ### 13.3 Decision procedure
 
+Two questions decide the verdict, asked in order. The first distinguishes a **blocking** gap —
+one that prevents the auditor from determining the artifact's compliance with a mandatory
+condition — from a **non-blocking** one, per §8.2's split; the second aggregates findings.
+
 ```
 run all fourteen passes (§6)
         ↓
-any pass could not be completed for lack of source/evidence?
-        ↓ yes                                   ↓ no
-   VERDICT = BLOCKED                     aggregate all findings
-   (name the specific gap)                       ↓
-                                     any open P0 finding?
-                                          ↓ yes         ↓ no
-                                  PATCH REQUIRED    any open P1 finding?
-                                                         ↓ yes    ↓ no
-                                                 PATCH REQUIRED   any P2 finding
-                                                                  not classified
-                                                                  non-blocking?
-                                                                    ↓ yes   ↓ no
-                                                            PATCH REQUIRED  PASS
+for every mandatory condition (§8.1): is its compliance determinable
+from available source/evidence — PASS, FAIL, N/A + reason, or a
+non-blocking UNVERIFIABLE (§8.2)?
+        ↓ no, for at least one            ↓ yes, for every one
+  mandatory condition                 aggregate all findings
+        ↓                                     ↓
+  VERDICT = BLOCKED                   any open P0 finding?
+  (name the specific                       ↓ yes         ↓ no
+  condition and the                PATCH REQUIRED    any open P1 finding?
+  blocking gap)                                          ↓ yes    ↓ no
+                                                  PATCH REQUIRED   any P2 finding
+                                                                   not classified
+                                                                   non-blocking (§1.6, §9)?
+                                                                     ↓ yes   ↓ no
+                                                             PATCH REQUIRED  PASS
 ```
+
+Stated as five rules, matching §8.2 and §13.1–§13.2 exactly — this document uses one decision
+model, not three:
+
+1. **If the audit cannot determine compliance with a mandatory condition because authority or
+   evidence is missing at a blocking level** (§8.2), the verdict is **BLOCKED**, naming the
+   specific condition and gap.
+2. **If the audit completes** — every mandatory condition's compliance is determinable — **and
+   an unresolved P0, P1, or blocking-classified P2 finding remains**, the verdict is **PATCH
+   REQUIRED**.
+3. **If the audit completes, coverage is full, no unresolved P0/P1/blocking-P2 finding remains,
+   and every mandatory condition's compliance is determinable**, the verdict is **PASS**.
+4. **Every remaining `UNVERIFIABLE` row is listed in the Unverifiable Items section (§14.1) and
+   is never itself marked `PASS`** — including the non-blocking rows that did not prevent a
+   PASS verdict under rule 3.
+5. A non-blocking `UNVERIFIABLE` row (§8.2) never triggers rule 1 by itself. Only a *blocking*
+   one does.
 
 ---
 
