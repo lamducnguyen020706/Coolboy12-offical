@@ -946,6 +946,26 @@
       "type": "prompt",
       "source": "UserPromptSubmit",
       "completion_recorded": false
+    },
+    {
+      "event_id": "6e1225635b8d197e64e23098",
+      "timestamp": "2026-09-05T01:33:10+07:00",
+      "summary": "Prompt received",
+      "artifact": null,
+      "phase": null,
+      "type": "prompt",
+      "source": "UserPromptSubmit",
+      "completion_recorded": false
+    },
+    {
+      "event_id": "c8439e46d53dc9b561fa8fda",
+      "timestamp": "2026-09-05T01:47:31+07:00",
+      "summary": "Prompt received",
+      "artifact": null,
+      "phase": null,
+      "type": "prompt",
+      "source": "UserPromptSubmit",
+      "completion_recorded": false
     }
   ]
 }
