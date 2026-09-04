@@ -179,7 +179,7 @@ authorized, defined, or bounded here.
 
 ## 8. Shared Mechanisms Do Not Transfer Sovereignty
 
-**S-5** restated as its own rule, because it is the one most easily lost: **a mechanism may be
+This section applies **S-5**, because it is the rule most easily lost: **a mechanism may be
 shared; sovereignty is not shared with it.**
 
 > **I-103** — *a mechanism may be shared; a semantic may not be shared without evidence in each
@@ -217,7 +217,7 @@ owns the P2 kernel conformance suite, and this document implements no test.
 
 | ID | Condition | Basis |
 |---|---|---|
-| **C-01** | There are exactly six sovereign Record Models — W, E, P, R, V, I — and no seventh. | RMS §2, §25 |
+| **C-01** | There are exactly six sovereign Record Models — W, E, P, R, V, I — and no additional semantic Record Model. | RMS §2, §25 |
 | **C-02** | No Record Model is a semantic specialization of another, in any direction. | S-6, I-101 |
 | **C-03** | World is not a template, base, or parent for any Record Model, and nothing inherits from World. | S-8, RMS §2, §30 |
 | **C-04** | No universal semantic Record Model exists above, beneath, or between the six. | S-9, RMS §4 |
