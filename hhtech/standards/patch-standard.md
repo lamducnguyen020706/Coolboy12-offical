@@ -71,9 +71,10 @@ this document, and it is reported rather than acted on as if it were source-esta
 `hhtech/auditreport.md` has raised against one target artifact.
 
 **When it applies.** After an audit has produced a report containing at least one finding that
-requires correction (any P0, any P1, a blocking-classified P2 per `audit-standard.md` §9/§1.6,
-or a P3 a human has explicitly directed to be addressed), or when a human explicitly directs a
-patch operation citing specific findings.
+requires correction (any P0; any P1; any open P2 — one the audit result has not itself
+downgraded to INFO under `audit-standard.md` §1.6/§9, see §4; or a P3 a human has explicitly
+directed to be addressed), or when a human explicitly directs a patch operation citing specific
+findings.
 
 **Relationship to `audit-standard.md`.** That document defines how a finding is discovered,
 evidenced, and classified. This document takes those findings as *unverified input* (§6) and
@@ -116,9 +117,22 @@ history is not architectural authority. It records file changes, never canonical
 
 ## 3. Patch Scope
 
-**The normal boundary is the target artifact's own declared path**, plus any file its own
-manifest entry declares as a RULE-G3 merge (Artifact 003, RULE G3). Nothing else is in scope by
-default.
+**The normal boundary is the target artifact's complete declared scope, as established by its
+Roadmap manifest entry** — every file the manifest declares, including any RULE-G3 merge
+(Artifact 003, RULE G3) where one applies. An artifact whose manifest legitimately spans several
+files has all of those files in scope; scope is the manifest's, not narrowed to a single path
+merely because a single path is the common case.
+
+```
+Roadmap manifest  ──defines──▶  the target artifact's intended file/path scope
+git diff          ──shows───▶   what actually changed
+comparison        ──detects─▶   unexpected scope expansion
+```
+
+**The Roadmap defines intended scope. Git diff never defines or expands it.** Git diff is
+evidence of what actually changed (Tier 5, §2), checked against the Roadmap-declared scope —
+never a second, competing source of what is allowed to change (§12). Nothing outside that
+declared scope is in scope by default.
 
 **Another file may be modified only when both conditions hold:**
 
@@ -126,7 +140,7 @@ default.
 2. the additional file's modification is itself required by Tiers 1–3 — a declared RULE-G3
    companion, or a file the finding's own source citation directly implicates.
 
-Every such file is named with an explicit justification in the patch report (§20). A file that
+Every such file is named with an explicit justification in the patch result (§20). A file that
 fails either condition is out of scope, however convenient touching it would be.
 
 **Prohibited scope expansion**, stated with the standard's own example: if Artifact 042 has a
@@ -168,11 +182,32 @@ action stated for each:**
 |---|---|---|
 | **P0** | Spine-law/`FROZEN`/anti-ordering violation; canonical-gate breach; COM reintroduction | Highest priority (§7). If genuinely not patchable at the artifact's own level — e.g. it requires infrastructure not yet built — report as such (§16) rather than fabricate a correction. |
 | **P1** | Artifact's own `Val`/`Done` unmet; cited `BP`/`RMS` contradicted; `H`/`LS`/`G` violated; scope has expanded into a downstream artifact | Resolved per the artifact's own `Val`/`Done` and `BP`/`RMS` citation. Blocks completion (§17) until resolved. |
-| **P2** | Source-supported, non-blocking structural drift; not itself resolved to INFO by a recorded non-blocking classification (`audit-standard.md` §1.6) | Resolved if source-supported and not itself dependent on unbuilt infrastructure. A P2 already downgraded to INFO by `audit-standard.md` §1.6/§9 is **not** patched. |
+| **P2** | Source-supported, non-blocking structural drift; not itself resolved to INFO by a recorded non-blocking classification (`audit-standard.md` §1.6) | Resolved if source-supported and not itself dependent on unbuilt infrastructure. A P2 already downgraded to INFO by `audit-standard.md` §1.6/§9 is **not** patched. **The patch agent never makes this downgrade decision itself — it only reads whichever classification the audit result already recorded.** |
 | **P3** | Wording imprecision, loose citation, weak-but-checkable `Val`, terminology drift | Patched when the correction is safe and minimal. May be explicitly deferred with a stated reason (§20) — never silently dropped. |
 | **INFO** | `NOT SPECIFIED BY AUTHORITATIVE SOURCE`; recorded non-blocking conflict; legitimate choice inside an open boundary | **Never patched.** `audit-standard.md` defines INFO as never affecting verdict; correcting it is prohibited scope expansion (§3). |
 | **UNVERIFIABLE** (a traceability-table value, not a severity) | The requirement could not be checked with available evidence or authority (`audit-standard.md` §8.2) | Not "patched into PASS." If UNVERIFIABLE because the artifact itself is missing content that is its own declared responsibility, supplying that content is a legitimate patch. If UNVERIFIABLE because of a gap outside the artifact (e.g. GAP-C's absent requirement register), there is nothing to patch — it stays UNVERIFIABLE and is reported (`audit-standard.md` §13.3 rule 4). |
 | **BLOCKED** (a verdict, not a per-finding severity) | The audit itself could not determine mandatory-condition compliance (`audit-standard.md` §13.1) | Not a patch target. The patch agent cannot patch its way out of a BLOCKED verdict caused by unavailable source or an unresolved upstream dependency. Reported for human/authorial resolution. |
+
+**The patch agent does not classify severity, and does not decide whether a P2 is blocking.**
+`audit-standard.md` assigns P0/P1/P2/P3/INFO and decides which findings block the artifact's
+verdict; this document consumes that assignment.
+
+```
+P2 severity  →  assigned by audit (audit-standard.md §9, §1.6)  →  patch agent consumes it
+```
+
+**not:**
+
+```
+P2  →  patch agent decides it is serious  →  becomes blocking
+```
+
+The patch agent MUST NOT independently promote, reclassify, downgrade, or invent a new severity
+value for any finding — including a value such as "P2-BLOCKING" that does not exist in
+`audit-standard.md`'s vocabulary. A P2 counts toward the completion criteria in §17 only when the
+audit result itself has not already downgraded it to INFO under `audit-standard.md` §1.6/§9's
+recorded-non-blocking classification; that determination is made in the audit report, and the
+patch agent's only job is to read it correctly.
 
 **Four categories, routed differently, never merged:**
 
@@ -268,7 +303,7 @@ P0 itself: *"Blocks the artifact and anything whose own compliance depends on th
 
 **Low-priority cleanup must never obscure an unresolved blocking finding.** A diff burying an
 open P0 under a dozen P3 wording fixes is a defect in the patch, not a stylistic choice — the
-patch report (§20) lists P0/P1 status first, regardless of the diff's own ordering.
+patch result (§20) lists P0/P1 status first, regardless of the diff's own ordering.
 
 ---
 
@@ -359,10 +394,24 @@ judgment.
 Finding ID  →  Requirement  →  Source location  →  Changed location  →  Validation
 ```
 
-The patch report (§20) carries this mapping explicitly, one row per changed location. **A
-changed line that cannot be justified by a finding, or by an explicitly necessary consequence of
-one, is suspicious scope expansion** — flagged in the self-audit (§18) and removed before the
-patch is reported complete, not explained away after the fact.
+The patch result (§20) carries this mapping explicitly, one row per changed location.
+
+**When a changed location is not the finding's own directly-named location, the causal chain to
+it is shown, link by link — not asserted in one step:**
+
+```
+Finding ID  →  direct correction  →  necessary consequence  →  additional changed location  →  validation
+```
+
+Worked example: `AUD-042-01` (a validator defect) → the validator correction itself → a helper
+function the correction requires to change → the test asserting the helper's old behavior, which
+the correction requires to change to still pass. Every intermediate link is stated in the patch
+result (§20); the first and last locations alone do not establish necessity.
+
+**A changed location that is neither directly required by the finding nor an explicitly
+necessary consequence of that correction — with its own stated link in the chain — is suspicious
+scope expansion** — flagged in the self-audit (§18) and removed before the patch is reported
+complete, not explained away after the fact.
 
 ---
 
@@ -372,9 +421,13 @@ After patching, inspect `git status`, `git diff`, and `git diff --check`. This i
 producer-side mirror of `audit-standard.md` §12's Diff Audit, which the re-audit will run
 independently.
 
+**Scope itself is Roadmap-defined (§3); this inspection checks the actual diff against it, never
+the reverse.**
+
 **Categories the inspection must catch, and remove before completion:**
 
-- unexpected file changes outside the traceability map (§11)
+- unexpected file changes outside the target artifact's Roadmap-declared scope (§3) or the
+  traceability map (§11)
 - unrelated hunks inside an otherwise-justified file
 - generated or derived artifacts accidentally committed as authored (`derived/**`,
   `fixtures/**` — Roadmap PART I/PART VII SoT table; `audit-standard.md` §12 point 8)
@@ -410,7 +463,7 @@ finding, never omitted for convenience.
 
 **Generating a check is not running it.** Roadmap PART XV, verbatim: *"Generating tests ≠
 running them. Generating drills ≠ executing them. Generating benchmarks ≠ measuring them."*
-`CLAUDE.md` states the same rule for this session directly. A patch report (§20) that claims
+`CLAUDE.md` states the same rule for this session directly. A patch result (§20) that claims
 tests passed without evidence they were actually executed does not satisfy this section.
 
 ---
@@ -429,7 +482,7 @@ invalid input  →  still rejected
 
 **A patch is not accepted merely because the happy path works.** If the correction could
 plausibly have loosened a refusal, deny-check, or validation boundary while fixing the named
-defect, the negative case is exercised and its result recorded in the patch report (§20), not
+defect, the negative case is exercised and its result recorded in the patch result (§20), not
 assumed.
 
 ---
@@ -484,7 +537,7 @@ contradicting source.
 
 | # | Condition | Governed by |
 |---|---|---|
-| 1 | Every patchable blocking finding (P0/P1, and any blocking-classified P2) is resolved | §7, §8 |
+| 1 | Every patchable blocking finding is resolved — P0, P1, and any P2 the audit result has not itself downgraded to INFO (§4) | §7, §8 |
 | 2 | Required non-blocking findings are resolved per what the audit result actually required | §4 |
 | 3 | Authoritative constraints remain intact | §9, §10 |
 | 4 | No unjustified scope expansion occurred | §3, §11 |
@@ -521,7 +574,7 @@ close a finding.
 
 **What the patch operation leaves behind, for the next audit:** the traceability map (§11), the
 inspected diff (§12), the validation results with evidence of actual execution (§13), and the
-patch report (§20). This is what lets a Post-Patch Re-Audit (`audit-standard.md` §5.3, §15)
+patch result (§20). This is what lets a Post-Patch Re-Audit (`audit-standard.md` §5.3, §15)
 independently re-verify every prior open finding and assign it a fresh `Outcome` —
 `CONFIRMED-OPEN` / `CLOSED` / `REOPENED-REGRESSION` / `SUPERSEDED`.
 
@@ -532,13 +585,22 @@ there) — never something a patch operation self-issues, no matter how confiden
 
 ---
 
-## 20. Patch Report Contract
+## 20. Patch Result Contract
 
 The schema for an artifact-specific patch execution result. **This section defines the schema
 only — no artifact-specific result belongs in this document**, matching
 `audit-standard.md` §14's own framing of its report schema.
 
-**At minimum, a patch report states:**
+**What a patch result is:** the outcome the implementation agent returns or reports after a
+patch operation — an execution result, not a universal standard. It is reported in the agent's
+normal execution response or session output.
+
+**What a patch result is not:** it is **not a required repository file**, **not**
+`patchreport.md`, and **not** an additional HHTECH pipeline artifact. The only generated HHTECH
+repository outputs are `hhtech/auditreport.md` and `hhtech/patchprompt.md` — both produced
+elsewhere in the pipeline, neither by this document, and this section creates no third one.
+
+**At minimum, a patch result states:**
 
 1. artifact ID
 2. patch status (complete / incomplete, per §17)
@@ -571,7 +633,7 @@ READ  →  VALIDATE  →  PLAN  →  PATCH  →  TEST  →  INSPECT DIFF  →  S
 | TEST | §13 Implementation Validation, §14 Negative Validation |
 | INSPECT DIFF | §12 Diff Firewall |
 | SELF-AUDIT | §18 Post-Patch Self-Audit |
-| HAND OFF FOR RE-AUDIT | §19 Re-Audit Handoff, §20 Patch Report Contract |
+| HAND OFF FOR RE-AUDIT | §19 Re-Audit Handoff, §20 Patch Result Contract |
 
 A generated `patchprompt.md` is expected to instantiate this eight-step sequence with the
 specific findings and target artifact filled in. This document does not itself generate that
