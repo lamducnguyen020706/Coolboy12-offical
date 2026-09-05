@@ -1,234 +1,343 @@
 # 1. Audit Identity
 
-- **Artifact:** 044 — seven architectural categories
-- **Audit type:** Full Artifact Audit under `hhtech/standards/audit-standard.md §5.1`
-- **Auditor:** GPT-5.6, under `hhtech/standards/audit-standard.md`
-- **Branch:** `claude/coolboy12-build-31qwm0`
-- **Audited commit:** `d309bc95067f1ae9d3e8fc8cd9452b93cd26b1b5`
-- **Repository state:** clean working tree; no staged or unstaged changes
 - **Report date:** 2025-02-14
+- **Auditor:** GPT-5.6, under `hhtech/standards/audit-standard.md`
+- **Audit mode:** Full Artifact Audit (§5.1)
+- **Branch:** `claude/coolboy12-build-31qwm0`
+- **Audited HEAD:** `af3e6db7efd5b24617cdc5941fff7d10e0f31864`
+- **Repository state:** clean working tree; no staged or unstaged changes
+
+The audit was performed against the single supplied repository state identified above.
 
 # 2. Target Artifact
 
-- **Roadmap ID:** `044`
-- **Name:** `seven architectural categories`
+- **Artifact ID:** 044
+- **Artifact name:** seven architectural categories
 - **Declared path:** `docs/constitution/categories.md`
 - **Scope kind:** file
 - **Multi-file entry:** no; Roadmap RULE G3 is not invoked
-- **Actual target:** `docs/constitution/categories.md`, present at the declared path
-- **Target type:** `doc`
-- **Target role:** `CONTRACT`
-- **Target phase/stage:** `P2/2b`
-
-The target's authored content defines eight categories, consistent with the Roadmap `Val` and `Done`, despite the historical heading "Seven Architectural Categories" in RMS §6.1.
+- **Actual target:** `docs/constitution/categories.md`, present on disk and tracked
 
 # 3. Audit Mode
 
-**Full Artifact Audit** under `hhtech/standards/audit-standard.md §5.1`.
+This was a **Full Artifact Audit** under `hhtech/standards/audit-standard.md §5.1`.
 
-All fourteen mandatory passes were run independently and in order. Pass 9 was not applicable because the target is `T: doc`, not `code` or `schema`. Pass 10 was assessed against the target's declared validation form and available associated-artifact context; no separate test artifact is declared for Artifact 044.
+All fourteen mandatory passes were run independently:
+
+| Pass | Result | Audit output |
+|---|---|---|
+| 1. Artifact Identity | PASS | Target path and metadata match the supplied Artifact 044 Roadmap row. |
+| 2. Scope | PASS | The artifact defines the eight category boundaries and explicitly defers Kind admission and sibling contracts. |
+| 3. Blueprint Compliance | BLOCKED | Blueprint §13 and its relevant subsections were supplied and checked. Blueprint §6.1 was unavailable despite being identified as an explicit target reference in the supplied source ledger. |
+| 4. RMS Compliance | PASS | RMS §6.1 and relevant RMS closures were supplied and matched. |
+| 5. Roadmap Compliance | PASS | H: 039 exists; no S, LS, G, or anti-ordering violation was evidenced. |
+| 6. Internal Consistency | PASS | No internal contradiction was found in the target. |
+| 7. Completeness | PASS | All eight `Val` categories and the eight-test `Done` condition are discharged. |
+| 8. Boundary Integrity | PASS | No universal semantic model, cross-model ownership transfer, schema merge, or undeclared multi-file merge was found. |
+| 9. Implementation Correctness | N/A | The Roadmap type is `doc`, not `code` or `schema`. |
+| 10. Test Correctness | PASS | The artifact contains one explicit classification test for each of the eight categories; no associated executable test artifact is declared. |
+| 11. Diff Integrity | PASS | No target or repository diff exists at the audited HEAD. |
+| 12. Regression Analysis | PASS | The target is unchanged from the committed baseline; no weakening was evidenced. |
+| 13. Edge Cases | PASS | The target addresses the no-ninth-category case, Kind-candidate boundary, WSV singleton distinction, derived projections, and model-owned semantics. |
+| 14. Negative Audit | PASS | The artifact explicitly refuses ninth categories, premature Kind admission, universal semantics, universal Relationship Records, and universal schemas. |
+
+The overall audit is blocked only because the compliance of a mandatory Blueprint-reference condition cannot be determined from the supplied evidence.
 
 # 4. Source Set
 
-The following supplied sources were read and used:
+## Supplied and read
 
-| Source label | Path/section | Status | Read confirmation |
-|---|---|---:|---|
-| Master Blueprint document | `docs/sources/COOLBOY12_MASTER_BLUEPRINT_v0.7.03.md` | AVAILABLE | Read as supplied section-by-section |
-| Record Model System document | `docs/sources/COOLBOY12_RECORD_MODEL_SYSTEM_v1.0.md` | AVAILABLE | Read in full |
-| Build Roadmap document | `docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md` | AVAILABLE | Read as supplied rows/registers/parts |
-| Audit Standard | `hhtech/standards/audit-standard.md` | AVAILABLE | Read in full |
-| Patch Standard | `hhtech/standards/patch-standard.md` | AVAILABLE | Read in full |
-| CLAUDE.md | `CLAUDE.md` | AVAILABLE | Read in full |
-| Blueprint §10 — Spine | Blueprint §10 | AVAILABLE | Read |
-| Roadmap anti-ordering register | Roadmap PART IX | AVAILABLE | Read |
-| Roadmap gate register | Roadmap PART VIII | AVAILABLE | Read |
-| Artifact 044 manifest row | Roadmap row 044 | AVAILABLE | Read |
-| Artifact 044 target | `docs/constitution/categories.md` | AVAILABLE | Read in full |
-| Blueprint §13 | Blueprint §13 | AVAILABLE | Read |
-| RMS §6.1 | RMS §6.1 | AVAILABLE | Read |
-| Blueprint §12 | Blueprint §12 | AVAILABLE | Read |
-| Blueprint §13.0 | Blueprint §13.0 | AVAILABLE | Read |
-| Blueprint §13.6d | Blueprint §13.6d | AVAILABLE | Read |
-| Blueprint §13.9 | Blueprint §13.9 | AVAILABLE | Read |
-| Blueprint §7 | Blueprint §7 | AVAILABLE | Read |
-| Blueprint §13.11 | Blueprint §13.11 | AVAILABLE | Read |
-| Blueprint §29.6a | Blueprint §29.6a | AVAILABLE | Read |
-| Blueprint §8 | Blueprint §8 | AVAILABLE | Read |
-| RMS §7 | RMS §7 | AVAILABLE | Read |
-| Invariants I-102, I-103, I-104, I-105 | Blueprint §36 | AVAILABLE | Read |
-| Artifact 039 Roadmap row and content | Roadmap row 039; `docs/constitution/record_system.md` | AVAILABLE | Read as H-dependency context only |
-| Artifact 057 Roadmap row | Roadmap row 057 | AVAILABLE | Read |
-| Artifact 043 Roadmap row and content | Roadmap row 043; `docs/constitution/mechanism_semantics.md` | AVAILABLE | Read as sibling context only |
-| Artifact 052 Roadmap row | Roadmap row 052 | AVAILABLE | Read |
-| Artifact 055 Roadmap row | Roadmap row 055 | AVAILABLE | Read |
-| Artifact 003 Roadmap row and content | Roadmap row 003; `docs/conventions/artifact_conventions.md` | AVAILABLE | Read as conformance context |
-| Artifact 004 Roadmap row | Roadmap row 004 | AVAILABLE | Read |
-| Artifact 012 Roadmap row and content | Roadmap row 012; `tests/constitutional/register.md` | AVAILABLE | Read as conformance context |
-| Artifact 041 Roadmap row and content | Roadmap row 041; `docs/constitution/sovereignty.md` | AVAILABLE | Read as conformance context |
+| Source label | Path / section | Status | Use |
+|---|---|---|---|
+| Master Blueprint (document) | `docs/sources/COOLBOY12_MASTER_BLUEPRINT_v0.7.03.md` | AVAILABLE | Supplied document context; sections listed below were read. |
+| Record Model System (document) | `docs/sources/COOLBOY12_RECORD_MODEL_SYSTEM_v1.0.md` | AVAILABLE | Supplied in full and read. |
+| Build Roadmap (document) | `docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md` | AVAILABLE | Supplied document context; relevant rows/registers were read. |
+| `hhtech/standards/audit-standard.md` | `hhtech/standards/audit-standard.md` | AVAILABLE | Audit procedure; read in full. |
+| `hhtech/standards/patch-standard.md` | `hhtech/standards/patch-standard.md` | AVAILABLE | Patch procedure context; read in full. |
+| CLAUDE.md (session conduct) | `CLAUDE.md` | AVAILABLE | Standing session instructions; read. |
+| Blueprint §10 | Master Blueprint §10 | AVAILABLE | Spine; read. |
+| Roadmap anti-ordering register | Roadmap PART IX | AVAILABLE | Ordering checks; read. |
+| Roadmap gate register | Roadmap PART VIII | AVAILABLE | Gate checks; read. |
+| Roadmap manifest row for artifact 044 | Roadmap Artifact 044 row | AVAILABLE | Target contract; read. |
+| TARGET | `docs/constitution/categories.md` | AVAILABLE | Audit target; read in full. |
+| Blueprint §13 | Master Blueprint §13 | AVAILABLE | Declared BP authority and category boundaries; read. |
+| RMS §6.1 | RMS §6.1 | AVAILABLE | Declared RMS authority; read. |
+| Blueprint §12 | Master Blueprint §12 | AVAILABLE | Canon, projection, and authority boundaries; read. |
+| Blueprint §29.6a | Master Blueprint §29.6a | AVAILABLE | Source-of-truth classification; read. |
+| Blueprint §13.0 | Master Blueprint §13.0 | AVAILABLE | Record/Canon distinction; read. |
+| Blueprint §7 | Master Blueprint §7 | AVAILABLE | Design principles, including P-7; read. |
+| Blueprint §13.11 | Master Blueprint §13.11 | AVAILABLE | Kind admission and retirement; read. |
+| Blueprint §13.6d | Master Blueprint §13.6d | AVAILABLE | Model-owned packaging; read. |
+| Blueprint §13.9 | Master Blueprint §13.9 | AVAILABLE | World-only Relationship/History package; read. |
+| Blueprint §8 | Master Blueprint §8 | AVAILABLE | Capability and projection boundaries; read. |
+| RMS §7 | RMS §7 | AVAILABLE | World category and WSV boundary; read. |
+| Invariant I-103 | Blueprint §36 / I-103 | AVAILABLE | Mechanism/semantic boundary; read. |
+| Invariant I-104 | Blueprint §36 / I-104 | AVAILABLE | Record/Canon distinction; read. |
+| Invariant I-102 | Blueprint §36 / I-102 | AVAILABLE | World-only Relationship/History concepts; read. |
+| Invariant I-105 | Blueprint §36 / I-105 | AVAILABLE | Registry ownership boundary; read. |
+| Requirement RR-07 | Requirement register | UNAVAILABLE | ID preserved; authoritative requirement text not supplied. |
+| Artifact 039 Roadmap row | Roadmap Artifact 039 row | AVAILABLE | H dependency existence and contract; read. |
+| Artifact 039 content | `docs/constitution/record_system.md` | AVAILABLE | H dependency facts directly relied upon; read as context only. |
+| Artifact 057 Roadmap row | Roadmap Artifact 057 row | AVAILABLE | Downstream ownership and unlock context; read. |
+| Artifact 043 Roadmap row and content | Roadmap row; `docs/constitution/mechanism_semantics.md` | AVAILABLE | Boundary context; read as context only. |
+| Artifact 052 Roadmap row | Roadmap Artifact 052 row | AVAILABLE | Canonicality ownership context; read. |
+| Artifact 055 Roadmap row | Roadmap Artifact 055 row | AVAILABLE | Relationship-boundary ownership context; read. |
+| Artifact 003 Roadmap row and content | Roadmap row; `docs/conventions/artifact_conventions.md` | AVAILABLE | Metadata and RULE G/G2/G3 context; read. |
+| Artifact 012 Roadmap row and content | Roadmap row; `tests/constitutional/register.md` | AVAILABLE | Invariant-register context; read. |
+| Artifact 041 Roadmap row and content | Roadmap row; `docs/constitution/sovereignty.md` | AVAILABLE | Sovereignty context; read. |
+| Git state | supplied branch, HEAD, status, and diff output | AVAILABLE | Tier 5 factual evidence; read. |
 
-The following were **not supplied** and were not reconstructed:
+## Not supplied and not treated as read
 
-| Source label | Path/section | Status | Treatment |
-|---|---|---:|---|
-| Blueprint §6.1 | Blueprint §6.1 | UNAVAILABLE | Not used as authority; no blocking target condition depends on it because the target's manifest citation is BP §13 and RMS §6.1 is available |
-| Requirement RR-07 | requirement register | UNAVAILABLE | Preserved as an unverified ID; non-blocking GAP-C |
-| Artifact 057 content | `docs/constitution/kind_admission.md` | UNAVAILABLE | Not audited; sibling collision recorded as unverifiable where applicable |
-| Artifact 052 content | `docs/constitution/canonicality.md` | UNAVAILABLE | Not audited; sibling collision recorded as unverifiable where applicable |
-| Artifact 055 content | `docs/constitution/relationship_boundary.md` | UNAVAILABLE | Not audited; sibling collision recorded as unverifiable where applicable |
-| Artifact 004 content | `/CLAUDE.md` as Artifact 004 | UNAVAILABLE | The supplied session `CLAUDE.md` was read as operational context, but the unavailable Artifact 004 content was not reconstructed |
+| Source label | Path / section | Status | Effect |
+|---|---|---|---|
+| Blueprint §6.1 | Master Blueprint §6.1 | UNAVAILABLE | Mandatory Blueprint-reference coverage cannot be independently verified from this section. |
+| Requirement RR-07 text | Requirement register | UNAVAILABLE | Traceability row remains UNVERIFIABLE, non-blocking under GAP-C. |
+| Artifact 057 content | `docs/constitution/kind_admission.md` | UNAVAILABLE | Not recursively audited; BP §13.11 and the Roadmap row were used instead. |
+| Artifact 052 content | `docs/constitution/canonicality.md` | UNAVAILABLE | Not audited; only its Roadmap ownership declaration was used. |
+| Artifact 055 content | `docs/constitution/relationship_boundary.md` | UNAVAILABLE | Not audited; only its Roadmap ownership declaration was used. |
+| Artifact 004 content | `/CLAUDE.md` as Artifact 004 | UNAVAILABLE | The supplied `CLAUDE.md` session-conduct source was read, but unavailable Artifact 004 content was not reconstructed. |
 
 # 5. Scope
 
 ## In scope
 
-- Artifact identity and metadata of `docs/constitution/categories.md`
+- Artifact identity and metadata in `docs/constitution/categories.md`
 - The eight category definitions and tests
-- The category decision procedure
-- The anti-noun-proliferation rule
-- The target's stated boundaries and conformance clauses
-- Compliance with Roadmap row 044
-- Compliance with Blueprint §13 and discovered applicable Blueprint requirements
-- Compliance with RMS §6.1 and relevant RMS closures
-- Hard dependency existence and directly relied-upon facts from Artifact 039
-- Declared unlock relationship to Artifact 057 and all Kind work
-- Boundary integrity under RULE G/G2/G3
-- Git diff, status, and regression state
+- The artifact's explicit non-authority and downstream-boundary statements
+- Compliance with Roadmap Artifact 044's `Val`, `Done`, `BP`, `RMS`, `H`, `→`, and `Req` fields
+- Blueprint §13 and discovered related Blueprint sections
+- RMS §6.1 and relevant RMS closures
+- Applicable Spine laws, invariants, anti-orderings, gates, and RULE G/G2/G3 questions
+- Existence and directly relied-upon facts of H dependency Artifact 039
+- Git state, diff integrity, and regression against the committed target baseline
 
-## Explicitly out of scope
+## Out of scope
 
-- Artifact 039's independent correctness; it was inspected only as the declared `H: 039` dependency
-- Artifact 043's independent correctness; it was read only as sibling boundary context
-- Artifact 057's content and independent Kind Admission Test implementation
-- Artifact 052's canonicality framework
-- Artifact 055's relationship boundary specification
-- Artifact 004's unavailable artifact-content audit
-- The unavailable requirement text for `RR-07`
-- Any Blueprint, RMS, Roadmap, sibling, or dependency amendment
-- Runtime implementation, schemas, tests, canonical data, or `canon/**`
+The following were used only as context and were not audited as separate targets:
+
+- Artifact 039, `docs/constitution/record_system.md`
+- Artifact 043, `docs/constitution/mechanism_semantics.md`
+- Artifact 041, `docs/constitution/sovereignty.md`
+- Artifact 012, `tests/constitutional/register.md`
+- Artifact 003, `docs/conventions/artifact_conventions.md`
+- Artifact 057, including its unavailable content
+- Artifact 052, including its unavailable content
+- Artifact 055, including its unavailable content
+- Any other sibling, dependency, downstream artifact, Blueprint, RMS, or Roadmap defect not directly breaking Artifact 044
+
+No finding is raised against an out-of-scope artifact.
 
 # 6. Executive Verdict
 
-The audit completed with demonstrated coverage of the target's available mandatory requirements. The target matches Roadmap row 044, contains all eight categories required by its `Val` and `Done`, preserves the category definitions and tests from RMS §6.1, maintains the distinction between shared category vocabulary and model-owned semantics, and does not introduce a ninth category, universal semantic model, universal lifecycle, universal canonicality, or universal Relationship/History Record. The hard dependency 039 exists, no gate or anti-ordering is bypassed, and the repository is clean with no target diff. The unavailable requirement register remains a non-blocking GAP-C item, while unavailable sibling contents are recorded as unverifiable collision context rather than presumed compliant. No P0, P1, P2, or P3 finding was confirmed. The verdict is PASS.
+The audit is **BLOCKED**. The target artifact otherwise demonstrates strong compliance: its path and metadata match Artifact 044, all eight categories required by the Roadmap are present with explicit tests, the category boundaries agree with RMS §6.1, and the artifact preserves model sovereignty and the mechanism/semantics boundary.
+
+However, the supplied source ledger identifies Blueprint §6.1 as an explicit reference associated with the target, while Blueprint §6.1 was not supplied and could not be read. Because Blueprint compliance is a mandatory audit condition and the missing section cannot be independently checked, the audit cannot establish complete mandatory coverage. This is an evidence blockage, not an artifact defect.
 
 # 7. Requirement Coverage
 
-## 7.1 Roadmap and source requirements
-
 | Requirement | Source | Applicability | Artifact Evidence | Verdict |
-|---|---|---|---|---|
-| Artifact identity matches ID, name, and path | Roadmap row 044; Artifact 003 §§3–12 | applies | Target header and path match row 044 | PASS |
-| Metadata uses legal values and all required fields | Artifact 003 C-1–C-8; Roadmap row 044 | applies | Target header states the complete declared metadata set with legal values | PASS |
-| Target is a `doc` and `CONTRACT` | Roadmap row 044 | applies | Target header states `T: doc`, `R: CONTRACT` | PASS |
-| `H: 039` exists and resolves | Roadmap row 044; Artifact 003 dependency conventions | applies | `docs/constitution/record_system.md` exists and was supplied | PASS |
-| No undeclared gate is bypassed | Roadmap row 044; Roadmap PART VIII | applies | Row has `G: —`; target performs no gated implementation | PASS |
-| Unlocks 057 and all Kind work | Roadmap row 044; Artifact 003 unlock conventions | applies | Target explicitly states Artifact 057 owns admission and that the document unlocks later Kind work | PASS |
-| `Val` requires eight category terms with tests | Roadmap row 044 | applies | Sections 2–3 define Record, Kind, Field, State, Relationship, Definition, Projection, Primitive and provide a test for each | PASS |
-| `Done` requires eight terms and eight tests | Roadmap row 044 | applies | Category table contains eight rows, each with Definition and Test columns | PASS |
-| `Why` stops every noun becoming a Kind | Roadmap row 044; Blueprint P-7 | applies | Sections 1, 12, and 13 explicitly route nouns away from premature Kind promotion | PASS |
-| `Req: RR-07` is preserved exactly | Roadmap row 044; Artifact 003 §13; audit-standard §8.3 | applies | Target preserves `Req: RR-07` and states its register is unavailable | UNVERIFIABLE — requirement register unavailable, GAP-C non-blocking |
-| Blueprint §13 governs the Record System and categories | Blueprint §13 | applies | Target states categories inside the Record System and preserves the six-model boundary without restating or redefining it | PASS |
-| RMS §6.1's eight category definitions and tests are preserved | RMS §6.1 | applies | Target §3 reproduces all eight definitions and tests | PASS |
-| The category vocabulary does not become a universal semantic model | Blueprint §13; RMS §3–§4; I-103 | applies | Target §2 states categories are classifications, not a universal semantic schema | PASS |
-| Record is not Canon and canonicality is not universal | Blueprint §13.0; I-104 | applies | Target §4 explicitly distinguishes Record, Canon, and canonicality | PASS |
-| Relationship and History Records remain World-specific | Blueprint §13.6d; §13.9; I-102; RMS §7 | applies | Target §8 explicitly states no universal Relationship Record and no universal History Record | PASS |
-| Projections remain derived and never authoritative | Blueprint §29.6a; RMS §6.1 | applies | Target §10 states Projection is derived, rebuildable, and never authoritative | PASS |
-| Registry Definitions govern but never instantiate | RMS §6.1; Blueprint §13.6e; I-105 | applies | Target §9 states Definition is a Registry Record that governs and never instantiates | PASS |
-| Shared mechanisms do not confer shared semantics | Blueprint §13.7a; I-103; Artifact 043 | applies | Target §§2, 11, and 15 repeatedly preserve facility/semantic separation | PASS |
-| Kind admission remains owned by Artifact 057 | Blueprint §13.11; Roadmap row 057 | applies | Target §§1, 5, 12, 13, and 17 explicitly defer admission to Artifact 057 | PASS |
-| No ninth category is introduced | RMS §6.1; Roadmap row 044; target §2 | applies | Target states “There is no ninth category” and routes unmatched nouns to review | PASS |
-| Category vocabulary does not create a seventh Record Model | RMS §2, §25; I-101 | applies | No seventh model is introduced or implied | PASS |
+|---|---|---:|---|---|
+| Artifact identity: ID 044 | Roadmap Artifact 044 row | applies | Header identifies `Artifact 044`. | PASS |
+| Artifact name | Roadmap Artifact 044 row | applies | Header and title identify “seven architectural categories.” | PASS |
+| Declared path | Roadmap Artifact 044 row; Artifact 003 §3 | applies | Target exists at `docs/constitution/categories.md`. | PASS |
+| `Own: CONST` | Roadmap Artifact 044 row; Artifact 003 §4 | applies | Header states `Own: CONST`. | PASS |
+| `RM: all` | Roadmap Artifact 044 row; Artifact 003 §5 | applies | Header states `RM: all`. | PASS |
+| `T: doc` | Roadmap Artifact 044 row; Artifact 003 §6 | applies | Header states `T: doc`. | PASS |
+| `R: CONTRACT` | Roadmap Artifact 044 row; Artifact 003 §7 | applies | Header states `R: CONTRACT`. | PASS |
+| `SoT: AUTHORITATIVE` | Roadmap Artifact 044 row; Artifact 003 §8 | applies | Header states `SoT: AUTHORITATIVE`. | PASS |
+| `Auth: governing` | Roadmap Artifact 044 row; Artifact 003 §9 | applies | Header states `Auth: governing`. | PASS |
+| `Canon: n/a` | Roadmap Artifact 044 row; Artifact 003 §10 | applies | Header states `Canon: n/a`; §17 says no canonical data. | PASS |
+| `CD: no` | Roadmap Artifact 044 row; Artifact 003 §11 | applies | Header states `CD: no`; §17 says it writes nothing to `canon/**`. | PASS |
+| `Ph/St: P2/2b` | Roadmap Artifact 044 row; Artifact 003 §12 | applies | Header states `Ph/St: P2/2b`. | PASS |
+| `Req: RR-07` preserved exactly | Roadmap Artifact 044 row; Artifact 003 §13 | applies | Header and §17 preserve `RR-07` exactly. | UNVERIFIABLE — requirement register unavailable; non-blocking GAP-C |
+| `BP: §13` is cited | Roadmap Artifact 044 row; Artifact 003 §14 | applies | Header cites `BP: §13`; §17 attributes authority to Blueprint §13. | PASS |
+| `RMS: §6.1` is cited | Roadmap Artifact 044 row; Artifact 003 §15 | applies | Header cites `RMS: §6.1`; §2 and §3 use RMS §6.1. | PASS |
+| Blueprint §6.1 reference coverage | Supplied source ledger identifies Blueprint §6.1 as explicit target reference | applies | The section was not supplied; no direct comparison is possible. | UNVERIFIABLE — blocking source gap |
+| H dependency 039 exists and resolves | Roadmap Artifact 044 row; Artifact 003 §16 | applies | Artifact 039 Roadmap row and content supplied; target explicitly scopes itself relative to 039. | PASS |
+| No soft dependency declared | Roadmap Artifact 044 row; Artifact 003 §17 | applies | Header states `S: —`. | PASS |
+| No lockstep declared | Roadmap Artifact 044 row; Artifact 003 §18 | applies | Header states `LS: —`. | PASS |
+| No gate declared | Roadmap Artifact 044 row; Artifact 003 §19 | applies | Header states `G: —`; no gate bypass evidenced. | PASS |
+| Unlocks 057 and all Kind work | Roadmap Artifact 044 row; Artifact 003 §20 | applies | Header states `→ 057, all Kind work`; §5 defers admission to 057. | PASS |
+| `Val`: Record category and test | Roadmap Artifact 044 `Val`; RMS §6.1 | applies | §3 defines Record and gives the independent identity/lifecycle/authority test; §4 expands it. | PASS |
+| `Val`: Kind category and test | Roadmap Artifact 044 `Val`; RMS §6.1; Blueprint §13.11 | applies | §3 defines Kind; §5 states the Kind Admission Test is separate and §12 routes candidates to 057. | PASS |
+| `Val`: Field category and test | Roadmap Artifact 044 `Val`; RMS §6.1 | applies | §3 defines Field; §6 gives the no-independent-identity test. | PASS |
+| `Val`: State category and test | Roadmap Artifact 044 `Val`; RMS §6.1; RMS §7 | applies | §3 defines State; §7 gives enumerable/governed-transition test and model-owned example. | PASS |
+| `Val`: Relationship category and test | Roadmap Artifact 044 `Val`; RMS §6.1; I-102 | applies | §3 and §8 define the endpoint-ownership test and prohibit universal Relationship Records. | PASS |
+| `Val`: Definition category and test | Roadmap Artifact 044 `Val`; RMS §6.1; I-105 | applies | §3 and §9 define Registry Definition and its governs/never-instantiates test. | PASS |
+| `Val`: Projection category and test | Roadmap Artifact 044 `Val`; RMS §6.1; Blueprint §29.6a | applies | §3 and §10 define derived/rebuildable/non-authoritative Projection. | PASS |
+| `Val`: Primitive category and test | Roadmap Artifact 044 `Val`; RMS §6.1 | applies | §3 and §11 define capability operating on Records and not being a Record. | PASS |
+| `Done`: eight terms | Roadmap Artifact 044 `Done` | applies | §§2–3 enumerate exactly eight categories. | PASS |
+| `Done`: eight tests | Roadmap Artifact 044 `Done` | applies | Each row in §3 contains a test; §§4–11 expand each test. | PASS |
+| Blueprint §13 Record System boundary | Blueprint §13 | applies | §2, §4, §5, §8, §15, and §17 preserve the six-model and no-universal-object boundaries. | PASS |
+| Blueprint §13.0 Record ≠ Canon | Blueprint §13.0; I-104 | applies | §4 explicitly states Record ≠ Canon and defers canonicality to Artifact 052. | PASS |
+| Blueprint §13.7a / I-103 mechanism ≠ semantics | Blueprint §13.7a; I-103 | applies | §2, §7, §11, §15, and §17 explicitly preserve the facility/semantic distinction. | PASS |
+| Blueprint §13.6d / I-102 World-only package boundary | Blueprint §13.6d; §13.9; I-102 | applies | §8 explicitly rejects a universal Relationship Record and History Record and states World-only scope. | PASS |
+| Blueprint §13.9 World package | Blueprint §13.9; RMS §7 | applies | §8 names World as the model where Relationship Records are explicitly realized and avoids requiring the package elsewhere. | PASS |
+| Blueprint §13.11 Kind admission ownership | Blueprint §13.11; Roadmap Artifact 057 row | applies | §5 and §12 make Artifact 057 the admission owner and do not duplicate its decision. | PASS |
+| Blueprint §29.6a Projection non-authority | Blueprint §29.6a | applies | §10 states Projection is derived, rebuildable, and never authoritative. | PASS |
+| Spine Law 1: One Canon | Blueprint §10, Law 1 | applies | §4 separates Record from Canon and §10 rejects Projection as authority. | PASS |
+| Spine Law 5: Publishing Firewall | Blueprint §10, Law 5 | applies | §17 states the artifact carries no canonical data and does not define publication semantics. | PASS |
+| Spine Law 9: Every Object Has Lineage | Blueprint §10, Law 9 | applies | No category is treated as a substitute for provenance or history; §17 defers those contracts. | PASS |
+| I-102 | Blueprint §36, I-102 | applies | §8 states Relationship/History Records are World concepts and not universal primitives. | PASS |
+| I-103 | Blueprint §36, I-103 | applies | §2 and §15 state shared category names do not confer shared semantics. | PASS |
+| I-104 | Blueprint §36, I-104 | applies | §4 and §14 keep Record and Canon separate. | PASS |
+| I-105 | Blueprint §36, I-105 | applies | §9 states Definition is a Registry Record and does not make Registry a super-model. | PASS |
+| Anti-ordering X-02: Derived before authoritative | Roadmap PART IX, X-02; Blueprint §29.6a | applies | §10 requires Projection to be derived/rebuildable and non-authoritative. | PASS |
+| Anti-ordering X-04: Implementation before architecture | Roadmap PART IX, X-04 | N/A | Target is a documentation contract and contains no implementation. | N/A + target is `T: doc` |
+| Anti-ordering X-08: World mechanism becoming universal | Roadmap PART IX, X-08; I-102 | applies | §7, §8, and §15 explicitly reject universal World semantics. | PASS |
+| Anti-ordering X-16: Kind without admission test | Roadmap PART IX, X-16; Blueprint §13.11 | applies | §5 and §12 route Kind candidates to the separate admission test. | PASS |
+| RULE G: specification/schema separation | Artifact 003 RULE G | applies | §17 expressly states the artifact introduces no schema. | PASS |
+| RULE G2: example/test separation | Artifact 003 RULE G2 | applies | No separate executable test artifact is merged; each category test is part of the contract's required definition/test pair. | PASS |
+| RULE G3: multi-file declaration | Artifact 003 RULE G3 | applies | Target is a single file and the Roadmap declares no multi-file entry. | PASS |
+| Constitutional Gate 1: contradiction | Audit procedure §20 | applies | No contradiction with supplied Spine or frozen RMS category content found. | PASS |
+| Constitutional Gate 2: ownership violation | Audit procedure §20 | applies | Target names sibling ownership and defers sibling interiors. | PASS |
+| Constitutional Gate 3: forbidden inheritance | Audit procedure §20; I-101 | applies | §15 rejects shared semantic inheritance. | PASS |
+| Constitutional Gate 4: semantic universalization | Audit procedure §20; I-103 | applies | §2 and §15 expressly reject universal semantic claims. | PASS |
+| Constitutional Gate 5: scope contamination | Audit procedure §20 | applies | §1 and §17 state non-goals and downstream ownership. | PASS |
+| Constitutional Gate 6: authority inversion | Audit procedure §20 | applies | §17 states the artifact derives authority from Blueprint/RMS and amends neither. | PASS |
+| Constitutional Gate 7: canonicality inversion | Audit procedure §20; I-104 | applies | §4 rejects Record = Canon; §10 rejects Projection authority. | PASS |
+| Constitutional Gate 8: source-of-truth inversion | Audit procedure §20; Blueprint §29.6a | applies | Projection is explicitly DERIVED and non-authoritative. | PASS |
+| Constitutional Gate 9: dependency-direction violation | Audit procedure §20 | applies | H:039 resolves; downstream contracts are explicitly deferred. | PASS |
+| Constitutional Gate 10: gate/order violation | Audit procedure §20; Roadmap gates | applies | No gate is declared or bypassed. | PASS |
+| Constitutional Gate 11: specification/schema collision | Audit procedure §20; RULE G | applies | §17 states no schema is introduced. | PASS |
+| Constitutional Gate 12: example/test collision | Audit procedure §20; RULE G2 | applies | No separate example/test artifact is merged. | PASS |
+| Constitutional Gate 13: model sovereignty violation | Audit procedure §20; I-101 | applies | §15 preserves six-model sovereignty and rejects universal semantics. | PASS |
+| Constitutional Gate 14: downstream ownership theft | Audit procedure §20 | applies | §§5, 8, 17 defer admission, canonicality, relationship, and other downstream contracts. | PASS |
 
-## 7.2 Applicable Spine requirements
-
-| Requirement | Source | Applicability | Artifact Evidence | Verdict |
-|---|---|---|---|---|
-| One Canon | Blueprint §10, Spine law 1 | applies | Target distinguishes Record from Canon and does not create a second truth source | PASS |
-| One Path | Blueprint §10, Spine law 2 | applies | Target contains no write path or mutation route | PASS |
-| One Authority | Blueprint §10, Spine law 3 | applies | Target does not assign canon-writing authority | PASS |
-| Foundation Lock | Blueprint §10, Spine law 4 | applies | Target does not amend Foundation truth | PASS |
-| Publishing Firewall | Blueprint §10, Spine law 5 | applies | Target does not make publication canonical; it keeps category classification separate | PASS |
-| Provisional by Default | Blueprint §10, Spine law 6 | applies | Target defers unresolved Kind admission and does not turn classification into admission | PASS |
-| Severity Floor | Blueprint §10, Spine law 7 | applies | Target does not trivialize relationship or canonicality boundaries | PASS |
-| Every Event Propagates | Blueprint §10, Spine law 8 | N/A + no event or propagation behavior is specified | Target is a classification contract, not a propagation artifact | N/A |
-| Every Object Has Lineage | Blueprint §10, Spine law 9 | N/A + target carries no Records or canonical objects | No object lifecycle or canonical mutation is introduced | N/A |
-| Nothing Bypasses the Composer | Blueprint §10, Spine law 10 | N/A + target introduces no executable action | No workflow or mutation mechanism is specified | N/A |
-
-## 7.3 Constitutional Gate
-
-| # | Condition tested | Evidence | Result |
-|---:|---|---|---|
-| 1 | Constitutional contradiction | Target preserves the Spine and cited frozen category requirements | PASS |
-| 2 | Ownership violation | Target explicitly defers Artifact 057, 052, 055, and other sibling boundaries | PASS |
-| 3 | Forbidden inheritance | No model inheritance or World specialization appears | PASS |
-| 4 | Semantic universalization | Target states category sharing does not share semantics | PASS |
-| 5 | Scope contamination | Target is limited to classification; downstream contracts are expressly excluded | PASS |
-| 6 | Authority inversion | Target says Blueprint/RMS govern and the artifact amends neither | PASS |
-| 7 | Canonicality inversion | Target states Record ≠ Canon and does not universalize canonicality | PASS |
-| 8 | Source-of-truth inversion | Target states Projection is derived and never authoritative | PASS |
-| 9 | Dependency-direction violation | `H: 039` resolves; no undeclared dependency is used as an authority | PASS |
-| 10 | Gate/order violation | No gate is declared or bypassed; no implementation is advanced | PASS |
-| 11 | Specification/schema collision | Target is documentation only and introduces no schema | PASS |
-| 12 | Example/test collision | Examples and category tests are columns within the classification contract, not separate example/test artifacts or merged implementation artifacts | PASS |
-| 13 | Model sovereignty violation | No seventh model or shared semantic parent is introduced | PASS |
-| 14 | Downstream ownership theft | Kind admission and sibling contracts are explicitly deferred | PASS |
-
-## 7.4 Ownership and custody matrix
+## Ownership and custody matrix
 
 | Responsibility | Current artifact | Upstream owner | Downstream owner | Evidence | Verdict |
 |---|---|---|---|---|---|
-| Define the eight architectural category boundaries | Artifact 044 | RMS §6.1 and Blueprint §13 | Later artifacts consume the vocabulary | Target §§2–3 | PASS |
-| Define whether a proposed Kind is admitted | Not owned by Artifact 044 | Blueprint §13.11 | Artifact 057 | Target §§5, 12, 13, 17; Roadmap row 057 | PASS |
-| Define mechanism/semantics boundary | Not owned by Artifact 044 | Blueprint §13.7a | Artifact 043 | Target §2 and §15 name but do not replace Artifact 043 | PASS |
-| Define canonicality framework | Not owned by Artifact 044 | Blueprint §13.7c | Artifact 052 | Target §§4, 7, 14, 17 defer canonicality | PASS |
-| Define relationship boundary | Not owned by Artifact 044 | Blueprint §13.6d and §13.9 | Artifact 055 | Target §8 defers the boundary | PASS |
-| Create an implicit shared semantic owner | Artifact 044 creates none | Blueprint §13.7a; I-103 | None | Target §2 and §15 reject semantic universalization | PASS |
-
-## 7.5 Cross-artifact collision audit
-
-| Collision category | Sibling/context checked | Result |
-|---|---|---|
-| Duplicate definition | Artifact 039 and Artifact 043 supplied; target explicitly states its narrower boundary | No confirmed collision |
-| Duplicate ownership | Artifact 039, 041, and 043 supplied; target defers their responsibilities | No confirmed collision |
-| Implicit override | Target states authoritative sources govern | No confirmed collision |
-| Semantic leakage | Target separates category names from model semantics | No confirmed collision |
-| Scope theft | Artifact 057, 052, and 055 content unavailable | `UNVERIFIABLE — sibling content unavailable`; target's explicit non-authority declarations provide positive local evidence |
-| Dependency inversion | Artifact 039 supplied and exists; target relies on it as H dependency | No confirmed collision |
-| Premature downstream specification | Artifact 057 content unavailable; target does not state the admission test | `UNVERIFIABLE — sibling content unavailable`; no target defect confirmed |
-| Upstream restatement | Target does not restate Artifact 039's six-model constitution or Artifact 043's nine prohibitions as its own contract | PASS |
-| Universalization | Artifact 043 and relevant invariants supplied; target preserves the facility/claim boundary | PASS |
+| Define the eight category names, definitions, and classification tests | Artifact 044 | Blueprint §13 / RMS §6.1 | Later category users and Kind artifacts | Target §§2–3; Roadmap Artifact 044 `Val` | PASS |
+| Decide whether a Kind proposal is admitted | Not Artifact 044 | Blueprint §13.11 | Artifact 057 | Target §5 and §12; Roadmap Artifact 057 row | PASS |
+| Define mechanism/semantics boundary | Not Artifact 044 | Blueprint §13.7a / I-103 | Artifact 043 | Target §§2, 11, 15, 17 | PASS |
+| Define canonicality framework | Not Artifact 044 | Blueprint §13.7c / I-104 | Artifact 052 | Target §§4, 17 | PASS |
+| Define Relationship boundary | Not Artifact 044 | Blueprint §13.3 / I-102 | Artifact 055 | Target §8 and §17 | PASS |
+| Define Record System constitution | Not Artifact 044 | Blueprint §13 / RMS §§2–3 | Artifact 039 | Target §1 and §17 | PASS |
+| Create an implicit shared semantic owner | None | None | None | No such claim in target | PASS |
 
 # 8. Findings
 
-No confirmed findings.
+No artifact defect finding is issued.
 
-No stable `AUD-044-NN` finding IDs were opened because the available evidence did not demonstrate a source-supported mismatch in the target. The unavailable `RR-07` register and unavailable sibling contents are traceability limitations and observations, not findings against Artifact 044.
+The audit has one blocking evidence condition, not a confirmed implementation defect:
+
+| ID | Severity | Source Requirement | Evidence | Impact | Remediation Direction | Validation Condition |
+|---|---|---|---|---|---|---|
+| None assigned | — | — | — | No confirmed defect against `docs/constitution/categories.md` was established. | No artifact patch is authorized by this audit. | Supply the unavailable authoritative section and perform a fresh audit. |
+
+The missing Blueprint §6.1 source is an audit blockage rather than a target finding because the target's demonstrated content is otherwise supported by the supplied RMS §6.1 and Blueprint §13 authority.
 
 # 9. Evidence
 
-No finding evidence is applicable. The following minimal excerpts support the completed audit:
+## Target identity and contract
 
-- **RMS §6.1:** “The Seven Architectural Categories” followed by eight rows: Record, Kind, Field, State, Relationship, Definition, Projection, Primitive.
-- **Roadmap row 044:** `Val: Record/Kind/Field/State/Relationship/Definition/Projection/Primitive each with a test · Done: eight terms, eight tests`.
-- **Target §2:** “The Record System recognizes exactly these **eight architectural categories**.”
-- **Target §3:** The category table contains eight rows, each with `Definition` and `Test`.
-- **Target §8:** “This category establishes **no universal Relationship Record**.”
-- **Target §10:** “A **Projection** is derived, rebuildable output. Its test is absolute: **never authoritative**.”
-- **Target §12:** “Reaching step 2 makes a proposal a Kind *candidate* and nothing more; Artifact 057 decides admission.”
-- **Target §17:** “This document derives its authority from Blueprint §13 and RMS §6.1, and amends neither.”
+`docs/constitution/categories.md` begins:
+
+> `Artifact 044` · seven architectural categories · `docs/constitution/categories.md`
+
+The header restates the Roadmap contract, including:
+
+> `Val: Record/Kind/Field/State/Relationship/Definition/Projection/Primitive each with a test`
+
+and:
+
+> `Done: eight terms, eight tests`
+
+## Eight category tests
+
+The target's table contains one definition and one test for each category:
+
+> `Record` ... `Has independent identity, lifecycle, and authority`
+
+> `Kind` ... `Passes the Kind Admission Test (§13)`
+
+> `Field` ... `Has no independent identity`
+
+> `State` ... `Enumerable; transitions are governed`
+
+> `Relationship` ... `First-class only when no endpoint can own it`
+
+> `Definition` ... `Governs; never instantiates`
+
+> `Projection` ... `Never authoritative (§29.6a)`
+
+> `Primitive` ... `Operates on Records; is not one`
+
+## Boundary preservation
+
+The target states:
+
+> `These are architectural classifications, not a universal semantic schema.`
+
+It also states:
+
+> `Sharing a category name across models says how a thing is classified. It says nothing about what that thing means in any model, and confers no shared semantics of any sort`
+
+The Relationship section states:
+
+> `This category establishes no universal Relationship Record.`
+
+The Non-Authority Boundary states:
+
+> `does not define any Record Model's Kinds, fields, states, or schemas`
+
+and:
+
+> `does not state or modify the Kind Admission Test (Artifact 057)`
+
+These excerpts support the PASS results for scope, sovereignty, universalization, and downstream ownership.
+
+## Unavailable source evidence
+
+The supplied source ledger explicitly records:
+
+> `Blueprint §6.1 ... UNAVAILABLE`
+
+and:
+
+> `[NOT SUPPLIED — UNAVAILABLE: section number not located in the document]`
+
+No comparison against Blueprint §6.1 was made.
+
+## Git evidence
+
+The supplied Git state shows:
+
+> `git status --short` — `(clean)`
+
+> `git diff --name-status (unstaged)` — `(empty)`
+
+> `git diff --name-status (staged)` — `(empty)`
+
+The target baseline states:
+
+> `docs/constitution/categories.md: tracked=True on_disk=True changed_since_HEAD=False`
+
+Therefore no changed hunk or target regression can be attributed to this audit state.
 
 # 10. Regression Analysis
 
-The target was compared with its committed state at the audited HEAD:
+The comparison baseline was the committed state at the audited HEAD:
 
-- `docs/constitution/categories.md` is tracked and present.
-- `changed_since_HEAD=False`.
-- `git diff HEAD -- docs/constitution/categories.md` is empty.
-- No prior accepted target baseline was supplied beyond the committed state.
-- No weakening from MUST to SHOULD, removal of a prohibition, narrowed refusal, weakened boundary, or altered test assertion was observed.
-- The target's current text preserves its category definitions, category tests, non-authority boundary, and downstream deferrals.
+- Target: `docs/constitution/categories.md`
+- `changed_since_HEAD`: `False`
+- `git diff HEAD -- docs/constitution/categories.md`: no change
+- Working tree: clean
+- Staged diff: empty
+- Unstaged diff: empty
 
-Regression result: **PASS**.
+No before/after weakening was observed. No requirement changed from MUST to SHOULD, no boundary was removed, no refusal was loosened, and no test assertion was weakened.
+
+The source-level heading discrepancy remains observable:
+
+- RMS §6.1 heading: **“The Seven Architectural Categories”**
+- RMS §6.1 table: **eight** categories
+- Roadmap Artifact 044 `Val`: eight categories
+- Roadmap Artifact 044 `Done`: eight terms, eight tests
+
+The target records this discrepancy rather than silently changing either authority source. This was downgraded to an observation because the target correctly implements the eight-row frozen table and no source-supported artifact defect was established.
 
 # 11. Diff Analysis
 
@@ -238,13 +347,11 @@ Regression result: **PASS**.
 
 ## Actual changed files
 
-- Unstaged: none
-- Staged: none
-- Working tree: clean
+None.
 
 ## Target hunks
 
-No target hunks changed at the audited commit state.
+None. The target is unchanged from HEAD.
 
 ## Out-of-scope changes
 
@@ -254,68 +361,90 @@ None.
 
 None.
 
-## Diff risk
+## Generated or derived artifacts
 
-No unrelated files, generated artifacts, temporary files, deletions, formatting churn, canonical-zone changes, or hidden side effects were present in the supplied Git state.
+None.
 
-Diff result: **PASS**.
+## Risk notes
+
+No diff-related risk exists at the audited commit. The absence of a diff does not itself establish architectural compliance; compliance was evaluated from the target and supplied authorities separately.
 
 # 12. Unverifiable Items
 
-1. **`Req: RR-07`** — `UNVERIFIABLE — requirement register unavailable (GAP-C, non-blocking)`. The ID is preserved exactly. Its requirement text was not invented.
-2. **Blueprint §6.1** — `UNVERIFIABLE — section unavailable`. It is not the target's declared Blueprint citation; the target's declared BP §13 and RMS §6.1 requirements were available and sufficient for the completed checks. This item does not block the verdict.
-3. **Artifact 057 content** — `UNVERIFIABLE — sibling content unavailable`. The Roadmap row and the target's explicit deferral were available; Artifact 057 was not audited.
-4. **Artifact 052 content** — `UNVERIFIABLE — sibling content unavailable`. The Roadmap row and target's explicit non-authority statement were available; Artifact 052 was not audited.
-5. **Artifact 055 content** — `UNVERIFIABLE — sibling content unavailable`. The Roadmap row and target's explicit non-authority statement were available; Artifact 055 was not audited.
-6. **Artifact 004 content as a separate supplied artifact** — `UNVERIFIABLE — sibling content unavailable`. The supplied session `CLAUDE.md` was read for operational procedure, but the unavailable Artifact 004 content was not reconstructed.
+1. **Blueprint §6.1 compliance — blocking**
+   - The supplied source ledger identifies Blueprint §6.1 as an explicit target reference.
+   - Blueprint §6.1 was not supplied and was marked UNAVAILABLE.
+   - Its content was not reconstructed or inferred.
+   - The audit therefore cannot complete mandatory Blueprint-reference coverage.
 
-These items do not prevent determining Artifact 044's compliance with its own `Val`, `Done`, `BP`, `RMS`, dependency, scope, and boundary requirements.
+2. **RR-07 requirement text — non-blocking GAP-C**
+   - `Req: RR-07` is preserved exactly.
+   - The authoritative requirement register was not supplied.
+   - Per audit-standard §8.3, the row is UNVERIFIABLE and non-blocking.
+   - No requirement text was invented.
+
+3. **Artifact 057 content — non-blocking contextual gap**
+   - `docs/constitution/kind_admission.md` was unavailable.
+   - Artifact 057 was not audited.
+   - Artifact 044's admission boundary was independently checked against Blueprint §13.11 and the supplied Artifact 057 Roadmap row.
+
+4. **Artifact 052 content — non-blocking contextual gap**
+   - `docs/constitution/canonicality.md` was unavailable.
+   - Artifact 052 was not audited.
+   - Artifact 044 only defers canonicality ownership to Artifact 052; the Roadmap ownership row and Blueprint §13.0/I-104 were supplied.
+
+5. **Artifact 055 content — non-blocking contextual gap**
+   - `docs/constitution/relationship_boundary.md` was unavailable.
+   - Artifact 055 was not audited.
+   - Artifact 044's Relationship boundary was checked against Blueprint §13.6d, §13.9, I-102, and the supplied Roadmap row.
+
+6. **Artifact 004 content — non-blocking contextual gap**
+   - The source label for Artifact 004 content was unavailable.
+   - The separately supplied `CLAUDE.md` standing-instructions source was read as session conduct.
+   - No finding against Artifact 004 was raised.
 
 # 13. False-Positive Checks
 
 The §10 checklist was applied to every candidate concern.
 
-| Suspicion considered | Result |
-|---|---|
-| RMS §6.1 is titled “Seven” while listing eight categories | Downgraded to observation; the Roadmap `Val` and `Done` also require eight, and the target accurately records the discrepancy without altering either authority source |
-| The target uses World mutation classes as the State example | Downgraded; RMS §7 expressly permits this as a World classification and the target explicitly says it is not a universal state model |
-| The target mentions Artifact 057, 052, and 055 | Downgraded; the references are boundary/dependency declarations and the target explicitly refuses to define those sibling contracts |
-| The target includes examples in the category table | Downgraded; the Roadmap requires category tests, and examples do not create a separate merged example/test artifact |
-| Artifact 057, 052, and 055 contents are unavailable | Recorded as `UNVERIFIABLE — sibling content unavailable`; no defect was inferred from unread material |
-| RR-07 cannot be verified | Recorded as non-blocking GAP-C; no requirement text was invented |
-| Blueprint §6.1 is unavailable | Recorded as an unavailable source item; not promoted to a target defect because the declared BP §13 and RMS §6.1 requirements were supplied |
+| Candidate suspicion | Disposition | Reason |
+|---|---|---|
+| The title says “seven” while the table has eight categories | Downgraded to observation | RMS §6.1 itself has the same heading/table discrepancy; the Roadmap `Val` and `Done` require eight, and the target implements eight. |
+| The target mentions Artifact 057 but its content is unavailable | Downgraded to observation | The target only assigns admission ownership and the supplied Blueprint §13.11 independently establishes the admission boundary. |
+| The target mentions Artifact 052 and Artifact 055 whose content is unavailable | Downgraded to observation | The target explicitly defers those contracts rather than defining them; their Roadmap ownership rows and authoritative Blueprint boundaries are available. |
+| The target uses World mutation classes as a State example | Not a finding | RMS §7 explicitly identifies locked/world-state/derived as a World classification, not a universal state model; the target states that limitation. |
+| The target contains classification procedure prose beyond the table | Not a finding | The Roadmap requires each category with a test; the additional sections discharge completeness and negative-boundary requirements without introducing a schema or implementation. |
+| The target uses “materialised view” as a Projection example | Not a finding | Blueprint §29.6a expressly lists materialised views as DERIVED. |
+| The target does not include executable tests | Not a finding | The artifact is `T: doc`; its `Val` requires each category with a test, which is discharged by the explicit table and expanded test sections. No paired test artifact is declared. |
+| The target is unchanged at HEAD | Not a finding | Git state is evidence of change, not architectural authority; content was still fully inspected. |
 
-No suspicion passed all eight controls as a confirmed finding.
+No suspicion passed all eight false-positive controls as a confirmed artifact defect.
 
 # 14. Final Verdict
 
-Artifact 044 satisfies the demonstrably applicable mandatory conditions:
+The audit cannot issue PASS because the compliance of the mandatory Blueprint §6.1 reference condition is not determinable: the section was unavailable in the supplied source set. The audit is therefore **BLOCKED — INSUFFICIENT AUTHORITATIVE EVIDENCE** in the procedural sense defined by audit-standard §32.
 
-- identity and metadata match Roadmap row 044;
-- the hard dependency 039 exists;
-- all eight required categories are present;
-- each category has a definition and test;
-- the target preserves RMS §6.1;
-- the target respects Blueprint §13, RMS §7, I-102, I-103, I-104, and I-105;
-- the target does not create a universal semantic model, ninth category, seventh Record Model, universal lifecycle, universal canonicality, or universal Relationship/History Record;
-- downstream ownership is expressly preserved;
-- no gate, anti-ordering, dependency, or scope rule is violated;
-- no regression or diff defect is present.
+To move from BLOCKED to a determinable verdict:
 
-The remaining unavailable materials are recorded as non-blocking unverifiable items under the applicable audit-standard rules. No patch is required. A future change to the target should trigger a new Full Artifact Audit or an applicable Post-Patch Re-Audit.
+1. Supply Blueprint §6.1 or an authoritative repository resolution establishing its content.
+2. Re-run the Blueprint compliance pass against the supplied section.
+3. Recompute the requirement coverage table and final verdict.
+4. Recheck that the eight category definitions and tests remain unchanged and consistent with the newly supplied section.
+
+No patch to `docs/constitution/categories.md` is presently justified by the evidence. The target has no confirmed P0, P1, or P2 defect in the supplied material.
 
 # 15. Re-Audit Requirements
 
-A re-audit is required if `docs/constitution/categories.md` changes, if Roadmap row 044 changes, or if a source amendment changes Blueprint §13, RMS §6.1, or the relevant invariant/boundary requirements.
+Run a **Post-Patch Re-Audit is not applicable** because no patch was authorized and no target change occurred. The required follow-up is a fresh **Full Artifact Audit** under §5.1 after the evidence gap is resolved.
 
-The next audit should:
+The re-audit must:
 
-1. Re-read the complete current target.
-2. Re-check all eight category definitions and tests against RMS §6.1.
-3. Re-check the category decision procedure against Blueprint §13.11 and Artifact 057's then-current content.
-4. Re-check the non-authority boundaries against the then-current contents of Artifacts 052 and 055.
-5. Re-check `RR-07` if the requirement register becomes available.
-6. Inspect fresh `git status`, staged state, and target diff.
-7. If a patch has been applied, run a Post-Patch Re-Audit under `audit-standard.md §5.3` and independently verify any prior finding IDs, although this audit opened none.
+- read Blueprint §6.1 directly;
+- re-run Pass 3 independently;
+- re-evaluate the Blueprint §6.1 row in Requirement Coverage;
+- confirm the eight category definitions and tests against all available Tier 1–3 authority;
+- retain the RR-07 row as non-blocking UNVERIFIABLE unless the requirement register becomes available;
+- re-run the diff and regression checks against the then-current branch and commit;
+- issue a new machine-readable verdict based on complete mandatory coverage.
 
-VERDICT: PASS
+VERDICT: BLOCKED
