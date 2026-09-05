@@ -1,87 +1,69 @@
 # Artifact 043 — mechanism vs semantics boundary
 
-## Verdict: BLOCKED
+## VERDICT: BLOCKED
 
-**DO NOT PATCH.**
+**DO NOT PATCH** the target artifact:
 
-The audit is **BLOCKED** because the declared target artifact,
-`docs/constitution/mechanism_semantics.md`, is not present on disk and no complete target
-content was supplied. Consequently, mandatory compliance cannot be determined for the artifact’s
-identity and metadata, the nine prohibitions required verbatim by the Roadmap, their binding
-status, Blueprint §13.7a and RMS §3–§4 compliance, internal consistency, negative and boundary
-coverage, diff integrity, or regression state.
+- `docs/constitution/mechanism_semantics.md`
 
-This is primarily an **audit-context/source-resolution gap**: the evidence needed to evaluate the
-target is unavailable. The target’s absence is also the confirmed artifact defect recorded by the
-audit as `AUD-043-01`, but this BLOCKED verdict must not be cleared by inventing or authoring a
-target patch under this prompt.
+This is a single-file artifact scope. The target is not defective on the evidence supplied. The audit found no artifact defect and confirmed the available target checks, but mandatory audit coverage could not be completed.
 
-## Exact target scope
+## Exact blocking reason
 
-- **Artifact ID:** 043
-- **Artifact name:** mechanism vs semantics boundary
-- **Declared path:** `docs/constitution/mechanism_semantics.md`
-- **Scope kind:** file
-- **Multi-file entry:** False
-- **Declared audit scope:** only `docs/constitution/mechanism_semantics.md`
+The audit is **BLOCKED — INSUFFICIENT AUTHORITATIVE EVIDENCE** because:
 
-Do not modify any file merely to turn the BLOCKED verdict into PASS. Do not modify the target
-artifact, create replacement content, or apply a remediation plan while the audit-context gap
-remains unresolved.
+1. The complete Roadmap manifest evidence required to verify Artifact 043’s `→ all` inverse dependency agreement under Artifact 003 C-9 was not supplied. The target’s own `→ all` declaration could not be checked against every corresponding inverse `H` declaration.
+2. The contents of explicitly named sibling/downstream artifacts required for the mandatory cross-artifact collision audit were not supplied. Therefore duplicate definition, duplicate ownership, implicit override, semantic leakage, scope theft, dependency inversion, premature downstream specification, upstream restatement, and universalization could not be fully determined.
 
-## Unavailable evidence sources
+These are **audit-context/source-resolution gaps, not defects in Artifact 043**. Do not treat the BLOCKED verdict as evidence that the target requires correction.
 
-The audit report used these unavailable source labels:
+## Unavailable or unresolved evidence sources
 
-1. **TARGET docs/constitution/mechanism_semantics.md** —
-   `docs/constitution/mechanism_semantics.md` is declared but not present on disk. No target
-   header, authored content, nine prohibitions, binding completion state, baseline, or target diff
-   is available. This is the blocking source-resolution gap.
-2. **Requirement BR-20** — the authoritative requirement register entry is unavailable. The audit
-   classified this as `UNVERIFIABLE — requirement register unavailable (GAP-C, non-blocking)`;
-   it does not independently cause the BLOCKED verdict.
-3. **Requirement RR-04** — the authoritative requirement register entry is unavailable. The audit
-   classified this as `UNVERIFIABLE — requirement register unavailable (GAP-C, non-blocking)`;
-   it does not independently cause the BLOCKED verdict.
-4. **Artifact 004 (content)** — `/CLAUDE.md` is unavailable because the file does not exist in
-   the repository. This was context only, not a target requirement, and does not independently
-   cause the BLOCKED verdict.
+The audit report used the following unavailable source labels:
+
+- **Requirement BR-20** — requirement register unavailable; recorded as a non-blocking GAP-C item.
+- **Requirement RR-04** — requirement register unavailable; recorded as a non-blocking GAP-C item.
+- **Artifact 044 content** — `docs/constitution/categories.md` unavailable.
+- **Artifact 048 content** — `docs/constitution/provenance_meaning.md` unavailable.
+- **Artifact 049 content** — `docs/constitution/temporal_terms.md` unavailable.
+- **Artifact 051 content** — `docs/constitution/authority.md` unavailable.
+- **Artifact 052 content** — `docs/constitution/canonicality.md` unavailable.
+- **Artifact 054 content** — `docs/constitution/temporal_obligation.md` unavailable.
+- **Artifact 055 content** — `docs/constitution/relationship_boundary.md` unavailable.
+- **Artifact 056 content** — `docs/constitution/package_boundary.md` unavailable.
+- **Artifact 057 content** — `docs/constitution/kind_admission.md` unavailable.
+- **Artifact 058 content** — `docs/constitution/cross_model.md` unavailable.
+- **Artifact 004 content as a separately resolved artifact** — `/CLAUDE.md` unavailable as separately resolved Artifact 004 content. `CLAUDE.md` itself was supplied as session-conduct context and was read in that capacity.
+
+The audit also recorded these unresolved evidence conditions:
+
+- **Artifact 003 C-9 inverse unlock verification** — the complete Roadmap rows for every artifact included in `→ all` were not supplied.
+- **Complete sibling collision verification** — the unavailable sibling contents prevent complete collision coverage.
 
 ## Required evidence resolution
 
-Before any artifact patching decision is made, the blocking target evidence must become
-available: the complete authored content for
-`docs/constitution/mechanism_semantics.md` at its exact declared path, or an equivalent complete
-target-content submission that can be inspected as the current target. The current repository
-state and target diff/baseline must also be available for the audit to evaluate the mandatory
-diff and regression conditions.
+Before any further verdict can be determined, the audit context must provide:
 
-The authoritative requirement-register entries for **BR-20** and **RR-04** may remain unavailable
-as the audit classified them as non-blocking GAP-C items; do not invent or paraphrase their
-requirement text. Do not invent any other source content.
+1. The complete Roadmap manifest evidence needed to verify every inverse `H` declaration corresponding to Artifact 043’s `→ all`.
+2. The authoritative contents of Artifacts 044, 048, 049, 051, 052, 054, 055, 056, 057, and 058, or equivalent authoritative collision evidence sufficient to perform the required cross-artifact checks.
+3. The authoritative requirement register entries for BR-20 and RR-04 if their requirement coverage is to be resolved; these are non-blocking by themselves but must remain unverified until supplied.
 
-Once the blocking evidence is available, require a fresh full artifact audit by re-running:
+Do not reconstruct unavailable sources from memory, infer requirement text, or invent sibling content.
+
+## Prohibited actions
+
+- Do not modify `docs/constitution/mechanism_semantics.md`.
+- Do not add, remove, weaken, reword, or restructure target content to turn BLOCKED into PASS.
+- Do not invent a correction, finding, requirement, sibling contract, dependency declaration, or source text.
+- Do not weaken any requirement or boundary to create patch work.
+- Do not modify the Blueprint, RMS, Roadmap, or either HHTECH standard.
+- Do not perform unrelated cleanup or modify files outside an explicitly authorized operation.
+- Do not treat the unrelated `reports/implement-log.json` working-tree modification as an Artifact 043 defect or sweep it into any artifact change.
+
+Once the missing evidence and context are available, re-run:
 
 ```text
 ./hhtech/audit 043
 ```
 
-The re-audit must determine the outcome of `AUD-043-01` from current evidence. Do not run a
-second audit as part of this prompt or claim that the artifact passes.
-
-## Authority and conduct restrictions
-
-- Do not patch the artifact to clear the BLOCKED verdict.
-- Do not invent source content, target content, requirements, metadata, or validation evidence.
-- Do not weaken, rewrite, or reinterpret any Blueprint, RMS, Roadmap, or standards requirement.
-- Do not modify the Master Blueprint, Record Model System, Roadmap,
-  `hhtech/standards/audit-standard.md`, or `hhtech/standards/patch-standard.md`.
-- Do not modify any out-of-scope artifact or unrelated file.
-- Do not perform unrelated cleanup.
-- Do not treat the available Artifact 039 dependency or neighboring artifacts as substitutes for
-  the missing target.
-- Do not declare PASS or close `AUD-043-01` based on an agent claim; only the re-audit may assign
-  the current outcome.
-
-The next operation is evidence resolution, followed by re-running `./hhtech/audit 043`; it is
-not an artifact patch.
+The re-audit must freshly verify the current target, the complete `→ all` inverse dependency evidence, the required sibling collision checks, requirement coverage where the register is available, and the current repository diff.
