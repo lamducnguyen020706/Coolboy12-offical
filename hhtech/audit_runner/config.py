@@ -13,7 +13,7 @@ from .errors import InputError
 
 HHTECH_BASE_URL = "https://hhtechapi.net"
 HHTECH_ENDPOINT = f"{HHTECH_BASE_URL}/v1/chat/completions"
-HHTECH_MODEL = "gpt-5.6-luna"
+HHTECH_MODEL = "gpt-5.6-sol"
 API_KEY_ENV_VAR = "HHTECH_API_KEY"
 
 DEFAULT_TIMEOUT_SECONDS = 180
