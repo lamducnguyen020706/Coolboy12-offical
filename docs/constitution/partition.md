@@ -233,9 +233,9 @@ or runtime.
 
 Artifact 041 §9 fixes this: partition ownership *"makes no claim that a partition is one
 implementation class, schema, file, table, or store."* RMS §4 puts the storage question on the
-other side of the line: storage and migration contracts are shared mechanism, and *"storage *shape*
-is model-owned within the contract."* Blueprint §13.9 *"permits one file, three files, or a table
-apiece."*
+other side of the line: storage and migration contracts are shared mechanism, and *"Storage shape
+is model-owned within the contract."* Blueprint §13.9 leaves an implementation free to hold a
+package as *"one file, three files, or a table apiece."*
 
 Two consequences, and this section claims no third:
 
