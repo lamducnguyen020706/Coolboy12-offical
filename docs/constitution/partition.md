@@ -135,7 +135,7 @@ These five are the normative core of this contract.
 |---|---|---|
 | **045.1** | Every Record **MUST** have **exactly one** owning partition. | I-16; Blueprint §13.6, §13.1; RMS §6.1 |
 | **045.2** | Every partition **MUST** own **exactly one** sovereign Record Model. | I-16, I-101; Blueprint §13.6; RMS §2 |
-| **045.3** | A Record's semantic ownership **MUST** be determined by its owning partition's sovereign Record Model. | Blueprint §13.6; RMS §6; Artifact 042 |
+| **045.3** | A Record's semantic **ownership** **MUST** belong to its owning partition's sovereign Record Model. Another model's authority over a definition **DOES NOT TRANSFER OWNERSHIP** of that Record. | Blueprint §13.6, §36 (I-105); RMS §6; Artifact 042 |
 | **045.4** | Cross-partition conversion of a Record **MUST NOT** occur. It is **PROHIBITED**. | I-16; Blueprint §13.6, §12.13 |
 | **045.5** | Referencing or depending on a Record held in another partition **MUST NOT** transfer ownership of that Record. | Blueprint §13.6a rule 2 |
 
@@ -144,13 +144,36 @@ is derived at read time from its location, its kind, its content, or its history
 carried by the Record (Blueprint §13.1) and is checked (Blueprint §13.6: *"A partition remains a
 required property of every Record, checked by the linter"*).
 
+**Ownership holds from the moment there is a Record.** Because the partition is a required
+property of every Record, **a Record is not a conformant Record until its exactly-one owning
+partition is established**: there is no valid state in which a Record exists and its partition is
+absent, null, provisional, or still to be assigned. Blueprint §36 states the conformance reading
+directly — *"every Record carries exactly one partition and is owned by that partition's Record
+Model (I-16, I-101)."* This closes a conceptual gap in 045.1 and introduces no mechanism: **which
+component establishes the partition, and when in a creation sequence it does so, is not this
+contract's to say.**
+
 **045.2** is Artifact 041's S-1, restated here because 045.1 and 045.3 have no meaning without it.
 It is not re-derived; Artifact 041 owns the sovereignty contract.
 
 **045.3** is the consequence that makes 045.1 load-bearing. The partition is not a label on a
-Record; it is the statement of **which model's semantics govern it**. A Record in `R` is governed
-by Registry semantics because it is in `R` — not because it resembles a definition, and not
+Record; it is the statement of **which model semantically owns it**. A Record in `R` is owned by
+the Registry Record Model because it is in `R` — not because it resembles a definition, and not
 because some other model would find Registry semantics convenient for it.
+
+**Ownership and definitional authority are two questions, and 045.3 answers only the first.**
+Registry is a sovereign Record Model whose Records define what terms mean, and the rest of the
+system resolves against those definitions. That authority is real and this contract does not
+narrow it: Blueprint §36 states that Registry *"governs definitions without owning another model's
+Records (I-105)."* So a World Record may resolve against a Registry definition, and be governed by
+it as a definition, while remaining **World-owned throughout**. The converse binds equally: no
+model acquires ownership of a Registry Record by depending on its definitions.
+
+```
+Record ownership          ─▶  exactly one owning partition / sovereign Record Model
+Registry authority        ─▶  what a definition means
+                              — and never ownership of the Record that resolves against it
+```
 
 **045.4** is stated as a prohibition, not as a preference. See §8.
 
@@ -168,11 +191,18 @@ prohibited."* Blueprint §13.6: *"**Cross-partition conversion is prohibited** (
 production record never becomes a world record by promotion — the author creates the world record
 and records the relationship."*
 
-**What is prohibited, stated exactly.** `Convert` is a defined refactoring operation — *"An object
-changes `kind`"* — and its identity rule is that *"identity persists"* (Blueprint §12.13). The
-prohibition bites precisely there: the operation whose defining property is that **identity
-persists** may not cross a partition boundary. A Record does not migrate, promote, demote, graduate,
-get re-partitioned, or get reclassified into another partition and remain the same Record.
+**What is prohibited, stated exactly.** A Record **MUST NOT** cross a partition boundary while
+remaining the same conceptual Record. A Record does not migrate, promote, demote, graduate, get
+re-partitioned, or get reclassified into another partition and remain the same Record.
+
+**The prohibition is independent of any model-specific `Convert` semantics.** Blueprint §12.13
+defines `Convert` — *"An object changes `kind`"*, with the identity rule *"Identity persists"* —
+inside its own Canonical Refactoring context. This contract neither redefines that operation nor
+exports it: **nothing here requires that every Record Model implement a `Convert` operation, or
+that any model inherit another's identity-operation semantics** (I-103, Artifact 043). The rule
+this contract states is the constitutional one, and it binds whatever the model calls the act:
+**where a source-defined operation preserves identity, that operation cannot be used to cross a
+partition boundary.**
 
 **Every ordered pair, without exception.** The prohibition is directionless and pairwise complete
 across the six:
@@ -187,19 +217,25 @@ No pair is exempt. No pair is exempt because the two models share a mechanism (I
 references the other (§9), because one depends on the other (§11), because the two rosters contain
 similar-sounding kinds, or because the conversion would be convenient.
 
-**What the sources name in its place.** Blueprint §12.13 names the remedy in five words: *"those
-are a retire-and-create."* Blueprint §13.6 names it in the World/Production case: *"the author
-creates the world record and records the relationship."*
+**What the sources name in its place, and how far that naming reaches.** For the cross-partition
+conversion case it names, Blueprint §12.13 states the remedy in five words: *"those are a
+retire-and-create."* Blueprint §13.6 states it for the World/Production case: *"the author creates
+the world record and records the relationship."*
 
-The second Record so created is a Record of **its own** partition, minted under its own partition's
-ownership, governed by its own partition's Record Model, carrying its own identity and its own
-lifecycle. It is not the first Record relocated, and the first Record is unchanged in its
-ownership by the second's existence.
+**Those are source-explicit examples, not a universal transition mechanism.** The global
+constitutional rule is the prohibition; retire-and-create is what the Blueprint explicitly
+describes for the cases it addresses. **This contract does not promote that example into a
+required protocol for every ordered partition pair**, and no reader may cite it as having done so.
 
-**This contract defines none of the mechanics of that act.** Retire-and-create, the relationship
-that records it, the gate it passes, the provenance it carries, and the identity operations it uses
-belong to the Mutation Coordinator path, to Blueprint §12.13's refactoring governance, and to the
-owning models — none of which is 045's to specify.
+What this contract does state about any second Record is only its ownership: a Record created in
+another partition is a Record of **its own** partition, owned by that partition's sovereign Record
+Model, carrying its own identity and its own lifecycle. It is not the first Record relocated, and
+the first Record is unchanged in its ownership by the second's existence.
+
+**This contract defines none of the mechanics of that act** — not which Record is retired first,
+not the gate it passes, not the provenance it carries, not the identity it is given, and not the
+relationship that records it. Those belong to the governed mutation path, to Blueprint §12.13's
+refactoring governance, and to the owning models.
 
 ## 9. Ownership Is Not Reference
 
@@ -227,9 +263,11 @@ reference, like a forbidden one, moves no ownership.
 
 ## 10. Ownership Is Not Storage
 
-Partition ownership is a **semantic** fact about a Record. It is **not** a statement about
-filesystem location, directory, package, table, process, cache, index, deployment, shard, service,
-or runtime.
+Partition ownership is an **architectural ownership** fact about a Record: it identifies which
+sovereign Record Model owns the Record semantically, and it **does not thereby define every
+semantic dimension of that Record** — those are the owning model's, enumerated at §6. It is
+**not** a statement about filesystem location, directory, package, table, process, cache, index,
+deployment, shard, service, or runtime.
 
 Artifact 041 §9 fixes this: partition ownership *"makes no claim that a partition is one
 implementation class, schema, file, table, or store."* RMS §4 puts the storage question on the
@@ -274,9 +312,10 @@ parsing, formatting, or resolution · identity equivalence or stability · what 
 a model. Artifact 034 owns the grammar; Artifacts 035–037 operationalise it; **Artifact 046** owns
 the identity semantics boundary, which row 045 names as this artifact's unlock (`→ 046`).
 
-Where an identity string and a Record's declared partition would disagree, this contract states no
-resolution: that is a structural-validation question (Artifact 037) and an identity-semantics
-question (Artifact 046), and inventing an answer here would decide both.
+This contract does not define identity parsing, formatting, or identity semantics. Consistency
+between a Record's declared partition and its identity representation is enforced by the relevant
+identity and structural-validation contracts; **045 defines only the ownership rule itself** and
+states no resolution for a disagreement between the two.
 
 ## 13. Ownership Is Not Kind
 
@@ -307,8 +346,19 @@ Each row names a boundary this contract **defers to** and does not anticipate.
 | **046** | the identity semantics boundary | what an identity means in a model; universal grammar ≠ universal semantics |
 | **058** | the cross-model dependency rules | which cross-partition edges are legal or forbidden |
 
+Stated as a division of labour, so that no reader mistakes one contract's job for another's:
+
+```
+041  establishes the sovereignty of the six models
+045  supplies the ownership fact — which partition owns a Record, and the conversion prohibition
+046  defines identity semantics
+058  decides which cross-partition dependency edges are legal
+129  enforces the partition invariant in executable form
+```
+
 Artifact 039 §11 lists all twenty P2 kernel boundaries and assigns this one to 045: *"045 —
-partition ownership."* This contract claims that boundary and no adjacent one.
+partition ownership."* This contract claims that boundary and no adjacent one, and duplicates no
+neighbouring contract.
 
 ## 15. Worked Examples
 
@@ -385,6 +435,13 @@ cite it as having done so:
 16. serialization format or envelope contents — **Artifact 033**
 17. any universal semantic base model — **PROHIBITED** by RMS §4's nine prohibitions and
     Artifact 043
+18. universal `Convert` semantics, or any requirement that a Record Model implement one — §8
+19. universal retire-and-create mechanics, or a transition protocol for any partition pair — §8
+20. Registry's semantic-authority model — Registry is sovereign over its definitions (I-105);
+    this contract states only that such authority transfers no Record ownership — §7
+21. how a disagreement between a Record's declared partition and its identity representation is
+    resolved — §12
+22. Mutation Coordinator behaviour, or any part of the governed mutation path — §8
 
 **On 17 in particular.** Nothing in this contract establishes a universal Record base, a universal
 semantic parent, a shared ancestor of the six, or World as a base from which the others
@@ -397,8 +454,8 @@ is not revived here in any form.
 
 ```
 Record System
-      └─▶ six sovereign Record Models
-                └─▶ each owns exactly one partition
+      └─▶ six sovereign partitions
+                └─▶ each partition owns exactly one sovereign Record Model
                           └─▶ each Record belongs to exactly one partition
 ```
 
@@ -414,8 +471,9 @@ Stated here so they are checkable. **Artifact 059** owns the P2 kernel conforman
 |---|---|---|
 | **C-01** | Every Record declares exactly one owning partition, drawn from the six. | 045.1 |
 | **C-02** | No Record declares zero partitions, and none declares two or more. | 045.1 |
+| **C-02a** | A Record is not a conformant Record unless its exactly-one owning partition is established as part of its creation or admission; no Record is valid with a partition still unassigned. | 045.1 |
 | **C-03** | Each of the six partitions owns exactly one sovereign Record Model, and no model is owned by two partitions. | 045.2 |
-| **C-04** | A Record's governing semantics are those of its owning partition's Record Model, and of no other. | 045.3 |
+| **C-04** | A Record is semantically owned by its owning partition's Record Model and by no other; another model's authority over a definition the Record resolves against does not make that model the Record's owner. | 045.3 |
 | **C-05** | No operation converts a Record from one partition to another while preserving its identity as the same Record. | 045.4 |
 | **C-06** | No cross-partition reference or dependency changes the owning partition of either Record. | 045.5 |
 | **C-07** | No seventh partition exists, and no partition is a specialization of another. | §5, I-101 |
@@ -433,8 +491,10 @@ conformant to the Record System: the other P2 contracts carry their own conditio
 | Partition names which Record Model owns the Record | Blueprint §13.1, §13.6 |
 | Ownership is semantic, not storage | Artifact 041 §9; RMS §4; Blueprint §13.9 |
 | Cross-partition conversion is prohibited | I-16; Blueprint §13.6, §12.13 |
-| `Convert` preserves identity — which is why it may not cross | Blueprint §12.13 |
-| Retire-and-create is what stands in its place | Blueprint §12.13, §13.6 |
+| An identity-preserving operation cannot be used to cross a partition boundary; `Convert` is defined in Blueprint §12.13's own context and is not universalized here | Blueprint §12.13; I-103 |
+| Blueprint §12.13 explicitly describes retire-and-create for the cross-partition conversion case it names; 045 defines no universal cross-partition transition mechanism | Blueprint §12.13, §13.6 |
+| Registry governs definitions without owning another model's Records | Blueprint §36 (I-105) |
+| A Record is not conformant until its one owning partition is established | Blueprint §36 (I-16, I-101); §13.6 |
 | Reference confers no ownership | Blueprint §13.6a rule 2 |
 | Publication creates no ownership and no truth | Spine law 5; Blueprint §13.6a rules 1 and 3 |
 | Kinds live inside partitions | Blueprint §13.6a; RMS §6.1 |
