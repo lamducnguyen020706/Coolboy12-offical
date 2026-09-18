@@ -101,8 +101,7 @@ another. World is not a template."*
 
 **Six at v1.0.** At v1.0 the Record System consists of exactly these six sovereign partitions —
 W, E, P, R, V and I — and RMS §25 concludes: *"**NO SEVENTH SOVEREIGN RECORD MODEL IS REQUIRED AT
-v1.0.**"* No partition stands above the six, none stands between them, and none is a
-specialization of another (I-101, Artifact 041).
+v1.0.**"* No partition is a specialization of another (I-101, Artifact 041).
 
 **That is a statement of the v1.0 architecture, not a claim about every future revision.** The
 sources scope it that way and this contract does not extend them: RMS §25 says *required at v1.0*,
@@ -189,7 +188,8 @@ and dependencies are *legal* is **Artifact 058's** matrix, not this contract's (
 ## 8. The Cross-Partition Conversion Prohibition
 
 **PROHIBITED.** A Record owned by one partition **MUST NOT** be converted into a Record of another
-partition while retaining conceptual identity as the same Record.
+partition. Separately creating a Record in another partition is not a conversion of the original
+Record, and the original's ownership is unchanged by it (§15 example E).
 
 The rule is normative and unconditional. It is not a default, not a guideline, not a strong
 preference, and not a thing that is merely unexpected. I-16: *"Cross-partition conversion is
