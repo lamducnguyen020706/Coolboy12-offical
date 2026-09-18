@@ -400,17 +400,18 @@ object never becomes an Issue object by being published."*
 W-CH-001-arthur  ──✗ PROHIBITED ✗──▶  a Production Record
 ```
 
-There is no operation that turns `W-CH-001-arthur` into a Production Record. The `Convert`
-operation — the one whose identity rule is *"identity persists"* — may not cross the boundary;
-Blueprint §12.13 names what stands in its place: *"those are a retire-and-create."*
+There is no operation that turns `W-CH-001-arthur` into a Production Record. No identity-preserving
+operation may cross the boundary, whatever the owning model calls it (§8).
 
-A Production Record about Arthur may of course exist. It is **separately created**, is `P`-owned
-from the moment it exists, is governed by Production semantics and Production ceremony, and carries
-its own identity. It is **not** `W-CH-001-arthur` relocated, and `W-CH-001-arthur` is unchanged by
-it. Blueprint §13.6: *"the author creates the world record and records the relationship"* — stated
-there in the opposite direction, and reading identically in this one.
+A Production Record about Arthur may of course exist. It is a **distinct Record**, separately
+created, `P`-owned from the moment it exists, governed by Production semantics, and carrying its
+own identity. It is **not** `W-CH-001-arthur` relocated, and `W-CH-001-arthur` is unchanged in its
+ownership by it. Blueprint §13.6: *"the author creates the world record and records the
+relationship"* — stated there in the opposite direction, and reading identically in this one.
 
-**The mechanics of that creation are not defined here** (§8).
+**This example demonstrates the constitutional prohibition. It is not a transition protocol**, and
+the mechanics of that separate creation are not defined here — not the order of acts, not the
+gate, not the provenance, not the identity, and not the relationship that records it (§8).
 
 ## 16. Non-Goals — What This Contract Does Not Define
 
