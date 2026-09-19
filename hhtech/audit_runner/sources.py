@@ -557,6 +557,25 @@ class SourceResolver:
                     seen.add(artifact_id)
                     ordered_ids.append((artifact_id, f"{field_label} dependency ({semantics})"))
 
+        # Universal context comes before the citation-driven tiers, and not
+        # after them. Any artifact whose Roadmap row unlocks "all" is
+        # conformance context for every later artifact (this is how Artifact
+        # 003's conventions arrive — derived from the Roadmap, not hardcoded),
+        # and audit-standard.md §8.1 makes that conformance mandatory. Ordered
+        # last, it was the first thing the context budget dropped: an artifact
+        # that cites many neighbours — which a well-bounded contract does —
+        # exhausted the budget before 003 was ever reached, and the audit then
+        # blocked for want of a source sitting in the repository all along.
+        for other_id, other_row in self.all_rows.items():
+            if other_id in seen or other_id >= row.id:
+                continue
+            unlocks = other_row.get("Unlocks").strip().lower()
+            if unlocks == "all" or unlocks.startswith("all "):
+                seen.add(other_id)
+                ordered_ids.append(
+                    (other_id, "universal conformance context (its Roadmap row unlocks `all`)")
+                )
+
         for artifact_id in references.artifacts:
             if artifact_id not in seen:
                 seen.add(artifact_id)
@@ -568,19 +587,6 @@ class SourceResolver:
         if previous and previous not in seen:
             seen.add(previous)
             ordered_ids.append((previous, "immediately previous artifact in Roadmap order"))
-
-        # Universal context: any artifact whose Roadmap row unlocks "all" is
-        # conformance context for every later artifact (this is how Artifact
-        # 003's conventions arrive — derived from the Roadmap, not hardcoded).
-        for other_id, other_row in self.all_rows.items():
-            if other_id in seen or other_id >= row.id:
-                continue
-            unlocks = other_row.get("Unlocks").strip().lower()
-            if unlocks == "all" or unlocks.startswith("all "):
-                seen.add(other_id)
-                ordered_ids.append(
-                    (other_id, "universal conformance context (its Roadmap row unlocks `all`)")
-                )
 
         loaded = 0
         for artifact_id, why in ordered_ids:

@@ -18,7 +18,10 @@ from dataclasses import dataclass, field
 # authored artifacts. Each pattern captures the canonical token form.
 _ARTIFACT_REF = re.compile(r"\bArtifact\s+(\d{3})\b")
 _BLUEPRINT_SECTION = re.compile(r"(?:Blueprint\s+)?§(\d+(?:\.\d+)*[a-z]?)\b")
-_RMS_SECTION = re.compile(r"RMS\s+§+(\d+(?:\.\d+)*[a-z]?)\b")
+# The colon form is not optional decoration: every artifact's metadata header
+# writes `RMS: §2`, so requiring whitespace after "RMS" mis-attributed every
+# metadata citation in the repository to the Blueprint.
+_RMS_SECTION = re.compile(r"RMS\s*:?\s*§+(\d+(?:\.\d+)*[a-z]?)\b")
 _INVARIANT = re.compile(r"\bI-(\d{2,3})\b")
 _ANTI_ORDERING = re.compile(r"\bX-(\d{2})\b")
 _REQUIREMENT = re.compile(r"\b([A-Z]{2,3})-(\d{2,3})\b")

@@ -181,6 +181,25 @@ def test_rms_citation_not_misattributed_to_blueprint():
     assert refs.blueprint_sections == []
 
 
+def test_rms_colon_form_not_misattributed_to_blueprint():
+    """Every artifact metadata header writes `RMS: §2`, not `RMS §2`.
+
+    Requiring whitespace after "RMS" sent every metadata citation in the
+    repository to the Blueprint, which produced phantom BLOCKED verdicts
+    against sections that do not exist.
+    """
+    for text in ("RMS: §2", "RMS:  §6.1", "RMS: §§22,23"):
+        refs = references.extract_references(text)
+        assert refs.rms_sections, f"{text!r} produced no RMS citation"
+        assert refs.blueprint_sections == [], (
+            f"{text!r} leaked into blueprint_sections: {refs.blueprint_sections}"
+        )
+
+    header = references.extract_references("Req: BR-17 · BP: §13.6 · RMS: §2")
+    assert header.blueprint_sections == ["13.6"]
+    assert header.rms_sections == ["2"]
+
+
 def test_invariants_and_anti_orderings_are_not_requirements():
     refs = references.extract_references("I-101 and X-08 and RR-06 and BR-17")
     assert refs.requirements == ["RR-06", "BR-17"]
