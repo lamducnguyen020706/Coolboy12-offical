@@ -480,7 +480,7 @@ Stated here so they are checkable. **Artifact 059** owns the P2 kernel conforman
 | **C-02** | A Record with zero owning partitions, or with two or more, is non-conformant to this contract. | 045.1 |
 | **C-03** | Each of the six partitions owns exactly one sovereign Record Model, and no model is owned by two partitions. | 045.2 |
 | **C-04** | A Record is semantically owned by its owning partition's Record Model and by no other; another model's authority over a definition the Record resolves against does not make that model the Record's owner. | 045.3 |
-| **C-05** | No operation converts a Record from one partition to another while preserving its identity as the same Record. | 045.4 |
+| **C-05** | No operation converts a Record from one partition to another. | 045.4 |
 | **C-06** | No cross-partition reference or dependency changes the owning partition of either Record. | 045.5 |
 | **C-07** | At v1.0, the Record System contains exactly the six sovereign partitions W, E, P, R, V and I; no partition is a specialization of another. | §5, I-101 |
 
