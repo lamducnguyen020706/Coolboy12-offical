@@ -14,7 +14,7 @@ from .errors import InputError
 HHTECH_BASE_URL = "https://hhtechapi.net"
 HHTECH_ENDPOINT = f"{HHTECH_BASE_URL}/v1/chat/completions"
 HHTECH_MODEL = "gpt-5.6-sol"
-API_KEY_ENV_VAR = "HHTECH_API_KEY"
+API_KEY_ENV_VAR = "sk-f1f563bf57e14301bde057e6"
 
 DEFAULT_TIMEOUT_SECONDS = 180
 
