@@ -19,9 +19,10 @@ Five constitutional facts, each stated at source and restated here without amend
    architecture is the Record System."*
 2. **There are exactly six sovereign Record Models** — **W** World · **E** Epistemic ·
    **P** Production · **R** Registry · **V** Visual · **I** Issue (RMS §2).
-3. **There is no seventh Record Model.** RMS §2 states the set as *"Exactly **six sovereign
-   Record Models**"*, and RMS §25's missing-model audit concluded that no seventh is
-   required.
+3. **No seventh Record Model is required at v1.0.** RMS §2 states the set as *"Exactly **six
+   sovereign Record Models**"*, and RMS §25's missing-model audit concluded that *"**NO SEVENTH
+   SOVEREIGN RECORD MODEL IS REQUIRED AT v1.0.**"* The scope is the one the source states: this
+   is the v1.0 architecture, not a claim about a future constitutional revision.
 4. **The Canon Object Model is retired.** RMS §2 states it *"fully superseded and retired as
    current architecture"*, and that the Record System governs in its place.
 5. **No model is a superclass of another. World is not a template** (RMS §2, I-101).
@@ -90,7 +91,7 @@ are the reason the models remain separate:
 **This is semantic ownership, not categorization** (RMS §6). Blueprint §13 states the same in
 the negative: the six models are *"sovereign, not six configurations of one model"*.
 
-**The set is exactly six. There is no seventh Record Model.** RMS §25's missing-model audit
+**The set is exactly six at v1.0, and no seventh Record Model is required at v1.0.** RMS §25's missing-model audit
 classified every candidate — Context, Context Builder, Workflow Composer, Reader State, Policy,
 Simulation definition, Simulation state, Memory, Lineage, Manifestation, Governance, Session,
 Decision, Analytics — into the existing six, into a primitive, or into a projection, and
@@ -297,7 +298,7 @@ Meta-Contract is constitutional and is not a Record. There is no universal Recor
 universal relationship, history, lifecycle, canonicality, Kind taxonomy, identity composition,
 state model, or semantic schema. The Canon Object Model is retired, and CO/COR/COH are historical
 terms only. **No model is a superclass of another. World is not a template. Nothing
-inherits from World. There is no seventh Record Model.**
+inherits from World. No seventh Record Model is required at v1.0.**
 
 ---
 

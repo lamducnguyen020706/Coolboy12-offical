@@ -362,8 +362,8 @@ Stated as a division of labour, so that no reader mistakes one contract's job fo
 129  enforces the partition invariant in executable form
 ```
 
-Artifact 039 §11 lists all twenty P2 kernel boundaries and assigns this one to 045: *"045 —
-partition ownership."* This contract claims that boundary and no adjacent one, and duplicates no
+Artifact 039 §11 lists all twenty P2 kernel boundaries and assigns this one to 045 as
+*"partition ownership"*. This contract claims that boundary and no adjacent one, and duplicates no
 neighbouring contract.
 
 ## 15. Worked Examples
