@@ -29,12 +29,17 @@ from .conftest import (
 # artifact_id
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("raw,expected", [("1", "001"), ("42", "042"), ("042", "042"), ("490", "490")])
+
+@pytest.mark.parametrize(
+    "raw,expected", [("1", "001"), ("42", "042"), ("042", "042"), ("490", "490")]
+)
 def test_normalize_artifact_id_valid(raw, expected):
     assert artifact_id.normalize_artifact_id(raw) == expected
 
 
-@pytest.mark.parametrize("raw", ["0", "491", "foo", "", "   ", "42abc", "-1", "+1", "4 2"])
+@pytest.mark.parametrize(
+    "raw", ["0", "491", "foo", "", "   ", "42abc", "-1", "+1", "4 2"]
+)
 def test_normalize_artifact_id_invalid(raw):
     with pytest.raises(InputError):
         artifact_id.normalize_artifact_id(raw)
@@ -57,6 +62,7 @@ def test_parse_single_argument_ok():
 # ---------------------------------------------------------------------------
 # Roadmap parsing
 # ---------------------------------------------------------------------------
+
 
 def test_find_manifest_row_all_fields():
     row = find_manifest_row(ROADMAP_TEXT, "042")
@@ -95,7 +101,13 @@ def test_previous_artifact_id():
 
 @pytest.mark.parametrize(
     "citation,expected",
-    [("§13", ["13"]), ("n/a", []), ("—", []), ("§13.7a", ["13.7a"]), ("§§2,6", ["2", "6"])],
+    [
+        ("§13", ["13"]),
+        ("n/a", []),
+        ("—", []),
+        ("§13.7a", ["13.7a"]),
+        ("§§2,6", ["2", "6"]),
+    ],
 )
 def test_parse_citation_numbers(citation, expected):
     assert parse_citation_numbers(citation) == expected
@@ -126,6 +138,7 @@ def test_parse_artifact_references_ranges_and_words():
 # Scope resolution
 # ---------------------------------------------------------------------------
 
+
 def test_scope_single_file(repo):
     scope = derive_target_scope(repo, find_manifest_row(ROADMAP_TEXT, "042"))
     assert scope.kind == SCOPE_FILE
@@ -142,20 +155,28 @@ def test_scope_literal_path_kept_when_file_absent(repo):
 def test_scope_glob_multi_file(repo):
     scope = derive_target_scope(repo, find_manifest_row(ROADMAP_TEXT, "044"))
     assert scope.kind == SCOPE_GLOB
-    assert set(scope.matched_files) == {"docs/target/multi/a.md", "docs/target/multi/b.md"}
+    assert set(scope.matched_files) == {
+        "docs/target/multi/a.md",
+        "docs/target/multi/b.md",
+    }
     assert scope.multi_file
 
 
 def test_scope_directory(repo):
     scope = derive_target_scope(repo, find_manifest_row(ROADMAP_TEXT, "045"))
     assert scope.kind == SCOPE_DIRECTORY
-    assert set(scope.matched_files) == {"docs/target/dir/one.md", "docs/target/dir/two.md"}
+    assert set(scope.matched_files) == {
+        "docs/target/dir/one.md",
+        "docs/target/dir/two.md",
+    }
     assert scope.multi_file  # RULE G3: many files, one artifact
 
 
 def test_scope_unresolvable_path_fails_closed(repo):
     row = find_manifest_row(ROADMAP_TEXT, "042")
-    empty = type(row)(id=row.id, name=row.name, path="—", fields=row.fields, raw=row.raw)
+    empty = type(row)(
+        id=row.id, name=row.name, path="—", fields=row.fields, raw=row.raw
+    )
     with pytest.raises(InputError):
         derive_target_scope(repo, empty)
 
@@ -163,6 +184,7 @@ def test_scope_unresolvable_path_fails_closed(repo):
 # ---------------------------------------------------------------------------
 # Reference extraction
 # ---------------------------------------------------------------------------
+
 
 def test_extract_references_from_target_text():
     refs = references.extract_references(TARGET_042_TEXT)
@@ -256,6 +278,7 @@ def test_reference_extraction_deduplicates():
 # Verdict extraction — terminal-line determinism
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize("word", ["PASS", "PATCH REQUIRED", "BLOCKED"])
 def test_extract_verdict_valid(word):
     assert verdict.extract_verdict(make_audit_response("042", word)).verdict == word
@@ -347,6 +370,7 @@ def test_validate_artifact_identity_missing():
 # Patch prompt validation
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize("word", ["PASS", "PATCH REQUIRED", "BLOCKED"])
 def test_validate_patch_prompt_accepts_matching_contract(word):
     patchcheck.validate_patch_prompt(make_patch_prompt("042", word), "042", word)
@@ -374,7 +398,9 @@ def test_patch_prompt_rejects_embedded_api_key():
         "## Task\n", "## Task\nkey: test-fixture-key-not-real\n"
     )
     with pytest.raises(PatchGenerationFailure):
-        patchcheck.validate_patch_prompt(text, "042", "PASS", api_key="test-fixture-key-not-real")
+        patchcheck.validate_patch_prompt(
+            text, "042", "PASS", api_key="test-fixture-key-not-real"
+        )
 
 
 def test_patch_prompt_missing_artifact_mention():
@@ -393,7 +419,7 @@ def test_patch_prompt_rejects_architecture_modification():
 
 
 def test_patch_prompt_allows_forbidding_authority_edits():
-    """"Do not modify the Blueprint" is the required instruction, not a violation."""
+    """ "Do not modify the Blueprint" is the required instruction, not a violation."""
     patchcheck.validate_patch_prompt(
         make_patch_prompt("042", "PATCH REQUIRED"), "042", "PATCH REQUIRED"
     )
@@ -424,8 +450,10 @@ def test_patch_prompt_blocked_without_do_not_patch_rejected():
     import re as _re
 
     text = _re.sub(
-        r"[Dd]o not patch", "Consider patching",
-        make_patch_prompt("042", "BLOCKED"), flags=_re.IGNORECASE,
+        r"[Dd]o not patch",
+        "Consider patching",
+        make_patch_prompt("042", "BLOCKED"),
+        flags=_re.IGNORECASE,
     )
     assert "DO NOT PATCH" not in text.upper()
     with pytest.raises(PatchGenerationFailure):
@@ -434,4 +462,54 @@ def test_patch_prompt_blocked_without_do_not_patch_rejected():
 
 def test_patch_prompt_unknown_verdict_rejected():
     with pytest.raises(PatchGenerationFailure):
-        patchcheck.validate_patch_prompt(make_patch_prompt("042", "PASS"), "042", "MAYBE")
+        patchcheck.validate_patch_prompt(
+            make_patch_prompt("042", "PASS"), "042", "MAYBE"
+        )
+
+
+def test_unexpected_response_shape_reports_the_server_message():
+    """A gateway error must surface its own message, not just `'choices'`.
+
+    An HTTP 200 carrying an error document produced only the missing key
+    name, which says nothing about an unknown model, an exhausted quota or a
+    rejected key. The real message now travels with the failure.
+    """
+    from audit_runner.config import HhtechConfig
+    from audit_runner.luna_client import _describe_unexpected
+
+    cfg = HhtechConfig(
+        endpoint="e", model="gpt-6-astra", api_key="sk-SECRET", timeout_seconds=400
+    )
+
+    nested = _describe_unexpected(
+        {"error": {"message": "The model does not exist", "code": "model_not_found"}},
+        cfg,
+    )
+    assert "The model does not exist" in nested
+    assert "model_not_found" in nested
+    assert "gpt-6-astra" in nested
+
+    flat = _describe_unexpected({"error": "invalid api key"}, cfg)
+    assert "invalid api key" in flat
+
+    unknown = _describe_unexpected({"id": "x", "detail": "nope"}, cfg)
+    assert "detail" in unknown and "id" in unknown
+
+    assert "list" in _describe_unexpected(["a"], cfg)
+
+
+def test_unexpected_response_description_never_echoes_the_credential():
+    """The diagnostic is bounded and carries no key."""
+    from audit_runner.config import HhtechConfig
+    from audit_runner.luna_client import _describe_unexpected
+
+    cfg = HhtechConfig(
+        endpoint="e", model="m", api_key="sk-SECRET-VALUE", timeout_seconds=1
+    )
+    for payload in ({"error": {"message": "boom"}}, {"a": 1}, ["x"], "s", 7):
+        assert "sk-SECRET-VALUE" not in _describe_unexpected(payload, cfg)
+
+    # An unbounded server message is truncated, not pasted whole.
+    flood = _describe_unexpected({"error": {"message": "x" * 5000}}, cfg)
+    assert len(flood) < 700
+    assert flood.endswith("Model requested: 'm'.")
