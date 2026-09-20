@@ -200,6 +200,47 @@ def test_rms_colon_form_not_misattributed_to_blueprint():
     assert header.rms_sections == ["2"]
 
 
+def test_a_bare_flat_section_is_not_read_as_a_blueprint_citation():
+    """An artifact's cross-references to its OWN sections are not citations.
+
+    A constitutional artifact numbers its sections `## 1.` … `## 18.` and
+    writes `(§8)` or `(§11, §14)` when pointing at itself. Reading those as
+    Blueprint citations made the resolver load whole Blueprint mega-sections
+    — 223KB of them for Artifact 045, a third of its audit prompt.
+    """
+    for text in ("(§8)", "(§11, §14)", "everything named in §16", "see §5 and §9"):
+        refs = references.extract_references(text)
+        assert refs.blueprint_sections == [], (
+            f"{text!r} leaked a self-reference into blueprint_sections: "
+            f"{refs.blueprint_sections}"
+        )
+
+
+def test_a_qualified_or_subsection_citation_is_still_attributed():
+    """The fix must not silence real Blueprint citations."""
+    assert references.extract_references("Blueprint §36").blueprint_sections == ["36"]
+    assert references.extract_references("§13.6a").blueprint_sections == ["13.6a"]
+    assert references.extract_references("§12.13").blueprint_sections == ["12.13"]
+
+    both = references.extract_references("Blueprint §13.6 and §12.13")
+    assert both.blueprint_sections == ["13.6", "12.13"]
+
+
+def test_a_citation_run_keeps_its_source_across_commas():
+    """`RMS §2, §25` names two RMS sections, not one RMS and one Blueprint."""
+    run = references.extract_references("RMS §2, §25")
+    assert run.rms_sections == ["2", "25"]
+    assert run.blueprint_sections == []
+
+    doubled = references.extract_references("RMS §§22,23")
+    assert doubled.rms_sections == ["22", "23"]
+    assert doubled.blueprint_sections == []
+
+    blueprint_run = references.extract_references("Blueprint §13.6, §13.6a")
+    assert blueprint_run.blueprint_sections == ["13.6", "13.6a"]
+    assert blueprint_run.rms_sections == []
+
+
 def test_invariants_and_anti_orderings_are_not_requirements():
     refs = references.extract_references("I-101 and X-08 and RR-06 and BR-17")
     assert refs.requirements == ["RR-06", "BR-17"]

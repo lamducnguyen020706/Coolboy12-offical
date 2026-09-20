@@ -17,11 +17,41 @@ from dataclasses import dataclass, field
 # Reference syntaxes actually used across the Blueprint, RMS, Roadmap and the
 # authored artifacts. Each pattern captures the canonical token form.
 _ARTIFACT_REF = re.compile(r"\bArtifact\s+(\d{3})\b")
-_BLUEPRINT_SECTION = re.compile(r"(?:Blueprint\s+)?§(\d+(?:\.\d+)*[a-z]?)\b")
+
+# Blueprint sections are recognised in two forms, and a bare flat `§N` is
+# deliberately NOT one of them.
+#
+# A constitutional artifact numbers its own sections `## 1.` … `## 18.` and
+# cross-references them inline — `(§8)`, `(§11, §14)`, "everything named in
+# §16". Treating those as Blueprint citations made the resolver load whole
+# Blueprint mega-sections that the artifact never cited: for Artifact 045 that
+# was §12 (51KB), §15 (38KB), §14 (34KB), §9, §11 and §7 — 223KB, a third of
+# the entire audit prompt, which is what pushed generation past the timeout.
+#
+# A dotted or lettered section (`§13.6a`, `§12.13`) cannot be a self-reference,
+# because no artifact numbers its own sections that way, so it is attributed
+# without needing the prefix. A flat `§N` requires the explicit word.
+#
+# The cost is a miss, not a mislabel: a genuinely bare `Blueprint §36` in prose
+# is dropped. audit-standard.md §6.2 already treats an artifact's citations as
+# "a floor, not a ceiling", the Roadmap row's declared `BP:` field is resolved
+# by its own path, and a missing source is recoverable where a 223KB false
+# positive is not.
+_BLUEPRINT_SECTION_QUALIFIED = re.compile(r"Blueprint\s*:?\s*§+(\d+(?:\.\d+)*[a-z]?)\b")
+_BLUEPRINT_SECTION_SUBSECTION = re.compile(r"§(\d+\.\d+[a-z]?)\b")
+
 # The colon form is not optional decoration: every artifact's metadata header
 # writes `RMS: §2`, so requiring whitespace after "RMS" mis-attributed every
 # metadata citation in the repository to the Blueprint.
 _RMS_SECTION = re.compile(r"RMS\s*:?\s*§+(\d+(?:\.\d+)*[a-z]?)\b")
+
+# A citation run continues across commas: `RMS §2, §25` and
+# `RMS §§22,23` name two RMS sections, not one RMS and one Blueprint. Without
+# this the trailing member fell through to the Blueprint pattern.
+_CITATION_RUN = re.compile(
+    r"(Blueprint|RMS)\s*:?\s*((?:§+\d+(?:\.\d+)*[a-z]?)(?:\s*,\s*§*\d+(?:\.\d+)*[a-z]?)*)"
+)
+_RUN_MEMBER = re.compile(r"(\d+(?:\.\d+)*[a-z]?)")
 _INVARIANT = re.compile(r"\bI-(\d{2,3})\b")
 _ANTI_ORDERING = re.compile(r"\bX-(\d{2})\b")
 _REQUIREMENT = re.compile(r"\b([A-Z]{2,3})-(\d{2,3})\b")
@@ -84,12 +114,27 @@ def extract_references(text: str) -> ReferenceSet:
     if not text:
         return ReferenceSet()
 
-    rms_sections = _dedup(_RMS_SECTION.findall(text))
+    # Citation runs first: they settle attribution for every member of
+    # `RMS §2, §25`, so a trailing member never falls through to the Blueprint
+    # pattern below.
+    run_rms: list[str] = []
+    run_blueprint: list[str] = []
+    for source, run in _CITATION_RUN.findall(text):
+        members = _RUN_MEMBER.findall(run)
+        (run_rms if source == "RMS" else run_blueprint).extend(members)
 
-    # Remove RMS-qualified citations before scanning for Blueprint sections,
-    # so "RMS §6" is not also recorded as "Blueprint §6".
-    blueprint_scan = _RMS_SECTION.sub(" ", text)
-    blueprint_sections = _dedup(_BLUEPRINT_SECTION.findall(blueprint_scan))
+    rms_sections = _dedup([*run_rms, *_RMS_SECTION.findall(text)])
+
+    # Remove every resolved citation run before scanning for unqualified
+    # subsections, so an RMS run is not re-read as a Blueprint reference.
+    blueprint_scan = _CITATION_RUN.sub(" ", text)
+    blueprint_sections = _dedup(
+        [
+            *run_blueprint,
+            *_BLUEPRINT_SECTION_QUALIFIED.findall(blueprint_scan),
+            *_BLUEPRINT_SECTION_SUBSECTION.findall(blueprint_scan),
+        ]
+    )
 
     requirements: list[str] = []
     for prefix, number in _REQUIREMENT.findall(text):

@@ -24,7 +24,14 @@ def test_load_config_ok(monkeypatch):
     cfg = config.load_config()
     assert cfg.api_key == "fixture-key"
     assert cfg.endpoint == "https://hhtechapi.net/v1/chat/completions"
-    assert cfg.model == "gpt-5.6-luna"
+    # The model is operator-owned and has been changed deliberately twice
+    # (gpt-5.6-luna -> gpt-5.6-sol -> gpt-6-astra). Pinning the literal here
+    # turned every intentional change into a red suite while proving nothing
+    # about load_config, which is what this test exists to check. Assert the
+    # plumbing instead: the config surfaces the module's declared model, and
+    # that model is a real non-empty value.
+    assert cfg.model == config.HHTECH_MODEL
+    assert isinstance(cfg.model, str) and cfg.model.strip()
 
 
 def test_config_never_touches_anthropic_env(monkeypatch):
