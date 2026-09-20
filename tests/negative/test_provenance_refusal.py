@@ -64,14 +64,59 @@ def test_non_text_is_refused(value):
         "2026-09-20 12:00:00",
         "2026-09-20T12:00:00",
         "2026-09-20T12:00:00+07:00",
+        "2026-09-20T12:00:00+00:00",
+        "2026/09/20T12:00:00Z",
         "yesterday",
         "1758369600",
     ],
 )
-def test_an_unusable_instant_is_refused_not_guessed(when):
-    """``when`` is never inferred, parsed loosely, or replaced by the clock."""
+def test_a_lexically_wrong_instant_is_refused_not_guessed(when):
+    """Layer A — the value is not in the accepted representation at all."""
     with pytest.raises(ProvenanceCaptureError) as excinfo:
         capture_provenance(who=WHO, when=when, why=WHY)
+
+    assert excinfo.value.code is ProvenanceErrorCode.INVALID_WHEN
+
+
+@pytest.mark.parametrize(
+    "when",
+    [
+        "2026-99-99T99:99:99Z",
+        "2026-13-01T12:00:00Z",
+        "2026-09-31T12:00:00Z",
+        "2026-02-29T12:00:00Z",
+        "2026-09-20T24:00:00Z",
+        "2026-09-20T12:60:00Z",
+        "2026-09-20T12:00:61Z",
+    ],
+)
+def test_an_impossible_instant_is_refused(when):
+    """Layer B — lexically well-formed, but not a moment that exists.
+
+    Each of these passes the representation pattern and names no real instant.
+    A regex alone accepted all seven; they are refused, never rolled forward
+    into a neighbouring valid instant.
+    """
+    with pytest.raises(ProvenanceCaptureError) as excinfo:
+        capture_provenance(who=WHO, when=when, why=WHY)
+
+    assert excinfo.value.code is ProvenanceErrorCode.INVALID_WHEN
+
+
+def test_an_impossible_instant_does_not_leak_a_parser_error():
+    """INVALID_WHEN stays the contract; no raw ValueError escapes."""
+    with pytest.raises(ProvenanceCaptureError) as excinfo:
+        capture_provenance(who=WHO, when="2026-02-29T12:00:00Z", why=WHY)
+
+    assert excinfo.value.code is ProvenanceErrorCode.INVALID_WHEN
+    assert isinstance(excinfo.value.__cause__, ValueError)
+
+
+@pytest.mark.parametrize("fraction", [".1234567", ".12345678", "."])
+def test_fractional_precision_beyond_the_chosen_format_is_refused(fraction):
+    """The accepted format is 1-6 fractional digits; it is not widened here."""
+    with pytest.raises(ProvenanceCaptureError) as excinfo:
+        capture_provenance(who=WHO, when=f"2026-09-20T12:00:00{fraction}Z", why=WHY)
 
     assert excinfo.value.code is ProvenanceErrorCode.INVALID_WHEN
 
@@ -109,6 +154,32 @@ def test_a_mapping_missing_a_dimension_is_refused(dimension):
 
     assert excinfo.value.code is ProvenanceErrorCode.MISSING_DIMENSION
     assert excinfo.value.dimension == dimension
+
+
+def test_heterogeneous_unknown_keys_refuse_without_leaking_a_type_error():
+    """Unknown keys that cannot be compared must still refuse deterministically.
+
+    Sorting the unknown keys raised ``TypeError: '<' not supported between
+    instances of 'int' and 'NoneType'`` before this was fixed — refusing a
+    fourth dimension must not itself be refusable.
+    """
+    payload = {"who": WHO, "when": WHEN, "why": WHY, 1: "x", None: "y"}
+
+    with pytest.raises(ProvenanceCaptureError) as excinfo:
+        provenance_from_mapping(payload)
+
+    assert excinfo.value.code is ProvenanceErrorCode.UNKNOWN_DIMENSION
+
+
+@pytest.mark.parametrize("key", [1, None, True, 2.5, (), frozenset()])
+def test_any_unhashable_shaped_unknown_key_is_refused(key):
+    """A single non-string unknown key is refused whatever its type."""
+    payload = {"who": WHO, "when": WHEN, "why": WHY, key: "smuggled"}
+
+    with pytest.raises(ProvenanceCaptureError) as excinfo:
+        provenance_from_mapping(payload)
+
+    assert excinfo.value.code is ProvenanceErrorCode.UNKNOWN_DIMENSION
 
 
 @pytest.mark.parametrize("payload", [None, "who", 1, ["who"], object()])

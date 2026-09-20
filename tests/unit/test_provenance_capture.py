@@ -48,6 +48,25 @@ def test_b_all_three_dimensions_survive_capture():
     assert provenance.why == WHY
 
 
+@pytest.mark.parametrize(
+    "when",
+    [
+        "2026-09-20T12:00:00Z",
+        "2026-09-20T12:00:00.1Z",
+        "2026-09-20T12:00:00.12Z",
+        "2026-09-20T12:00:00.123Z",
+        "2026-09-20T12:00:00.1234Z",
+        "2026-09-20T12:00:00.12345Z",
+        "2026-09-20T12:00:00.123456Z",
+        "2024-02-29T00:00:00Z",
+        "2026-12-31T23:59:59Z",
+    ],
+)
+def test_a_real_instant_in_the_accepted_format_is_captured(when):
+    """Valid instants across the format's range, including a real leap day."""
+    assert capture_provenance(who=WHO, when=when, why=WHY).when == when
+
+
 def test_b_capture_preserves_values_byte_for_byte():
     """No normalisation: a capture records what the caller said, unedited."""
     why = "because  of   irregular internal spacing"

@@ -128,9 +128,24 @@ def test_047_decides_no_approval():
 
 
 def test_047_never_reads_the_clock():
-    """No instant is silently invented; the caller states ``when``."""
-    for token in ("datetime", "time.time", "utcnow", "now(", "date.today"):
+    """No instant is silently invented; the caller states ``when``.
+
+    ``datetime`` itself is permitted and used — it decides whether a supplied
+    value is a real instant (I-86 draws the line at *generating* a timestamp,
+    not at validating one). What must not appear is any call that produces the
+    current time.
+    """
+    for token in ("time.time", "utcnow", ".now(", "date.today", "timestamp()"):
         assert token not in BODY
+
+
+def test_047_capture_signature_has_no_optional_when():
+    """There is no ``when=None`` default that a clock could fill in."""
+    signature = inspect.signature(capture_provenance)
+    for name, parameter in signature.parameters.items():
+        assert parameter.default is inspect.Parameter.empty, (
+            f"{name} acquired a default, which is how a clock gets in"
+        )
 
 
 def test_047_touches_no_storage_and_no_canon():
