@@ -1,214 +1,216 @@
 # 1. Audit Identity
 
-- **Report date:** 2025-02-14
-- **Auditor:** GPT-5.6, under `hhtech/standards/audit-standard.md`
+- **Artifact:** 047
+- **Target:** provenance capture mechanism
 - **Branch:** `claude/coolboy12-build-31qwm0`
-- **Audited HEAD:** `3ed55d85ad0862b6b018c37100ef7a80fbf55a55`
-- **Audit basis:** repository state and supplied sources at the stated commit
-- **Audit type:** Full Artifact Audit under audit-standard.md §5.1
+- **Audited HEAD:** `1b4d45a08f4201132a11615932aff0cf39b1a825`
+- **Repository state:** clean; no staged or unstaged changes
+- **Auditor:** GPT-5.6, under `hhtech/standards/audit-standard.md`
+- **Audit date:** not supplied in the audit snapshot
+
+This is a Full Artifact Audit under audit-standard.md §5.1.
 
 # 2. Target Artifact
 
-- **Artifact ID:** 047
-- **Name:** provenance capture mechanism
-- **Declared path:** `src/coolboy12/kernel/provenance.py`
-- **Scope kind:** file
-- **Multi-file entry:** `False`
-- **Declared scope status:** target file present and tracked
-- **Roadmap role:** `T: code`, `R: IMPL`
-- **Declared contract:** captures who/when/why; provenance meaning remains model-owned; capture only
+| Field | Value |
+|---|---|
+| Artifact ID | `047` |
+| Name | provenance capture mechanism |
+| Declared path | `src/coolboy12/kernel/provenance.py` |
+| Scope kind | file |
+| Multi-file entry | False |
+| File state | present and tracked |
+| Roadmap role | `T: code`, `R: IMPL` |
+| Declared responsibility | captures who/when/why; provenance meaning remains model-owned |
+
+The target file's metadata header matches the supplied Roadmap manifest row.
 
 # 3. Audit Mode
 
-**Full Artifact Audit.**
+**Full Artifact Audit** — audit-standard.md §5.1.
 
-All fourteen mandatory passes were run in order against the supplied current artifact, its declared Roadmap contract, available authoritative sources, available dependency context, and supplied Git state. Pass 3 remains **UNVERIFIABLE** because the Roadmap citation `Blueprint §10 Spine 9` was explicitly unavailable as a supplied section. The audit therefore cannot establish complete mandatory-source coverage.
+All fourteen mandatory passes were run against the supplied target state. The hard dependency was inspected for existence, declared state, dependency relationship, and facts directly relied upon; it was not recursively audited.
 
 # 4. Source Set
 
 ## Supplied and read
 
-| Source label | Path / section | Status |
-|---|---|---|
-| Master Blueprint (document) | `docs/sources/COOLBOY12_MASTER_BLUEPRINT_v0.7.03.md` | AVAILABLE |
-| Record Model System (document) | `docs/sources/COOLBOY12_RECORD_MODEL_SYSTEM_v1.0.md` | AVAILABLE |
-| Build Roadmap (document) | `docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md` | AVAILABLE |
-| `hhtech/standards/audit-standard.md` | `hhtech/standards/audit-standard.md` | AVAILABLE |
-| `hhtech/standards/patch-standard.md` | `hhtech/standards/patch-standard.md` | AVAILABLE |
-| CLAUDE.md (session conduct) | `CLAUDE.md` | AVAILABLE |
-| Blueprint §10 | Blueprint §10 | AVAILABLE |
-| Roadmap anti-ordering register | Roadmap PART IX | AVAILABLE |
-| Roadmap gate register | Roadmap PART VIII | AVAILABLE |
-| Roadmap manifest row for artifact 047 | Roadmap manifest | AVAILABLE |
-| TARGET `src/coolboy12/kernel/provenance.py` | target file | AVAILABLE |
-| RMS §18 | Record Model System §18 | AVAILABLE |
-| Blueprint §13.7b | Blueprint §13.7b | AVAILABLE |
-| Blueprint §13.7a | Blueprint §13.7a | AVAILABLE |
-| Blueprint §12.16 | Blueprint §12.16 | AVAILABLE |
-| RMS §6 | Record Model System §6 | AVAILABLE |
-| RMS §4 | Record Model System §4 | AVAILABLE |
-| Invariant I-90 | Blueprint §36 | AVAILABLE |
-| Invariant I-86 | Blueprint §36 | AVAILABLE |
-| Artifact 033 (Roadmap row) | Roadmap manifest | AVAILABLE |
-| Artifact 033 (content) | `docs/constitution/record_envelope.md` | AVAILABLE |
-| Artifact 133 (Roadmap row) | Roadmap manifest | AVAILABLE |
-| Artifact 003 (Roadmap row) | Roadmap manifest | AVAILABLE |
-| Artifact 003 (content) | `docs/conventions/artifact_conventions.md` | AVAILABLE |
-| Artifact 004 (Roadmap row) | Roadmap manifest | AVAILABLE |
-| Artifact 012 (Roadmap row) | Roadmap manifest | AVAILABLE |
-| Artifact 012 (content) | `tests/constitutional/register.md` | AVAILABLE |
-| Artifact 041 (Roadmap row) | Roadmap manifest | AVAILABLE |
-| Artifact 041 (content) | `docs/constitution/sovereignty.md` | AVAILABLE |
-| Artifact 043 (Roadmap row) | Roadmap manifest | AVAILABLE |
-| Artifact 043 (content) | `docs/constitution/mechanism_semantics.md` | AVAILABLE |
-| Artifact 046 (Roadmap row) | Roadmap manifest | AVAILABLE |
-| Artifact 046 (content) | `docs/constitution/identity_semantics.md` | AVAILABLE |
-| Artifact 048 (Roadmap row) | Roadmap manifest | AVAILABLE |
-| Artifact 054 (Roadmap row) | Roadmap manifest | AVAILABLE |
+- Master Blueprint document — `docs/sources/COOLBOY12_MASTER_BLUEPRINT_v0.7.03.md` — available; relevant supplied sections read:
+  - §10 Spine
+  - §13.7a
+  - §13.7b
+  - §12.16
+  - invariant I-86
+  - invariant I-90
+- Record Model System v1.0 — `docs/sources/COOLBOY12_RECORD_MODEL_SYSTEM_v1.0.md` — available; relevant supplied sections read:
+  - §4
+  - §6
+  - §18
+- Build Roadmap — `docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md` — available; supplied relevant material read:
+  - Artifact 047 manifest row
+  - Artifact 033 manifest row
+  - Artifact 133 manifest row
+  - Artifact 048 manifest row
+  - Artifact 003, 004, 012, 041, 043, and 046 context rows
+  - anti-ordering register
+  - gate register
+- `hhtech/standards/audit-standard.md` — available and read
+- `hhtech/standards/patch-standard.md` — available and read
+- `CLAUDE.md` — available and read
+- Target — `src/coolboy12/kernel/provenance.py` — available and read in full
+- Artifact 033 content — `docs/constitution/record_envelope.md` — available and read as H-dependency context only
+- Artifact 003 content — `docs/conventions/artifact_conventions.md` — available and read as conformance context only
+- Artifact 012 content — `tests/constitutional/register.md` — available and read as invariant-register context only
+- Artifact 041 content — `docs/constitution/sovereignty.md` — available and read as universal conformance context only
+- Artifact 043 content — `docs/constitution/mechanism_semantics.md` — available and read as universal conformance context only
+- Artifact 046 content — `docs/constitution/identity_semantics.md` — available and read as universal conformance context only
 
-## Not supplied and not read
+## Not supplied
 
-| Source label | Status | Effect |
-|---|---|---|
-| Blueprint §10 Spine 9 | UNAVAILABLE | Direct verification of the target's declared BP citation is unavailable |
-| Blueprint §5.5 | UNAVAILABLE | Direct verification of this referenced section is unavailable |
-| Requirement BR-15 authoritative text | UNAVAILABLE | Requirement text must not be inferred |
-| Artifact 133 content | UNAVAILABLE | Unlock target content was not inspected |
-| Artifact 004 content | UNAVAILABLE | Universal sibling content was not inspected |
-| Artifact 048 content | UNAVAILABLE | Downstream provenance-meaning sibling content was not inspected |
-| Artifact 054 content | UNAVAILABLE | Downstream temporal-obligation sibling content was not inspected |
+- Requirement BR-15 authoritative register text — **UNAVAILABLE**
+- Artifact 133 content — `src/coolboy12/validation/temporal.py` — **UNAVAILABLE**
+- Artifact 004 content — `/CLAUDE.md` as the repository artifact — **UNAVAILABLE**; session `CLAUDE.md` was supplied separately
+- Artifact 048 content — `docs/constitution/provenance_meaning.md` — **UNAVAILABLE**
+
+Unavailable context artifacts were not audited as targets and were not reconstructed.
 
 # 5. Scope
 
 ## In scope
 
-- Identity and declared metadata of Artifact 047.
-- `src/coolboy12/kernel/provenance.py`.
-- Artifact 047's `Val`, `Done`, `BP`, `RMS`, `Req`, dependency, gate, phase, and unlock declarations.
-- Direct reliance on hard dependency Artifact 033.
-- Provenance capture versus provenance meaning.
-- The mechanism/semantics boundary.
-- Temporal-axis naming and timestamp status.
-- Spine, invariant, anti-ordering, gate, implementation, edge-case, negative, regression, and diff checks applicable to Artifact 047.
+- `src/coolboy12/kernel/provenance.py`
+- Its Artifact 047 manifest contract
+- Its cited Blueprint and RMS requirements
+- Directly applicable Spine law, invariants, anti-orderings, gates, and mechanism/semantics boundaries
+- Artifact 033 as the declared hard dependency, inspected only for the envelope fact directly relied upon
+- Artifact 048's declared downstream relationship, without auditing its unavailable content
+- Artifact 133's declared unlock relationship, without auditing its unavailable content
+- Git status, diff, and regression baseline for the target file
 
 ## Out of scope
 
-The following were context only and were not audited as target artifacts:
-
-- Artifact 033's own complete conformance.
-- Artifact 133's temporal-validator implementation.
-- Artifact 048's provenance-meaning contract.
-- Artifact 054's temporal-obligation contract.
-- Artifact 003, 004, 012, 041, 043, and 046 as independent artifacts.
-- Any unrelated repository path.
-- Any architectural defect belonging solely to an unavailable sibling or dependency.
+- Artifact 033's own compliance
+- Artifact 133's implementation
+- Artifact 048's implementation
+- Any other sibling, dependency, or downstream artifact
+- Tests not supplied or declared as an associated Artifact 047 test
+- Requirement BR-15's unavailable authoritative text
+- Blueprint, RMS, Roadmap, and HHTECH standard modification
 
 # 6. Executive Verdict
 
-The audit is **blocked by insufficient authoritative evidence**, not by a confirmed implementation defect. The supplied implementation is consistent on the available evidence with the Artifact 047 contract: it captures `who`, `when`, and `why`, requires all three, does not read the clock, distinguishes capture from meaning, and does not implement history, audit, revision, version, or derivation semantics. However, the target's declared Roadmap citation `Blueprint §10 Spine 9` was explicitly unavailable, and the authoritative requirement text for `BR-15` was unavailable. Because a mandatory cited source could not be directly verified, complete compliance coverage cannot be established under audit-standard.md §§8.2 and 13.
+The target correctly implements the declared capture-only responsibility. It captures the three source-established provenance dimensions — who, when, and why — while explicitly separating capture from model-owned meaning, audit, history, revision, version, and derivation. The implementation does not introduce a universal provenance schema as an architectural claim, does not confer canonical status from syntax, does not read the clock, and does not create a second mutation path. All determinable mandatory conditions pass. BR-15 remains a non-blocking `UNVERIFIABLE` requirement-register row under GAP-C; unavailable sibling content affects only contextual collision verification and does not prevent judging Artifact 047's own compliance. No finding remains open.
 
 # 7. Requirement Coverage
 
 | Requirement | Source | Applicability | Artifact Evidence | Verdict |
 |---|---|---|---|---|
-| Artifact identity and path match | Roadmap row 047; Artifact 003 C-1/C-2 | applies | Target module docstring identifies Artifact 047 and the declared path; file exists at that path | PASS |
-| Legal metadata values | Roadmap row 047; Artifact 003 C-3/C-4/C-5 | applies | Module metadata matches `Own: CONST`, `RM: all`, `T: code`, `R: IMPL`, `SoT: DEV-ENV`, `Auth: none`, `Canon: n/a`, `Ph/St: P2/2b` | PASS |
-| Exact requirement ID preservation | Roadmap row 047; Artifact 003 C-6 | applies | Target preserves `Req: BR-15` exactly | PASS |
-| `BP: §10 Spine 9` citation | Roadmap row 047; audit-standard §8.1 | applies | Declared citation is present, but the supplied section `Blueprint §10 Spine 9` is unavailable | **UNVERIFIABLE — mandatory cited section unavailable** |
-| `RMS: §18` citation and provenance separation | RMS §18 | applies | Module separates provenance from audit, history, revision, version, and derivation; implementation exposes only provenance capture | PASS |
-| Provenance captures who/when/why | Blueprint §13.7b; RMS §18; Roadmap row 047 `Val` | applies | `Provenance` has `who`, `when`, and `why`; `capture_provenance` requires all three | PASS on available evidence |
-| Capture is shared mechanism; meaning remains model-owned | Blueprint §13.7a; RMS §6; Roadmap row 047 `Val` | applies | Module explicitly describes itself as capture-only, takes no model or partition input, and states that meaning belongs to the owning model | PASS |
-| Provenance is an envelope property, not a separate semantic model | Blueprint §13.7b; Artifact 033 §5.5 | applies | Module describes its value as the content of the envelope's `provenance` field and not an envelope or Record | PASS on supplied Artifact 033 evidence |
-| Exactly seven universal envelope fields remain intact | RMS §4; Artifact 033 §4–§5 | applies | Target does not add envelope fields; it supplies a value for `provenance` only | PASS |
-| `tier` and `status` are not universalized | RMS §4; Artifact 033 §6 | applies | Target does not define either field | PASS |
-| Real-World Time axis is named | Blueprint §12.16; invariant I-86 | applies | Module identifies `when` as caller-supplied Real-World Time and does not infer canonical standing from syntax | PASS |
-| External timestamp does not become canonical merely by generation | I-86; Blueprint §12.16 | applies | Target states that validation does not confer canonical status and that mutation-path recording is required | PASS |
-| No clock default or inferred instant | Blueprint §12.16; invariant I-86; Roadmap `Val` | applies | `capture_provenance` requires keyword-only `when`; no clock access or default is present | PASS |
-| No universal History Record or model-owned history implementation | RMS §4; I-90; Artifact 054 Roadmap row | applies | Target explicitly excludes history packaging and does not implement a History Record | PASS on available evidence |
-| No audit/session or approval semantics in provenance | Blueprint §13.7b; RMS §18 | applies | Target explicitly excludes session and approval mode and does not expose them | PASS |
-| Hard dependency 033 exists and resolves | Roadmap row 047; Roadmap row/content 033 | applies | Artifact 033 row and content were supplied; target directly relies on its `provenance` field | PASS |
-| No declared gate bypass | Roadmap row 047; gate register | applies | Row declares `G: —`; no gate-dependent behavior or canonical write is implemented | PASS |
-| Unlock declaration `→ 133` is preserved | Roadmap row 047 | applies | Target metadata preserves `→ 133` | PASS |
-| Artifact remains capture-only | Roadmap row 047 `Done: capture only` | applies | Module has capture, validation, and mapping helpers but no model-specific meaning or temporal packaging | PASS |
-| Artifact does not define downstream provenance meaning | Roadmap row 048; Blueprint §13.7a/b | applies | Target repeatedly defers meaning to the owning model and Artifact 048 | PASS on available row/source evidence |
-| Artifact does not define downstream temporal obligation | Roadmap row 054; I-90 | applies | Target captures an instant but does not define model temporal packaging or a universal history mechanism | PASS on available row/source evidence |
-| RULE G/G2/G3 boundary | Artifact 003 C-11/C-12 | applies | Single code file implements one declared mechanism; no undeclared multi-file merge, schema, example, or test is present in supplied scope | PASS |
-| Spine law 9 compliance | Blueprint §10; declared citation §10 Spine 9 | applies | Supplied Blueprint §10 includes the law-9 text and target requires a recorded `why`; direct declared subsection is unavailable | **UNVERIFIABLE for the declared citation; partial available-evidence PASS** |
-| Invariant I-90 | Blueprint §36, I-90 | applies | Target does not create a universal History Record and leaves mechanism/model packaging separate | PASS on supplied invariant text |
-| Invariant I-86 | Blueprint §36, I-86 | applies | Target treats external/generated timestamps as non-canonical until recorded through the mutation path | PASS |
-| Relevant anti-orderings X-02, X-04, X-08, X-11, X-22 | Roadmap PART IX | applies where relevant | No derived authority, universal World mechanism, second write path, or silent fallback is present | PASS |
-| `Req: BR-15` authoritative requirement text | BR-15 register entry | applies | Requirement ID is preserved, but the authoritative register is unavailable | **UNVERIFIABLE — GAP-C, non-blocking by itself** |
-| `Done: capture only` observable state | Roadmap row 047 | applies | Public API captures and validates provenance; no broader mechanism is implemented | PASS on available evidence |
+| Artifact identity and declared path | Roadmap row 047; Artifact 003 C-1–C-8 | Applies | Module header matches ID, name, path, metadata, and role | PASS |
+| Captures `who`, `when`, and `why` | Roadmap row 047 `Val`; Blueprint §13.7b; RMS §18 | Applies | `Provenance`, `capture_provenance`, and `PROVENANCE_DIMENSIONS` define and enforce all three | PASS |
+| Capture is shared infrastructure; meaning remains model-owned | Roadmap row 047 `Val`; Blueprint §13.7a; RMS §6 | Applies | Module documentation explicitly separates capture from model meaning and accepts no model input | PASS |
+| Provenance is distinct from audit, history, revision, version, and derivation | Blueprint §13.7b; RMS §18 | Applies | “What this module is not” and the six-concept table separate the concepts | PASS |
+| Provenance is an envelope property, not an additional envelope field | Blueprint §13.7b; RMS §4; Artifact 033 §5.5 | Applies | `Provenance` is described as the value carried by the existing `provenance` envelope field; no envelope is implemented | PASS |
+| `when` names Real-World Time | Blueprint §12.16; Roadmap row 047; invariant I-86 | Applies | `when` documentation identifies caller-supplied Real-World Time and does not infer canonical status | PASS |
+| External timestamps do not become canonical temporal values by generation alone | invariant I-86; Blueprint §12.16 | Applies | Code validates representation only and states that mutation-path recording confers status | PASS |
+| No universal History Record or universal temporal packaging | invariant I-90; Blueprint §13.7a; RMS §4 | Applies | Module explicitly does not package history, order captures, or derive axes | PASS |
+| No shared semantic universalization | Blueprint §13.7a; RMS §4; invariant I-103 | Applies | The implementation provides a facility and documents that it does not decide provenance meaning | PASS |
+| No canonical write bypass | Spine law 2; anti-orderings X-07 and X-11 | Applies | Module only constructs immutable values; it does not write canon or implement mutation | PASS |
+| Fail closed on missing or invalid capture data | Spine law 9; Roadmap row 047 `Val`; target contract | Applies | Missing, invalid, unknown, and impossible inputs raise `ProvenanceCaptureError`; no defaults or repairs are used | PASS |
+| All three dimensions are required | Spine law 9; Blueprint §13.7b; target contract | Applies | Constructor and mapping factory reject absent or empty dimensions | PASS |
+| Artifact 033 hard dependency exists and supplies the relied-upon envelope fact | Roadmap row 047 `H: 033`; Artifact 033 row/content | Applies | Artifact 033 exists; its contract identifies `provenance` as one of exactly seven envelope fields | PASS |
+| Unlock relationship does not authorize downstream implementation | Roadmap row 047 `→ 133`; Artifact 133 row | Applies | Target remains capture-only and does not implement temporal validation or downstream behavior | PASS |
+| No gate bypass or prohibited build order | Roadmap gate register; anti-orderings X-01, X-04, X-08, X-22 | Applies | No gate is declared; no canon, runtime, or universal semantic implementation is introduced | PASS |
+| RULE G/G2/G3 boundary | Artifact 003 RULE G/G2/G3; Roadmap row 047 | Applies | One code file implements one mechanism; no specification/schema or example/test merge is present | PASS |
+| `Val` is discharged | Roadmap row 047 `Val` | Applies | Observable capture API and validation behavior are present | PASS |
+| `Done: capture only` | Roadmap row 047 `Done` | Applies | File contains capture, representation helpers, and refusal behavior, but no provenance meaning or model semantics | PASS |
+| Blueprint §10 Spine compliance | Blueprint §10, especially laws 2, 9, and 10 | Applies | No canon write, no anonymous capture, and no workflow/composer bypass is implemented | PASS |
+| RMS §18 compliance | RMS §18 | Applies | Provenance is limited to who/when/why and separated from neighboring concepts | PASS |
+| Associated test correctness | audit-standard.md §11 | Not applicable | No associated Artifact 047 test was supplied or declared in the target contract | N/A — no associated test artifact supplied or declared |
+| Diff integrity | audit-standard.md §12; git state | Applies | Working tree, staged area, and target diff are empty | PASS |
+| Regression preservation | audit-standard.md §6 Pass 12; supplied baseline | Applies | Target is unchanged from HEAD; no before/after weakening exists | PASS |
+| BR-15 authoritative requirement text | Roadmap row 047; audit-standard.md §8.3 | Applies | Requirement register was not supplied | UNVERIFIABLE — requirement register unavailable (GAP-C, non-blocking) |
 
 ## Constitutional Gate
 
 | # | Condition | Evidence | Result |
 |---:|---|---|---|
-| 1 | Constitutional contradiction | Target explicitly preserves Spine and RMS boundaries; no contradiction found in available source comparison | PASS on available evidence |
-| 2 | Ownership violation | Target states provenance meaning remains model-owned | PASS |
-| 3 | Forbidden inheritance | No Record Model or inheritance is introduced | PASS |
-| 4 | Semantic universalization | Target calls itself a shared capture mechanism and rejects universal meaning | PASS |
-| 5 | Scope contamination | No model-owned history, audit, revision, version, or derivation implementation is present | PASS |
-| 6 | Authority inversion | Target does not treat itself as architectural authority; metadata says `Auth: none` | PASS |
-| 7 | Canonicality inversion | Target states syntax does not confer canonical status and performs no canonical write | PASS |
-| 8 | Source-of-truth inversion | Target is a development implementation and does not treat derived data as authoritative | PASS on available evidence |
-| 9 | Dependency-direction violation | Artifact 033 exists and precedes 047; target does not rely on unavailable downstream implementation | PASS |
-| 10 | Gate/order violation | Row declares no gate; no premature canonical operation is implemented | PASS |
-| 11 | Specification/schema collision | Target is code, not a schema or specification artifact | N/A — no schema/specification collision |
-| 12 | Example/test collision | No example/test content is included | N/A — target is implementation code |
-| 13 | Model sovereignty violation | No seventh model or semantic superclass is introduced | PASS |
-| 14 | Downstream ownership theft | Target names but does not decide Artifact 048/054 responsibilities | PASS on available row/source evidence |
+| 1 | Constitutional contradiction | Target follows Spine law 9 and does not contradict the supplied Spine | PASS |
+| 2 | Ownership violation | Capture is implemented; meaning is explicitly left to models and Artifact 048 | PASS |
+| 3 | Forbidden inheritance | No Record Model or inheritance construction appears | PASS |
+| 4 | Semantic universalization | Target distinguishes shared facility from model-owned meaning | PASS |
+| 5 | Scope contamination | No downstream temporal or provenance-meaning implementation appears | PASS |
+| 6 | Authority inversion | Target treats Blueprint/RMS as authority and implementation choices as local decisions | PASS |
+| 7 | Canonicality inversion | Validation does not confer canonical temporal status; no Record is treated as Canon | PASS |
+| 8 | Source-of-truth inversion | No derived or cached output is treated as authoritative | PASS |
+| 9 | Dependency-direction violation | Artifact 033 exists and is upstream; no undeclared implementation dependency is required for the audited contract | PASS |
+| 10 | Gate/order violation | No gate is bypassed; no canonical or runtime path is introduced | PASS |
+| 11 | Specification/schema collision | Target is code implementing capture, not a schema or specification artifact | PASS |
+| 12 | Example/test collision | No example or test implementation is merged into the target | PASS |
+| 13 | Model sovereignty violation | No seventh model, superclass, or shared semantic parent is introduced | PASS |
+| 14 | Downstream ownership theft | Provenance meaning and temporal model mechanisms remain outside the target | PASS |
+
+## Ownership and Custody Matrix
+
+Artifact 047 is `R: IMPL`, not `ARCH`, `CONTRACT`, or `GOV`; the mandatory architectural ownership matrix is therefore not applicable. The ownership questions were nevertheless checked:
+
+| Responsibility | Current artifact | Upstream owner | Downstream owner | Evidence | Verdict |
+|---|---|---|---|---|---|
+| Capture who/when/why | Artifact 047 | Blueprint §13.7b and RMS §18 establish the obligation | Consumers/models use the captured value | `capture_provenance`, `Provenance` | PASS |
+| Provenance meaning | Not owned by 047 | Blueprint §13.7a; RMS §6 | Artifact 048 and each model | Explicit module boundary statements | PASS |
+| Envelope field existence | Not owned by 047 | Artifact 033 and RMS §4 | Envelope consumers | Module says it carries the existing field's value | PASS |
+| Temporal architecture/history packaging | Not owned by 047 | Blueprint §12.16, invariant I-90 | Model-specific mechanisms; Artifact 133 context row | Explicit exclusions in module text | PASS |
+
+## Cross-Artifact Collision Audit
+
+- Artifact 033: no duplicate envelope definition detected in the target. The target uses the existing `provenance` field and does not redefine the seven-field envelope.
+- Artifact 048: **UNVERIFIABLE — sibling content unavailable.** The target explicitly reserves provenance meaning to the downstream boundary, so no affirmative collision is claimed.
+- Artifact 133: no downstream temporal validator behavior is implemented in the target; its unavailable content is not needed to determine Artifact 047's own capture-only contract.
+- Universal mechanism boundary: no semantic ownership is transferred to the shared capture mechanism.
+
+## Universalization Audit
+
+The shared construction is classified as a **facility**, not a semantic claim. The target captures three source-established dimensions, but does not define what those dimensions mean in any Record Model. No Universal Record Base, universal lifecycle, universal canonicality, universal history mechanism, or universal semantic schema is introduced.
+
+## Open-Boundary Audit
+
+The target does not freeze the downstream provenance-meaning boundary or any model-specific provenance interpretation. It explicitly states that representation choices are local implementation decisions and that provenance meaning remains model-owned.
 
 # 8. Findings
 
-No confirmed artifact defect is issued on the supplied evidence.
+No findings.
 
-The audit cannot produce a PASS determination because mandatory authoritative coverage is incomplete. The blocking condition is reported in **Unverifiable Items**, not as an implementation finding:
-
-- Direct source verification of the Roadmap's `BP: §10 Spine 9` citation is unavailable.
-- The authoritative text of `BR-15` is unavailable, although this requirement-register gap is non-blocking by itself.
-
-No `AUD-047-NN` finding ID is assigned because no confirmed mismatch against an available authoritative requirement was established.
+No authoritative requirement mismatch was established against the target artifact. The unavailable BR-15 register is a non-blocking traceability gap under audit-standard.md §8.3, not a defect in the target. Artifact 048 content is unavailable for sibling-collision verification but is not required to determine the target's own declared capture-only compliance.
 
 # 9. Evidence
 
-## Target implementation
+The following excerpts support the coverage determination:
 
-- `src/coolboy12/kernel/provenance.py`, module docstring: identifies the file as Artifact 047 and describes it as “the capture half of provenance, and nothing else.”
-- `src/coolboy12/kernel/provenance.py`, `PROVENANCE_DIMENSIONS`: defines the three dimensions as `("who", "when", "why")`.
-- `src/coolboy12/kernel/provenance.py`, `Provenance`: carries exactly `who`, `when`, and `why`.
-- `src/coolboy12/kernel/provenance.py`, `capture_provenance`: requires all three values as keyword-only arguments and returns a validated `Provenance`.
-- `src/coolboy12/kernel/provenance.py`, `Provenance.__post_init__`: validates all three dimensions on construction.
-- `src/coolboy12/kernel/provenance.py`, `_check_when`: validates a supplied instant and does not read a clock.
-- `src/coolboy12/kernel/provenance.py`, `provenance_to_mapping` and `provenance_from_mapping`: serialize and reconstruct only the three declared dimensions.
-- `src/coolboy12/kernel/provenance.py`, module documentation: states that provenance meaning is model-owned and that audit, history, revision, version, and derivation are separate concepts.
-
-## Available authoritative excerpts
-
-- Blueprint §13.7a: “Provenance capture | Records who, when, why | What provenance means in a model (§13.7b).”
-- Blueprint §13.7b: “Provenance | Who made this, when, and why | An envelope property on the Record.”
-- RMS §18: “provenance (who/when/why) · audit (approval mode, session) · history (how state came to be) · revision (this changed) · version (a distinct issued state) · lineage (this came from that).”
-- Blueprint §12.16: Real-World Time is authoritative in “History Record, WSV-H, provenance.”
-- Invariant I-86: an external timestamp becomes Real-World Time only by being recorded as such through the mutation path.
-- RMS §4: provenance capture is universal infrastructure while provenance meaning remains model-owned.
-- Artifact 033 §5.5: the universal envelope's `provenance` field captures provenance without owning what provenance means in a model.
-- Git state: clean working tree; no staged or unstaged changes; no target-file diff.
+- **Roadmap row 047:** “`Val: captures who/when/why; meaning left to models`” and “`Done: capture only`”.
+- **Blueprint §13.7b:** “**Provenance** | Who made this, when, and **why** | An envelope property on the Record”.
+- **RMS §18:** “**provenance** (who/when/why) · **audit** (approval mode, session) · **history** (how state came to be) · **revision** ... · **version** ... · **lineage** ...”.
+- **Blueprint §13.7a:** “**Provenance capture** | Records who, when, why | What provenance *means* in a model”.
+- **Blueprint §12.16:** Real-World Time is “the operational clock at which a canonical action occurred” and is authoritative in “History Record, WSV-H, provenance.”
+- **Invariant I-86:** an external timestamp becomes Real-World Time only by being recorded as such through the mutation path.
+- **Target module:** `PROVENANCE_DIMENSIONS = ("who", "when", "why")`.
+- **Target module:** `capture_provenance(*, who: str, when: str, why: str)` requires all three values and returns `Provenance`.
+- **Target module:** “nothing here should be read as” a universal provenance schema; “the meaning of a captured value stays governed by the owning Record Model”.
+- **Target module:** “nothing here is defaulted to the clock: a caller states `when` or the capture is refused”.
+- **Target module:** `Provenance.__post_init__` validates all three dimensions.
+- **Target module:** `provenance_from_mapping` rejects unknown dimensions and missing dimensions rather than silently dropping or inventing values.
+- **Artifact 033 §5.5:** the envelope `provenance` field “Captures provenance” and does not own “What provenance means in a model”.
+- **Git evidence:** clean status; no staged or unstaged changes; no diff against HEAD.
 
 # 10. Regression Analysis
 
-The supplied regression baseline reports:
+The supplied regression baseline states:
 
-- `src/coolboy12/kernel/provenance.py` is tracked and present.
-- `changed_since_HEAD=False`.
-- `git diff HEAD -- src/coolboy12/kernel/provenance.py` is empty.
-- No prior changed target state was supplied for comparison beyond the committed current state.
+- `src/coolboy12/kernel/provenance.py`: tracked and present
+- `changed_since_HEAD=False`
+- `git diff HEAD -- src/coolboy12/kernel/provenance.py`: no change
 
-Accordingly:
+Because the target has no change against the audited HEAD, there is no current before/after weakening to identify. No MUST was weakened, no refusal behavior was removed, no boundary was narrowed, and no test assertion was changed.
 
-- No weakening of a prior target implementation is evidenced.
-- No MUST-to-SHOULD change, removed refusal, narrowed validation, or weakened boundary is evidenced.
-- No test assertion regression can be assessed because no associated test artifact or prior test state was supplied.
-- Regression status is **PASS for observable Git-state comparison**, but complete historical behavioral regression coverage is not established.
+A historical prior accepted version beyond the supplied HEAD was not provided. The available committed-state comparison is sufficient for this audit's current regression check.
 
 # 11. Diff Analysis
 
@@ -218,109 +220,82 @@ Accordingly:
 
 ## Actual changed files
 
-- Unstaged: none.
-- Staged: none.
-- Target-file diff: none.
-- Working tree: clean.
+- Unstaged: none
+- Staged: none
+- Target diff: none
+- Working tree: clean
 
-## Scope and risk analysis
+## Scope and risk assessment
 
 - No unrelated files changed.
-- No generated or derived artifact changed.
-- No accidental deletion is evidenced.
-- No canonical-data zone was touched.
-- No hidden side effect is evidenced by the supplied diff state.
-- No patch minimality review is applicable because the target has no current diff.
-- Diff integrity: **PASS**.
+- No target hunks changed.
+- No generated or derived artifacts changed.
+- No canonical zone was touched.
+- No authority document was changed.
+- No hidden side effect is evidenced by the supplied git state.
+- No formatting churn or accidental deletion is present.
+
+The diff is bounded because it is empty.
 
 # 12. Unverifiable Items
 
-1. **Roadmap `BP: §10 Spine 9` citation**
-   - The source label `Blueprint §10 Spine 9` is explicitly marked UNAVAILABLE.
-   - The supplied broader Blueprint §10 contains the text of Spine law 9, but the explicitly declared subsection was not supplied as a separately resolved source.
-   - Direct compliance with the target's declared BP citation is therefore UNVERIFIABLE.
-   - This is blocking because the audit-standard requires every declared BP citation to be covered and §13 blocks when mandatory authoritative evidence is unavailable.
+1. **BR-15 authoritative requirement text**
+   - State: `UNAVAILABLE`
+   - Reason: the authoritative requirement register was not supplied and is reported absent from the repository.
+   - Effect: `UNVERIFIABLE — requirement register unavailable (GAP-C, non-blocking)`.
+   - Operator action: none required for the current audit verdict; supplying the authoritative register would permit direct BR-15 verification on a later audit.
 
-2. **Blueprint §5.5**
-   - Explicitly marked UNAVAILABLE.
-   - The target's related discussion relies on Artifact 033 §5.5, whose content was supplied; the unavailable Blueprint section itself was not verified.
-   - Status: UNVERIFIABLE.
+2. **Artifact 048 content**
+   - State: `UNAVAILABLE`
+   - Reason: `docs/constitution/provenance_meaning.md` was not supplied; the supplied context reports that the file does not exist in the repository.
+   - Effect: sibling collision with the downstream provenance-meaning artifact cannot be directly inspected.
+   - Operator action: provide the artifact content if it exists, or correct the Roadmap/reference state if it does not. This does not block Artifact 047 because the target explicitly leaves meaning to models and does not claim the downstream meaning contract.
 
-3. **Requirement BR-15**
-   - The authoritative requirement register is unavailable.
-   - The exact ID `BR-15` is preserved without inventing its text.
-   - Status: UNVERIFIABLE under GAP-C; non-blocking by itself.
+3. **Artifact 133 content**
+   - State: `UNAVAILABLE`
+   - Reason: `src/coolboy12/validation/temporal.py` was not supplied; the supplied context reports that the file does not exist in the repository.
+   - Effect: the unlock target's implementation cannot be inspected.
+   - Operator action: none required for Artifact 047's own compliance; audit Artifact 133 separately if and when it exists.
 
-4. **Artifact 048 content**
-   - Downstream provenance-meaning sibling content is unavailable.
-   - Collision and downstream-boundary verification is limited to the supplied Roadmap row and authoritative Blueprint/RMS material.
-   - Status: `UNVERIFIABLE — sibling content unavailable`.
-
-5. **Artifact 054 content**
-   - Downstream temporal-obligation sibling content is unavailable.
-   - Verification is limited to its supplied Roadmap row, I-90, RMS §16 summary, and available temporal authority.
-   - Status: `UNVERIFIABLE — sibling content unavailable`.
-
-6. **Artifact 133 content**
-   - Unlock target implementation is unavailable because the file does not exist in the supplied repository state.
-   - Artifact 047 was checked only for preserving its declared unlock relationship and not for downstream integration.
-   - Status: `UNVERIFIABLE — downstream content unavailable`.
-
-7. **Artifact 004 content**
-   - The content file `/CLAUDE.md` was marked unavailable as a separately resolved context artifact, although `CLAUDE.md` was supplied as standing session conduct.
-   - No finding is raised against Artifact 004.
-   - Status: `UNVERIFIABLE as a sibling-content collision source`.
-
-8. **Associated test execution**
-   - No test artifact was declared for Artifact 047 in the supplied material, and no associated test source or execution result was supplied.
-   - Pass 10 is treated as N/A for a declared test association, but executable test coverage of this implementation is not established.
-   - Status: UNVERIFIABLE as runtime test evidence, not a confirmed defect.
+4. **Artifact 004 repository-content copy**
+   - State: `UNAVAILABLE`
+   - Reason: `/CLAUDE.md` as the Artifact 004 content was not supplied in the artifact-content slot. Session `CLAUDE.md` was supplied and read.
+   - Effect: no mandatory Artifact 047 condition is blocked; the target's scope and conduct checks are determinable from the supplied session instructions and Roadmap row.
 
 # 13. False-Positive Checks
 
-The §10 checklist was applied before declining to issue findings.
+The audit-standard.md §10 checklist was applied to every candidate suspicion.
 
-- **Source read before finding:** available cited sources were read directly; unavailable sources were not reconstructed.
-- **Authoritative requirement check:** no suspicion was promoted without a Blueprint, RMS, Roadmap, invariant, or declared contract basis.
-- **Scope check:** no issue was raised against Artifact 033, 048, 054, 133, or any other context artifact.
-- **Preference versus violation:** implementation choices such as the UTC `Z` textual representation, dataclass use, immutability, and mapping helpers were not treated as defects because no supplied authoritative source forbids them.
-- **Deduplication:** missing source authority was recorded once as an audit coverage blockage rather than split into multiple implementation findings.
-- **Insufficient evidence control:** unavailable Blueprint sections and the requirement register were recorded as UNVERIFIABLE, not treated as failures of the code.
-- **Ambiguity control:** no source conflict was silently resolved.
-- **Open-boundary control:** provenance meaning and model-specific temporal packaging were not frozen by the implementation.
+- **Potential issue downgraded:** the target chooses a concrete UTC string representation and a frozen dataclass. This is an implementation representation choice, not a violation, because the authoritative sources establish the three dimensions and their boundary but do not prescribe a universal internal representation.
+- **Potential issue downgraded:** the mapping helper accepts `dict` rather than every possible mapping type. No authoritative source requires a general mapping protocol; this is not a confirmed defect.
+- **Potential issue downgraded:** no test file was supplied. Artifact 047's Roadmap row is `T: code`, has no associated test declaration in the supplied scope, and the absence of supplied test content does not establish a target defect.
+- **Potential issue downgraded:** the target contains detailed explanatory prose. The prose remains within the capture/meaning boundary and does not freeze Artifact 048's downstream meaning contract.
+- **Potential issue downgraded:** Artifact 048 content is unavailable. This is recorded as an unverifiable sibling-collision item, not as a finding against Artifact 047.
+- **Potential issue downgraded:** the requirement register is unavailable. Under audit-standard.md §8.3, BR-15 is preserved and marked non-blocking `UNVERIFIABLE`; its text was not invented.
+- **Potential issue rejected:** no evidence supports a claim that validating an instant grants canonical Real-World Time status. The target explicitly denies that effect and aligns with I-86.
 
-Suspicion downgraded to observation rather than finding:
-
-- The module accepts only its chosen textual UTC instant format. This is an explicit 047 representation decision, and no supplied authority requires another representation.
-- No associated test file or execution result was supplied. The absence of supplied test evidence is not itself a source-backed omission against the target's declared `Val`.
-- The target names unavailable downstream artifacts 048 and 054. Naming their ownership boundary is not evidence that their content was implemented early.
+No suspicion passed all eight false-positive controls as a confirmed finding.
 
 # 14. Final Verdict
 
-The audit cannot be completed to a PASS determination because the mandatory declared source `Blueprint §10 Spine 9` was unavailable. The target implementation has no confirmed P0, P1, or P2 defect on the supplied evidence, and the clean Git state shows no diff requiring remediation.
+The audit is complete. Artifact 047 satisfies its determinable Roadmap, Blueprint, RMS, Spine, invariant, dependency, boundary, implementation, edge-case, negative-behavior, and diff requirements. The only remaining traceability gap is BR-15's unavailable requirement-register text, which is explicitly non-blocking under audit-standard.md §8.3. Unavailable sibling and unlock content does not prevent determination of Artifact 047's own mandatory compliance.
 
-To move from BLOCKED to a completed audit:
-
-1. Supply or resolve the exact authoritative content for `Blueprint §10 Spine 9`.
-2. Supply or resolve `Blueprint §5.5` if it remains a mandatory direct citation for this artifact.
-3. Preserve `BR-15` exactly and supply the authoritative requirement-register text, or retain its documented GAP-C status while confirming that all other mandatory coverage is determinable.
-4. Re-run the full fourteen-pass audit, including fresh source coverage, sibling-collision checks, and any available associated test evidence.
+No change is required to move the artifact to the passing state. A future audit may optionally re-check BR-15 after the requirement register is supplied and may inspect Artifact 048 if that file becomes available.
 
 # 15. Re-Audit Requirements
 
-Run a **Post-Patch Re-Audit / Full Artifact Audit** after the evidence gap is resolved; no implementation patch is authorized solely to clear this blocked verdict.
+A Post-Patch Re-Audit is not required because no patch is requested and the audited target has no diff.
 
-The re-audit must:
+If the target changes later, perform a new Full Artifact Audit or Post-Patch Re-Audit as applicable and re-check:
 
-- Re-verify Artifact 047 at the same or a later coherent repository state.
-- Read the exact supplied `Blueprint §10 Spine 9` section directly.
-- Read `Blueprint §5.5` directly if it remains applicable.
-- Preserve `BR-15` without paraphrase and verify it against the supplied requirement register if available.
-- Re-run all fourteen passes independently.
-- Re-run the constitutional gate and universalization audit.
-- Re-check collisions against Artifacts 048 and 054 if their content becomes available.
-- Confirm whether associated tests exist and, if so, verify actual execution rather than inferred or generated results.
-- Inspect fresh `git status`, staged state, unstaged diff, target diff, and regression baseline.
-- Retain this report's conclusion as historical context only; current source and repository state must control the re-audit.
+- all prior coverage rows, especially the capture-only boundary;
+- `who`/`when`/`why` refusal behavior;
+- absence of clock defaults and canonical-status inference;
+- separation from audit, history, revision, version, derivation, and model-owned provenance meaning;
+- Artifact 033 envelope compatibility;
+- negative and boundary cases for invalid, missing, unknown, and impossible values;
+- changed-file scope and regression state;
+- BR-15 if the requirement register becomes available;
+- Artifact 048 collision status if its content becomes available.
 
-VERDICT: BLOCKED
+VERDICT: PASS
