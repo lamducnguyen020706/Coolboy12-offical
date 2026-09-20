@@ -347,7 +347,8 @@ audit, escalates to BLOCKED (§13).
   claims)?
 - **Evidence:** Blueprint text quoted verbatim beside the artifact's claim.
 - **Finding conditions:** a claim with no Blueprint support; a Spine-law contradiction; a
-  citation that does not support the clause it is attached to.
+  citation that does not support the clause it is attached to; a citation naming a section the
+  Blueprint does not contain (§6.2a, §8.2a — a citation defect, never a blocking evidence gap).
 
 ### Pass 4 — RMS Compliance
 
@@ -493,6 +494,22 @@ Before concluding a pass, the auditor additionally checks:
 This is a search obligation, not an invitation to invent — every requirement found this way must
 still be quoted verbatim as its own finding's source (§4).
 
+#### 6.2a Reading a citation: the section is the citable unit
+
+A citation may carry a **locator** after the section number, pointing inside the section rather
+than naming a different one. Row 047's `BP: §10 Spine 9` cites Blueprint §10 and points at Spine
+law 9 within it; `§29.6a note` cites §29.6a. **The section number is the citable unit; whatever
+follows is a locator.**
+
+An auditor resolving such a citation reads the section and then the locator within it. It never
+treats the whole string as a section identifier: there is no Blueprint section called
+"§10 Spine 9", so doing that converts a resolvable citation into a `NONEXISTENT` source and
+blocks the audit on a phantom (§8.2a).
+
+**A section belongs to the document it is cited from.** `Artifact 033 §5.5` is Artifact 033's
+section; reading it as Blueprint §5.5 asks the Blueprint for a section it does not have. Where a
+citation names its document, that document is the one to read.
+
 ---
 
 ## 7. Evidence Standard
@@ -593,6 +610,39 @@ them blocks:
 `PASS` is legal only when every mandatory condition's compliance can be determined and no
 unresolved P0/P1, or blocking-classified P2, finding remains — never merely because no defect
 was found (§13.2).
+
+### 8.2a Unavailable is not the same as nonexistent
+
+**A source that was not supplied and a source that does not exist are different facts, and only
+one of them can block an audit.** Before recording any source as blocking, the auditor
+establishes which it is:
+
+| State | Meaning | Effect |
+|---|---|---|
+| `AVAILABLE` | supplied and read | normal |
+| `UNAVAILABLE` | the source **exists** — a real section of a real document, a file in the repository — but was not supplied to this audit | may block (§13.1) |
+| `NONEXISTENT` | the source was **cited but is not present** in the document it was cited from — the section number appears in no heading, the file is in no tree | **never blocks** |
+
+**A `NONEXISTENT` source is a finding against the citation, not an evidence gap.** Nothing can
+supply a section that was never written. Blocking on its absence asks the operator to produce
+what cannot exist, and the audit stalls permanently on a defect it has not named. The auditor
+instead records a finding against whichever artifact carries the bad citation — the target, its
+Roadmap row, or the resolver that manufactured the label — and continues to a verdict on the
+evidence that does exist.
+
+**Establishing the state is the auditor's work, not the operator's.** When a cited section is
+not in the supplied set, the auditor checks whether the cited document contains it at all before
+choosing between `UNAVAILABLE` and `NONEXISTENT`. Where the document itself was not supplied and
+the question cannot be settled, the state is `UNAVAILABLE` and the uncertainty is stated in the
+row.
+
+> **Recorded history.** This subsection exists because every blocked verdict issued under the
+> previous wording named a source that does not exist. Artifact 044 blocked on `Blueprint §6.1`,
+> where the Blueprint runs §6 → §7 with no subsections. Artifact 047 blocked on
+> `Blueprint §10 Spine 9`, which is §10 plus a locator and names no section, and on
+> `Blueprint §5.5`, which is Artifact 033's section and not the Blueprint's. In each case the
+> content the auditor actually needed was already supplied. Three blocked audits, no artifact
+> defect, and nothing an operator could have supplied to clear any of them.
 
 ### 8.3 The requirement register gap (GAP-C)
 
@@ -731,7 +781,13 @@ compliant.
 |---|---|
 | **PASS** | Every mandatory condition (§8.1) has a determinable compliance state — resolved to `PASS`, `N/A + reason`, or non-blocking `UNVERIFIABLE`/`INFO` (§8.2) — and no unresolved P0 or P1 finding remains. Any P2 findings present are either resolved or explicitly classified as recorded, non-blocking conflicts (§1.6, downgraded to INFO). |
 | **PATCH REQUIRED** | The audit completed — every mandatory condition's compliance was determinable — and at least one unresolved P0, P1, or blocking-classified P2 finding exists, **and** the audit has enough evidence to state what is wrong and, where determinable, a remediation direction (§16). |
-| **BLOCKED** | The audit cannot complete because a mandatory condition's compliance cannot be determined at all — a required source document or section is unavailable; a declared `H` dependency does not exist or is itself unaudited/unaccepted; an unresolved source-authority conflict (§1.6) bears directly on this artifact's compliance and cannot be classified non-blocking; a blocking `UNVERIFIABLE` (§8.2) exists against a mandatory condition; or the evidence needed for a mandatory pass fundamentally does not exist (e.g., Implementation Correctness requested against an artifact with no implementation). |
+| **BLOCKED** | The audit cannot complete because a mandatory condition's compliance cannot be determined at all — a required source document or section **exists but is unavailable** (§8.2a); a declared `H` dependency does not exist or is itself unaudited/unaccepted; an unresolved source-authority conflict (§1.6) bears directly on this artifact's compliance and cannot be classified non-blocking; a blocking `UNVERIFIABLE` (§8.2) exists against a mandatory condition; or the evidence needed for a mandatory pass fundamentally does not exist (e.g., Implementation Correctness requested against an artifact with no implementation). |
+
+**A blocked verdict names something an operator can actually supply.** Before issuing BLOCKED on
+a missing source, the auditor establishes that the source exists (§8.2a). A `NONEXISTENT` source
+never blocks: it is a citation defect, reported as a finding, and the audit proceeds on the
+evidence that does exist. An audit that blocks on a section nobody can write has not identified
+a gap — it has mistaken a bad citation for one.
 
 ### 13.2 PASS is not "no findings found"
 
@@ -810,7 +866,10 @@ artifact-specific finding belongs in `audit-standard.md`.**
     weakened.
 11. **Diff Analysis** — the Pass 11/§12 output: changed-file set, unrelated changes, risk notes.
 12. **Unverifiable Items** — every `UNVERIFIABLE + reason` row, always including the target
-    artifact's own `Req` ID per §8.3.
+    artifact's own `Req` ID per §8.3. **Each item states its §8.2a state — `UNAVAILABLE` or
+    `NONEXISTENT` — and, for a blocking item, what an operator would supply to clear it.** An
+    item no operator can supply is `NONEXISTENT` by definition and does not block; it is
+    reported as a citation finding instead.
 13. **False-Positive Checks** — confirmation the §10 checklist was applied, and a list of any
     suspicion downgraded to observation rather than promoted to finding.
 14. **Final Verdict** — restated, with an explicit list of what must change to move from PATCH

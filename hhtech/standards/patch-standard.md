@@ -898,6 +898,19 @@ A `BLOCKED` prompt additionally states the exact blocking reason, lists each una
 by the label the audit report used, distinguishes an audit-context or source-resolution gap from
 an artifact defect, and requires the audit to be re-run once the evidence is available.
 
+**It also names, per source, what would actually resolve it** — because the two §8.2a states
+have different remedies and only one of them is "supply the document":
+
+| State | Resolved by |
+|---|---|
+| `UNAVAILABLE` — the source exists but was not supplied | supplying it to the audit context, then re-running |
+| `NONEXISTENT` — the source was cited but is not there | correcting the citation, or the resolver that built the label — **never** by supplying it, and never by editing the target |
+
+A prompt that directs an operator to supply a `NONEXISTENT` source is malformed. It asks for
+something nobody can produce, and the audit will block identically on the next run. Under
+`audit-standard.md` §8.2a such a source should not have blocked at all: it is a citation defect,
+and the prompt says so rather than demanding impossible evidence.
+
 **A prompt that contradicts its own verdict is malformed** and must be rejected rather than
 executed: a PASS-contract prompt issued against a `PATCH REQUIRED` audit invites an unaudited
 change, and a patch prompt issued against a `BLOCKED` audit invites exactly the substitution
