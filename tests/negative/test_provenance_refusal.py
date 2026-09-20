@@ -14,6 +14,7 @@ from __future__ import annotations
 import pytest
 
 from coolboy12.kernel.provenance import (
+    Provenance,
     ProvenanceCaptureError,
     ProvenanceErrorCode,
     capture_provenance,
@@ -24,6 +25,69 @@ from coolboy12.kernel.provenance import (
 WHO = "an author"
 WHEN = "2026-09-20T12:00:00Z"
 WHY = "a recorded reason"
+
+
+def test_the_public_constructor_cannot_bypass_validation():
+    """The value type has no unvalidated back door.
+
+    Before ``__post_init__`` existed, ``Provenance(who="", when="not-a-time",
+    why="")`` constructed cleanly and rendered through the mapping helper —
+    an invalid capture could enter the system without ever meeting the
+    contract the factory advertised.
+    """
+    with pytest.raises(ProvenanceCaptureError):
+        Provenance(who="", when="not-a-time", why="")
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "code"),
+    [
+        ({"who": "", "when": WHEN, "why": WHY}, ProvenanceErrorCode.MISSING_DIMENSION),
+        ({"who": WHO, "when": WHEN, "why": ""}, ProvenanceErrorCode.MISSING_DIMENSION),
+        (
+            {"who": 123, "when": WHEN, "why": WHY},
+            ProvenanceErrorCode.INVALID_INPUT_TYPE,
+        ),
+        (
+            {"who": WHO, "when": "2026-02-29T12:00:00Z", "why": WHY},
+            ProvenanceErrorCode.INVALID_WHEN,
+        ),
+        (
+            {"who": WHO, "when": "2026-09-20T12:00:60Z", "why": WHY},
+            ProvenanceErrorCode.INVALID_WHEN,
+        ),
+        (
+            {"who": WHO, "when": "not-a-time", "why": WHY},
+            ProvenanceErrorCode.INVALID_WHEN,
+        ),
+    ],
+)
+def test_direct_construction_raises_the_same_codes_as_the_factory(kwargs, code):
+    """One rule set, whichever construction path a caller takes."""
+    with pytest.raises(ProvenanceCaptureError) as excinfo:
+        Provenance(**kwargs)
+
+    assert excinfo.value.code is code
+
+
+def test_direct_construction_of_a_valid_capture_succeeds():
+    """Closing the back door must not close the front one."""
+    provenance = Provenance(
+        who="author",
+        when="2026-09-20T12:00:00Z",
+        why="restore intended reveal timing",
+    )
+
+    assert provenance.who == "author"
+    assert provenance.when == "2026-09-20T12:00:00Z"
+    assert provenance.why == "restore intended reveal timing"
+
+
+def test_the_factory_and_the_constructor_agree():
+    """capture_provenance is a thin wrapper, not a second rule set."""
+    assert capture_provenance(who=WHO, when=WHEN, why=WHY) == Provenance(
+        who=WHO, when=WHEN, why=WHY
+    )
 
 
 @pytest.mark.parametrize("dimension", ["who", "when", "why"])

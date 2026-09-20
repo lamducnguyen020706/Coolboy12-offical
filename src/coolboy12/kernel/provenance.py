@@ -239,12 +239,16 @@ class Provenance:
     schema. Another implementation could carry the same three differently
     without touching a source rule.
 
-    The instance is immutable after construction: a capture states a moment
-    that has passed, so it is superseded by a new capture and never edited in
-    place, and this type gives no way to edit it. That is a value-semantics
-    property of the dataclass and **not** a constitutional mutation lifecycle
-    — canonical mutation travels the governed path (Spine law 2), which this
+    The instance is immutable after construction. That is an implementation
+    property of this Python value object; it defines no mutation, revision,
+    version, derivation or history semantics, none of which 047 owns.
+    Canonical mutation travels the governed path (Spine law 2), which this
     module neither implements nor bypasses.
+
+    **Construction validates.** The same structural invariants the factory
+    applies are enforced here, so the type has no unvalidated back door: a
+    ``Provenance`` that exists is a ``Provenance`` that passed the capture
+    contract.
 
     It is not a Record, not an envelope, and not an eighth envelope field. The
     envelope is seven fields (RMS §4, Artifact 033) and holds *one* of them,
@@ -255,13 +259,34 @@ class Provenance:
     """Who made this. Opaque text: this module reads no identity out of it."""
 
     when: str
-    """When the capture happened, in the 047 DECISION instant spelling.
+    """The caller-supplied **Real-World Time** value for the action this
+    provenance records, in the 047 DECISION instant spelling.
 
-    A capture-time transport value, not a COOLBOY12 temporal axis.
+    Real-World Time is the axis (Blueprint §12.16, which makes it
+    authoritative in provenance), and naming it is all 047 does with it: this
+    module does not derive, order, convert or reinterpret temporal axes, and
+    confers no canonical status by validating the value (I-86).
+
+    **It is the time of the action, not of this function call.** If an action
+    occurred at 10:15 and is captured at 10:17, ``when`` is 10:15 — whatever
+    the caller supplied. Nothing here substitutes the moment of capture, and
+    nothing here reads a clock.
     """
 
     why: str
     """Why it was made — the reason the caller recorded, uninterpreted."""
+
+    def __post_init__(self) -> None:
+        """Enforce the capture contract on every construction path.
+
+        Validation lives in the private checkers and is called from exactly
+        one place per dimension, so the factory and the constructor cannot
+        drift into two rule sets. The checkers read primitives and build no
+        ``Provenance``, so there is no construction cycle.
+        """
+        _check_text(self.who, "who")
+        _check_when(self.when)
+        _check_text(self.why, "why")
 
 
 def _check_text(value: object, dimension: str) -> str:
@@ -340,20 +365,24 @@ def capture_provenance(*, who: str, when: str, why: str) -> Provenance:
     fabricates nothing — no substitute actor, no invented instant, no inferred
     reason — because a fabricated provenance is worse than a refused one under
     Spine law 9.
+
+    A thin wrapper over the constructor: :meth:`Provenance.__post_init__`
+    applies the same invariants, so both construction paths enforce one rule
+    set and neither is the safe one.
     """
-    return Provenance(
-        who=_check_text(who, "who"),
-        when=_check_when(when),
-        why=_check_text(why, "why"),
-    )
+    return Provenance(who=who, when=when, why=why)
 
 
 def provenance_to_mapping(provenance: Provenance) -> dict[str, str]:
     """Render a capture as a plain mapping of the three dimensions.
 
-    047 DECISION: exactly three string-valued keys, JSON-compatible, so the
-    value crosses a serialization boundary without this module introducing a
-    format of its own.
+    047 DECISION: this helper renders the current 047 implementation
+    representation as a three-key, string-valued, JSON-compatible mapping.
+    That shape is an implementation convenience — it **is** a format, chosen
+    here — and is **not** a constitutional universal provenance wire schema.
+
+    SOURCE FACT: provenance answers who, when and why.
+    047 DECISION: those three are currently carried under these three keys.
     """
     if not isinstance(provenance, Provenance):
         raise ProvenanceCaptureError(
