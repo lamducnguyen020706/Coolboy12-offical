@@ -235,6 +235,53 @@ def test_heterogeneous_unknown_keys_refuse_without_leaking_a_type_error():
     assert excinfo.value.code is ProvenanceErrorCode.UNKNOWN_DIMENSION
 
 
+class _HostileKey:
+    """A hashable key whose rendering raises.
+
+    Not a production concern in itself — it exists to prove the refusal path
+    never executes caller code to build its own error message.
+    """
+
+    def __hash__(self) -> int:
+        return 7
+
+    def __eq__(self, other: object) -> bool:
+        return self is other
+
+    def __repr__(self) -> str:
+        raise RuntimeError("repr bomb")
+
+    def __str__(self) -> str:
+        raise RuntimeError("str bomb")
+
+
+def test_a_hostile_key_cannot_break_the_refusal_path():
+    """UNKNOWN_DIMENSION survives a key that refuses to be rendered.
+
+    Rendering the offending key into the message ran the caller's __repr__
+    inside the refusal, so a hostile key raised RuntimeError out of
+    provenance_from_mapping instead of the promised UNKNOWN_DIMENSION. The
+    diagnostic no longer touches the key.
+    """
+    payload = {"who": WHO, "when": WHEN, "why": WHY, _HostileKey(): "smuggled"}
+
+    with pytest.raises(ProvenanceCaptureError) as excinfo:
+        provenance_from_mapping(payload)
+
+    assert excinfo.value.code is ProvenanceErrorCode.UNKNOWN_DIMENSION
+
+
+def test_the_refusal_message_is_independent_of_caller_values():
+    """The message is a fixed string; the code is the contract."""
+    payload = {"who": WHO, "when": WHEN, "why": WHY, _HostileKey(): "x", 1: "y"}
+
+    with pytest.raises(ProvenanceCaptureError) as excinfo:
+        provenance_from_mapping(payload)
+
+    # Constructing the message must not raise, and must name no key.
+    assert "who, when, why" in str(excinfo.value)
+
+
 @pytest.mark.parametrize("key", [1, None, True, 2.5, (), frozenset()])
 def test_any_unhashable_shaped_unknown_key_is_refused(key):
     """A single non-string unknown key is refused whatever its type."""

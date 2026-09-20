@@ -75,8 +75,9 @@ Record came to be as it is.
 
 ``why`` is a recorded reason, not a causal account
 --------------------------------------------------
-The ``why`` captured here is the rationale the caller supplies at the moment of
-capture. It is **not** a causal graph, an event chain, a derivation chain, or
+The ``why`` captured here is the reason the caller supplies for the action or
+decision being recorded. It is **not** a causal graph, an event chain, a
+derivation chain, or
 the History answer to *how this Record came to be what it is* — Blueprint
 §13.7b assigns that to history, which is model-owned packaging. This module
 stores the text and interprets none of it.
@@ -106,7 +107,7 @@ This module does not define World Time, does not define Session Number, does
 not define the issue ordinal (which §12.16 holds is not a temporal axis at
 all), does not order captures, does not derive one axis from another — §12.16:
 *"no axis is derivable from another"* — and does not package history, which is
-model-owned (§13.7b, Artifact 054, I-90).
+model-owned under Blueprint §13.7b and never universal (I-90).
 
 **Syntax does not confer canonical status.** I-86: a timestamp produced by an
 external system *"becomes World Time, Session Number, or Real-World Time only
@@ -245,10 +246,12 @@ class Provenance:
     Canonical mutation travels the governed path (Spine law 2), which this
     module neither implements nor bypasses.
 
-    **Construction validates.** The same structural invariants the factory
-    applies are enforced here, so the type has no unvalidated back door: a
-    ``Provenance`` that exists is a ``Provenance`` that passed the capture
-    contract.
+    **Construction validates.** The public constructor and the factory enforce
+    the same structural invariants, so **every supported construction path**
+    produces a value that passed the capture contract. The claim is scoped to
+    supported paths deliberately: implementation-level object reconstruction
+    can bypass ordinary initialization in Python, and 047 owns no
+    deserialization contract and adds none.
 
     It is not a Record, not an envelope, and not an eighth envelope field. The
     envelope is seven fields (RMS §4, Artifact 033) and holds *one* of them,
@@ -416,13 +419,20 @@ def provenance_from_mapping(mapping: object) -> Provenance:
     # produce UNKNOWN_DIMENSION rather than leak the TypeError that comparing
     # them raises. Refusing a fourth dimension must not itself be refusable.
     known = frozenset(PROVENANCE_DIMENSIONS)
-    unknown = [key for key in mapping if key not in known]
-    if unknown:
+    # `key not in known` compares against a frozenset of strings: a key that is
+    # unhashable cannot be a dict key at all, and one that is merely unorderable
+    # is never compared, so heterogeneous keys are refused rather than raising.
+    unknown_count = sum(1 for key in mapping if key not in known)
+    if unknown_count:
+        # The offending key is deliberately NOT rendered. A key may define a
+        # hostile __repr__ or __str__, and a diagnostic that executes caller
+        # code can raise RuntimeError out of the refusal path — breaking the
+        # contract that an unknown dimension yields UNKNOWN_DIMENSION. The code
+        # is the contract; the message is a fixed, caller-independent string.
         raise ProvenanceCaptureError(
             ProvenanceErrorCode.UNKNOWN_DIMENSION,
-            f"provenance carries only {', '.join(PROVENANCE_DIMENSIONS)}",
-            value=", ".join(repr(key) for key in unknown),
-            dimension=str(unknown[0]),
+            f"provenance carries only {', '.join(PROVENANCE_DIMENSIONS)}; "
+            f"the mapping carried {unknown_count} other key(s)",
         )
     for dimension in PROVENANCE_DIMENSIONS:
         if dimension not in mapping:
