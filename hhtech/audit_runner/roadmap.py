@@ -26,6 +26,11 @@ from pathlib import Path
 
 from .errors import InputError
 
+# A section number and nothing after it: digits, optional dotted parts, an
+# optional trailing letter. Anything following is a pointer into the section
+# (e.g. "Spine 9"), not part of the section's identity.
+_SECTION_NUMBER = re.compile(r"^(\d+(?:\.\d+)*[a-z]?)\b")
+
 _ROW_PATTERN = re.compile(
     r"^\*\*(?P<id>\d{3})\*\*\s*·\s*(?P<name>.*?)\s*·\s*`(?P<path>[^`]*)`\s*·\s*"
     r"Own:\s*(?P<Own>.*?)\s*·\s*"
@@ -54,9 +59,31 @@ _ROW_PATTERN = re.compile(
 )
 
 FIELD_NAMES = (
-    "id", "name", "path", "Own", "RM", "T", "R", "SoT", "Auth", "Canon",
-    "CD", "PhSt", "Req", "BP", "RMS", "H", "S", "LS", "G", "Unlocks",
-    "Val", "Done", "Why", "Risk", "Parallel",
+    "id",
+    "name",
+    "path",
+    "Own",
+    "RM",
+    "T",
+    "R",
+    "SoT",
+    "Auth",
+    "Canon",
+    "CD",
+    "PhSt",
+    "Req",
+    "BP",
+    "RMS",
+    "H",
+    "S",
+    "LS",
+    "G",
+    "Unlocks",
+    "Val",
+    "Done",
+    "Why",
+    "Risk",
+    "Parallel",
 )
 
 # Fields whose value can name other artifacts, and the dependency semantics
@@ -100,8 +127,11 @@ def parse_all_rows(roadmap_text: str) -> dict[str, ManifestRow]:
     for match in _ROW_PATTERN.finditer(roadmap_text):
         fields = {name: match.group(name).strip() for name in FIELD_NAMES}
         rows[fields["id"]] = ManifestRow(
-            id=fields["id"], name=fields["name"], path=fields["path"],
-            fields=fields, raw=match.group(0).strip(),
+            id=fields["id"],
+            name=fields["name"],
+            path=fields["path"],
+            fields=fields,
+            raw=match.group(0).strip(),
         )
     return rows
 
@@ -123,8 +153,11 @@ def find_manifest_row(roadmap_text: str, artifact_id: str) -> ManifestRow:
         )
     fields = {name: match.group(name).strip() for name in FIELD_NAMES}
     return ManifestRow(
-        id=fields["id"], name=fields["name"], path=fields["path"],
-        fields=fields, raw=raw,
+        id=fields["id"],
+        name=fields["name"],
+        path=fields["path"],
+        fields=fields,
+        raw=raw,
     )
 
 
@@ -206,7 +239,8 @@ def derive_target_scope(repo_root: Path, row: ManifestRow) -> TargetScope:
         matched_files: tuple[str, ...] = (raw_path,)
     else:
         matches = sorted(
-            p for p in glob_module.glob(str(repo_root / pattern), recursive=True)
+            p
+            for p in glob_module.glob(str(repo_root / pattern), recursive=True)
             if Path(p).is_file()
         )
         matched_files = tuple(str(Path(p).relative_to(repo_root)) for p in matches)
@@ -264,14 +298,28 @@ def parse_citation_numbers(citation: str) -> list[str]:
 
     "§13" -> ["13"] · "§13.7a" -> ["13.7a"] · "§§2,3" -> ["2", "3"] ·
     "n/a" / "—" -> [].
+
+    A citation may carry a pointer after the section number — row 047 cites
+    ``§10 Spine 9``, meaning Spine law 9 inside §10. Only the section number
+    is a section: keeping the trailing words produced the unresolvable source
+    label "Blueprint §10 Spine 9" and blocked the audit on a section that
+    does not exist, while §10 itself was supplied and available all along.
+    The pointer is dropped here and the law is still reached by the Spine-law
+    extractor, which reads it from the artifact's text.
     """
     if is_empty_field(citation):
         return []
     out: list[str] = []
     for token in citation.split(","):
         cleaned = token.strip().lstrip("§").strip()
-        if cleaned and cleaned not in out:
-            out.append(cleaned)
+        if not cleaned:
+            continue
+        match = _SECTION_NUMBER.match(cleaned)
+        if match is None:
+            continue
+        section = match.group(1)
+        if section not in out:
+            out.append(section)
     return out
 
 
@@ -280,6 +328,5 @@ def parse_requirement_ids(req_field: str) -> list[str]:
     if is_empty_field(req_field):
         return []
     return [
-        match.group(0)
-        for match in re.finditer(r"\b[A-Z]{2,3}-\d{2,3}\b", req_field)
+        match.group(0) for match in re.finditer(r"\b[A-Z]{2,3}-\d{2,3}\b", req_field)
     ]

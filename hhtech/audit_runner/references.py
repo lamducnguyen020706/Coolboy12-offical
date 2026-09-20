@@ -40,6 +40,12 @@ _ARTIFACT_REF = re.compile(r"\bArtifact\s+(\d{3})\b")
 _BLUEPRINT_SECTION_QUALIFIED = re.compile(r"Blueprint\s*:?\s*§+(\d+(?:\.\d+)*[a-z]?)\b")
 _BLUEPRINT_SECTION_SUBSECTION = re.compile(r"§(\d+\.\d+[a-z]?)\b")
 
+# A dotted section belonging to a named artifact is that artifact's, not the
+# Blueprint's. Artifact 047 cites "Artifact 033 §5.5"; reading it as Blueprint
+# §5.5 asked for a section the Blueprint does not have, and the audit then
+# blocked on its absence. Stripped before the unqualified subsection scan.
+_FOREIGN_SECTION = re.compile(r"Artifact\s+\d{3}\s*§+\d+(?:\.\d+)*[a-z]?")
+
 # The colon form is not optional decoration: every artifact's metadata header
 # writes `RMS: §2`, so requiring whitespace after "RMS" mis-attributed every
 # metadata citation in the repository to the Blueprint.
@@ -77,8 +83,13 @@ class ReferenceSet:
 
     def merge(self, other: ReferenceSet) -> ReferenceSet:
         for name in (
-            "artifacts", "blueprint_sections", "rms_sections", "invariants",
-            "anti_orderings", "requirements", "spine_laws",
+            "artifacts",
+            "blueprint_sections",
+            "rms_sections",
+            "invariants",
+            "anti_orderings",
+            "requirements",
+            "spine_laws",
         ):
             mine = getattr(self, name)
             for value in getattr(other, name):
@@ -89,8 +100,12 @@ class ReferenceSet:
     def is_empty(self) -> bool:
         return not any(
             (
-                self.artifacts, self.blueprint_sections, self.rms_sections,
-                self.invariants, self.anti_orderings, self.requirements,
+                self.artifacts,
+                self.blueprint_sections,
+                self.rms_sections,
+                self.invariants,
+                self.anti_orderings,
+                self.requirements,
                 self.spine_laws,
             )
         )
@@ -127,7 +142,7 @@ def extract_references(text: str) -> ReferenceSet:
 
     # Remove every resolved citation run before scanning for unqualified
     # subsections, so an RMS run is not re-read as a Blueprint reference.
-    blueprint_scan = _CITATION_RUN.sub(" ", text)
+    blueprint_scan = _FOREIGN_SECTION.sub(" ", _CITATION_RUN.sub(" ", text))
     blueprint_sections = _dedup(
         [
             *run_blueprint,

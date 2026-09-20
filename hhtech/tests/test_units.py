@@ -113,6 +113,27 @@ def test_parse_citation_numbers(citation, expected):
     assert parse_citation_numbers(citation) == expected
 
 
+@pytest.mark.parametrize(
+    "citation,expected",
+    [
+        ("§10 Spine 9", ["10"]),
+        ("§13 Spine 2", ["13"]),
+        ("§29.6a note", ["29.6a"]),
+        ("§§2,3 and elsewhere", ["2", "3"]),
+    ],
+)
+def test_a_pointer_after_the_section_number_is_not_part_of_the_section(
+    citation, expected
+):
+    """Row 047 cites `§10 Spine 9`: section 10, Spine law 9 inside it.
+
+    Keeping the trailing words built the source label "Blueprint §10 Spine 9",
+    which names no section, and the audit then blocked on its absence while
+    §10 itself was supplied and available.
+    """
+    assert parse_citation_numbers(citation) == expected
+
+
 def test_parse_requirement_ids():
     assert parse_requirement_ids("BR-17,RR-01") == ["BR-17", "RR-01"]
     assert parse_requirement_ids("—") == []
@@ -246,6 +267,27 @@ def test_a_qualified_or_subsection_citation_is_still_attributed():
 
     both = references.extract_references("Blueprint §13.6 and §12.13")
     assert both.blueprint_sections == ["13.6", "12.13"]
+
+
+def test_another_artifacts_section_is_not_a_blueprint_citation():
+    """`Artifact 033 §5.5` is 033's section, not Blueprint §5.5.
+
+    The Blueprint has no §5.5. Attributing it there asked for a section that
+    does not exist and blocked an audit on its absence.
+    """
+    for text in (
+        "Artifact 033 §5.5",
+        "Artifact 033 §5.5 names the provenance field",
+        "see Artifact 041 §9 for the reading",
+    ):
+        refs = references.extract_references(text)
+        assert refs.blueprint_sections == [], (
+            f"{text!r} attributed another artifact's section to the Blueprint: "
+            f"{refs.blueprint_sections}"
+        )
+
+    # The artifact itself is still picked up as context.
+    assert "033" in references.extract_references("Artifact 033 §5.5").artifacts
 
 
 def test_a_citation_run_keeps_its_source_across_commas():
