@@ -368,8 +368,8 @@ no reader may cite it as having done so:
 5. any universal provenance schema, ontology, or semantic model — **PROHIBITED**, RMS §4
 6. any Universal Record Base — **PROHIBITED**, RMS §4
 7. universal lifecycle semantics — **PROHIBITED**, RMS §4
-8. universal canonicality semantics — **Artifact 052**, I-104, §13.7c
-9. universal authority semantics — **Artifact 051**
+8. universal canonicality semantics — canonicality is model-defined, I-104, §13.7c
+9. universal authority semantics — authority is domain-scoped, RMS §17
 10. a universal temporal mechanism — temporal architecture is model-owned, §13.6d, I-90
 11. universal history, revision, or version packaging — model-owned, §13.6d, I-90
 12. universal relationship packaging — I-102
@@ -423,8 +423,7 @@ implementation and no model semantics.
 
 ## 17. Conformance Conditions
 
-Stated so they are checkable. **Artifact 059** owns the P2 kernel conformance suite; this document
-implements no test and is `T: doc`.
+Stated so they are checkable. This document implements no test and is `T: doc`.
 
 No `048.x` constitutional invariant is minted: the sources supply I-103 for the mechanism/semantic
 rule and I-101 for model sovereignty, and no source-backed invariant number exists for the
