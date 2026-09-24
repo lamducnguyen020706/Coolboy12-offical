@@ -124,10 +124,9 @@ implements the capture.
 
 | | |
 |---|---|
-| **Dimensions** | `who` · `when` · `why` — three, source-fixed, no fourth |
+| **Dimensions** | `who` · `when` · `why` — the capture dimensions named by the governing sources |
 | **Why universal** | Spine law 9 binds all six models (RMS §4) |
-| **Mechanism** | Artifact 047 |
-| **What the layer may do** | capture, hold, store, serialize and transport the provenance value |
+| **Shared facility** | provides the provenance capture mechanism established by Artifact 047 |
 | **What the layer may not do** | decide what that value means inside any Record Model |
 
 The shared layer is **model-agnostic**. It does not take a partition, a Kind, a Record or a Record
@@ -135,11 +134,10 @@ Model as input, and it therefore cannot branch on one. A mechanism that inspecte
 in order to interpret a provenance value would be deciding meaning, which is the one thing it may
 not do.
 
-**"No fourth" binds the shared layer, not the models.** That the shared capture contract carries
-three dimensions and no fourth is a statement about *the shared mechanism's* surface. It is **not**
-a universal schema constraint on what a Record Model may hold, record, or require within its own
-package composition, which is model-owned (§13.6d, I-107). Reading it as one would make this
-contract the universal provenance schema it exists to prevent.
+This contract acknowledges the existence of the shared capture facility and states the boundary
+around it. **It grants that facility nothing further** — no storage, persistence, serialization,
+transport or indexing architecture is established, permitted or assigned here, and package
+composition remains model-owned (§13.6d, I-107).
 
 ### 6.1 The three dimensions are captured terms, not a semantic vocabulary
 
@@ -223,9 +221,9 @@ The World Record Model is the most mature of the six and the only one whose arch
 Blueprint describes in full. **That maturity confers nothing.**
 
 World's provenance semantics are World's. They are not the default, the baseline, the reference
-implementation, or the starting point for E, P, R, V or I. A model that reaches a different answer
-has not deviated from a norm — it has answered its own question, which is the only authority it
-needs (§13.6d, I-101).
+implementation, or the starting point for E, P, R, V or I. A model defines its provenance semantics
+within its own Record Model architecture, subject to the higher constitutional rules that already
+bind it (§13.6d, I-101).
 
 The Blueprint states the same caution about the packaging table at §13.6d: overlapping answers
 record *"that six models were asked the same question and four gave overlapping answers"*, and
@@ -324,27 +322,16 @@ same capture mechanism  →  different model-owned semantic interpretation
 
 ## 12. Boundary With Neighbouring Concerns
 
-Blueprint §13.7b separates provenance from five neighbouring concepts — audit, history, revision,
-version and lineage — which *"are not interchangeable."* RMS §18 carries the same separation.
+Blueprint §13.7b and RMS §18 separate provenance from neighbouring concerns; they *"are not
+interchangeable."*
 
-**Three consequences bind here, and only three:**
+Two consequences bind here, and only two:
 
-1. **Provenance is not a universal substitute for any of the five.** A Record that carries
-   provenance has not thereby been given an audit record, a history, a revision, a version, or a
-   derivation account.
-2. **Provenance does not create the others.** The existence of a captured provenance value does not
-   establish that a model has, needs, or must define any neighbouring mechanism. Whether a model
-   needs one, and in what form, is that model's question (§13.6d, I-90, I-107).
-3. **The packaging of each remains with its own owner.** History packaging is model-owned; the
-   History Record is the World Record Model's mechanism and is required of no other model (I-90,
-   I-102).
+1. **Provenance is not a universal substitute for any of them.**
+2. **The presence of provenance does not create, define, or replace any such concern.**
 
-**The vocabulary contract for the six terms is Artifact 049** — `docs/constitution/temporal_terms.md`,
-which separates provenance, audit, history, revision, version and lineage, and retires the
-unqualified word *lineage*. **This document does not perform that work**, states no semantic
-contract for the other five terms, and must not be read as a substitute for it.
-
-That is the whole of the boundary 048 needs. Everything further belongs to 049.
+**Artifact 049 owns the vocabulary separation among those terms. This document does not perform
+that work**, defines none of them, and must not be read as a substitute for it.
 
 ## 13. Dependencies and Position
 
@@ -364,17 +351,10 @@ That is the whole of the boundary 048 needs. Everything further belongs to 049.
 | upstream | **033** universal Record envelope | the `provenance` field's place in the envelope |
 | upstream | **043** mechanism vs semantics | the system-wide firewall and its nine prohibitions |
 | downstream | **049** temporal terms | the six-term vocabulary separation |
-| downstream | **207** World provenance | W's meaning of provenance |
-| downstream | **281** E provenance | E's meaning of provenance |
 | consumers | the six Record Models | their own provenance semantics |
 
-**On the Roadmap's downstream provenance rows.** Rows 207 and 281 declare dedicated provenance
-artifacts for W and E and both name 048 as a hard dependency. **No equivalent row is scheduled for
-P, R, V or I.** That is recorded here as an observed condition of the Roadmap and **is not
-resolved by this document**: it does not establish that those four models have no provenance
-meaning, that their meaning is established elsewhere, or that any other model's meaning applies to
-them. Their provenance meaning remains theirs to establish (RMS §6), by whatever artifact their own
-phase work declares.
+Each Record Model establishes the meaning of provenance for its own Records (RMS §6). This
+document names no artifact by which any model must do so.
 
 ## 14. Non-Goals — What This Contract Does Not Define
 
@@ -384,20 +364,20 @@ no reader may cite it as having done so:
 1. the provenance capture mechanism — **Artifact 047**
 2. the `provenance` envelope field and the seven-field envelope — **Artifact 033**
 3. the six-term vocabulary separation — **Artifact 049**
-4. any model's own provenance semantics — **207**, **281**, and each model's own work for P, R, V, I
+4. any model's own provenance semantics — each Record Model's own work, RMS §6
 5. any universal provenance schema, ontology, or semantic model — **PROHIBITED**, RMS §4
 6. any Universal Record Base — **PROHIBITED**, RMS §4
 7. universal lifecycle semantics — **PROHIBITED**, RMS §4
 8. universal canonicality semantics — **Artifact 052**, I-104, §13.7c
 9. universal authority semantics — **Artifact 051**
-10. a universal temporal mechanism — **Artifact 054**, I-90
+10. a universal temporal mechanism — temporal architecture is model-owned, §13.6d, I-90
 11. universal history, revision, or version packaging — model-owned, §13.6d, I-90
 12. universal relationship packaging — I-102
 13. the temporal axes — Blueprint §12.16
 14. audit semantics, approval mode, or session — **audit, not provenance**, §13.7b, I-14
 15. executable validators, linters, or conformance suites
 16. storage architecture, persistence, database keys, or indexes
-17. serialization format — **Artifact 033**; representation — **Artifact 047**
+17. serialization format, transport representation, or storage implementation
 18. runtime implementation of any kind
 19. any reintroduction of the retired Canon Object Model — retired at RMS §2
 
@@ -429,7 +409,6 @@ The right-hand column is the **owner**. Appearance in the left column confers no
 | Concern | Owner |
 |---|---|
 | Capturing `who` / `when` / `why` | Shared infrastructure — **Artifact 047** |
-| Holding, storing and transporting the captured value | Shared infrastructure |
 | Meaning of provenance inside a Record Model | **The owning Record Model** |
 | Which of a model's actions are provenance-bearing | The owning Record Model |
 | Model-specific semantic validation of provenance | The owning Record Model |
@@ -459,17 +438,16 @@ remaining conditions, which are therefore stated without one.
 | **C-04** | The rule applies identically to W, E, P, R, V and I. | I-101; RMS §6 |
 | **C-05** | No Record Model is the template or semantic parent of another for provenance. | I-101; §13.6d |
 | **C-06** | No universal provenance schema, ontology, lifecycle or wire format is defined here. | RMS §4 nine prohibitions; §10 |
-| **C-07** | The capture dimensions are `who`, `when` and `why`, and no fourth is added. | Blueprint §13.7b; RMS §18 |
-| **C-08** | No universal causal meaning is assigned to `why`. | Blueprint §13.7b; §6.1 |
-| **C-09** | No provenance-specific temporal system or clock is created. | Blueprint §12.16; RMS §6 |
-| **C-10** | Artifact 047's implementation details are not constitutionalized by this document. | §6.2; Roadmap rows 047, 048 |
-| **C-11** | This contract does not modify or re-specify Artifact 047. | Roadmap row 048 `H: 047` |
-| **C-12** | This contract states no model-specific provenance semantics on behalf of any model. | RMS §6; §7, §11 |
-| **C-13** | Provenance is not used as a substitute for audit, history, revision, version or derivation. | Blueprint §13.7b; RMS §18 |
-| **C-14** | The six-term vocabulary contract is left to Artifact 049. | Roadmap row 049; §12 |
-| **C-15** | This document contains no executable content and mints no Record. | Roadmap row 048 `T: doc`, `Canon: n/a` |
+| **C-07** | No universal causal meaning is assigned to `why`. | Blueprint §13.7b; §6.1 |
+| **C-08** | No provenance-specific temporal system or clock is created. | Blueprint §12.16; RMS §6 |
+| **C-09** | Artifact 047's implementation details are not constitutionalized by this document. | §6.2; Roadmap rows 047, 048 |
+| **C-10** | This contract does not modify or re-specify Artifact 047. | Roadmap row 048 `H: 047` |
+| **C-11** | This contract states no model-specific provenance semantics on behalf of any model. | RMS §6; §7, §11 |
+| **C-12** | Provenance is not used as a substitute for a neighbouring concern. | Blueprint §13.7b; RMS §18 |
+| **C-13** | The vocabulary separation among those terms is left to Artifact 049. | Roadmap row 049; §12 |
+| **C-14** | This document contains no executable content and mints no Record. | Roadmap row 048 `T: doc`, `Canon: n/a` |
 
-A construction satisfying all fifteen is conformant **to this contract**. It is not thereby
+A construction satisfying all fourteen is conformant **to this contract**. It is not thereby
 conformant to the Record System: the other P2 contracts carry their own conditions.
 
 ## 18. Source Traceability
@@ -496,8 +474,7 @@ conformant to the Record System: the other P2 contracts carry their own conditio
 | `provenance` is one of the seven envelope fields | Artifact 033 §5.5; RMS §4 |
 | Record ≠ Canon; SoT class is not canonicality | Blueprint §13.0; I-104 |
 | Hard dependency on 047; unlocks the models | Roadmap row 048 |
-| Downstream provenance artifacts declared for W and E | Roadmap rows 207, 281 |
-| The six-term vocabulary is its own artifact | Roadmap row 049 |
+| The vocabulary separation is its own artifact | Roadmap row 049 |
 
 `Req: BR-21` is preserved exactly as the Roadmap states it. The authoritative requirement register
 is not present in this repository; the requirement text is therefore **not** reproduced here and
