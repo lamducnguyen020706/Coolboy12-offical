@@ -8,7 +8,7 @@ Val: six terms separated; unqualified *lineage* retired · Done: vocabulary fixe
 Why: one word for three senses caused prior defects · Risk: high · ∥: no
 
 > **On the title.** The Roadmap names this artifact with the six terms as Blueprint §13.7b
-> lists them, the retired word among them. That name is preserved exactly, as a proper name.
+> lists them, the retired word among them. That name is preserved exactly as the Roadmap fixes it.
 > The document's own heading does not substitute any single current term for the retired word,
 > because the word has three replacements, not one (§7.3).
 
@@ -64,7 +64,8 @@ a shared vocabulary and model-owned packaging; illustrations of the difference; 
 against using one term for another.
 
 **Out of scope.** The temporal architecture of any Record Model; the History Record as anything
-but World's mechanism; any audit, revision, version or derivation mechanism; visual asset
+but World's mechanism; any audit, revision or version mechanism; any identity-operation
+mechanism; visual asset
 relationships; any graph of descent; schemas, code, storage, serialization, runtime and tests.
 This contract says **which word names which question**. It does not answer any of the questions
 for any model.
@@ -87,10 +88,11 @@ capture or provenance meaning; §5.1 places provenance among the six terms and n
 ## 4. The Governing Vocabulary Rule
 
 > **Provenance, audit, history, revision and version, and the three senses of the retired word,
-> are distinct terms. They are not interchangeable. Their questions are fixed by Blueprint §13.7b. Their packaging
-> and mechanisms are not fixed by this vocabulary: they remain governed by each Record Model's
-> own architecture. The unqualified word *lineage* is retired, and must not be used for any of
-> the three senses it once carried.**
+> are distinct terms. They are not interchangeable. Their questions are fixed by Blueprint §13.7b,
+> and no Record Model redefines them. Except where a governing source explicitly establishes
+> shared infrastructure — as it does for provenance capture — packaging and model-specific
+> mechanisms remain governed by the owning Record Model's architecture. The unqualified word
+> *lineage* is retired, and must not be used for any of the three senses it once carried.**
 
 Two readings are ruled out by that rule, one on each side.
 
@@ -108,10 +110,10 @@ all six models use the same temporal package
 ```
 
 **Six terms are not six structures.** No model is required to hold six things because six words
-exist. A model may answer several of these questions with one mechanism, answer one with none
-that the others would recognize, or conclude that a question applies to it differently. Blueprint
-§13.6d states this about packaging directly: *"a model may conclude that it needs no History
-Record at all"*, or a different mechanism in its place.
+exist. A model may realize several of these concepts in one mechanism, or realize one in a form
+no other model would recognize; the source-defined question each term names is unchanged either
+way. Blueprint §13.6d states this about packaging directly: *"a model may conclude that it needs
+no History Record at all"*, or a different mechanism in its place.
 
 ## 5. The Six Terms
 
@@ -125,12 +127,10 @@ where its packaging belongs. The question column is Blueprint §13.7b's, verbati
 | **History** | How this Record's state came to be what it is | Model-owned packaging; World uses the History Record |
 | **Revision** | This Record changed, and here is the change | Model-owned |
 | **Version** | This is a distinct issued state of the same thing | Model-owned; Issue versions by supersession, never by edit |
-| *(retired word)* | This came *from* that | Three senses — see §5.6 and §7 |
+| **Lineage** | This came *from* that | Unqualified use retired; three senses — see §5.6 and §7 |
 
-**Only provenance is an envelope field.** RMS §4's universal envelope is `partition` · `kind` ·
-`object_id` · `slug` · `provenance` · `registry_ref` · `sot_class` — seven fields, `FROZEN`.
-Provenance is the only one of the six terms among them. No audit, history, revision, version or
-derivation field is universal.
+**Of these six concepts, `provenance` is the one named in the universal Record envelope**
+(RMS §4). This document does not define or modify the envelope schema.
 
 ### 5.1 Provenance
 
@@ -145,7 +145,9 @@ that model, and Artifact 048 holds that boundary. `when` names Real-World Time, 
 a different question (§5.2). Not history, not revision, not version. Not the retired word in any
 of its senses.
 
-**Packaging boundary.** Set by 047 and 048. This contract adds nothing to it.
+**Ownership.** Capture mechanism: Artifact 047, shared infrastructure. Provenance meaning
+boundary: Artifact 048. Model-specific packaging: owned by the Record Model that carries the
+Record. This contract defines none of the three.
 
 > *Illustrative and non-normative.* A Record carries captured provenance stating who made or
 > changed it, the relevant Real-World Time, and the recorded reason. That alone says nothing about
@@ -225,21 +227,21 @@ revision structure is established by the word.
 §13.7b, §13.6a). Blueprint §13.6a: *"A published artifact is immutable (Section 18.7).
 Correction is a new publication with a `supersedes` relationship, never an edit."*
 
-**What it is not.** Not revision. **Not every revision is a version**, and a model is not required
-to issue distinct states at all. Not an identity operation: Blueprint §13.8 states that Issue's
-supersession rule *"is a publication rule, not one of these four"* identity operations — the
-same word, *supersede*, names a version rule in Issue and a derivation operation in World (§7.3).
+**What it is not.** Not revision. **Not every revision is a version.** Not an identity operation:
+Blueprint §13.8 states that Issue's supersession rule *"is a publication rule, not one of these
+four"* identity operations — the same word, *supersede*, names a version rule in Issue and a
+derivation operation in World (§7.3).
 
 **Packaging boundary.** Model-owned. **Issue's rule is Issue's.** Versioning by supersession is
-the Issue Record Model's rule and is not the rule for any other model. No universal version
-numbering or version stamp is established by the word; no version field is a universal envelope
-field (RMS §4).
+the Issue Record Model's rule and is not the rule for any other model. Version semantics and
+packaging are model-owned. This contract establishes no universal versioning mechanism, numbering
+scheme, or version structure.
 
 > *Illustrative and non-normative.* A published Issue is not edited into a different state; a
 > correction is a new publication that supersedes it. That is the Issue model's version meaning.
-> It is not a template for how any other model issues, or declines to issue, distinct states.
+> It is not a template for how any other model issues distinct states.
 
-### 5.6 The retired word
+### 5.6 Lineage — unqualified use retired
 
 **Question it carried.** *This came from that.*
 
@@ -249,7 +251,7 @@ they belong to three different categories of thing, and each now has its own cur
 
 | Sense | What it is | Current term | Owner |
 |---|---|---|---|
-| Identity operations | an account of operations on Records' identities | `derivation` | World semantics; **OPEN** elsewhere (§13.8) |
+| Identity operations | operations on Records' identities (§13.8) | `derivation` | World semantics; **OPEN** elsewhere (§13.8) |
 | A World Kind | a structure in the fiction — *"this cross-generational hereditary or ancestral structure"* | `LINEAGE` | the World Record Model (§13.6) |
 | Visual asset descent | one asset's descent from another | *visual derivation* | the Visual Record Model (RMS §19) |
 
@@ -279,7 +281,7 @@ The following statements are **invalid** under this contract:
 | "approval mode is provenance" | approval mode is audit — §5.2 |
 | "session is provenance" | session is audit — §5.2 |
 | "revision = version" | a revision does not by itself constitute a version — §5.4, §5.5 |
-| "version = every edit" | Issue versions *never* by edit; no model is required to version at all — §5.5 |
+| "version = every edit" | a revision does not by itself constitute a version, and Issue versions *never* by edit — §5.4, §5.5 |
 | "the History Record is the universal temporal mechanism" | it is World's mechanism — §5.3, I-90, I-102 |
 | "*lineage* = generic derivation graph" | the unqualified word is retired, and no such graph exists — §7 |
 | "`LINEAGE` = visual asset derivation" | a World Kind, not a Visual relationship — §7.3 |
@@ -328,11 +330,12 @@ Any new architectural or documentary text that needs one of the three senses use
 current term. The bare word may appear only:
 
 1. where the retirement itself is being stated or discussed, as here;
-2. in a proper name the sources fix — the Roadmap's name for this artifact, and Spine law 9's
-   title, *"Every Object Has Lineage"*;
+2. in a source-fixed title — the Roadmap's name for this artifact, and Spine law 9's title,
+   *"Every Object Has Lineage"*;
 3. in a verbatim quotation of a source.
 
-It may not appear as a generic term for ancestry, descent, derivation or relationship.
+It may not appear as a generic term for ancestry, descent or relationship, nor in place of any of
+the three current terms.
 
 ### 7.5 Historical text is not rewritten
 
@@ -352,7 +355,8 @@ reads correctly without the word."*
 So:
 
 - the traceability obligation Spine law 9 states is untouched;
-- the word in the law's title is a proper name, not a use of the retired term (§7.4);
+- the term remains in the source-fixed title of Spine law 9; this does not reopen the retired
+  generic use;
 - retiring the word retires an ambiguity, not an obligation;
 - this contract does not amend, reinterpret or add to the Spine, and mints no replacement law.
 
@@ -360,7 +364,8 @@ So:
 
 **This contract fixes vocabulary. It does not fix packaging.**
 
-The six questions are shared by every model. The mechanisms that answer them are not:
+The six terms and their source-defined questions are fixed for every model. Except where a
+governing source establishes shared infrastructure, the mechanisms that realize them are not:
 
 | | Universal | Model-owned |
 |---|---|---|
@@ -369,7 +374,7 @@ The six questions are shared by every model. The mechanisms that answer them are
 | Provenance capture | **yes** — Artifact 047 | — |
 | How history, audit, revision and version are packaged | — | **yes** — §13.6d, I-90 |
 | Whether a model has a History Record | — | **yes** — World does; no other model is required to (I-90, I-102) |
-| What derivation means outside World | — | **OPEN** — §13.8 |
+| What the identity operations mean outside World | — | **OPEN** — §13.8 |
 
 Blueprint §13.6d states the governing rule: *"each Record Model owns the packaging of its
 Records."* Its packaging rows for E, P, R, V and I are *"MODEL-DESIGN INPUT (not a freeze)"*, and
@@ -381,16 +386,19 @@ package for any model.
 ### 8.1 The six models
 
 The vocabulary applies identically across **W** World · **E** Epistemic · **P** Production ·
-**R** Registry · **V** Visual · **I** Issue. How each model answers the six questions is that
-model's responsibility, because:
+**R** Registry · **V** Visual · **I** Issue. How each model packages, realizes, or
+operationalizes these concepts within its own architecture is model-owned, subject to the
+governing constitutional rules. The source-defined question for each term is not redefined by the
+model. This follows from:
 
 - **I-101** — no Record Model is a specialization of another or the template for another;
 - **I-103** — shared infrastructure never confers shared meaning;
 - **I-90** — traceable evolution is required of every model, by a mechanism each model owns;
 - **I-107** — a composition declared for an undesigned model is not a requirement.
 
-**World is the only model whose temporal mechanism the sources describe in full. That is not a
-reason to use it as the template for the other five**, and this contract does not.
+**World is the Record Model for which the Blueprint explicitly specifies the History Record
+mechanism. That mechanism is not a template for the other models**, and this contract does not
+use it as one.
 
 ## 9. Worked Examples
 
@@ -432,7 +440,7 @@ The Blueprint's illustrative World identity `W-LI-001-DelPhonar` (§13.9a) names
 hereditary structure in the fiction. It is a World Record of a World Kind.
 
 It is not a name for how any Record came to be, and it must not be called by the bare word when
-what is meant is derivation or descent.
+what is meant is `derivation` or *visual derivation*.
 
 ### Example 5 — Visual derivation
 
@@ -445,10 +453,11 @@ That is *visual derivation*, and it is Visual's (RMS §19). It does not make eit
 
 In the World Record Model, two Records are merged by the identity operation *Merge* (§13.8).
 
-The account of that operation is `derivation` — Blueprint §13.1 names `SUPERSEDES` and
-`MERGED_INTO` as *"derivation operations, not genealogy."* It is not `LINEAGE`, it is not
-*visual derivation*, and it is not written with the bare word. What an identity operation means in
-the other five models is **OPEN** (§13.8); this example says nothing about them.
+That is the identity-operation sense, and its term is `derivation` — Blueprint §13.1 names
+`SUPERSEDES` and `MERGED_INTO` as *"derivation operations, not genealogy."* It is not `LINEAGE`,
+it is not *visual derivation*, and it is not written with the bare word. What an identity
+operation means in the other five models is **OPEN** (§13.8); this example says nothing about
+them.
 
 ## 10. Non-Goals — What This Contract Does Not Define
 
@@ -460,7 +469,8 @@ it as having done so:
 3. a universal audit record or audit schema
 4. a universal revision schema, numbering or sequence
 5. a universal version schema, numbering or stamp
-6. any universal graph of descent, ancestry or derivation
+6. any universal graph of descent or ancestry, in the `derivation` sense, the *visual derivation*
+   sense, or any other
 7. the meaning of identity operations outside World — **OPEN**, §13.8
 8. any model's temporal architecture or temporal package — model-owned, §13.6d, I-90
 9. any conversion of a MODEL-DESIGN-INPUT packaging row into a requirement — I-107
@@ -481,7 +491,7 @@ it as having done so:
 | **B** | **History universalization** — using the World History Record as the universal temporal mechanism | I-90; I-102 |
 | **C** | **Revision–version collapse** — treating every revision as a version | Blueprint §13.7b |
 | **D** | **Provenance–audit collapse** — treating approval mode or session as provenance | Blueprint §13.7b; I-14 |
-| **E** | **Resurrecting the retired word** — using it as a generic term for relationship, ancestry, descent or derivation | Blueprint §13.7b; RMS §18 |
+| **E** | **Resurrecting the retired word** — using it as a generic term for relationship, ancestry or descent, or in place of `derivation`, `LINEAGE` or *visual derivation* | Blueprint §13.7b; RMS §18 |
 | **F** | **World Kind leakage** — treating `LINEAGE` as a system-wide temporal concept | Blueprint §13.6, §13.7b |
 | **G** | **Visual–World leakage** — treating *visual derivation* as `LINEAGE` | Blueprint §13.7b |
 | **H** | **Derivation collapse** — treating identity-operation `derivation` and *visual derivation* as one mechanism | Blueprint §13.7b, §13.8; RMS §19 |
@@ -524,7 +534,7 @@ conformant to the Record System: the other P2 contracts carry their own conditio
 | Separation lets each model own its temporal architecture without importing World's | Blueprint §13.7b |
 | Provenance is an envelope property; capture shared, meaning model-owned | Blueprint §13.7b, §13.7a; RMS §4; Artifacts 047, 048 |
 | Real-World Time is authoritative in provenance | Blueprint §12.16 |
-| Only provenance, of the six, is a universal envelope field | RMS §4 |
+| Of the six, provenance is the one named in the universal Record envelope | RMS §4 |
 | Audit = approval mode, session, by whose act; recorded within each temporal entry | Blueprint §13.7b; I-14 |
 | "Who approved it" is a separate question from who, when and why | P-18; I-09 |
 | History = how the Record's state came to be | Blueprint §13.7b |
