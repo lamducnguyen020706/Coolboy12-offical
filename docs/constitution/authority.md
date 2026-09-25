@@ -11,23 +11,23 @@ Why: I-104 made buildable · Risk: high · ∥: no
 Row 051 states this artifact's reason in four words: **I-104 made buildable.**
 
 I-104: *"Record and Canon are not synonyms. Canonicality is a status property whose meaning is
-defined by each Record Model that has one, and two models hold Records that are never
-canonical."* RMS §17 states the rule this artifact exists to make operational, in full:
+defined by each Record Model that has one"*. RMS §17 states the core rule this artifact exists to
+make operational:
 
 > *"**Record ≠ Canon.** All authority is domain-scoped."*
 
-Those two sentences are the whole of the source architecture's authority rule. This contract
-makes them usable: it fixes what "authority" refers to, holds the one constitutional commit
-position apart from every other use of the word, and states the boundaries that stop authority
-collapsing into Record, Canon, canonicality, source-of-truth class, provenance, model ownership
-or infrastructure permission.
+This contract makes those two sentences usable, together with the rules of the Spine and
+Blueprint §10.1 on the one Authority: it fixes what "authority" refers to, holds the one
+constitutional commit position apart from every other use of the word, and states the boundaries
+that stop authority collapsing into Record, Canon, canonicality, source-of-truth class,
+provenance, model ownership or infrastructure permission.
 
 Artifact 042 already names the question this document answers: *"Semantic ownership is not
 change authority. Who may commit a change, and under what ceremony, is Artifact 051."* This
 contract answers it at the level of the framework. It does not write any model's ceremony.
 
 It adds no architecture. Every rule below is a contractual formulation of what the Spine,
-Blueprint §10.1, §12.1, §12.6, §13.0, §13.6, §13.6c, §13.7a, §13.7c and §26.2a, RMS §6 and §17,
+Blueprint §10.1, §12.1, §12.2, §12.6, §13.0, §13.6, §13.7a, §13.7c and §26.2a, RMS §6 and §17,
 and the invariants cited already establish.
 
 ## 2. Constitutional Status
@@ -92,7 +92,7 @@ each meaning already lives, so that none is read as another.
 | Term | What it is, per its source | Source | Owner |
 |---|---|---|---|
 | **Authority** | The one constitutional position that commits canon — *"a position, not a person"* | Spine law 3; Blueprint §10.1; I-03 | the Spine |
-| **authority** | Legitimate power within a domain. *"All authority is domain-scoped."* | RMS §17 | this contract (the framework); each model (its own domain) |
+| **authority** | The framework rule that authority is domain-scoped: *"All authority is domain-scoped."* | RMS §17 | this contract (the rule); the semantics of authority within a specific domain stay with that domain's governing contract |
 | **Record** | *"The architectural unit: a persistent semantic unit owned by exactly one Record Model"* | Blueprint §13.0 | Artifact 039 |
 | **Record Model** | *"The partition-owned semantic model that owns Records"* | Blueprint §13.0; RMS §6 | Artifacts 041, 042 |
 | **Canon** | *"A governance and truth concept: the committed record, and the authority that commits it"* | Blueprint §13.0, §12.1 | the Spine |
@@ -113,7 +113,8 @@ source rule, and the sources themselves are not rewritten to follow it.
 > position that commits canon, through the one path. Every other authority is scoped to the domain
 > its source gives it, and extends no further. Authority is not Record, not Canon, not
 > canonicality, not source-of-truth class, not provenance, not model ownership, and not
-> infrastructure permission.**
+> infrastructure permission. No shared mechanism, model, storage layer or implementation component
+> acquires semantic authority because it is shared.**
 
 ```
                         CONSTITUTIONAL AUTHORITY
@@ -153,11 +154,16 @@ Stated as rules:
 5. **No automation, schedule or default may ever exercise it** in the Authority's absence
    (§10.1).
 
-**The Authority is scoped too.** Applied to the Authority, RMS §17's rule means this: what §10.1
-grants the position is the commit of canon, through the one path of Spine law 2, and that is its
-domain. It does not make the Authority the owner of any model's Records — semantic ownership stays
-with each Record Model (RMS §6), and Artifact 042 already records that *"Semantic ownership is not
-change authority."*
+**The Authority and domain-scoped authority are distinct uses of the term.** The constitutional
+Authority is the single human commit position defined by Spine law 3 and Blueprint §10.1.
+Domain-scoped authority is the framework rule of RMS §17: an authority claim applies only within
+the domain that gives it meaning. This contract does not reconcile the two into one taxonomy, does
+not turn the Authority into a model-owned authority object, and defines no model-specific authority
+semantics.
+
+Holding the Authority does not make anyone the owner of any model's Records: semantic ownership
+stays with each Record Model (RMS §6), and Artifact 042 already records that *"Semantic ownership
+is not change authority."*
 
 ## 7. Domain-Scoped Authority
 
@@ -175,25 +181,18 @@ domain.
     nothing beyond it                     ✗  "authoritative"  →  "authoritative everywhere"
 ```
 
-**The sources already show it.** Three places, each reading correctly only when authority is
-scoped:
+**Domain-specific authority semantics belong to the owning model or domain contract.** This
+framework freezes the boundary only. It does not enumerate, normalize or compare the six Record
+Models' authority semantics, and it defines no model's authority meaning or ceremony.
 
-- **Blueprint §13.7c** records, per Record Model, what authorizes its state: the Human Gate for
-  World and for Epistemic; Production ceremony for Production; Registry change (§9.4) for
-  Registry; a gate per kind for Visual; publication for Issue. Six models, not one authorizing
-  act. What those mean is not stated here — the table is Artifact 052's, and each model's meaning
-  is its own.
+Blueprint §13.7c is cited here for one fact only: the governing sources already distinguish the
+models from one another, and those distinctions must not be universalized. What any of them is
+belongs to Artifact 052 and to each model's own contract, not to this document.
 
-  One consequence is fixed, because the Spine fixes it: wherever a model's Records are canonical,
-  canon changes only through the one path (Spine law 2) and only the Authority commits it (I-03).
-  How a model's own authorizing act sits within that path — for example, how a Registry change
-  (§9.4) meets the Human Gate — the sources do not restate, and this contract does not decide. It
-  is each model's own contract's, and the canonical-gate framework's (Artifact 145).
-- **Blueprint §29.6a** lists *"Production State about the plan"* as AUTHORITATIVE, while
-  **Blueprint §13.6** says Production State is *"never authoritative about the world"*. Both hold
-  because each is scoped: about the plan, and about the world.
-- **Blueprint §13.6c**: *"V holds the objects. It does not hold the authority."* Holding a Record is
-  not holding authority over what it is about.
+One consequence is fixed because the Spine fixes it, and it is not model-specific: wherever canon
+changes, it changes only through the one path (Spine law 2), and only the Authority commits it
+(I-03). How a model's own ceremony sits within that path is not stated here; it is that model's
+contract's, and the canonical-gate framework's (Artifact 145).
 
 **No universal taxonomy of domains is established here.** This contract states that authority is
 scoped; it does not enumerate the scopes, rank them, or assume the six models share one authority
@@ -203,10 +202,10 @@ authority hierarchy, and are not read as one here.
 
 **Source condition recorded, not resolved.** RMS §17 places the authority matrix *"in Appendix E
 and Deliverable H"*. Appendix E of the RMS reads only *"Authority Matrix → Deliverable H"*, and
-**Deliverable H is not present in this repository.** The matrix is therefore unavailable, and this
-contract does not reconstruct it. The framework rule — that authority is domain-scoped — stands
-without it; the per-domain enumeration it would carry belongs to that deliverable and to each
-model's own authority contract.
+**Deliverable H is not present in this repository.** The matrix is therefore unavailable, and it
+**MUST NOT** be reconstructed — here, or from the Blueprint by inference. The framework rule —
+that authority is domain-scoped — stands without it; the per-domain enumeration it would carry
+belongs to that deliverable and to each model's own authority contract.
 
 ## 8. Authority and the Canon Boundary
 
@@ -217,13 +216,13 @@ apart: *"**`Record` is architectural. `Canon` is governance.**"*
 Operationally:
 
 - A Record does not become Canon by existing, by being stored, or by being valid.
-- Blueprint §12.1: *"Canon is exactly the committed record"*. Canon is reached through the one path
-  and the Authority's commit — never by storage, by repetition, or by any component's assertion.
+- Blueprint §12.1: *"Canon is exactly the committed record"*. Canon is reached only through the one
+  path — propose → check → human gate → commit → changelog → log (Spine law 2) — and only the
+  Authority commits it (I-03). Never by storage, by repetition, or by any component's assertion.
 - **Authority over something is not canonicality of it.** Being authoritative within a domain does
-  not make a Record canonical, and it does not make it World Canon. Whether and how a model treats
-  its Records as canonical is that model's (I-104), within the framework of Artifact 052.
-- Two models hold Records that are never canonical at all (I-104). Their authority, where they
-  have one, is real within their domain and confers no canonicality.
+  not make a Record canonical, in its own model or in any other.
+- **Whether a Record Model defines canonicality, and what that canonicality means, is outside this
+  framework.** It is defined by Artifact 052 and by the owning model where applicable (I-104).
 
 ## 9. Authority and Source-of-Truth Classification
 
@@ -239,8 +238,10 @@ Artifact 050 classifies where a fact lives: `AUTHORITATIVE` · `DERIVED` · `CAC
 | Owner | Artifact 050 | the Spine; this contract; each model |
 
 A Record may be the `AUTHORITATIVE` source for its domain's fact. That does not make the Record the
-constitutional Authority, does not give it authority over anything outside its domain, and does not
-make it World Canon. Conversely, the constitutional Authority is not a source-of-truth class.
+constitutional Authority, does not give it authority over anything, and does not make it canonical.
+**The separation runs both ways:** a source-of-truth class is not an authority claim, and an
+authority claim is not a source-of-truth class. The constitutional Authority is not a
+source-of-truth class either.
 
 This contract does not modify, re-specify or duplicate Artifact 050.
 
@@ -353,8 +354,8 @@ no leakage across models                 — I-101, I-103
   the most mature model and is not the authority template for E, P, R, V or I.
 - **I-103** — *"Shared infrastructure never confers shared meaning."* A shared framework is not a
   shared authority semantics.
-- **I-105** — Registry *"holds semantic authority over definitions and never semantic ownership of
-  another model's Records."* Registry is not a super-authority.
+- **I-105** — Registry never acquires *"semantic ownership of another model's Records"*. Registry
+  is not a super-authority over the other five.
 - No model inherits another's authority semantics, and none is required to share an authority
   lifecycle, field or structure with another.
 
@@ -373,9 +374,10 @@ Guard rails are defence-in-depth, never the Authority. Blueprint §12.6:
 
 I-83 carries the same rule. So none of the following is the Authority, or confers it:
 
-- a repository hook — including this repository's own canon write-deny hook (Artifact 022), which
-  blocks direct writes to `canon/**` and is defence-in-depth in exactly this sense. Its metadata
-  reads `Auth: enforcing`: an artifact's domain-scoped metadata (Artifact 003), not the Authority;
+- a repository-level canon-write guard or hook — it may block a direct write to a protected path,
+  and is defence-in-depth in exactly this sense;
+- an artifact's `Auth:` metadata value, such as `enforcing` — domain-scoped artifact metadata
+  (Artifact 003), not the Authority;
 - an operating-system, database or API permission;
 - a tool allowlist or an AI tool restriction;
 - a validator, adapter, repository or index;
@@ -407,7 +409,7 @@ provenance, audit, history, revision, version and the retired word is Artifact 0
 | **A** | **Universal authority semantics** — one meaning of authority for all six models | RMS §17; I-103 |
 | **B** | **Universal authority boolean** — a true/false authority flag on Records | RMS §17; Blueprint §13.7a |
 | **C** | **Universal authority schema** — an authority field, level, status or scope on every Record | Blueprint §13.7a; RMS §4 |
-| **D** | **Record = authority** — treating a Record's existence or storage as authority | RMS §17; Blueprint §13.6c |
+| **D** | **Record = authority** — treating a Record's existence or storage as authority | RMS §17; Blueprint §13.0 |
 | **E** | **Record = Canon** | Blueprint §13.0; I-104 |
 | **F** | **Authority = canonicality** | Blueprint §13.7c; I-104 |
 | **G** | **SoT class = the Authority** — reading `AUTHORITATIVE` as the constitutional position | Blueprint §29.6a, §10.1 |
@@ -430,40 +432,32 @@ provenance, audit, history, revision, version and the retired word is Artifact 0
 **Every example below is illustrative and non-normative.** It shows where a boundary falls. It
 defines no model's authority, canonicality, schema or ceremony.
 
-### Example A — A World Record
+### Example A — Source-of-truth class vs Authority
 
-A World CHARACTER Record is authoritative within World's domain, as World defines it. That makes the
-Record neither the Authority nor Canon in any other model: a change to it becomes canon only through
-the one path, at the Human Gate, written by the Mutation Coordinator. And World's arrangement is not
-a template — no other model's authority is read from it (I-101).
+A Record lives in the `AUTHORITATIVE` source-of-truth class. That answers where its fact lives
+(§29.6a). It does not make the Record the constitutional Authority, and it does not make the Record
+an authority over anything. Whether the Record may change is decided by the one path and the
+Authority's commit, not by its class.
 
-### Example B — A Registry definition
+### Example B — Provenance vs authorization
 
-A Registry definition is authoritative about the meaning it defines. I-105 draws the line: Registry
-*"holds semantic authority over definitions and never semantic ownership of another model's
-Records."* A World Record that resolves that definition remains World's Record; the Registry's
-authority over the definition gives it none over the World instance.
+A provenance entry records that a person performed an action, at a Real-World Time, for a stated
+reason. That record does not grant the person the Authority, and it does not make the action
+legitimate after the fact. Provenance records an act; it does not authorize it.
 
-### Example C — An Epistemic Record
+### Example C — Guard rail vs the Authority
 
-An Epistemic Record belongs to the model that answers *"Who knows, believes, suspects, or has been
-shown what?"* (RMS §6) — not *"What is true of the world?"*, which is World's question. Whatever
-authority E defines over its own subject matter, it reaches E's question and not World's, and it is
-not inherited from World. What E's authority means is E's to state.
+A repository hook rejects a direct write to a protected path. That capability is defence-in-depth
+(§12.6, I-83). The hook does not become the Authority: a write it lets through is not thereby
+approved, and it cannot redefine the commit boundary. If it and the Human Gate disagree, the gate is
+right and the hook is a bug.
 
-### Example D — Production, Issue and Visual
+### Example D — A domain boundary
 
-- **Production.** Production State is `AUTHORITATIVE` *"about the plan"* (§29.6a) and *"never
-  authoritative about the world"* (§13.6). The same Record is authoritative in one domain and not in
-  another, and Production is never canonical (I-104).
-- **Issue.** An Issue Record is authoritative about the published artifact and is *"Not Canon"*
-  (§13.6): *"a World object never becomes an Issue object by being published"* (§13.6), and nothing
-  is true because it is printed (Spine law 5).
-- **Visual.** *"V holds the objects. It does not hold the authority."* (§13.6c). A Visual Record's
-  existence confers no authority over what it depicts.
-
-In each case the Record exists, is held by its model, and may be authoritative within its domain —
-and none of that makes it World Canon.
+An authority claim is made within some domain. It applies within the domain that gives it meaning
+and nowhere else, and it gives no ownership of another model's Records. This framework does not
+define that domain's internal semantics, lifecycle, schema or ceremony; the domain's own contract
+does.
 
 ## 20. Conformance Conditions
 
@@ -484,12 +478,12 @@ no `051.x` invariant is minted.
 | **C-09** | Authority does not imply canonicality. | Blueprint §13.7c; I-104 |
 | **C-10** | Source-of-truth class `AUTHORITATIVE` is not the Authority. | Blueprint §29.6a, §10.1 |
 | **C-11** | No model's authority semantics are the template for another's. | I-101 |
-| **C-12** | Registry's authority over definitions confers no ownership of another model's Records. | I-105 |
+| **C-12** | No model's authority confers ownership of another model's Records; Registry is no super-authority. | RMS §6; I-105 |
 | **C-13** | No infrastructure, external component or guard rail is the Authority. | Blueprint §12.6, §26.2a; I-83; I-84 |
 | **C-14** | A recorded provenance `who` confers no authority. | Blueprint §13.7b; §16 |
 | **C-15** | No universal authority field, boolean, schema, level or lifecycle is defined. | Blueprint §13.7a; RMS §4 |
 | **C-16** | No model's authority meaning or ceremony is defined here. | RMS §6 |
-| **C-17** | No canonicality meaning, table or gate is defined here. | Roadmap rows 052, 145 |
+| **C-17** | This contract defines no model-specific canonicality meaning, canonicality table, or canonical gate. | Roadmap rows 052, 145 |
 | **C-18** | The document contains no executable content and mints no Record, Kind, field or invariant. | Roadmap row 051 `T: doc` |
 
 A construction satisfying all eighteen is conformant **to this contract**. It is not thereby
@@ -516,14 +510,11 @@ conformant to the Record System: the other P2 contracts carry their own conditio
 | Repositories provide capabilities, not semantics | Blueprint §26.2a |
 | No external component holds canonical semantics or adjudicates a mutation | I-84 |
 | AI output is provisional and advisory | Spine law 6 |
-| Per-model authorizing acts differ | Blueprint §13.7c |
-| Wherever Records are canonical, the one path and the one committer apply | Spine law 2; I-03; Blueprint §13.6 |
 | Artifact metadata `Auth:` is domain-scoped and is not the Authority | Artifact 003, field 9 |
-| Production State authoritative about the plan, never about the world | Blueprint §29.6a, §13.6 |
-| V holds the objects, not the authority | Blueprint §13.6c |
-| Issue is not Canon; publication does not make canon | Blueprint §13.6, §13.6a; Spine law 5 |
-| Registry holds authority over definitions, never ownership of others' Records | I-105 |
+| Registry never acquires ownership of another model's Records; no super-authority | I-105 |
 | No model is a template for another | I-101 |
+| Model distinctions exist in the sources and are not universalized here | Blueprint §13.7c |
+| No universal Record base, lifecycle, canonicality or schema | Blueprint §13.7a |
 | Shared infrastructure never confers shared meaning | I-103 |
 | Model-owned Record semantics | RMS §6 |
 | Semantic ownership is not change authority | Artifact 042 |
