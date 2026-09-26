@@ -146,8 +146,11 @@ below).
 The account MUST make the approving act traceable. This is not provenance's *who*: Blueprint §13.7b
 gives audit the question *"Under what approval mode, in which session, by whose act"*, and I-14
 requires that *"Approval mode is recorded, not merely the fact of approval."* Artifact 049 §5.2
-keeps the two apart. What the approving act is in a given model — the Human Gate, a production
-ceremony, a model's own act — is that model's (Artifact 051); how it is recorded IS MODEL-OWNED.
+keeps the two apart. The Human Gate and the Authority framework remain Spine-owned constitutional
+mechanisms (Spine law 3; Artifact 051) and are not assigned to a Record Model by this contract. A
+Record Model may own additional model-specific approval semantics or approval ceremony where its
+governing model architecture provides them. How the approving act is represented in that model's
+temporal account IS MODEL-OWNED.
 
 ### 5.5 What caused it
 
