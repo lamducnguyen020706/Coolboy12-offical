@@ -13,9 +13,12 @@ Record Models without creating a universal Record package?**
 
 The answer is Blueprint §13.6d's governing rule: *"each Record Model owns the packaging of its
 Records."* World's package is established; Epistemic, Production, Visual and Issue own theirs;
-Registry owns its own; and no package is universal. Row 056's reason is *"I-107"*: a package
-declared for a model that has not been independently designed is provisional and may not be
-implemented as a requirement.
+Registry owns its own; and no Record Model package composition is universal. Row 056's reason is
+*"I-107"*: a package declared for a model that has not been independently designed is provisional
+and may not be implemented as a requirement.
+
+The header reproduces row 056 exactly. Its *"others model-owned"* stands beside *"R
+Registry-owned"*: *others* means E, P, V and I, and R is Registry-owned (§8 below).
 
 **This contract adds no architecture.** Every rule restates Blueprint §13.6d, §13.6e, §13.7,
 §13.7a and §13.9, RMS §4, §6 and §7, and I-72, I-90, I-101, I-102, I-103, I-105 and I-107.
@@ -60,9 +63,9 @@ architectures); schemas, fields, storage, code and tests.
 
 > **Package composition is owned by the Record Model that owns the Records. World's package is
 > established, and it is World's. Epistemic, Production, Visual and Issue own their package
-> architectures. Registry owns the package architecture of Registry Records. No package is
-> universal, and a package row declared for a model not yet independently designed is provisional
-> and is not a requirement.**
+> architectures. Registry owns the package architecture of Registry Records. No Record Model
+> package composition is universal, and a package row declared for a model not yet independently
+> designed is provisional and is not a requirement.**
 
 | Clause | Source |
 |---|---|
@@ -77,8 +80,8 @@ architectures); schemas, fields, storage, code and tests.
 RMS §6 lists what a Record Model owns: *"its Kind taxonomy, identity semantics, state and
 lifecycle, relationship packaging, temporal architecture, provenance meaning, canonicality meaning
 (if any), semantic validation, and package composition."* Package composition is the architectural
-grouping of records that together make up a model's Records — for World, *"a package of three
-records with one identity between them"* (§13.9).
+determination of which Record constructs constitute a model's package — for World, *"a package of
+three records with one identity between them"* (§13.9).
 
 The package is architectural, not physical. §13.9: *"The package is logical and semantic. An
 implementation may store, index, or project the three differently — one file, three files, or a
@@ -174,8 +177,8 @@ Therefore:
 1. A row's presence in the Blueprint does not create a constitutional requirement.
 2. This contract promotes no row to a requirement and treats none as an implementation instruction.
 3. The model's own architecture establishes and owns the package decision.
-4. A model may confirm, revise, reduce or replace its row: *"a model closing its schema may confirm
-   or revise its row"* (§13.6d).
+4. The model's own architecture may confirm, revise, reduce or replace the design input represented
+   by its row: *"a model closing its schema may confirm or revise its row"* (§13.6d).
 5. This contract performs no model's package design.
 
 **How a model changes its shape.** §13.6d: *"A Record Model changing its own packaging is a schema
@@ -240,8 +243,10 @@ owning-role rule, WSV relationship questions or any relationship schema.
    Registry owns the package architecture of Registry Records.
 ```
 
-The first line is invalid: I-101, I-107, and §13.6d — *"No downstream artifact may treat Record +
+The first line is invalid under §13.6d and I-107 — *"No downstream artifact may treat Record +
 History Record — or any other composition below — as a settled requirement for E, P, R, V, or I."*
+I-101 independently prohibits treating one Record Model as another model's template: *"no Record
+Model is the template for another."*
 In §13.6d, *below* is its package table. So no downstream artifact may treat any package
 composition shown for E, P, R, V or I in §13.6d as a settled implementation requirement unless and
 until that model's own architecture establishes it.
@@ -293,7 +298,7 @@ invariant number.
 | **C-056-09** | A similar package shape does not imply semantic inheritance or a universal primitive. | I-101; I-103; §13.6d; §13.9 |
 | **C-056-10** | Artifact 055's Relationship Record scope is not widened. | I-102; Artifact 055 |
 | **C-056-11** | Artifact 054's temporal obligation is not redefined. | Artifact 054 |
-| **C-056-12** | No package schema, field, storage or implementation is created. | Roadmap row 056 `T: doc`; §13.9 |
+| **C-056-12** | No package schema, field, storage or implementation is created. | Roadmap row 056 (`T: doc` · `R: CONTRACT`); Roadmap PART I per-directory rules, `docs/**` prohibits *"implementation detail"*; Roadmap §0.5 RULE G; Blueprint §13.9 |
 | **C-056-13** | No invariant is minted or amended. | Blueprint §36, §10.4; P-28; I-15 |
 | **C-056-14** | Each model's own architecture establishes and retains its package decision. | §13.6d; I-107 |
 | **C-056-15** | No Registry package decision is exported as another model's requirement. | I-105; §13.6e |
