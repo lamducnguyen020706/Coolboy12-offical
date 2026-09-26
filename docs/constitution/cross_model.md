@@ -51,9 +51,13 @@ Roadmap; it does not amend, supersede, or outrank any of them, and mints or amen
 Where this document differs from the Master Blueprint, the Record Model System, or the OS File
 Build Roadmap, **those governing sources are correct and this document is wrong.**
 
-**Precedence among the sources.** Roadmap §0.2: *"Blueprint + RMS govern."* Where the Roadmap and
-the Blueprint or RMS differ, this contract follows the Blueprint and RMS. No source ranks the
-Blueprint and the RMS against each other; a conflict between them is recorded, not decided.
+**Precedence among the sources.** Roadmap §0.2: *"Blueprint + RMS govern. Where the prior roadmap
+or the old roadmap conflicts with them, they lose."* It adds that *"Two unresolved source conflicts
+are recorded, not silently decided"*. §0.2 states the consequence of a conflict expressly for the
+prior and old roadmaps; it does not state in terms what follows when this Roadmap conflicts with
+the Blueprint or RMS. No source ranks the Blueprint and the RMS against each other. This contract
+therefore records a conflict among the sources and decides it only where a source states the
+outcome.
 
 `Req: RR-35` is preserved exactly as the Roadmap states it. This contract does not reproduce,
 reconstruct or infer the requirement text, and creates no new requirement under it.
@@ -94,7 +98,7 @@ PART IX anti-orderings · downstream validation (134)
 | Term | Meaning | Source |
 |---|---|---|
 | **Cross-model reference** | a reference from a Record of one Record Model to a Record, or a declared definition, of another | RMS §4, §8.2, §10.3 |
-| **Edge `A → B`** | A references B, as the RMS writes *"E → W (reference; …)"*; the arrow runs from the referencing model to the referenced one | RMS §8.2; Blueprint §13.6a rule 3 |
+| **Edge `A → B`** | A references B, as the RMS writes *"E → W (reference; …)"*; the arrow runs from the referencing model to the referenced one. As the sources use it, an edge concerns references from A's Records to B's Records (see below) | RMS §8.2; Blueprint §13.6a rule 3; Roadmap §2.4 |
 | **Legal cross-model handle** | a resolvable ID | RMS §4 |
 | **Resolution** | mechanical; uniform across models | RMS §4 |
 | **Legality** | whether an edge is permitted; *"model/Registry-owned"* | RMS §4 |
@@ -104,6 +108,12 @@ PART IX anti-orderings · downstream validation (134)
 and *"the only sanctioned Issue dependency"*; RMS §9.2 lists *"references, dependencies, workflow
 transitions."*; RMS §10.3 separates *"depend on runtime instances"* from reference. **SOURCE GAP:**
 no available source defines the difference. This contract uses each word only where its source does.
+
+**Edges and Record references.** The sources state edges as rules about Records' references: RMS
+§8.2 writes *"E → W (reference; …)"*; Roadmap §2.4 gives `W → E/P/V/I` the ground
+*"(manifestation-blindness)"*, which RMS §7 states of a World field and Blueprint §13.6a rule 3 of
+a World record; and §2.4's `E → I` *"(reveal ordering)"* is RMS §8.2's reference. A Record-level
+statement is therefore not itself a matrix row, but it can govern the same references as an edge.
 
 ## 5. Dependency Authority
 
@@ -162,8 +172,8 @@ delegate legality to the model or the Registry (RMS §4), that delegation applie
 adopts neither *unlisted = forbidden* nor *unlisted = allowed*. Whether Deliverable J would close
 the matrix is not known.
 
-Where sources conflict, the conflict is recorded with its sources and the precedence Roadmap §0.2
-states (§2); it is not otherwise decided.
+Where sources conflict, the conflict is recorded with its sources; it is decided only where a
+source states the outcome (§2).
 
 ## 8. Dependency Matrix
 
@@ -193,9 +203,9 @@ source states any other E → P reference.
 
 **Issue and Visual semantics.** RMS §12.2: *"Issue references but never owns W/E/P/V semantics."*
 For V, the RMS states this at the level of semantics. The Blueprint's Record-level statement
-(§8.2) lets every Record, an I Record included, reference into the V partition. Neither is a
-Record Model edge: **no I → V Record Model edge is established**, and the matrix has no I → V
-row.
+(§8.2) lets every Record, an I Record included, reference into the V partition. Neither is stated
+as an I → V edge, and this contract does not expand either into one: **no I → V Record Model edge
+is established**, and the matrix has no I → V row.
 
 Every allowed edge carries the handle rule (§6) and confers no ownership (§12).
 
@@ -213,8 +223,9 @@ contract records them at that level and derives no matrix row from either.
   into the V partition"*; RMS §4 fixes the universal envelope at the bootstrap set *"and no more"*;
   and the Blueprint records which kinds must carry `visual_refs` as *"REQUIRES DECISION"*. The
   statement stands at the Record level: every Record may reference visual objects. Where the
-  reference is carried is not decided here, and no Record Model edge is inferred from it — no
-  E → V, P → V or I → V row. For W, the Roadmap separately forbids the W → V edge; §8.3.
+  reference is carried is not decided here. This contract does not expand the statement into
+  per-model rows — no E → V, P → V or I → V row is added. Where a model-level statement governs
+  the same references, the two meet: Roadmap §2.4 forbids W → V (§8.3).
 
 ### 8.3 W → V — source conflict
 
@@ -224,18 +235,21 @@ contract records them at that level and derives no matrix row from either.
 | **Source B** — Roadmap §2.4 | lists `W → E/P/V/I` (manifestation-blindness) among its forbidden edges | Record Model: an edge from W to V |
 | **Source C** — RMS §7; I-17; Blueprint §11 | *"no World field may reference an issue, tier, medium, artifact, or the real world"*; World records *"know nothing of magazines, covers, tiers, or issues"* | field of a World Record |
 
-**Why this is a conflict, not a difference of level.** Source A is Record-level and establishes no
-model edge as such (§8.2). But it names its target: *"References into the V partition"*, and each
-partition owns exactly one Record Model (I-16). So Source A permits a World Record to reference a
-V Record. Source B forbids the W → V edge, which forbids exactly that. The two sources are at
-different levels and still speak to the same reference, and they disagree about it. Source C
-forbids a World field referencing an *"artifact"* and names *"covers"*; RMS §9.1 speaks of
-*"Visual artifact/asset → V."*, and no source says whether a visual object is an artifact, or a
-cover, in Source C's sense.
+**Why this is a conflict, not a difference of level.** Source A is Record-level and is not a
+matrix row (§8.2). It names its target: *"References into the V partition"*, and each partition
+owns exactly one Record Model (I-16); so it permits a World Record to reference a V Record. Source
+B is a model edge, and as the sources use edges it concerns the references of W's Records (§4:
+§2.4 grounds `W → E/P/V/I` in manifestation-blindness, which RMS §7 states of a World field). So
+Source B forbids the reference Source A permits. The bridge between the two levels is the sources'
+own, and the two sources disagree about the same reference. Source C forbids a World field
+referencing an *"artifact"* and names *"covers"*; RMS §9.1 speaks of *"Visual artifact/asset →
+V."*, and no source says whether a visual object is an artifact, or a cover, in Source C's sense.
 
-**Authority treatment.** Roadmap §0.2: *"Blueprint + RMS govern."* Under that source rule, B does
-not prevail over A, and this contract does not adopt the Roadmap's W → V prohibition. A and C are
-both governing and no source ranks them. Whether a World Record may reference a visual object —
+**Authority treatment.** Roadmap §0.2 states that *"Blueprint + RMS govern"*, and states the
+consequence of a conflict expressly for the prior and old roadmaps (§2); it does not state in terms
+the outcome of a conflict between this Roadmap's §2.4 and the Blueprint. A and C are both governing
+and no source ranks them. This contract adopts neither the Roadmap's W → V prohibition nor the
+Blueprint's permission for World Records. Whether a World Record may reference a visual object —
 and whether that differs between a `CANONICAL-VISUAL-SPECIFICATION` and a `VISUAL-ASSET` — is
 **unresolved by the current sources**, and no source assigns its resolution to 058.
 
@@ -452,7 +466,8 @@ places the `EVENT` in no Issue package (056; C-058-12) and admits no Kind (057; 
 |---|---|
 | Resolvable ID the only legal cross-model handle | RMS §4 |
 | Resolution mechanical and uniform; legality model/Registry-owned | RMS §4 |
-| Precedence: Blueprint + RMS govern | Roadmap §0.2 |
+| Precedence: Blueprint + RMS govern; conflict consequence stated for the prior and old roadmaps | Roadmap §0.2 |
+| Edges concern Records' references (the sources' own bridge) | RMS §8.2, §7; Roadmap §2.4; Blueprint §13.6a rule 3 |
 | Matrix delegated to Deliverable J; Deliverable J named only in the RMS | RMS §22–23, Appendix G, §10.3 |
 | E → W, E → I | RMS §8.2; Blueprint §13.6a rule 3, §13.6b |
 | E → P[READER-MODEL] — **synthesis** of Blueprint §11 (*may reference reader models*) and Blueprint §11, §13.6 (READER-MODEL is Production); no general E → P | Blueprint §11, §13.6; RMS §9.1 |
