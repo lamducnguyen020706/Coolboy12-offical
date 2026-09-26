@@ -3,7 +3,7 @@
 **Artifact 056** · package boundary specification · `docs/constitution/package_boundary.md` ·
 Own: CONST · RM: all · T: doc · R: CONTRACT · SoT: AUTHORITATIVE · Auth: governing · Canon: n/a ·
 CD: no · Ph/St: P2/2d · Req: BR-18 · BP: §13.6d · RMS: §7 · H: 055 · S: — · LS: — · G: — ·
-→ models · Val: packaging model-owned; W established; others model-owned; R Registry-owned ·
+→ models · Val: packaging model-owned; W established; E/P/V/I model-owned; R Registry-owned ·
 Done: no universal package · Why: I-107 · Risk: high · ∥: no
 
 ## 1. Purpose
@@ -17,8 +17,8 @@ Registry owns its own; and no Record Model package composition is universal. Row
 *"I-107"*: a package declared for a model that has not been independently designed is provisional
 and may not be implemented as a requirement.
 
-The header reproduces row 056 exactly. Its *"others model-owned"* stands beside *"R
-Registry-owned"*: *others* means E, P, V and I, and R is Registry-owned (§8 below).
+Row 056's `Val` reads *"others model-owned"* beside *"R Registry-owned"*. The header states
+*others* explicitly as E/P/V/I, on the author's instruction; R is Registry-owned (§8 below).
 
 **This contract adds no architecture.** Every rule restates Blueprint §13.6d, §13.6e, §13.7,
 §13.7a and §13.9, RMS §4, §6 and §7, and I-72, I-90, I-101, I-102, I-103, I-105 and I-107.
@@ -243,10 +243,17 @@ owning-role rule, WSV relationship questions or any relationship schema.
    Registry owns the package architecture of Registry Records.
 ```
 
-The first line is invalid under §13.6d and I-107 — *"No downstream artifact may treat Record +
-History Record — or any other composition below — as a settled requirement for E, P, R, V, or I."*
-I-101 independently prohibits treating one Record Model as another model's template: *"no Record
-Model is the template for another."*
+The first line is invalid on three separate grounds:
+
+- **§13.6d** establishes that the E, P, R, V and I package rows are *"MODEL-DESIGN INPUT (not a
+  freeze)"*: *"No downstream artifact may treat Record + History Record — or any other composition
+  below — as a settled requirement for E, P, R, V, or I."*
+- **I-107** prohibits implementing provisional package composition as a requirement: *"A package
+  composition declared for a Record Model that has not been independently designed is provisional
+  and may not be implemented as a requirement."*
+- **I-101** preserves model sovereignty: *"No Record Model is a specialization of another, and no
+  Record Model is the template for another."*
+
 In §13.6d, *below* is its package table. So no downstream artifact may treat any package
 composition shown for E, P, R, V or I in §13.6d as a settled implementation requirement unless and
 until that model's own architecture establishes it.
@@ -298,7 +305,7 @@ invariant number.
 | **C-056-09** | A similar package shape does not imply semantic inheritance or a universal primitive. | I-101; I-103; §13.6d; §13.9 |
 | **C-056-10** | Artifact 055's Relationship Record scope is not widened. | I-102; Artifact 055 |
 | **C-056-11** | Artifact 054's temporal obligation is not redefined. | Artifact 054 |
-| **C-056-12** | No package schema, field, storage or implementation is created. | Roadmap row 056 (`T: doc` · `R: CONTRACT`); Roadmap PART I per-directory rules, `docs/**` prohibits *"implementation detail"*; Roadmap §0.5 RULE G; Blueprint §13.9 |
+| **C-056-12** | No package schema, field, storage or implementation is created. | Source facts: Roadmap row 056 — `T: doc` · `R: CONTRACT`; Roadmap PART I per-directory rules — `docs/**` prohibits *"implementation detail"*; Roadmap §0.5 RULE G — *"A specification and a schema are always separate artifacts"*; Blueprint §13.9 — *"The package is logical and semantic"*. Effect: 056 is a contract document and defines none of them. |
 | **C-056-13** | No invariant is minted or amended. | Blueprint §36, §10.4; P-28; I-15 |
 | **C-056-14** | Each model's own architecture establishes and retains its package decision. | §13.6d; I-107 |
 | **C-056-15** | No Registry package decision is exported as another model's requirement. | I-105; §13.6e |
