@@ -34,9 +34,8 @@ supersede, or outrank either, and amends no invariant. Where this document diffe
 Blueprint, the Record Model System, or the OS File Build Roadmap, **those governing sources are
 correct and this document is wrong.**
 
-`Req: BR-18` is preserved exactly as the Roadmap states it. The authoritative requirement register
-is not present in this repository; the requirement text is **not** reproduced and **MUST NOT** be
-inferred.
+`Req: BR-18` is preserved exactly as the Roadmap states it. This contract does not reproduce,
+reconstruct or infer its requirement text, and creates no new requirement under it.
 
 ## 3. Scope
 
@@ -101,7 +100,10 @@ serialization or storage format, a lifecycle, or a validator. This contract defi
 | The P-17/P-18 temporal obligation | Artifact 054; I-90 |
 | Wherever a Relationship Record exists, one authoritative edge in one Relationship Record | I-90; §13.6d; Artifact 055 |
 
-These bind every package; none of them is a package.
+These are system-level obligations relevant to model construction; they do not, by themselves,
+determine package composition or become universal package members. The temporal obligation is not a
+universal History Record, and the relationship-ownership rule is not a universal Relationship
+Record.
 
 ### 6.2 Model-owned
 
@@ -156,8 +158,9 @@ flag stands (RMS Appendix H, PC-2; Artifact 055 §9.3).
 *"Model-owned — each establishes its own"*; R *"Registry-owned — Registry establishes its own, as
 the model whose Records are definitions (§13.6e)"*.
 
-For each of E, P, R, V and I: **this model owns its package architecture; this contract does not
-freeze its unresolved package composition.**
+**For E, P, V and I, each model owns its own package architecture. For R, Registry owns the
+package architecture of Registry Records. None of these package decisions is frozen by this
+contract.**
 
 ## 9. Interpreting §13.6d's Package Table — MODEL-DESIGN INPUT
 
@@ -170,7 +173,7 @@ Therefore:
 
 1. A row's presence in the Blueprint does not create a constitutional requirement.
 2. This contract promotes no row to a requirement and treats none as an implementation instruction.
-3. The model's own architecture artifact owns the package decision.
+3. The model's own architecture establishes and owns the package decision.
 4. A model may confirm, revise, reduce or replace its row: *"a model closing its schema may confirm
    or revise its row"* (§13.6d).
 5. This contract performs no model's package design.
@@ -198,7 +201,7 @@ covers *"the package model"*. This contract cites the ceremony and defines none.
 **Source condition recorded, not resolved.** RMS §15 (`FROZEN`) records relationship mechanisms for
 E and P that differ from their rows above — E's knowledge relationships *"within KNOWLEDGE-STATE"*,
 P with *"No Relationship Record"* — as Artifact 055 §8.3 records. This contract decides nothing
-between them; each model's own package artifact (279, 340) does.
+between them; each model's own architecture does (documented in 279 and 340).
 
 ## 10. Registry's Own Package
 
@@ -239,6 +242,9 @@ owning-role rule, WSV relationship questions or any relationship schema.
 
 The first line is invalid: I-101, I-107, and §13.6d — *"No downstream artifact may treat Record +
 History Record — or any other composition below — as a settled requirement for E, P, R, V, or I."*
+In §13.6d, *below* is its package table. So no downstream artifact may treat any package
+composition shown for E, P, R, V or I in §13.6d as a settled implementation requirement unless and
+until that model's own architecture establishes it.
 
 ## 14. Prohibited Architectural Moves
 
@@ -288,8 +294,8 @@ invariant number.
 | **C-056-10** | Artifact 055's Relationship Record scope is not widened. | I-102; Artifact 055 |
 | **C-056-11** | Artifact 054's temporal obligation is not redefined. | Artifact 054 |
 | **C-056-12** | No package schema, field, storage or implementation is created. | Roadmap row 056 `T: doc`; §13.9 |
-| **C-056-13** | No invariant is minted or amended. | — this contract, §2 |
-| **C-056-14** | Each model's own architecture artifact retains its package decision. | §13.6d; I-107 |
+| **C-056-13** | No invariant is minted or amended. | Blueprint §36, §10.4; P-28; I-15 |
+| **C-056-14** | Each model's own architecture establishes and retains its package decision. | §13.6d; I-107 |
 | **C-056-15** | No Registry package decision is exported as another model's requirement. | I-105; §13.6e |
 
 A construction satisfying all fifteen is conformant **to this contract**. It is not thereby
@@ -333,6 +339,7 @@ and I. **Invalid** (§13 above).
 | Relationship Record and History Record World-only | I-102; Artifact 055 |
 | No universal package, History Record, Relationship Record, lifecycle | Blueprint §13.7a; RMS §4 |
 | Registry sovereign; owns its own package; not others' Records | Blueprint §13.6d, §13.6e; I-105 |
+| Invariants are the Blueprint's; changed only by Constitutional Amendment | Blueprint §36, §10.4; P-28; I-15 |
 | Temporal obligation | Artifact 054 |
 | Relationship boundary | Artifact 055 |
 | Commit-set shape follows the owning model's packaging | Roadmap row 153 |
@@ -341,7 +348,7 @@ and I. **Invalid** (§13 above).
 
 ## 19. Downstream Boundaries
 
-| Artifact | Owns |
+| Artifact | Specifies |
 |---|---|
 | **054** | the temporal obligation and model-owned temporal mechanism |
 | **055** | the relationship boundary and the World-scoped Relationship Record |
