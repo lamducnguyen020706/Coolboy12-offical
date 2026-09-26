@@ -1,0 +1,338 @@
+# COOLBOY12 — Kind Admission Test
+
+**Artifact 057** · Kind admission test · `docs/constitution/kind_admission.md` · Own: CONST ·
+RM: all · T: doc · R: CONTRACT · SoT: AUTHORITATIVE · Auth: governing · Canon: n/a · CD: no ·
+Ph/St: P2/2d · Req: BR-25,RR-26 · BP: §13.11 · RMS: §13 · H: 044 · S: — · LS: — · G: — ·
+→ every Kind artifact · Val: fourteen questions; ladder both directions · Done: test binding ·
+Why: every Kind must justify itself · Risk: HINGE · ∥: no
+
+## 1. Purpose
+
+This contract answers one question: **what must a proposed Kind answer before it is a Kind, and in
+which directions does the ladder run?**
+
+RMS §6.1 defines a Kind as *"A class of Record within one model"*, and its test as *"Passes the
+Kind Admission Test (§13)"*. RMS §13 states that test. This contract binds it to every Kind
+artifact — row 057's `→` is *"every Kind artifact"* and its `Done` is *"test binding"* — and states
+the ladder in both directions. Row 057's reason: *"every Kind must justify itself"*.
+
+**This contract adds no architecture.** Every rule restates RMS §6.1 and §13, Blueprint P-7, P-25,
+§13.6, §13.6e, §13.7, §13.11 and §29.4, I-71, I-84 and I-106, and Artifact 044.
+
+## 2. Constitutional Status
+
+`Own: CONST` · `RM: all` · `T: doc` · `R: CONTRACT` · `SoT: AUTHORITATIVE` · `Auth: governing` ·
+`Canon: n/a`.
+
+This document is AUTHORITATIVE about **the Kind admission test and its binding**. It is not World
+Canon, not a Record, not a Kind roster and not a schema. It admits no Kind and decides no model's
+roster.
+
+It derives the contract from the Master Blueprint and the Record Model System; it does not amend,
+supersede, or outrank either, and mints or amends no invariant. Where this document differs from
+the Master Blueprint, the Record Model System, or the OS File Build Roadmap, **those governing
+sources are correct and this document is wrong.**
+
+`Req: BR-25,RR-26` is preserved exactly as the Roadmap states it. This contract does not reproduce,
+reconstruct or infer the requirement text, and creates no new requirement under it.
+
+## 3. Scope
+
+**In scope.** The fourteen questions of RMS §13 and their binding on every Kind; the ladder,
+upward and downward; World's additional admission test and ceremony (§13.11); what the sources say
+about the Registry's part; the source conditions that bear on admission.
+
+**Out of scope.** Classification against the eight architectural categories (Artifact 044); any
+model's Kind roster (Artifacts 064, 176, 255, 298, 344, 363); the `KIND-DEFINITION` specification
+and schema (Artifacts 068, 069); package composition (056); cross-model dependency (058); the
+temporal obligation (054); the relationship boundary (055); the mechanics of any ceremony; schemas,
+fields, storage, code and tests.
+
+```
+044  architectural categories   — is it a Kind candidate at all? ("→ 057 decides")
+057  Kind admission test        ← this contract: the fourteen questions; the ladder
+  ↓
+     every Kind artifact        — 064 R · 176 W · 255 E · 298 P · 344 V · 363 I
+```
+
+## 4. Definitions
+
+| Term | Meaning | Source |
+|---|---|---|
+| **Kind** | *"A class of Record within one model"* | RMS §6.1; Artifact 044 §5 |
+| **Kind candidate** | a proposal classified as a class of Records within one model, before admission | Artifact 044 §7 |
+| **Kind Admission Test** | the fourteen questions every Kind must answer | RMS §13 |
+| **Admission** | a candidate passing the test; for World, also *"a schema change at Foundational ceremony"* | RMS §6.1, §13; Blueprint §13.11 |
+| **`KIND-DEFINITION`** | the Registry Record that defines what a Kind means | Blueprint §13.6e; Roadmap LS-1 |
+
+Classification is not admission. Artifact 044: *"Classification here is not admission."* A Kind
+existing in a roster, a Kind being defined in the Registry, and a Kind being admitted are three
+statements; this contract equates none of them.
+
+## 5. The Kind Admission Test
+
+### 5.1 The fourteen questions
+
+RMS §13 (`FROZEN`): *"every Kind must answer:"*
+
+| # | Question |
+|---|---|
+| 1 | what semantic object |
+| 2 | what semantic question |
+| 3 | why independent identity |
+| 4 | what persistent state |
+| 5 | what lifecycle |
+| 6 | what authority |
+| 7 | what references it |
+| 8 | why not a field |
+| 9 | why not a state |
+| 10 | why not a relationship |
+| 11 | why not a subtype |
+| 12 | why not a projection |
+| 13 | why not a Registry definition |
+| 14 | what breaks if it is not first-class |
+
+The numbering is this contract's, for reference; RMS §13 lists the questions in this order.
+
+### 5.2 Binding
+
+The test binds **every Kind**, in every Record Model (RMS §13: *"every Kind"*). A candidate that has
+not answered all fourteen has not passed, and is not a Kind (RMS §6.1).
+
+### 5.3 SOURCE GAP — what makes an answer sufficient
+
+RMS §13 requires an answer to each question and states no rule for judging one. This contract adds
+none. For World, §13.11 supplies eight yes/no questions and a refusal rule (§7 below); for the
+other models, judging an answer is the model's own design work (§8 below).
+
+## 6. The Ladder — Both Directions
+
+RMS §13: *"FIELD → KIND → STATUS → STRUCTURE, and the reverse when a Kind no longer justifies its
+structural cost."*
+
+**Upward.** P-7: *"A new concept becomes a field, then a kind, then a status, and only then —
+rarely — a new structure."* A concept enters at the lowest rung that carries it.
+
+**Downward.** P-7: *"The ladder runs downward as well as upward: an existing kind that a subtype or
+field could carry is walked back down it (Section 13.6)."* Blueprint §13.6 records the one time it
+was done: the ten retired World kinds were each *"walked down P-7's ladder to the lowest rung that
+carries it"*.
+
+**Retirement.** Descending the ladder is retirement, and P-25 makes it first-class: *"Every
+extension point that admits also retires."* For kinds, §13.11: *"Retiring a kind never deletes
+records of that kind"*; *"existing records remain valid, readable, and historically reachable
+forever; new records of that kind are refused by the linter."* The path is §29.4's, which applies
+to *"everything admission does"*. This contract defines no retirement procedure.
+
+**SOURCE GAP — the upper rungs.** The sources name STATUS and STRUCTURE as rungs and do not define
+them. This contract does not define them.
+
+## 7. World — The Additional Test and Ceremony
+
+World's taxonomy is established (Blueprint §13.6) and closed (I-71). §13.11: *"Closed does not mean
+permanent; it means an eighth kind is an event, not a convenience."*
+
+**Eight questions.** §13.11: *"A proposed World kind must answer all eight"*:
+
+1. independent canonical identity;
+2. an independent lifecycle;
+3. meaningful independent history;
+4. relationships that cannot be represented cleanly on an existing kind;
+5. a subtype would be insufficient;
+6. `CONCEPT` would be insufficient;
+7. a Registry classification would be insufficient;
+8. promotion avoids ontology bloat.
+
+A no on any of them *"refuses the promotion and names the correct rung: field, subtype,
+relationship, Concept, or Registry entry."*
+
+**Ceremony.** §13.11: *"Admission is a schema change at Foundational ceremony and lands in both
+documents in the same cycle (Section 13.7)."* I-71 states the same for an eighth instance-bearing
+kind. §13.7: *"A change to kinds … that lands in only one of the two documents is a defect"*.
+This contract cites the ceremony and defines none of its mechanics.
+
+**Source condition recorded, not resolved.** RMS §13 binds every Kind to fourteen questions;
+§13.11 and I-71 bind a World kind to eight. The sources do not say whether one replaces the other
+for World. Both apply as written; this contract neither merges them, maps one onto the other, nor
+chooses between them.
+
+## 8. The Other Record Models
+
+**Source condition recorded, not resolved.** The sources state the status of non-World rosters two
+ways:
+
+| Source | Statement |
+|---|---|
+| Blueprint §13.6, I-106 | non-World rosters are boundary-naming; a kind in that state *"may be renamed, split, merged, promoted from a field, or demoted to a subtype by the model's own design work without invoking §13.11's admission ceremony — because that ceremony governs an established taxonomy and only World has one"*; I-106: revisable *"until it declares otherwise"* |
+| RMS §8.1, §9.1, §10.1, §11.1, §12.1 | each roster recorded as a final taxonomy, *"CLOSED"* — E at seven, P at thirteen, R at fourteen, V at three, I at five |
+
+This contract does not decide whether the RMS closures are the declarations I-106 anticipates.
+
+**SOURCE GAP — the non-World admission act.** No source defines the ceremony by which a Kind is
+admitted to a non-World roster once it is closed. RMS §9.1 names one requirement — *"A future
+non-public production object requiring identity must pass a Kind Admission amendment rather than
+reuse a generic bucket"* — without defining the amendment. This contract defines no ceremony. The
+fourteen questions bind regardless (§5.2 above).
+
+**Model-specific criteria.** A model may carry its own admission criterion alongside the test.
+RMS §12.1 gives Issue's: *"a publication component is first-class when it is independently
+referenced, independently credited, or independently placed"*. Such criteria are the model's; this
+contract binds the fourteen questions and adds no model criterion.
+
+## 9. The Registry's Part
+
+What the sources establish:
+
+- **Registry defines a Kind; the model owns its Records.** §13.6e: the Registry owns *"The
+  definition of a kind"*; each Record Model owns *"Which Records of that kind exist, and what they
+  mean in its domain"*.
+- **Every Kind has a definition, in lockstep.** Roadmap LS-1: *"every Kind spec ↔ its Registry
+  KIND-DEFINITION"*, an atomic pair.
+- **Registry Kinds pass the same test.** Row 064: *"exactly fourteen Kinds, each with admission
+  rationale"*, with `H: 060,057`.
+- **No external component defines a kind.** I-84.
+
+What the sources do not establish: that the Registry decides whether another model's Kind is
+admitted. **Registry sovereignty is not admission authority over other models' Kinds**, and this
+contract assigns it none. A `KIND-DEFINITION` defining a Kind is not that Kind's admission.
+
+## 10. Relationship to Artifacts 056 and 058
+
+**056.** Admitting a Kind decides no package. Package composition remains owned as Artifact 056
+states it; the test's questions about identity, state and lifecycle do not select a package. A
+package change is itself a schema change at Foundational ceremony (§13.6d), and a separate decision.
+
+**058.** Question 7 asks *what references it*. Whether a given cross-model reference is legal is
+Artifact 058's, under RMS §22–23. This contract requires the answer and judges no reference.
+
+## 11. Prohibited Architectural Moves
+
+| # | Prohibited | Source |
+|---|---|---|
+| 1 | Treating a candidate as a Kind before it has answered all fourteen questions | RMS §6.1, §13 |
+| 2 | Treating classification as admission | Artifact 044 C-3 |
+| 3 | A Kind spanning more than one Record Model | RMS §6.1; Artifact 044 §5 |
+| 4 | A universal Kind taxonomy | RMS §4; Blueprint §13.7a |
+| 5 | An external component defining a kind | I-84 |
+| 6 | Admitting a World kind outside Foundational ceremony, or in one document only | §13.11; §13.7; I-71 |
+| 7 | Retiring a Kind by deleting its records | §13.11; §29.4 |
+| 8 | Reading a `KIND-DEFINITION` as the Kind's admission | §13.6e; Artifact 044 C-3 |
+| 9 | Treating Kind admission as a package decision | §13.6d; Artifact 056 |
+| 10 | Treating Kind admission as a cross-model dependency rule | Roadmap row 058 |
+
+## 12. What This Contract Does Not Define
+
+1. Any model's Kind roster. 2. Any Kind's meaning. 3. The `KIND-DEFINITION` specification or schema.
+4. The ceremony for admitting a non-World Kind. 5. The mechanics of Foundational ceremony. 6. A rule
+for judging an answer sufficient. 7. The STATUS and STRUCTURE rungs. 8. A retirement procedure.
+9. Package composition or ownership. 10. Cross-model dependency rules. 11. The temporal obligation.
+12. Relationship Record scope. 13. Schemas, fields, storage, APIs, serialization or code.
+14. Any new constitutional invariant.
+
+## 13. Conformance Conditions
+
+Contract conditions, checkable against a construction. They are not invariants and mint no
+invariant number.
+
+| ID | Condition | Source |
+|---|---|---|
+| **C-057-01** | Every Kind artifact records an answer to each of the fourteen questions for each Kind it declares. | RMS §13; Roadmap row 057 `→`, `Done` |
+| **C-057-02** | No candidate is treated as a Kind before it has passed the test. | RMS §6.1, §13 |
+| **C-057-03** | Classification under Artifact 044 is not treated as admission. | Artifact 044 C-3 |
+| **C-057-04** | Every Kind is a class of Record within exactly one Record Model. | RMS §6.1 |
+| **C-057-05** | The ladder is applied in both directions; a Kind that no longer justifies its structural cost is walked down it. | RMS §13; P-7 |
+| **C-057-06** | A proposed World kind also answers §13.11's eight questions, and is admitted at Foundational ceremony in both documents in the same cycle. | Blueprint §13.11, §13.7; I-71 |
+| **C-057-07** | Retiring a Kind deletes none of its records. | Blueprint §13.11, §29.4; P-25 |
+| **C-057-08** | A `KIND-DEFINITION` is not read as admission, and the Registry is assigned no admission authority over other models' Kinds. | Blueprint §13.6e; I-105 |
+| **C-057-09** | No external component defines a kind. | I-84 |
+| **C-057-10** | Admission decides no package and no cross-model reference. | Blueprint §13.6d; Roadmap rows 056, 058 |
+| **C-057-11** | The recorded source conditions and gaps (§5.3, §6, §7, §8 above) are left unresolved here. | Blueprint §13.6, §13.11; RMS §8.1–§12.1, §13 |
+| **C-057-12** | No invariant is minted or amended. | Blueprint §36, §10.4; P-28; I-15 |
+
+A construction satisfying all twelve is conformant **to this contract**. It is not thereby
+conformant to the Record System: the other P2 contracts carry their own conditions.
+
+## 14. Worked Examples
+
+> **Illustrative and non-normative.** Each verdict below is the source's; none is decided here.
+
+**Example A — admitted.** `SPECIES`, World. §13.11 runs the eight questions and records *"Eight of
+eight. Admitted."* — among them: a species is not a property of its members (identity), and a
+Registry classification *"carries no state, history, or relationships"*.
+
+**Example B — a state, not a Kind.** `BELIEF`. RMS §13 rejects it as *"a state"* (question 9, why
+not a state); row 255 makes it *"explicitly not a Kind"* in E.
+
+**Example C — derived, not a Kind.** `CONTEXT`. RMS §13 rejects it as *"derived"* (question 12, why
+not a projection).
+
+**Example D — composition, not a Kind.** `SECTION`, `PAGE`, `SPREAD`. RMS §13 rejects them as
+*"composition"*.
+
+**Example E — projection or subtype.** `VISUAL-DERIVATIVE`. RMS §13: *"projection or subtype"*
+(questions 11 and 12).
+
+**Example F — identity without a Kind.** WSV carries identity and is durable, and is *"World state,
+not an instance-bearing Kind"* (RMS §7). Passing some questions is not passing the test.
+
+## 15. Source Traceability
+
+| Rule | Source |
+|---|---|
+| Kind: a class of Record within one model; passes the test | RMS §6.1 |
+| The fourteen questions; every Kind must answer | RMS §13 |
+| The ladder, both directions | RMS §13; Blueprint P-7, §13.6 |
+| Admission obliges retirement | Blueprint P-25, §29.4 |
+| Retirement never deletes records | Blueprint §13.11, §29.4 |
+| World: eight questions, refusal names the rung, Foundational ceremony, both documents | Blueprint §13.11, §13.7; I-71 |
+| World taxonomy established and closed | Blueprint §13.6; I-71 |
+| Non-World rosters: boundary-naming, revisable by the model | Blueprint §13.6; I-106 |
+| Non-World rosters: recorded CLOSED | RMS §8.1, §9.1, §10.1, §11.1, §12.1 |
+| Kind Admission amendment for a future P object | RMS §9.1 |
+| Issue's model-specific criterion | RMS §12.1 |
+| Registry defines a kind; the model owns its Records | Blueprint §13.6e; I-105 |
+| Kind ↔ KIND-DEFINITION lockstep | Roadmap LS-1 |
+| No external component defines a kind | I-84 |
+| No universal Kind taxonomy | RMS §4; Blueprint §13.7a |
+| Classification is not admission | Artifact 044 |
+| Rejections used as examples | RMS §13, §7; Blueprint §13.11; Roadmap row 255 |
+| Invariants are the Blueprint's | Blueprint §36, §10.4; P-28; I-15 |
+| Identity and acceptance | Roadmap row 057 |
+
+## 16. Downstream and Adjacent Boundaries
+
+| Artifact | Relationship to 057 |
+|---|---|
+| **044** architectural categories | hard dependency (`H: 044`); classifies a candidate; 057 decides admission |
+| **064 · 176 · 255 · 298 · 344 · 363** Kind taxonomies (R, W, E, P, V, I) | each names 057 as a hard dependency; each applies the test to its own roster |
+| **068 · 069** `KIND-DEFINITION` specification and schema | define a Kind's meaning in the Registry; not admission |
+| **054** temporal obligation | unaffected |
+| **055** relationship boundary | unaffected; question 10 asks *why not a relationship*, and 055 owns the Relationship boundary |
+| **056** package boundary | unaffected; admission decides no package |
+| **058** cross-model dependency | unaffected; judges the references question 7 asks about |
+
+## 17. Acceptance
+
+| Roadmap row 057 | Where |
+|---|---|
+| `Val`: *"fourteen questions"* | §5; C-057-01, C-057-02 |
+| `Val`: *"ladder both directions"* | §6; C-057-05 |
+| `Done`: *"test binding"* | §5.2; C-057-01 |
+| `→`: *"every Kind artifact"* | §5.2; §16 |
+
+## 18. Final Contract Statement
+
+Every Kind, in every Record Model, answers the fourteen questions of RMS §13 before it is a Kind.
+The ladder runs up and down: a concept enters at the lowest rung that carries it, and a Kind that
+no longer justifies its structural cost is walked back down, deleting no records. A World kind also
+answers §13.11's eight questions and is admitted at Foundational ceremony in both documents. This
+contract admits no Kind, decides no roster, package or reference, assigns the Registry no admission
+authority, and defines no ceremony the sources leave undefined.
+
+---
+
+*Artifact 057 · P2/2d · Own: CONST · SoT: AUTHORITATIVE · Auth: governing · Canon: n/a. This
+document states the Kind admission test and its binding, derived from RMS §6.1 and §13 and
+Blueprint §13.11, P-7 and P-25. It does not amend them and defines no roster, schema or ceremony.
+Where it differs from the Master Blueprint, the Record Model System, or the OS File Build Roadmap,
+those governing sources are correct and this document is wrong.*
