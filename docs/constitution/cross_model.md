@@ -31,10 +31,10 @@ state; it does not reconstruct Deliverable J.
 
 **This contract adds no architecture.** Every normative rule in it is either (a) directly
 established by an authoritative source, or (b) an explicitly identified **synthesis** whose
-component source statements jointly establish it — one rule, E → P (§8.1). The sources are
-Blueprint §11, §13.6, §13.6a, §13.6b, §13.6c and Spine law 5; RMS §4, §6.1, §7, §8.1, §8.2, §9.1,
-§10.3, §11.2, §12.2 and §24; Roadmap §0.2, §2.4 and row 058; and I-16, I-17, I-89, I-102, I-104
-and I-107.
+component source statements jointly establish it — one rule, E → P[READER-MODEL] (§8.1). The
+sources are Blueprint §11, §13.1, §13.6, §13.6a, §13.6b, §13.6c and Spine law 5; RMS §4, §6.1,
+§7, §8.1, §8.2, §9.1, §10.3, §11.2, §12.2 and §24; Roadmap §0.2, §2.4 and row 058; and I-16, I-17,
+I-89, I-102, I-104 and I-107.
 
 ## 2. Status and Authority
 
@@ -133,7 +133,7 @@ addressing needs N² resolvers"*. The identity grammar is AD-1's (`[PARTITION]-[
 ```
 cross-model reference
    ├── handle      — a resolvable ID (RMS §4); resolution is mechanical and uniform
-   └── legality    — whether the edge is permitted: §7–§9 below; otherwise model/Registry-owned
+   └── legality    — whether the edge is permitted: §7–§9 and §11 below
 ```
 
 **Resolving is not permission.** An ID that resolves makes no edge legal, and an edge's legality
@@ -147,16 +147,20 @@ edges are legal. What they state is:
 
 1. **Delegation** — legality is *"model/Registry-owned"* (RMS §4).
 2. **Explicit permissions** — edges the sources state as allowed, with their conditions (§8.1);
-   one of them, E → P, is an identified synthesis of two source statements.
+   one of them, E → P[READER-MODEL], is an identified synthesis of two source statements.
 3. **Explicit prohibitions** — edges the sources forbid (§8.1), including the Roadmap's list,
    headed *"Forbidden edges"* (§2.4).
-4. **One closed statement** — for Issue: RMS §8.2 calls E → I *"the only sanctioned Issue
-   dependency"*. Separately, Roadmap §2.4 forbids `any → I` except `E → I`. The prohibition on
-   W → I, P → I and V → I is stated by the Roadmap (and for W also by Blueprint §13.6a); the RMS
-   statement is consistent with it. The Registry is governed by RMS §10.3 (§11 below).
+4. **Issue** — **RMS §8.2 establishes E → I**, for reveal ordering, and calls it *"the only
+   sanctioned Issue dependency"*. **Roadmap §2.4 separately prohibits** `any → I` except `E → I`:
+   the prohibition on W → I, P → I and V → I is the Roadmap's (for W, Blueprint §13.6a rule 3 also
+   states it). The RMS wording is consistent with the Roadmap's prohibition and is not relied on
+   as its source. The Registry is governed by RMS §10.3 (§11 below).
 
-**An edge this contract does not state** is neither granted nor forbidden by it; its legality is
-model/Registry-owned under RMS §4. Whether Deliverable J would close the matrix is not known.
+**An edge omitted from this contract** is not thereby granted or forbidden by this contract. Its
+treatment follows whatever the governing sources actually establish; where those sources expressly
+delegate legality to the model or the Registry (RMS §4), that delegation applies. This contract
+adopts neither *unlisted = forbidden* nor *unlisted = allowed*. Whether Deliverable J would close
+the matrix is not known.
 
 Where sources conflict, the conflict is recorded with its sources and the precedence Roadmap §0.2
 states (§2); it is not otherwise decided.
@@ -165,24 +169,33 @@ states (§2); it is not otherwise decided.
 
 ### 8.1 Edges stated by the sources
 
+**Scope of the matrix.** Rows are Record Model → Record Model edges only. Registry references —
+to Registry definitions, to declarations, and to domain instances — are the Registry reference
+boundary (§11) and are not rows here. Record-level statements are §8.2's.
+
 | Source | Target | Status | Reference rule | Mutation rule | Condition | Source |
 |---|---|---|---|---|---|---|
 | **E** | **W** | allowed | E references W | *"mutation only via the governed path"* | — | RMS §8.2; Blueprint §13.6b (E's *"interface to World is by reference"*) |
 | **E** | **I** | conditional | E references I | not stated | *"reference for reveal ordering — the only sanctioned Issue dependency"* | RMS §8.2; Blueprint §13.6a rule 3 (*"Epistemic records may reference issues"*) |
-| **E** | **P** | conditional — **synthesis** | E references the P Kind READER-MODEL | not stated | READER-MODEL only; derived below from two Blueprint statements, not stated as an edge by any one source | Blueprint §11, §13.6; RMS §9.1 |
+| **E** | **P[READER-MODEL]** | conditional — **synthesis** | E references a P Record whose Kind is READER-MODEL | not stated | the target P Record MUST be of Kind READER-MODEL; **no general E → P permission is established** | Blueprint §11, §13.6; RMS §9.1 |
 | **I** | **W, E, P** | allowed | *"Issue records may reference World, Epistemic, and Production records."* | not stated | never ownership: *"Issue references; it never owns."* | Blueprint §13.6a rules 2–3 |
-| **I** | **V** | allowed, at the level RMS §12.2 states | *"Issue references but never owns W/E/P/V semantics."* — a reference to V **semantics** | not stated | never ownership. No source states I → V at the level of Records; the Record-level visual-reference statement is §8.2's | RMS §12.2 |
 | **W** | **I** | forbidden, absolutely | *"No World record may reference an issue — that is manifestation-blindness, and it is absolute (Section 11)."* | — | — | Blueprint §13.6a rule 3, §11; I-17; RMS §7; Roadmap §2.4 |
-| **P, V** | **I** | forbidden | Roadmap §2.4 lists `any → I` except `E → I` among its forbidden edges | — | — | Roadmap §2.4 (the prohibition); RMS §8.2 (E → I *"the only sanctioned Issue dependency"*) |
+| **P, V** | **I** | forbidden | Roadmap §2.4 lists `any → I` except `E → I` among its forbidden edges | — | the prohibition is stated by the Roadmap; RMS §8.2's *"the only sanctioned Issue dependency"* is consistent with it | Roadmap §2.4 |
 | **W** | **E, P** | forbidden | Roadmap §2.4 lists `W → E/P/V/I` (manifestation-blindness) among its forbidden edges | — | the prohibition is the Roadmap's: the Blueprint and RMS state no W → E or W → P rule, and their manifestation-blindness texts name an issue, tier, medium, artifact or the real world, not E or P | Roadmap §2.4 |
-| **W** | **V** | unresolved | see §8.3 | — | — | Blueprint §13.6c; Roadmap §2.4, §0.2; RMS §7; I-17 |
+| **W** | **V** | unresolved — source conflict | see §8.3 | — | — | Blueprint §13.1, §13.6c; Roadmap §2.4, §0.2 |
 | **V** | **W** | mutation forbidden; reference not established | not stated | *"Visual never mutates World."* | — | RMS §11.2; I-89 |
-| **R** | **domain instances** | forbidden | *"R → domain instances = FORBIDDEN."* | Registry *"MAY NOT"* *"mutate domain instances"* | nor *"own domain instances"*, *"depend on runtime instances"*, or *"use domain instances as semantic authority"* | RMS §10.3; Roadmap §2.4 (`R → domain instance`) |
 
-**E → P, derived.** Blueprint §11 states that Epistemic records *"may reference reader models"*, and
-§11 also states *"The reader model is a `READER-MODEL` in Production"*; §13.6 and RMS §9.1 list
-READER-MODEL among the P Kinds. Neither statement alone is the edge; together they state it, for
-READER-MODEL only. No source states any other E → P reference.
+**E → P[READER-MODEL], derived.** Blueprint §11 states that Epistemic records *"may reference
+reader models"*, and §11 also states *"The reader model is a `READER-MODEL` in Production"*; §13.6
+and RMS §9.1 list READER-MODEL among the P Kinds. Neither statement alone is the edge; together
+they state it, for READER-MODEL only. **No general E → P permission is established**, and no
+source states any other E → P reference.
+
+**Issue and Visual semantics.** RMS §12.2: *"Issue references but never owns W/E/P/V semantics."*
+For V, the RMS states this at the level of semantics. The Blueprint's Record-level statement
+(§8.2) lets every Record, an I Record included, reference into the V partition. Neither is a
+Record Model edge: **no I → V Record Model edge is established**, and the matrix has no I → V
+row.
 
 Every allowed edge carries the handle rule (§6) and confers no ownership (§12).
 
@@ -196,26 +209,29 @@ contract records them at that level and derives no matrix row from either.
   and the Registry's. **The existence of `registry_ref` on a Record does not by itself create a
   cross-Record-Model edge in this matrix.**
 - **Visual references.** Blueprint §13.6c: *"Every Record may reference visual objects."* The
-  Blueprint carries them in `visual_refs` (§13.1, §13.6c); RMS §4 fixes the universal envelope at
-  the bootstrap set *"and no more"*; and the Blueprint records which kinds must carry `visual_refs`
-  as *"REQUIRES DECISION"*. Where the reference is carried is not decided here, and no model-level
-  row is inferred from the Record-level statement: not E → V or P → V, not I → V at the level of
-  Records, and not W → V (§8.3).
+  Blueprint carries them in `visual_refs` (§13.1, §13.6c), which §13.1 describes as *"References
+  into the V partition"*; RMS §4 fixes the universal envelope at the bootstrap set *"and no more"*;
+  and the Blueprint records which kinds must carry `visual_refs` as *"REQUIRES DECISION"*. The
+  statement stands at the Record level: every Record may reference visual objects. Where the
+  reference is carried is not decided here, and no Record Model edge is inferred from it — no
+  E → V, P → V or I → V row. For W, the Roadmap separately forbids the W → V edge; §8.3.
 
 ### 8.3 W → V — source conflict
 
 | | Statement | Level |
 |---|---|---|
-| **Source A** — Blueprint §13.6c | *"Every Record may reference visual objects."*; a `REQUIRED` policy means *"A canonical depiction must exist before the object may reach CANON status"* | Record: every Record, World included |
+| **Source A** — Blueprint §13.6c, §13.1 | *"Every Record may reference visual objects."*; `visual_refs` are *"References into the V partition"*; a `REQUIRED` policy means *"A canonical depiction must exist before the object may reach CANON status"* | Record: every Record, World included, referencing into the V partition |
 | **Source B** — Roadmap §2.4 | lists `W → E/P/V/I` (manifestation-blindness) among its forbidden edges | Record Model: an edge from W to V |
 | **Source C** — RMS §7; I-17; Blueprint §11 | *"no World field may reference an issue, tier, medium, artifact, or the real world"*; World records *"know nothing of magazines, covers, tiers, or issues"* | field of a World Record |
 
-**Conflict.** Source A does not itself establish a W → V edge (§8.2); it permits every Record,
-World included, to reference visual objects. Source B is a model-level prohibition; applied to a
-World Record, it forbids what Source A permits. The two meet at the World Record, and that is the
-conflict. Source C forbids a World field
-referencing an *"artifact"* and names *"covers"*; RMS §9.1 speaks of *"Visual artifact/asset →
-V."*, and no source says whether a visual object is an artifact, or a cover, in Source C's sense.
+**Why this is a conflict, not a difference of level.** Source A is Record-level and establishes no
+model edge as such (§8.2). But it names its target: *"References into the V partition"*, and each
+partition owns exactly one Record Model (I-16). So Source A permits a World Record to reference a
+V Record. Source B forbids the W → V edge, which forbids exactly that. The two sources are at
+different levels and still speak to the same reference, and they disagree about it. Source C
+forbids a World field referencing an *"artifact"* and names *"covers"*; RMS §9.1 speaks of
+*"Visual artifact/asset → V."*, and no source says whether a visual object is an artifact, or a
+cover, in Source C's sense.
 
 **Authority treatment.** Roadmap §0.2: *"Blueprint + RMS govern."* Under that source rule, B does
 not prevail over A, and this contract does not adopt the Roadmap's W → V prohibition. A and C are
@@ -232,15 +248,17 @@ RMS §22–23 and Appendix G delegate the dependency matrix to Deliverable J, wh
 repository. RMS §10.3 confirms such a matrix exists: its rule *"appears in the Registry section,
 the dependency matrix, the governance matrix, the examples, and the implementation notes."*
 
-No available source states reference legality for these edges; under RMS §4 it is
-model/Registry-owned, and this contract neither grants nor forbids them:
+No available source states these as Record Model edges. This contract neither grants nor forbids
+them as edges; RMS §4's delegation of legality to the model or the Registry applies as the RMS
+states it:
 
-| Edges not stated |
+| Record Model edges not stated |
 |---|
-| E → V · E → R · E → P other than READER-MODEL |
-| P → W · P → E · P → V · P → R |
+| E → R · E → P other than P[READER-MODEL] |
+| P → W · P → E · P → R |
 | V → W (reference) · V → E · V → P · V → R |
 | W → R · I → R |
+| E → V · P → V · I → V — as model edges; the Record-level statement of §8.2 applies at its own level |
 
 For V → E, RMS §11.2 states a chain — a visual analysis whose claim concerns World Truth becomes E
 evidence — and states no edge direction. For every → R edge, see `registry_ref` (§8.2).
@@ -274,8 +292,8 @@ The sources separate referencing a Record from changing it:
 - **V → W.** *"Visual never mutates World."* (RMS §11.2). I-89: *"Vision produces observations and
   proposals, never canonicalization."*
 - **R → domain instances.** Registry *"MAY NOT"* mutate domain instances (RMS §10.3).
-- **I → anything.** Issue *"references but never owns"* (RMS §12.2); publication writes nothing to
-  canon (§12 below).
+- **Issue.** Issue *"references but never owns"* (RMS §12.2); publication writes nothing to canon
+  (§12 below).
 
 A permitted reference therefore grants no mutation.
 
@@ -289,11 +307,17 @@ RMS §10.3 (`FROZEN`, correcting v0.1's *"may never reference a kind"*):
   instances · use domain instances as semantic authority."*
 - *"R → R definitions = ALLOWED. R → domain instances = FORBIDDEN."*
 
-**Category.** The first bullet's references — to other Registry definitions and to declared
-Record Models, Kinds, schemas and semantic contracts — are **Registry declaration references**.
-RMS §10.3 states them with the cross-model rule; it does not state them as edges from R to the
-Records of another model, and this contract does not place them in the matrix (§8.1). A reference
-from one Registry definition to another is within R and is not a cross-model edge.
+**Three categories, kept apart.**
+
+- **Registry declaration references** — to declared Record Models, Kinds, schemas and semantic
+  contracts: allowed (RMS §10.3). RMS §10.3 does not state them as edges from R to the Records of
+  another model, and this contract does not place them in the matrix (§8.1).
+- **Registry-internal references** — R → R definitions: *"ALLOWED"* (RMS §10.3). Within R; not a
+  cross-model edge.
+- **Registry → domain instances** — *"FORBIDDEN"* (RMS §10.3); Roadmap §2.4 also lists
+  `R → domain instance` among its forbidden edges. The Registry may not reference, own or mutate a
+  domain instance, depend on a runtime instance, or use a domain instance as semantic authority.
+  This is the Registry reference boundary; it is stated here and not repeated as a matrix row.
 
 The prohibition is on **domain instances**, not on the domain models: the Registry may reference
 declared Record Models and Kinds. Nor does referencing a declaration give the Registry any domain
@@ -371,9 +395,9 @@ Only prohibitions the sources state:
 ## 16. Conformance Conditions
 
 Contract conditions, checkable against a construction. They are not invariants and mint no
-invariant number. They bind the allowed, conditional and forbidden rows of §8.1 and the general
-rules of §6 and §12. None binds the unresolved W → V row, a Record-level statement of §8.2, a
-Registry declaration reference as a model edge, or an edge in §8.4.
+invariant number. They bind the allowed, conditional and forbidden rows of §8.1, the Registry
+reference boundary of §11, and the general rules of §6 and §12. None binds the unresolved W → V
+row, a Record-level statement of §8.2, the Issue–V semantic statement, or an edge in §8.4.
 
 | ID | Condition | Source |
 |---|---|---|
@@ -431,15 +455,15 @@ places the `EVENT` in no Issue package (056; C-058-12) and admits no Kind (057; 
 | Precedence: Blueprint + RMS govern | Roadmap §0.2 |
 | Matrix delegated to Deliverable J; Deliverable J named only in the RMS | RMS §22–23, Appendix G, §10.3 |
 | E → W, E → I | RMS §8.2; Blueprint §13.6a rule 3, §13.6b |
-| E → P (READER-MODEL) — **synthesis** of Blueprint §11 (*may reference reader models*) and Blueprint §11, §13.6 (READER-MODEL is Production) | Blueprint §11, §13.6; RMS §9.1 |
+| E → P[READER-MODEL] — **synthesis** of Blueprint §11 (*may reference reader models*) and Blueprint §11, §13.6 (READER-MODEL is Production); no general E → P | Blueprint §11, §13.6; RMS §9.1 |
 | I → W, E, P | Blueprint §13.6a rules 2–3 |
-| I → V at the level of V semantics; Issue references never own | RMS §12.2 |
-| Only sanctioned Issue dependency | RMS §8.2; Roadmap §2.4 |
+| Issue references V semantics; no I → V edge established | RMS §12.2 |
+| E → I the only sanctioned Issue dependency (RMS); W/P/V → I forbidden (Roadmap) | RMS §8.2; Roadmap §2.4; Blueprint §13.6a rule 3 |
 | W → E, W → P forbidden | Roadmap §2.4 |
 | Visual never mutates World | RMS §11.2; I-89 |
 | Registry declaration references; R → domain instances forbidden | RMS §10.3, §24 |
 | Record-level `registry_ref`; Record-level visual references | RMS §4; Artifact 033; Blueprint §13.1, §13.6c |
-| W → V unresolved: Record-level permission vs model-level prohibition vs field-level limit | Blueprint §13.6c, §11; Roadmap §2.4, §0.2; RMS §7, §9.1; I-17 |
+| W → V unresolved: Blueprint Record-level permission into the V partition vs Roadmap W → V prohibition | Blueprint §13.1, §13.6c; Roadmap §2.4, §0.2; RMS §7, §9.1; I-17 |
 | Manifestation-blindness | Blueprint §11, §13.6a rule 3; I-17; RMS §7 |
 | Direction of reference frozen | Blueprint §13.6a rule 3, §13.6b |
 | Publication firewall | Spine law 5; Blueprint §13.6a rule 1; RMS §12.2; I-04, I-104 |
@@ -454,13 +478,14 @@ places the `EVENT` in no Issue package (056; C-058-12) and admits no Kind (057; 
 A cross-model reference uses a resolvable ID; that it resolves does not make it legal, and legality
 is model/Registry-owned. The sources state these edges: E references W, mutating it only via the
 governed path; E references I for reveal ordering — the only sanctioned Issue dependency — and,
-by synthesis of two Blueprint statements, the P Kind READER-MODEL; I references W, E and P Records
-and V semantics, and owns none of them; no World record references an issue; the Roadmap forbids
-W → E, W → P, P → I and V → I; V never mutates W; the Registry references definitions and
-declarations, never domain instances. Nothing becomes canon by being published, and no reference
-changes who owns a Record. W → V is in conflict between the governing sources, and the edges
-Deliverable J would hold are not stated; this contract decides neither. Row 058's acceptance target
-is *"matrix normative"*; its current status is NOT COMPLETE.
+by synthesis of two Blueprint statements, P Records of Kind READER-MODEL — no general E → P; I
+references W, E and P Records and owns none of them, and references V semantics without any
+I → V Record edge being established; no World record references an issue; the Roadmap forbids
+W → E, W → P, P → I and V → I; V never mutates W. The Registry references definitions and
+declarations, never domain instances (§11). Nothing becomes canon by being published, and no
+reference changes who owns a Record. W → V is in conflict between the governing sources, and the
+edges Deliverable J would hold are not stated; this contract decides neither. Row 058's acceptance
+target is *"matrix normative"*; its current status is NOT COMPLETE.
 
 ---
 
