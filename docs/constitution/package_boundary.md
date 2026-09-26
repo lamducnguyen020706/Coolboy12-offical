@@ -17,9 +17,6 @@ Registry owns its own; and no Record Model package composition is universal. Row
 *"I-107"*: a package declared for a model that has not been independently designed is provisional
 and may not be implemented as a requirement.
 
-Row 056's `Val` reads *"others model-owned"* beside *"R Registry-owned"*. The header states
-*others* explicitly as E/P/V/I, on the author's instruction; R is Registry-owned (§8 below).
-
 **This contract adds no architecture.** Every rule restates Blueprint §13.6d, §13.6e, §13.7,
 §13.7a and §13.9, RMS §4, §6 and §7, and I-72, I-90, I-101, I-102, I-103, I-105 and I-107.
 
