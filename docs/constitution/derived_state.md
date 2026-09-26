@@ -110,8 +110,9 @@ Roadmap's per-directory table sets what each zone may hold — for `derived/**`,
 prohibited *"anything unrebuildable"* — which constrains placement; placing a value there does not
 make it Derived.
 
-The Roadmap's sixth value, `DEV-ENV`, classifies repository artifacts, not data classes; that
-difference is CONFLICT-C in the Revolving Resolution Note, recorded there and not resolved here.
+The Roadmap also uses `DEV-ENV`, in its artifact metadata and its per-directory table, for
+repository and implementation artifacts. This contract does not treat `DEV-ENV` as a sixth runtime
+or data source-of-truth class; the five data classes remain those Blueprint §29.6a defines.
 
 ## 5. Authored State Is Not Derived
 
@@ -129,8 +130,9 @@ by a rebuild, never authoritative about the world"*. §12.4's Production row: *"
 never inferred, never canon."*
 
 **Filing authored state as Derived is data loss with a delay.** No wording in this contract
-softens that. A rebuild, in I-18's sense, is *every* rebuild: a full rebuild, a partial one, a
-cache refresh, a projection regeneration.
+softens that. The constitutional point is narrower than a definition of rebuilding: any rebuild
+operation that regenerates or discards Derived representations must not destroy authored
+Production State. This contract does not define the taxonomy or mechanics of rebuild operations.
 
 ### 5.2 Contents may be Derived; dispositions never are
 
@@ -212,20 +214,24 @@ is a finding, not a catastrophe."*
 §26.2d gives the same test for stores: *"A store that cannot be deleted and rebuilt has become part
 of the canon whether or not anyone intended it."*
 
-### 7.2 What rebuildability proves — and what it does not
+### 7.2 What a successful rebuild shows — and what it does not
 
-A rebuild that completes proves that the representation held nothing beyond its authoritative
-inputs. It does not make the representation authoritative, does not prove it is fresh, and does not
-decide between DERIVED and CACHED.
+A successful delete-and-rebuild demonstrates, under the applicable rebuild contract, that the
+representation can be reconstructed without relying on information that existed only in the
+deleted representation. It is evidence of conformance, not more: it does not make the result
+authoritative, does not establish that it is fresh, and does not by itself distinguish DERIVED
+from CACHED. A rebuild that does not complete remains what §29.8 says it is — a finding that the
+deleted store was not derived.
 
-The proof has to be run, not assumed. §29.6a: *"the way to find out is to rebuild it on a schedule
-rather than to assume."* §29.8: *"A derived store that has never been deleted is a store whose
-classification is an assumption."* This contract runs nothing; the drill and the engine are
+The evidence has to be produced, not assumed. §29.6a: *"the way to find out is to rebuild it on a
+schedule rather than to assume."* §29.8: *"A derived store that has never been deleted is a store
+whose classification is an assumption."* This contract runs nothing; the drill and the engine are
 downstream (§15 below).
 
-How a Derived artifact declares its source and rebuild method, the permitted direction of
-derivation, and the full-versus-incremental distinction are Artifact 020's convention and are not
-restated here.
+Artifact 020 owns the rebuild convention, including the requirement to declare a rebuild method.
+Artifact 167 owns the concrete SOURCE declaration and derived-layer contract. Artifact 172 owns the
+full rebuild contract. This contract establishes none of those mechanisms; it establishes the
+constitutional meaning of Derived and the no-loss requirement.
 
 ### 7.3 Source condition recorded, not resolved — the inputs of a rebuild
 
@@ -236,15 +242,14 @@ The sources state the inputs of Derived state in two forms:
 | *"Canon, Production State, and history"* | P-26; likewise Blueprint §9.1 and §12.4 |
 | *"canonical records alone"* | §29.8 drill; Roadmap rows 172 and 226 read *"full rebuild from canon alone"* |
 
-The forms differ: Production State is never canonical (RMS §9.2), so a Derived value computed from
-Production State — an analytic over arcs, say — satisfies P-26 and, read literally, cannot be
-rebuilt from canonical records alone.
-
-This contract does not resolve the difference. It uses P-26 — a named principle, restated as I-19
-— as the conceptual definition of Derived, and reads §29.8 as an operational drill, which is how
-§29.8 describes itself. It does not define the rebuild procedure. **Artifact 172 owns the full
-rebuild contract** and must carry the governing sources' relationship between these forms rather
-than simplify it in either direction.
+The two formulations are not identical on their face: P-26 names Production State among the
+inputs, and Production State is never canonical (RMS §9.2). This contract records both and does not
+resolve the operational relationship between them. It takes P-26 — a named principle, restated as
+I-19 — as the conceptual definition of Derived, and notes that §29.8 describes itself as an
+operational drill; it does not decide what a full rebuild may read. **Artifact 172 owns the full
+rebuild contract** and must preserve the governing-source relationship rather than silently collapse
+one formulation into the other. The P8 implementation and the P18 drills are further downstream. No
+mechanism is introduced here.
 
 ## 8. Derived ≠ Authoritative
 
@@ -300,15 +305,14 @@ as sufficient would turn every cache into Derived state.
 |---|---|---|
 | §29.6a meaning | *"Recomputable with no loss from authoritative sources."* | *"Recomputable and disposable, held only for speed."* |
 | §29.6a examples | indexes, projections, analytics, materialised views, back-references | *"Query results · rendering caches · asset-processing caches"* |
-| Rebuild obligation | declares source and method (Artifact 020 §4) | governed by its own cache semantics (Artifact 171; Artifact 020 §13) |
+| Concrete architecture | governed downstream by the derived-layer and rebuild contracts (Artifacts 167, 172) | governed downstream by the cache contract (Artifact 171) |
 | Authoritative? | never | never — RMS §9.1: *"cached ≠ authoritative"* |
 
 What §29.6a gives CACHED and not DERIVED is the purpose clause: *held only for speed*. A cache is
 there to make something faster and may be discarded for that reason alone. A Derived artifact is
-not defined by speed: it carries Artifact 020's source-and-method declaration and must still pass
-the no-loss test. Which class a data class carries is declared in its definition and validated by
-Artifact 050. **Derived = Cache** is a prohibited collapse (§14 below). This contract defines no
-cache architecture; Artifact 171 does.
+not defined by speed, and must still pass the no-loss test. Which class a data class carries is
+declared in its definition and validated by Artifact 050. **Derived = Cache** is a prohibited
+collapse (§14 below). This contract defines no cache architecture; Artifact 171 does.
 
 ### 9.2 Source condition recorded, not resolved — the drill's word *derived*
 
@@ -421,11 +425,11 @@ schema, field, structure or mechanism.
 | Artifact | Owns | Relationship to 053 |
 |---|---|---|
 | **050** `src/coolboy12/kernel/sot.py` | source-of-truth classification: exactly one of five classes | hard dependency (`H: 050`); 053 does not replace, redefine or duplicate it, and adds no second source-of-truth system |
-| **020** `docs/conventions/rebuild.md` | the rebuild convention: every DERIVED artifact declares its source and rebuild method | soft dependency (`S: 020`); 053 fixes what qualifies as Derived and what a rebuild may never lose, and restates none of 020 |
+| **020** `docs/conventions/rebuild.md` | the rebuild convention; the rebuild-method declaration — row 020 Val *"every derived thing declares a rebuild method"* | soft dependency (`S: 020`); 053 fixes what qualifies as Derived and what a rebuild may never lose, and restates none of 020 |
 | **051 · 052** | authority · canonicality | separate questions; 053 decides neither |
 | **048 · 049** | provenance meaning · temporal terms | 053 defines neither; §10 above cites 049 only to keep its terms apart |
 | **158** `docs/constitution/stale_derived.md` | stale-derived-state policy | downstream; names 053 as a hard dependency |
-| **167** `docs/constitution/derived_layer.md` | derived-layer architecture — Val *"every derived artifact declares SOURCE"*, Done *"six-field contract"* | downstream; names 053 as a hard dependency |
+| **167** `docs/constitution/derived_layer.md` | derived-layer architecture; the concrete SOURCE declaration — Val *"every derived artifact declares SOURCE"*, Done *"six-field contract"* | downstream; names 053 as a hard dependency |
 | **168 · 169 · 170 · 171** | index · projection · view · cache contracts | downstream applications of this discipline |
 | **172** `docs/constitution/rebuild_contract.md` | the full rebuild contract | downstream; carries the source condition of §7.3 above |
 | **173** `docs/constitution/staleness.md` | staleness propagation | downstream |
@@ -461,7 +465,7 @@ invariant number.
 | **C-053-04** | Derived state is never authoritative; where it disagrees with an authoritative source, the source prevails and the Derived value is wrong or stale. | §12.4; §12.11 |
 | **C-053-05** | No Derived representation is the only place a semantic fact exists. | §29.6a; I-84 |
 | **C-053-06** | A DERIVED value that cannot be recomputed with no loss is a classification defect — misfiled — not an operational fault. | §29.6a; §29.8; I-19 |
-| **C-053-07** | A DERIVED classification is proven by deleting and rebuilding, not assumed. | §29.6a; §29.8 |
+| **C-053-07** | A DERIVED classification is demonstrated by deleting and rebuilding, not assumed; the rebuild contract and the drills that do so are downstream, not this contract's. | §29.6a; §29.8; Roadmap rows 172, 472–473 |
 | **C-053-08** | Recomputable, disposable state held only for speed is CACHED, not thereby Derived. | §29.6a |
 | **C-053-09** | No Derived value becomes authoritative by being stored, indexed, consulted, cached, generated, consumed by a surface or held externally. | §13.7c; §12.11; Roadmap PART II §2.4 |
 | **C-053-10** | Every external store is DERIVED or CACHED, and none is the sole holder of a semantic. | §26.2d; I-84 |
@@ -470,7 +474,7 @@ invariant number.
 | **C-053-13** | Model-specific derived semantics remain with the owning Record Model. | I-101; I-103; §13.7c |
 | **C-053-14** | The collapses Derived = Cache and Derived = non-canonical are refused. | §29.6a; Artifact 052 |
 | **C-053-15** | No P6 or P8 architecture is defined; 158, 167–174, 219–230 and the drills 472–473 remain downstream. | Roadmap rows 158, 167–174, 219–230, 472–473 |
-| **C-053-16** | The two source conditions (§7.3, §9.2 above) are recorded, not resolved, and left downstream. | Roadmap rows 172, 226, 472–473 |
+| **C-053-16** | The rebuild-input formulations (§7.3 above) and the drill's rendering-cache wording (§9.2 above) are recorded for downstream handling, not constitutionally resolved here. | Roadmap rows 172, 226, 472–473 |
 | **C-053-17** | The document contains no executable content, defines no runtime component, and mints no Record, Kind, field, class or invariant. | Roadmap row 053 `T: doc` |
 
 A construction satisfying all seventeen is conformant **to this contract**. It is not thereby
@@ -503,12 +507,14 @@ conformant to the Record System: the other P2 contracts carry their own conditio
 | World field mutation class *derived* is World's | RMS §7 |
 | `derivation` and *visual derivation* | Artifact 049 |
 | Forbidden edge `derived → authoritative` | Roadmap PART II §2.4 |
-| Source and rebuild-method declaration | Artifact 020 |
+| Rebuild convention; rebuild-method declaration | Artifact 020; Roadmap row 020 |
+| Concrete SOURCE declaration; derived-layer architecture | Artifact 167; Roadmap row 167 |
+| Full rebuild contract | Artifact 172; Roadmap row 172 |
 | Hard dependency on 050; soft dependency on 020; unlocks P8 | Roadmap row 053 |
 | P6 derived-layer contracts, P8 derived layer and P18 rebuild drills downstream | Roadmap rows 158, 167–174, 219–230, 472–473 |
 | Inputs stated two ways — recorded, not resolved | P-26; Blueprint §9.1, §12.4, §29.8; Roadmap rows 172, 226 |
 | The drill's *derived store* includes rendering caches — recorded, not resolved | Blueprint §29.8, §29.6a |
-| SoT class count five vs six — recorded elsewhere, not resolved | Revolving Resolution Note, CONFLICT-C |
+| `DEV-ENV` used for repository and implementation artifacts, not as a data class | Roadmap §0.6, PART I; Blueprint §29.6a |
 
 ## 18. What This Contract Does Not Define
 
