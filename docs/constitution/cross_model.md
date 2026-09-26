@@ -14,13 +14,22 @@ do the governing sources allow, which do they forbid, and which do they leave un
 Row 058 calls it *"the dependency law"* and asks for *"allowed/forbidden edges; publication
 firewall; manifestation-blindness"*. The RMS places the rules at §22–23: *"Cross-Model Dependency
 & Reference Rules — Appendix G / Deliverable J."* Appendix G reads only *"Dependency Matrix →
-Deliverable J."* **Deliverable J is not in this repository** (§8.3 below). This contract therefore
-states every cross-model edge the Blueprint, the RMS and the Roadmap state, records the conflicts
-among them, and marks every other edge as not established. It completes no edge from inference.
+Deliverable J."*
 
-**This contract adds no architecture.** Every rule restates Blueprint §11, §13.6a, §13.6b, §13.6c
-and Spine law 5; RMS §4, §6.1, §7, §8.1, §8.2, §10.3, §11.2, §12.2 and §24; Roadmap §2.4 and rows
-058 and 465; and I-16, I-17, I-89, I-102, I-104 and I-107.
+**Deliverable J.** It is named only in the RMS, at §22–23 and Appendix G. Neither the Blueprint nor
+the Roadmap names it, and the Roadmap assigns it to no artifact. Row 058 cites RMS §§22,23 and sets
+`Done` to *"matrix normative"*; it does not say that 058 is Deliverable J. Deliverable J is not in
+this repository. **The sources therefore do not establish that 058 is Deliverable J, and do not
+establish that it is not.** This contract states the edges the Blueprint, the RMS and the Roadmap
+state; it does not reconstruct Deliverable J.
+
+**Acceptance target and current state.** *"matrix normative"* is row 058's acceptance target and is
+preserved unchanged. The rows of §8.1 bind, through §16. The matrix is not complete (§8.4), and
+this contract does not claim the target met.
+
+**This contract adds no architecture.** Every rule restates Blueprint §11, §13.6, §13.6a, §13.6b,
+§13.6c and Spine law 5; RMS §4, §6.1, §7, §8.1, §8.2, §9.1, §10.3, §11.2, §12.2 and §24; Roadmap
+§0.2, §2.4 and row 058; and I-16, I-17, I-89, I-102, I-104 and I-107.
 
 ## 2. Status and Authority
 
@@ -34,6 +43,10 @@ It derives the contract from the Master Blueprint, the Record Model System and t
 Roadmap; it does not amend, supersede, or outrank any of them, and mints or amends no invariant.
 Where this document differs from the Master Blueprint, the Record Model System, or the OS File
 Build Roadmap, **those governing sources are correct and this document is wrong.**
+
+**Precedence among the sources.** Roadmap §0.2: *"Blueprint + RMS govern."* Where the Roadmap and
+the Blueprint or RMS differ, this contract follows the Blueprint and RMS. No source ranks the
+Blueprint and the RMS against each other; a conflict between them is recorded, not decided.
 
 `Req: RR-35` is preserved exactly as the Roadmap states it. This contract does not reproduce,
 reconstruct or infer the requirement text, and creates no new requirement under it.
@@ -64,7 +77,7 @@ legality of a reference between Record Models.
           ↓
 058  cross-model edges      ← this contract
           ↓
-PART IX anti-orderings · 134 validator (forbidden edges rejected) · 463/465 integration
+PART IX anti-orderings · downstream validation (134)
 ```
 
 ## 4. Definitions
@@ -89,9 +102,11 @@ RMS §4: *"Reference resolution | Cross-model references must resolve uniformly 
 mechanical; legality is model/Registry-owned"*.
 
 - **Resolution** is a universal mechanism (RMS §3–§4). It is not decided here.
-- **Legality** is model/Registry-owned (RMS §4). This contract states the cross-model edges the
-  constitutional sources fix, and records where they stop. It does not take legality from the
-  models or the Registry, and fills no cell they would fill.
+- **Legality** is model/Registry-owned (RMS §4). The edges the sources fix are stated in model
+  sections — W at RMS §7, E at §8.2, R at §10.3, V at §11.2, I at §12.2 — in the Blueprint's
+  partition sections (§11, §13.6a, §13.6b, §13.6c) and Spine law 5, and in the Roadmap's forbidden
+  edges (§2.4). This contract **collects** them at the constitutional level and adds none. It does
+  not take legality from the models or the Registry, and decides no edge the sources leave to them.
 - **Authority** over what a Record means stays with the model that owns it (RMS §6.1: a Record is
   *"owned by exactly one Record Model"*; RMS §17). An edge moves none of it.
 
@@ -112,71 +127,102 @@ creates no handle. This contract adds no handle, address, path, pointer or resol
 
 ## 7. Dependency Legality
 
-The sources state edges in three forms, and this contract keeps them apart:
+**The source model.** The sources do not state a closed-world matrix, in which only listed edges
+are legal, nor an open-world one, in which unlisted edges are legal. What they state is:
 
-1. **Stated as allowed** — the sources state the reference and its condition.
-2. **Stated as forbidden** — the sources prohibit it.
-3. **Not established** — no available source states it. **Not established is not forbidden, and
-   not allowed.** The one closed rule in the sources is for Issue: E → I is *"the only sanctioned
-   Issue dependency"* (RMS §8.2), which leaves every other model's references to I Records
-   unsanctioned; the Registry's references to declarations are governed by RMS §10.3 (§11 below).
-   No source states a closed rule for any other target.
+1. **Delegation** — legality is *"model/Registry-owned"* (RMS §4).
+2. **Explicit permissions** — edges the sources state as allowed, with their conditions (§8.1).
+3. **Explicit prohibitions** — edges the sources forbid (§8.1), including the Roadmap's list,
+   headed *"Forbidden edges"* (§2.4).
+4. **One closed rule** — for Issue: E → I is *"the only sanctioned Issue dependency"* (RMS §8.2).
+   Every other model's reference to an I Record is therefore unsanctioned. The Registry's
+   references to declarations are governed by RMS §10.3 (§11 below).
 
-Where sources conflict, the conflict is recorded with its sources and their precedence (Blueprint
-and RMS above Roadmap); it is not silently decided.
+**An edge this contract does not state** is neither granted nor forbidden by it; its legality is
+model/Registry-owned under RMS §4. Whether Deliverable J would close the matrix is not known.
+
+Where sources conflict, the conflict is recorded with its sources and the precedence Roadmap §0.2
+states (§2); it is not otherwise decided.
 
 ## 8. Dependency Matrix
 
 ### 8.1 Edges stated by the sources
 
-| Edge | Status | Condition | Source |
-|---|---|---|---|
-| **E → W** | allowed | reference; *"mutation only via the governed path"* | RMS §8.2; Blueprint §13.6b |
-| **E → I** | allowed | *"reference for reveal ordering — the only sanctioned Issue dependency"* | RMS §8.2; Blueprint §13.6a rule 3; Roadmap §2.4 |
-| **E → P** | allowed, for reader models | Blueprint §11: E records *"may reference reader models"*; this contract reads *reader models* as the P Kind READER-MODEL (RMS §9.1) — an identification, not a source statement | Blueprint §11; RMS §9.1 |
-| **I → W, I → E, I → P** | allowed | reference, never ownership | Blueprint §13.6a rules 2–3; RMS §12.2 |
-| **I → V** | allowed | reference, never ownership: *"Issue references but never owns W/E/P/V semantics."* | RMS §12.2 |
-| **E → V, P → V, I → V** | allowed | *"Every Record may reference visual objects."* | Blueprint §13.6c |
-| **V → W** | allowed as reference; never as mutation | *"Visual never mutates World."* | Roadmap row 465 `Val`; RMS §11, §11.2 |
-| **any → R** | allowed | every Record carries the universal `registry_ref` (RMS §4); Artifact 033: it *"Carries the Record's reference into the Registry"* | RMS §4; Artifact 033 |
-| **R → R definitions** | ALLOWED | within R; listed because RMS §10.3 states it with the cross-model rule | RMS §10.3 |
-| **R → declared Record Models, Kinds, schemas, semantic contracts** | allowed | *"Registry MAY reference"* them | RMS §10.3 |
-| **R → domain instances** | FORBIDDEN | *"own domain instances · depend on runtime instances · mutate domain instances · use domain instances as semantic authority"* are all excluded | RMS §10.3; Roadmap §2.4 |
-| **W → I** | forbidden, absolutely | *"No World record may reference an issue — that is manifestation-blindness, and it is absolute (Section 11)."* | Blueprint §13.6a rule 3, §11; I-17; RMS §7; Roadmap §2.4 |
-| **P → I, V → I** | forbidden | E → I is the only sanctioned Issue dependency; Roadmap §2.4: `any → I` except `E → I` | RMS §8.2; Roadmap §2.4 |
-| **W → E, W → P** | forbidden | Roadmap §2.4: `W → E/P/V/I` (manifestation-blindness) | Roadmap §2.4 |
+| Source | Target | Status | Reference rule | Mutation rule | Condition | Source |
+|---|---|---|---|---|---|---|
+| **E** | **W** | reference allowed | E references W | *"mutation only via the governed path"* | — | RMS §8.2; Blueprint §13.6b |
+| **E** | **I** | conditional reference | E references I | not stated | *"reference for reveal ordering — the only sanctioned Issue dependency"* | RMS §8.2; Blueprint §13.6a rule 3 |
+| **E** | **P** | conditional reference | E references reader models | not stated | READER-MODEL only; a synthesis of two Blueprint statements (below) | Blueprint §11, §13.6; RMS §9.1 |
+| **I** | **W, E, P** | reference allowed | *"Issue records may reference World, Epistemic, and Production records."* | not stated | never ownership: *"Issue references; it never owns."* | Blueprint §13.6a rules 2–3 |
+| **I** | **V** | reference allowed | *"Issue references but never owns W/E/P/V semantics."* | not stated | never ownership | RMS §12.2 |
+| **W** | **I** | reference forbidden, absolutely | *"No World record may reference an issue — that is manifestation-blindness, and it is absolute (Section 11)."* | — | — | Blueprint §13.6a rule 3, §11; I-17; RMS §7; Roadmap §2.4 |
+| **P, V** | **I** | reference forbidden | E → I is the only sanctioned Issue dependency; Roadmap §2.4: `any → I` except `E → I` | — | — | RMS §8.2; Roadmap §2.4 |
+| **W** | **E, P** | reference forbidden | Roadmap §2.4: `W → E/P/V/I` (manifestation-blindness) | — | rests on the Roadmap: RMS §7 and I-17 name an issue, tier, medium, artifact and the real world, not E or P | Roadmap §2.4 |
+| **V** | **W** | mutation forbidden | not stated | *"Visual never mutates World."* | — | RMS §11.2; I-89 |
+| **R** | **R definitions** | reference allowed | within R; listed because RMS §10.3 states it with the cross-model rule | not stated | — | RMS §10.3 |
+| **R** | **declared Record Models, Kinds, schemas, semantic contracts** | reference allowed | *"Registry MAY reference"* them | not stated | declarations, not instances | RMS §10.3 |
+| **R** | **domain instances** | forbidden | *"R → domain instances = FORBIDDEN."* | *"mutate domain instances"* is excluded | nor own, depend on, or take semantic authority from them | RMS §10.3; Roadmap §2.4 |
+
+**E → P, derived.** Blueprint §11 states that Epistemic records *"may reference reader models"*, and
+§11 also states *"The reader model is a `READER-MODEL` in Production"*; §13.6 and RMS §9.1 list
+READER-MODEL among the P Kinds. Neither statement alone is the edge; together they state it, for
+READER-MODEL only. No source states any other E → P reference.
 
 Every allowed edge carries the handle rule (§6) and confers no ownership (§12).
 
-### 8.2 Source conflicts — recorded, not resolved here
+### 8.2 Record-level references — not model edges
 
-| Edge | One source | Other source | Precedence and effect |
-|---|---|---|---|
-| **W → V** | Blueprint §13.6c: *"Every Record may reference visual objects."* | Roadmap §2.4 forbids `W → E/P/V/I`; RMS §7 and I-17 forbid a World field referencing an *"artifact"* | The Blueprint outranks the Roadmap, so the Roadmap's W → V prohibition is not adopted here. Whether a World reference to a given visual object is a reference to an *"artifact"* under RMS §7 and I-17 is not settled by the sources. **W → V is unresolved.** |
-| **P → I** | Roadmap row 465 `Val`: *"E→W, P→all, V→W, I→all, R→none"* | RMS §8.2 (E → I the only sanctioned Issue dependency); Roadmap §2.4 | The RMS outranks the Roadmap: P → I is not sanctioned (§8.1). Row 465 is not read as sanctioning it. |
-| **R → other models** | Roadmap row 465 `Val`: *"R→none"* | RMS §10.3: R MAY reference declared Record Models, Kinds, schemas and semantic contracts | The RMS governs the Registry cells (§8.1, §11). |
+Two source statements concern what a **Record** may carry, not an edge between Record Models. This
+contract records them at that level and derives no matrix row from either.
 
-Where the visual reference is carried is not decided here: Blueprint §13.1 lists `visual_refs` in
-its envelope, and RMS §4 fixes the universal envelope at the bootstrap set *"and no more"*.
+- **`registry_ref`.** Every Record carries it (RMS §4, the universal envelope); Artifact 033: it
+  *"Carries the Record's reference into the Registry"*. The field's meaning and resolution are 033's
+  and the Registry's.
+- **Visual references.** Blueprint §13.6c: *"Every Record may reference visual objects."* The
+  Blueprint carries them in `visual_refs` (§13.1, §13.6c); RMS §4 fixes the universal envelope at
+  the bootstrap set *"and no more"*; and the Blueprint records which kinds must carry `visual_refs`
+  as *"REQUIRES DECISION"*. Where the reference is carried is not decided here, and no model-level
+  E → V or P → V row is inferred from the Record-level statement.
 
-### 8.3 SOURCE GAP — Deliverable J and the unestablished edges
+### 8.3 W → V — source conflict
+
+| | Statement |
+|---|---|
+| **Source A** — Blueprint §13.6c | *"Every Record may reference visual objects."*; a `REQUIRED` policy means *"A canonical depiction must exist before the object may reach CANON status"* |
+| **Source B** — Roadmap §2.4 | forbids `W → E/P/V/I` (manifestation-blindness) |
+| **Source C** — RMS §7, §9.1; I-17 | *"no World field may reference an issue, tier, medium, artifact, or the real world"*; RMS §9.1 files *"Visual artifact/asset → V."* |
+
+**Authority status.** Roadmap §0.2: *"Blueprint + RMS govern."* Source B therefore does not prevail
+over A or C, and this contract does not adopt the Roadmap's blanket W → V prohibition. Sources A
+and C are both governing, and no source ranks them. A permits every Record to reference visual
+objects; C bars a World field from referencing an artifact and files visual assets as artifacts.
+
+**058 treatment.** Whether a World Record may reference a visual object — and whether that differs
+between a `CANONICAL-VISUAL-SPECIFICATION` and a `VISUAL-ASSET` — is **unresolved by the current
+sources**. No source assigns its resolution to 058. This contract states no W → V row and binds no
+condition on it.
+
+### 8.4 SOURCE GAP — Deliverable J and the edges not stated
 
 RMS §22–23 and Appendix G delegate the dependency matrix to Deliverable J, which is not in this
 repository. RMS §10.3 confirms such a matrix exists: its rule *"appears in the Registry section,
-the dependency matrix, the governance matrix, the examples, and the implementation notes."* Without
-it, these edges are **not established** — neither allowed nor forbidden by this contract:
+the dependency matrix, the governance matrix, the examples, and the implementation notes."*
 
-| Edge | What the sources say |
-|---|---|
-| **P → W, P → E** | Roadmap row 465 `Val` lists *"P→all"*; no Blueprint or RMS statement establishes either edge |
-| **P → R** | only the universal `registry_ref` (§8.1) |
-| **E → P**, other than reader models | nothing |
-| **V → E** | RMS §11.2 states a chain — a visual analysis whose claim concerns World Truth becomes E evidence — and states no edge direction |
-| **V → P** | nothing |
+No available source states reference legality for these edges; under RMS §4 it is
+model/Registry-owned, and this contract neither grants nor forbids them:
 
-Row 058's `Done` is *"matrix normative"*. The cells in §8.1 are normative here; the matrix as a
-whole is **source-blocked** until Deliverable J, or an equivalent authoritative source, is
-available (§19).
+| Edges not stated |
+|---|
+| E → V · E → R · E → P other than READER-MODEL |
+| P → W · P → E · P → V · P → R |
+| V → W (reference) · V → E · V → P · V → R |
+| W → R · I → R |
+
+For V → E, RMS §11.2 states a chain — a visual analysis whose claim concerns World Truth becomes E
+evidence — and states no edge direction. For every → R edge, see `registry_ref` (§8.2).
+
+Row 058's `Done`, *"matrix normative"*, is not met by this contract; §8.1 is the part the sources
+support.
 
 ## 9. Directional Rules
 
@@ -200,9 +246,7 @@ The sources separate referencing a Record from changing it:
 - **E → W.** Reference; *"mutation only via the governed path"* (RMS §8.2). The RMS does not define
   *"the governed path"* at §8.2 and this contract does not define it. Canon changes only through
   Spine law 2's path, and RMS §4 names the Mutation Coordinator *"Spine 2 — sole canonical write
-  path"*; its mechanism is Artifact 152's (Roadmap P5). Roadmap §2.3 and §2.4 name the Mutation
-  Coordinator `133`; row 133 is the temporal validator and row 152 the Mutation Coordinator. This
-  contract cites row 152 and records the mismatch.
+  path"*.
 - **V → W.** *"Visual never mutates World."* (RMS §11.2). I-89: *"Vision produces observations and
   proposals, never canonicalization."*
 - **R → domain instances.** Registry *"MAY NOT"* mutate domain instances (RMS §10.3).
@@ -226,8 +270,8 @@ declared Record Models and Kinds. Nor does referencing a declaration give the Re
 instance. RMS §24: *"Registry is canon about meaning only; it can never override World Truth"*;
 *"R defines the terms; E owns the states"*.
 
-Every other model references the Registry through `registry_ref` (§8.1). That reference makes the
-referencing Record no part of the Registry, and the Registry no owner of it.
+Every Record carries `registry_ref` (§8.2). This contract derives no model-level edge from that
+field, and the field makes the Registry no owner of the Record that carries it.
 
 ## 12. Model Sovereignty and the Publication Firewall
 
@@ -258,7 +302,7 @@ reference makes nothing canon; I-104 keeps Record and Canon apart.
 | **056** package boundary | an edge places nothing in any model's package; composition stays model-owned (I-107) |
 | **057** Kind admission | an edge admits no Kind; 057's question 7, *what references it*, stays part of admission |
 | **152** Mutation Coordinator | the canonical write path; referenced in §10, not defined |
-| **134** validator · **463** · **465** | downstream: 134's `Val` is *"forbidden edges rejected"* |
+| **134** validator | downstream consumer of §8.1; not a source for this contract |
 
 ## 14. Prohibited Dependency Patterns
 
@@ -279,24 +323,25 @@ Only prohibitions the sources state:
 
 ## 15. What This Contract Does Not Define
 
-1. The edges Deliverable J holds (§8.3) — no available source states them.
-2. The W → V conflict (§8.2) — the sources conflict.
+1. The edges Deliverable J holds (§8.4) — no available source states them.
+2. W → V (§8.3) — the governing sources conflict.
 3. The difference between *reference* and *dependency* (§4) — undefined in the sources.
 4. RMS §8.2's *"the governed path"* (§10) — the RMS names it at §8.2 without defining it.
 5. A cycle rule, a transitive rule, or a dependency-chain rule (§9) — stated by no source.
 6. Reveal ordering — E's, under 054.
 7. Package composition (056) and Kind admission (057) — owned there.
 8. The World Relationship Record (055) — World-only.
-9. Resolution, resolvers, schemas, fields, storage, APIs, serialization and code — resolution is a
-   universal mechanism (RMS §3–§4); the rest is implementation.
-10. Where a visual reference is carried (§8.2).
-11. Any new constitutional invariant.
+9. The meaning of `registry_ref` or `visual_refs`, and where a visual reference is carried (§8.2).
+10. Resolution, resolvers, schemas, fields, storage, APIs, serialization and code — resolution is a
+    universal mechanism (RMS §3–§4); the rest is implementation.
+11. Any new constitutional invariant — an authoring constraint on this document (§2), not a
+    conformance condition.
 
 ## 16. Conformance Conditions
 
 Contract conditions, checkable against a construction. They are not invariants and mint no
-invariant number. They bind only the edges §8.1 states; no condition treats an edge in §8.2 or §8.3
-as allowed or forbidden.
+invariant number. They bind the edges §8.1 states and the general rules of §6 and §12; none treats
+an edge in §8.2, §8.3 or §8.4 as allowed or forbidden.
 
 | ID | Condition | Source |
 |---|---|---|
@@ -311,15 +356,15 @@ as allowed or forbidden.
 | **C-058-09** | A cross-model reference changes no Record's owning Record Model or partition. | RMS §6.1; I-16; Blueprint §13.6a rule 2; RMS §12.2 |
 | **C-058-10** | No Issue reference makes anything canon. | Spine law 5; Blueprint §13.6a rule 1; RMS §12.2; I-04 |
 | **C-058-11** | A cross-model reference is not required to be, and is not treated as, a World Relationship Record. | I-102; Artifact 055 |
-| **C-058-12** | A cross-model edge decides no package composition and admits no Kind. | I-107; RMS §6, §6.1, §13; Artifacts 056, 057 |
-| **C-058-13** | No invariant is minted or amended. | Blueprint §36, §10.4; P-28; I-15 |
+| **C-058-12** | A cross-model edge decides no package composition. | I-107; RMS §6; Artifact 056 |
+| **C-058-13** | A cross-model edge is not Kind admission and admits no Kind. | RMS §6.1, §13; Artifact 057 |
 
 A construction satisfying all thirteen is conformant **to this contract**. That is not conformance
-to the dependency matrix, which is source-blocked (§8.3).
+to a complete dependency matrix, which the available sources do not supply (§8.4).
 
 ## 17. Worked Examples
 
-> **Illustrative and non-normative.** Each rests on the source cited; none decides an edge.
+> **Illustrative and non-normative.** Each rests on a rule in §8.1; none decides an edge.
 
 **Example A — E → W.** An E `MYSTERY` references the World truth it concerns. RMS §8.1: it *"never
 contains or owns it."* The reference uses a resolvable ID (§6). Any change to that World truth goes
@@ -336,13 +381,9 @@ is not sanctioned (§8.1).
 makes an issue the owner of the event."* Whatever the article asserts, *"Nothing in an issue is true
 because it is printed."* (Spine law 5; Blueprint §13.6a rule 1).
 
-**Example E — not established.** A P `ARC` referencing a World `EVENT` is listed by Roadmap row
-465's *"P→all"* and stated by no Blueprint or RMS text available here. This contract neither allows
-nor forbids it (§8.3).
-
-**Example F — conflict.** A World `CHARACTER` referencing its `CANONICAL-VISUAL-SPECIFICATION`:
-Blueprint §13.6c says every Record may reference visual objects; Roadmap §2.4 forbids W → V. This
-contract records the conflict (§8.2) and decides nothing.
+**Example E — resolvable, not legal.** A World `CHARACTER` Record carrying the ID of an `ISSUE`
+Record: the ID is well-formed and resolves (RMS §4), and the reference is still forbidden
+(Blueprint §13.6a rule 3; C-058-03). Resolution identified the target; it did not permit the edge.
 
 ## 18. Source Traceability
 
@@ -350,38 +391,43 @@ contract records the conflict (§8.2) and decides nothing.
 |---|---|
 | Resolvable ID the only legal cross-model handle | RMS §4 |
 | Resolution mechanical and uniform; legality model/Registry-owned | RMS §4 |
-| Matrix delegated to Deliverable J | RMS §22–23, Appendix G, §10.3 |
+| Precedence: Blueprint + RMS govern | Roadmap §0.2 |
+| Matrix delegated to Deliverable J; Deliverable J named only in the RMS | RMS §22–23, Appendix G, §10.3 |
 | E → W, E → I | RMS §8.2; Blueprint §13.6a rule 3, §13.6b |
-| E → P (reader models) | Blueprint §11; RMS §9.1 |
-| I → W, E, P, V; references never own | Blueprint §13.6a rules 2–3; RMS §12.2 |
-| Any Record → V | Blueprint §13.6c |
-| V → W; Visual never mutates World | Roadmap row 465; RMS §11, §11.2; I-89 |
-| Any → R via `registry_ref` | RMS §4; Artifact 033 |
+| E → P (READER-MODEL) — synthesis of two statements | Blueprint §11, §13.6; RMS §9.1 |
+| I → W, E, P | Blueprint §13.6a rules 2–3 |
+| I → V; Issue references never own | RMS §12.2 |
+| Only sanctioned Issue dependency | RMS §8.2; Roadmap §2.4 |
+| W → E, W → P forbidden | Roadmap §2.4 |
+| Visual never mutates World | RMS §11.2; I-89 |
 | Registry reference boundary | RMS §10.3, §24 |
+| Record-level `registry_ref`; Record-level visual references | RMS §4; Artifact 033; Blueprint §13.1, §13.6c |
+| W → V conflict | Blueprint §13.6c; Roadmap §2.4, §0.2; RMS §7, §9.1; I-17 |
 | Manifestation-blindness | Blueprint §11, §13.6a rule 3; I-17; RMS §7 |
-| Forbidden edges | Roadmap §2.4 |
 | Direction of reference frozen | Blueprint §13.6a rule 3, §13.6b |
 | Publication firewall | Spine law 5; Blueprint §13.6a rule 1; RMS §12.2; I-04, I-104 |
 | One owning model; no conversion | RMS §6.1; I-16 |
 | Relationship mechanisms model-owned; RR World-only | RMS §15; I-102 |
-| Packaging model-owned | I-107 |
-| Invariants are the Blueprint's | Blueprint §36, §10.4; P-28; I-15 |
-| Identity and acceptance | Roadmap row 058 |
+| Packaging model-owned | I-107; RMS §6 |
+| Kind admission separate | RMS §6.1, §13; Artifact 057 |
+| Identity and acceptance target | Roadmap row 058 |
 
 ## 19. Final Contract Statement
 
-A cross-model reference uses a resolvable ID; that it resolves does not make it legal. E references
-W, mutating it only via the governed path, and references I for reveal ordering — the only
-sanctioned Issue dependency. I references W, E, P and V and owns none of them; nothing becomes canon
-by being published. No World record references an issue, and World references nothing in E or P.
-The Registry references definitions and declarations, never domain instances. No reference changes
-who owns a Record. W → V is in conflict between the sources, and the edges Deliverable J would hold
-are not established; this contract decides neither, and the matrix as a whole is source-blocked.
+A cross-model reference uses a resolvable ID; that it resolves does not make it legal, and legality
+is model/Registry-owned. The sources state these edges: E references W, mutating it only via the
+governed path; E references I for reveal ordering — the only sanctioned Issue dependency — and
+references the P Kind READER-MODEL; I references W, E, P and V and owns none of them; no World
+record references an issue, and World references nothing in E or P; V never mutates W; the
+Registry references definitions and declarations, never domain instances. Nothing becomes canon by
+being published, and no reference changes who owns a Record. W → V is in conflict between the
+governing sources, and the edges Deliverable J would hold are not stated; this contract decides
+neither, and does not claim row 058's target, *"matrix normative"*, met.
 
 ---
 
 *Artifact 058 · P2/2d · Own: CONST · SoT: AUTHORITATIVE · Auth: governing · Canon: n/a. This
 document states the cross-model edges the Blueprint, the RMS and the Roadmap establish. It does not
-amend them, defines no resolver, schema or matrix cell they leave undefined, and treats no unstated
-edge as forbidden. Where it differs from the Master Blueprint, the Record Model System, or the OS
-File Build Roadmap, those governing sources are correct and this document is wrong.*
+amend them, defines no resolver, schema or matrix cell they leave undefined, and grants or forbids
+no edge they do not state. Where it differs from the Master Blueprint, the Record Model System, or
+the OS File Build Roadmap, those governing sources are correct and this document is wrong.*
