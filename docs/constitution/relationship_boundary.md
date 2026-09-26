@@ -47,7 +47,7 @@ inferred.
 **In scope.** The reification criterion; Relationship against field, reference, composition,
 dependency and projection; relationship type against relationship instance; the single-owner rule
 and the owning role; the Derived back-reference; the Relationship Record's World scope, its
-current-state rule and the WSV exception; the Registry, authority and temporal boundaries.
+current-state rule and the WSV source status; the Registry, authority and temporal boundaries.
 
 **Out of scope.** The package boundary (Artifact 056); cross-model dependency (058); the temporal
 obligation (054); relationship-type definition and schema (079, 080); the World Relationship Record
@@ -114,6 +114,11 @@ Q2  Can one endpoint own it without ambiguity — as a field, or as a reference 
       YES → not a first-class Relationship: a Field or a reference on the owning side.
       NO  → a first-class Relationship.
 ```
+
+Where the governing model architecture already classifies a connection as composition,
+dependency, or another non-Relationship mechanism (§5.5 below), that source-defined classification
+is preserved; this test does not reclassify it merely because it is not represented as a field or
+reference. The test applies to connections the governing sources have not already classified.
 
 A connection that qualifies carries what §13.3 attaches to a Relationship: a stable identity; a
 Registry-defined type *"carrying its participant roles, its direction, its cardinality, and its
@@ -265,10 +270,15 @@ holds current state; World's History Record holds its evolution (§13.9). Neithe
 
 ### 9.3 WSV
 
-WSV's package is `Record + WSV-H` (I-72). §13.10: *"WSV owns no edges"*; a pressure edge targeting
-an indicator is owned by the other endpoint, so *"WSV is always the non-owning endpoint"*. §13.6d's
-`ESTABLISHED` W WSV row agrees. §13.10 carries a `PROPOSED` flag, recorded by RMS Appendix H as
-PC-2; this contract cites the rule and does not lift the flag.
+**Source status.** Blueprint §13.10 currently records a `PROPOSED` reading in which *"WSV owns no
+edges"* — a pressure edge targeting an indicator is owned by the other endpoint, so *"WSV is always
+the non-owning endpoint"* — and WSV has no Relationship Record. I-72 states WSV's package as
+`Record + WSV-H`, and §13.6d's W WSV row carries the same reading. §13.10's `PROPOSED` flag remains,
+recorded by RMS Appendix H as PC-2.
+
+**Contract effect.** Because that reading remains explicitly `PROPOSED`, this contract records it
+and does not make it a conformance requirement, does not resolve the underlying source conflict,
+and does not lift the flag.
 
 ## 10. Registry Boundary
 
@@ -370,7 +380,7 @@ invariant number.
 | **C-055-07** | The named Relationship Record is World-scoped and not a Record System primitive. | I-102; §13.9; §13.7a |
 | **C-055-08** | World's Relationship Record holds current relationships only. | I-74; §13.5 |
 | **C-055-09** | Relationship evolution is recorded in the owning object's temporal account, not the Relationship Record. | I-74; §13.5 |
-| **C-055-10** | WSV has no Relationship Record. | I-72; §13.10; §13.6d |
+| **C-055-10** | *Withdrawn.* The WSV reading of Blueprint §13.10 is `PROPOSED`; it is recorded in §9.3 above and is not a condition of this contract. | Blueprint §13.10 |
 | **C-055-11** | E, P, R, V and I are not required by 055 to adopt World's Relationship Record. | I-102; I-107; §13.6e |
 | **C-055-12** | No Record Model is a template for another's relationship packaging. | I-101; I-90 |
 | **C-055-13** | The Registry defines relationship-type meaning and owning role and holds no relationship instance. | §13.6e; RMS §15; I-88 |
@@ -380,7 +390,7 @@ invariant number.
 | **C-055-17** | Artifacts 054, 056 and 058 are not redefined. | Roadmap rows 054, 056, 058 |
 | **C-055-18** | The absence of a source definition of *ambiguity* stays disclosed and is not filled. | this contract, §5.2 |
 
-A construction satisfying all eighteen is conformant **to this contract**. It is not thereby
+A construction satisfying all seventeen is conformant **to this contract**. It is not thereby
 conformant to the Record System: the other P2 contracts carry their own conditions.
 
 ## 16. Worked Examples
@@ -429,7 +439,7 @@ row 276, holds knowledge relationships within KNOWLEDGE-STATE. Neither is the ot
 | Non-owning back-reference is Derived | Blueprint §13.9, §12.4, §12.11; I-73 |
 | Relationship Record is World-only, not a primitive | I-102; Blueprint §13.9, §13.7a; Artifact 039 |
 | World package | I-72; Blueprint §13.9 |
-| WSV has no Relationship Record | I-72; Blueprint §13.10, §13.6d |
+| WSV reading (no Relationship Record) — `PROPOSED` in §13.10; recorded, not adjudicated | I-72; Blueprint §13.10, §13.6d; RMS Appendix H PC-2 |
 | Current relationships only; changes in history | I-74; Blueprint §13.5, §13.9 |
 | Model sovereignty; no template | I-101 |
 | Shared infrastructure ≠ shared semantics | I-103; Blueprint §13.7a |
