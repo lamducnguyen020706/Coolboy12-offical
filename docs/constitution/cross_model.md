@@ -27,8 +27,19 @@ state; it does not reconstruct Deliverable J.
 
 - **Acceptance target** (Roadmap row 058 `Done`, preserved unchanged): *"matrix normative"*. The
   Roadmap's notation defines the field as *"Done: exit condition"* (§0.4): a target, not a claim.
-- **Current status: NOT COMPLETE.** The rows of §8.1 bind, through §16; the matrix is not complete
-  (§8.4), and this contract does not claim the target met.
+- **What "normative" means.** The Roadmap does not define the word. Where the sources use it, it
+  means binding force, not exhaustiveness: Blueprint §36 calls its register *"The blueprint's
+  normative claims, consolidated."*, and Artifact 016, frozen against the parallel criterion
+  *"Done: PART I table normative"*, made a table of partial coverage normative (*"The tables have
+  different coverage and neither is a subset of the other."*). Row 058's `Val` asks for
+  *"allowed/forbidden edges; publication firewall; manifestation-blindness"*, not an exhaustive
+  matrix.
+- **Acceptance status: met, on that reading.** The §8.1 matrix is binding through §16, and states
+  the allowed and forbidden edges, the publication firewall and manifestation-blindness.
+- **Source state: open, and bounded.** The matrix is not exhaustive (§8.4), and W → V is an
+  unresolved source conflict (§8.3). Both are states of the governing sources, recorded here; they
+  are not defects of this contract, and meeting the target does not resolve them. **Artifact
+  completion is not source-conflict resolution.**
 
 **This contract adds no architecture.** Every normative rule in it is either (a) directly
 established by an authoritative source, or (b) an explicitly identified **synthesis** whose
@@ -287,8 +298,9 @@ states it:
 For V → E, RMS §11.2 states a chain — a visual analysis whose claim concerns World Truth becomes E
 evidence — and states no edge direction. For every → R edge, see `registry_ref` (§8.2).
 
-Row 058's `Done`, *"matrix normative"*, is not met by this contract; §8.1 is the part the sources
-support.
+Row 058's `Done`, *"matrix normative"*, is met in the sense §1 states: the §8.1 matrix is binding.
+The edges listed above are not in it because no available source states them; they are not
+omitted by this contract, and the Roadmap does not assign Deliverable J to 058.
 
 ## 9. Directional Rules
 
@@ -445,7 +457,7 @@ row, a Record-level statement of §8.2, the Issue–V semantic statement, or an 
 | **C-058-13** | A cross-model edge is not Kind admission and admits no Kind. | RMS §6.1, §13; Artifact 057 |
 
 A construction satisfying all thirteen is conformant **to this contract**. That is not conformance
-to a complete dependency matrix, which the available sources do not supply (§8.4).
+to an exhaustive dependency matrix, which the available sources do not supply (§8.4).
 
 ## 17. Worked Examples
 
@@ -503,6 +515,7 @@ places the `EVENT` in no Issue package (056; C-058-12) and admits no Kind (057; 
 | Packaging model-owned | I-107; RMS §6 |
 | Kind admission separate | RMS §6.1, §13; Artifact 057 |
 | Identity and acceptance target | Roadmap row 058 |
+| *normative* read as binding force, not exhaustiveness | Blueprint §36; Roadmap row 016 `Done`; Artifact 016 §5–§6 |
 
 ## 19. Final Contract Statement
 
@@ -516,7 +529,8 @@ W → E, W → P, P → I and V → I; V never mutates W. The Registry reference
 declarations, never domain instances (§11). Nothing becomes canon by being published, and no
 reference changes who owns a Record. W → V is in conflict between the governing sources, and the
 edges Deliverable J would hold are not stated; this contract decides neither. Row 058's acceptance
-target is *"matrix normative"*; its current status is NOT COMPLETE.
+target, *"matrix normative"*, is met: the matrix is binding. The open source state — W → V and the
+unstated edges — remains open, recorded and not resolved here.
 
 ---
 
