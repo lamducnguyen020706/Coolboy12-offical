@@ -25,7 +25,8 @@ state; it does not reconstruct Deliverable J.
 
 **Acceptance target and current status.**
 
-- **Acceptance target** (Roadmap row 058 `Done`, preserved unchanged): *"matrix normative"*.
+- **Acceptance target** (Roadmap row 058 `Done`, preserved unchanged): *"matrix normative"*. The
+  Roadmap's notation defines the field as *"Done: exit condition"* (§0.4): a target, not a claim.
 - **Current status: NOT COMPLETE.** The rows of §8.1 bind, through §16; the matrix is not complete
   (§8.4), and this contract does not claim the target met.
 
@@ -258,7 +259,9 @@ Blueprint's permission for World Records. Whether a World Record may reference a
 and whether that differs between a `CANONICAL-VISUAL-SPECIFICATION` and a `VISUAL-ASSET` — is
 **unresolved by the current sources**. No source assigns its resolution to 058, and **Artifact 058
 has no authority to resolve it**: this contract describes the sources' cross-model consequences; it
-does not choose between conflicting source statements.
+does not choose between conflicting source statements. The Roadmap records its known source
+conflicts as decision gates (PART VIII: DG-01, DG-02); W → V is not among them, the Roadmap does not
+mention `visual_refs`, and this contract creates no gate.
 
 **058 treatment.** The W → V row reads UNRESOLVED SOURCE CONFLICT; no condition binds it.
 C-058-03 binds Source C's words and does not decide whether any visual object is an *"artifact"*.
@@ -299,8 +302,11 @@ support.
 - **Allowed in one direction is not allowed in the other.** E → I does not make I → E follow from
   it; each is stated separately (§8.1).
 
-**Not stated by any source:** a rule on dependency cycles, on transitive or indirect dependency,
-or on dependency chains between Record Models. This contract adds none (§15).
+**Not established for Record Models:** a rule on dependency cycles, on transitive or indirect
+dependency, or on dependency chains. The Roadmap's G-STATIC checklist (PART XIV, artifact 488)
+lists *"Dependency consistency: no forbidden edge, no cycle, no orphan"*; it does not state whether
+that item concerns the Roadmap's artifact dependency graph or edges between Record Models, and no
+Blueprint or RMS text states a cycle rule for Record Models. This contract adds none (§15).
 
 ## 10. Reference vs Mutation
 
@@ -404,7 +410,8 @@ Only prohibitions the sources state:
 2. W → V (§8.3) — the governing sources conflict.
 3. The difference between *reference* and *dependency* (§4) — undefined in the sources.
 4. RMS §8.2's *"the governed path"* (§10) — the RMS names it at §8.2 without defining it.
-5. A cycle rule, a transitive rule, or a dependency-chain rule (§9) — stated by no source.
+5. A cycle rule, a transitive rule, or a dependency-chain rule (§9) — none is stated for Record
+   Models; the scope of PART XIV's *"no cycle"* checklist item is not stated.
 6. Reveal ordering — E's, under 054.
 7. Package composition (056) and Kind admission (057) — owned there.
 8. The World Relationship Record (055) — World-only.
