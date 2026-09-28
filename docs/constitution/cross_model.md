@@ -183,17 +183,22 @@ source states the outcome (§2).
 to Registry definitions, to declarations, and to domain instances — are the Registry reference
 boundary (§11) and are not rows here. Record-level statements are §8.2's.
 
-| Source | Target | Status | Reference rule | Mutation rule | Condition | Source |
-|---|---|---|---|---|---|---|
-| **E** | **W** | allowed | E references W | *"mutation only via the governed path"* | — | RMS §8.2; Blueprint §13.6b (E's *"interface to World is by reference"*) |
-| **E** | **I** | conditional | E references I | not stated | *"reference for reveal ordering — the only sanctioned Issue dependency"* | RMS §8.2; Blueprint §13.6a rule 3 (*"Epistemic records may reference issues"*) |
-| **E** | **P[READER-MODEL]** | conditional — **synthesis** | E references a P Record whose Kind is READER-MODEL | not stated | the target P Record MUST be of Kind READER-MODEL; **no general E → P permission is established** | Blueprint §11, §13.6; RMS §9.1 |
-| **I** | **W, E, P** | allowed | *"Issue records may reference World, Epistemic, and Production records."* | not stated | never ownership: *"Issue references; it never owns."* | Blueprint §13.6a rules 2–3 |
-| **W** | **I** | forbidden, absolutely | *"No World record may reference an issue — that is manifestation-blindness, and it is absolute (Section 11)."* | — | — | Blueprint §13.6a rule 3, §11; I-17; RMS §7; Roadmap §2.4 |
-| **P, V** | **I** | forbidden | Roadmap §2.4 lists `any → I` except `E → I` among its forbidden edges | — | the prohibition is stated by the Roadmap; RMS §8.2's *"the only sanctioned Issue dependency"* is consistent with it | Roadmap §2.4 |
-| **W** | **E, P** | forbidden | Roadmap §2.4 lists `W → E/P/V/I` (manifestation-blindness) among its forbidden edges | — | the prohibition is the Roadmap's: the Blueprint and RMS state no W → E or W → P rule, and their manifestation-blindness texts name an issue, tier, medium, artifact or the real world, not E or P | Roadmap §2.4 |
-| **W** | **V** | unresolved — source conflict | see §8.3 | — | — | Blueprint §13.1, §13.6c; Roadmap §2.4, §0.2 |
-| **V** | **W** | mutation forbidden; reference not established | not stated | *"Visual never mutates World."* | — | RMS §11.2; I-89 |
+| Source Model | Target Model | Target Scope | Status | Constraint | Source |
+|---|---|---|---|---|---|
+| **E** | **W** | W Records | ALLOWED | reference; *"mutation only via the governed path"* | RMS §8.2; Blueprint §13.6b (E's *"interface to World is by reference"*) |
+| **E** | **I** | I Records | CONDITIONAL | *"reference for reveal ordering — the only sanctioned Issue dependency"* | RMS §8.2; Blueprint §13.6a rule 3 (*"Epistemic records may reference issues"*) |
+| **E** | **P** | P Records of Kind READER-MODEL only — `P[READER-MODEL]` | CONDITIONAL — **synthesis** | the target P Record MUST be of Kind READER-MODEL; **no general E → P permission is established** | Blueprint §11, §13.6; RMS §9.1 |
+| **I** | **W** | W Records | ALLOWED | *"Issue records may reference World, Epistemic, and Production records."*; never ownership: *"Issue references; it never owns."* | Blueprint §13.6a rules 2–3 |
+| **I** | **E** | E Records | ALLOWED | as for I → W: reference, never ownership | Blueprint §13.6a rules 2–3 |
+| **I** | **P** | P Records | ALLOWED | as for I → W: reference, never ownership | Blueprint §13.6a rules 2–3 |
+| **W** | **I** | I Records | FORBIDDEN | absolute: *"No World record may reference an issue — that is manifestation-blindness, and it is absolute (Section 11)."* | Blueprint §13.6a rule 3, §11; I-17; RMS §7; Roadmap §2.4 |
+| **P** | **I** | I Records | FORBIDDEN | Roadmap §2.4 lists `any → I` except `E → I` among its forbidden edges; RMS §8.2's *"the only sanctioned Issue dependency"* is consistent with it | Roadmap §2.4 |
+| **V** | **I** | I Records | FORBIDDEN | as for P → I | Roadmap §2.4 |
+| **W** | **E** | E Records | FORBIDDEN | Roadmap §2.4 lists `W → E/P/V/I` (manifestation-blindness) among its forbidden edges. The prohibition is the Roadmap's: the Blueprint and RMS state no W → E rule, and their manifestation-blindness texts name an issue, tier, medium, artifact or the real world, not E | Roadmap §2.4 |
+| **W** | **P** | P Records | FORBIDDEN | as for W → E; the Blueprint and RMS state no W → P rule | Roadmap §2.4 |
+| **W** | **V** | V Records | UNRESOLVED SOURCE CONFLICT | Blueprint §13.6c and §13.1 permit every Record, World included, to reference into the V partition; Roadmap §2.4 forbids `W → V`; Roadmap §0.2 does not decide it; 058 has no authority to (§8.3) | Blueprint §13.1, §13.6c; I-16; Roadmap §2.4, §0.2 |
+| **V** | **W** | W Records — **reference** | NOT ESTABLISHED | no available source states whether a V Record may reference a W Record | — |
+| **V** | **W** | W Records — **mutation** | FORBIDDEN | *"Visual never mutates World."* A mutation prohibition; it says nothing of reference | RMS §11.2; I-89 |
 
 **E → P[READER-MODEL], derived.** Blueprint §11 states that Epistemic records *"may reference
 reader models"*, and §11 also states *"The reader model is a `READER-MODEL` in Production"*; §13.6
@@ -231,7 +236,7 @@ contract records them at that level and derives no matrix row from either.
 
 | | Statement | Level |
 |---|---|---|
-| **Source A** — Blueprint §13.6c, §13.1 | *"Every Record may reference visual objects."*; `visual_refs` are *"References into the V partition"*; a `REQUIRED` policy means *"A canonical depiction must exist before the object may reach CANON status"* | Record: every Record, World included, referencing into the V partition |
+| **Source A** — Blueprint §13.6c, §13.1 | *"Every Record may reference visual objects."*; `visual_refs` are *"References into the V partition"*; *"Every Record has a defined relationship to the Visual Library, whether or not an asset exists (v0.6.3)."*; a `REQUIRED` policy means *"A canonical depiction must exist before the object may reach CANON status"* | Record: every Record, World included, referencing into the V partition |
 | **Source B** — Roadmap §2.4 | lists `W → E/P/V/I` (manifestation-blindness) among its forbidden edges | Record Model: an edge from W to V |
 | **Source C** — RMS §7; I-17; Blueprint §11 | *"no World field may reference an issue, tier, medium, artifact, or the real world"*; World records *"know nothing of magazines, covers, tiers, or issues"* | field of a World Record |
 
@@ -251,10 +256,12 @@ the outcome of a conflict between this Roadmap's §2.4 and the Blueprint. A and 
 and no source ranks them. This contract adopts neither the Roadmap's W → V prohibition nor the
 Blueprint's permission for World Records. Whether a World Record may reference a visual object —
 and whether that differs between a `CANONICAL-VISUAL-SPECIFICATION` and a `VISUAL-ASSET` — is
-**unresolved by the current sources**, and no source assigns its resolution to 058.
+**unresolved by the current sources**. No source assigns its resolution to 058, and **Artifact 058
+has no authority to resolve it**: this contract describes the sources' cross-model consequences; it
+does not choose between conflicting source statements.
 
-**058 treatment.** The W → V row reads *unresolved*; no condition binds it. C-058-03 binds Source
-C's words and does not decide whether any visual object is an *"artifact"*.
+**058 treatment.** The W → V row reads UNRESOLVED SOURCE CONFLICT; no condition binds it.
+C-058-03 binds Source C's words and does not decide whether any visual object is an *"artifact"*.
 
 ### 8.4 SOURCE GAP — Deliverable J and the edges not stated
 
@@ -304,7 +311,8 @@ The sources separate referencing a Record from changing it:
   Spine law 2's path, and RMS §4 names the Mutation Coordinator *"Spine 2 — sole canonical write
   path"*.
 - **V → W.** *"Visual never mutates World."* (RMS §11.2). I-89: *"Vision produces observations and
-  proposals, never canonicalization."*
+  proposals, never canonicalization."* This is a mutation prohibition only; whether a V Record may
+  reference a W Record is not established (§8.1), and neither follows from the other.
 - **R → domain instances.** Registry *"MAY NOT"* mutate domain instances (RMS §10.3).
 - **Issue.** Issue *"references but never owns"* (RMS §12.2); publication writes nothing to canon
   (§12 below).
@@ -418,10 +426,10 @@ row, a Record-level statement of §8.2, the Issue–V semantic statement, or an 
 | **C-058-01** | Every cross-model reference uses a resolvable ID as its handle. | RMS §4 |
 | **C-058-02** | An edge is not treated as legal because its target resolves. | RMS §4 |
 | **C-058-03** | No World record references an issue, and no World field references an issue, tier, medium, artifact, or the real world. | Blueprint §13.6a rule 3, §11; I-17; RMS §7 |
-| **C-058-04** | There is no W → I, P → I or V → I edge; an E → I edge serves reveal ordering only. | Roadmap §2.4; RMS §8.2; Blueprint §13.6a rule 3 |
+| **C-058-04** | There is no W → I, P → I or V → I edge (Roadmap §2.4; for W also Blueprint §13.6a rule 3, I-17, RMS §7). An E → I edge serves reveal ordering only (RMS §8.2, which sanctions E → I; it is not the source of the prohibition on the others). | Roadmap §2.4; RMS §8.2; Blueprint §13.6a rule 3; I-17; RMS §7 |
 | **C-058-05** | No World record references an E or P Record. | Roadmap §2.4 |
 | **C-058-06** | An E → W edge is a reference; any mutation of W arising from E happens only via the governed path. | RMS §8.2 |
-| **C-058-07** | V never mutates W. | RMS §11.2; I-89 |
+| **C-058-07** | V never mutates W. The condition binds mutation only; whether a V Record may reference a W Record is not established and no condition binds it. | RMS §11.2; I-89 |
 | **C-058-08** | No Registry Record references, owns or mutates a domain instance, depends on a runtime instance, or uses a domain instance as semantic authority. | RMS §10.3 |
 | **C-058-09** | A cross-model reference changes no Record's owning Record Model or partition. | RMS §6.1; I-16; Blueprint §13.6a rule 2; RMS §12.2 |
 | **C-058-10** | No Issue reference makes anything canon. | Spine law 5; Blueprint §13.6a rule 1; RMS §12.2; I-04 |
@@ -471,7 +479,8 @@ places the `EVENT` in no Issue package (056; C-058-12) and admits no Kind (057; 
 | Matrix delegated to Deliverable J; Deliverable J named only in the RMS | RMS §22–23, Appendix G, §10.3 |
 | E → W, E → I | RMS §8.2; Blueprint §13.6a rule 3, §13.6b |
 | E → P[READER-MODEL] — **synthesis** of Blueprint §11 (*may reference reader models*) and Blueprint §11, §13.6 (READER-MODEL is Production); no general E → P | Blueprint §11, §13.6; RMS §9.1 |
-| I → W, E, P | Blueprint §13.6a rules 2–3 |
+| I → W; I → E; I → P (three rows) | Blueprint §13.6a rules 2–3 |
+| V → W: reference not established; mutation forbidden | RMS §11.2; I-89 |
 | Issue references V semantics; no I → V edge established | RMS §12.2 |
 | E → I the only sanctioned Issue dependency (RMS); W/P/V → I forbidden (Roadmap) | RMS §8.2; Roadmap §2.4; Blueprint §13.6a rule 3 |
 | W → E, W → P forbidden | Roadmap §2.4 |
