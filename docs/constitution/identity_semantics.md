@@ -322,7 +322,7 @@ no reader may cite it as having done so:
 17. serialization format — **Artifact 033**
 18. universal identity operations — **§8.1**; World's are **Artifact 205**
 19. model-specific lifecycle ceremonies
-20. any reintroduction of the retired Canon Object Model — retired at RMS §2
+20. any reintroduction of the retired architecture — the Canon Object Model is retired at RMS §2
 
 **None of these exclusions weakens the universal rules in §8.** I-82's stability rules and
 Blueprint §13.9a's grammar are constitutional and bind every model; excluding a *semantic* from
