@@ -33,19 +33,24 @@ nothing about the Kinds, schemas, lifecycles or packages later phases design.
 Implementation decision: every check is static, deterministic, offline and
 read-only. It reads repository text and imports nothing from ``coolboy12``.
 
-The regression scan is a bounded structural guard, not a parser of meaning.
-It recognises the governing sources' own vocabulary and a finite set of local
-polarity constructions used by controlled constitutional prose; it does not
-attempt general natural-language entailment. Negation is judged against each
-matched prohibited claim, not against the sentence, clause or table row that
-holds it. A claim is excused only by a negation in its own proposition, a
-predicate directly after it that denies it, a negation governing the list it
+The regression scan is a bounded structural regression guard, not a parser of
+meaning. It recognises governing-source vocabulary and a finite set of direct
+local polarity constructions used in controlled constitutional prose.
+Indirect or arbitrarily nested natural-language entailment remains outside its
+scope. Its predicate classes — denying (prohibition, absence), permission,
+negation — each carry one polarity, the same before a claim and after it:
+"prevents X" and "X is absent" deny X; "nothing prevents X" and "X is not
+absent" affirm it; "X is not permitted" denies X, but "X is not prohibited"
+and "No rule forbids X" negate the prohibition, and X stands.
+
+Polarity is judged against each matched prohibited claim, not against the
+sentence, clause or table row that holds it. A claim is denied only by its own
+proposition, the predicate directly after it, a negation governing the list it
 is a bare member of, a verdict cell governing its concept cell, the negative
-lead-in of its list item, or a negative section heading. Polarity is explicit:
-"X is not permitted" negates X, but "X is not prohibited", "Nothing prevents X"
-and "No rule forbids X" negate the prohibition, and X stands. "anti" negates
-nothing, and "not only X" asserts X. A claim reworded past the prohibited
-names is outside its reach; the positive checks exist for that reason.
+lead-in of its list item, or a negative section heading. "anti" negates
+nothing, "unless" qualifies without denying, and "not only X" asserts X. A
+claim reworded past the prohibited names is outside the scan's reach; the
+positive checks exist for that reason.
 """
 
 from __future__ import annotations
@@ -191,64 +196,101 @@ PROHIBITION_ALIASES = {
     ),
 }
 
-# Negation words. "unless" is not here: a qualified universal ("... unless
-# overridden") still asserts the universal as the default architecture. "anti"
-# is not here: "anti-COM" and "anti-pattern" are labels, and negate nothing
-# that follows them.
-NEGATION = re.compile(
-    r"\b(no|not|never|nor|none|nothing|without|neither|cannot"
-    r"|prohibit\w*|forbid\w*|refus\w*|reject\w*|retire\w*|reintroduc\w*"
-    r"|reinstat\w*|resurrect\w*|revive\w*|rather than|instead of)\b|≠",
-    re.IGNORECASE,
+# Polarity. The scan asks one question of each matched prohibited claim: does
+# its own local proposition deny it, or affirm it? The answer is DENIED,
+# AFFIRMED or UNKNOWN, and three things are told apart:
+#
+#   1. denial of the construction       "prevents X"           → X denied
+#                                       "X is absent"          → X denied
+#                                       "X is prohibited"      → X denied
+#   2. affirmation of the construction  "permits X"            → X affirmed
+#   3. negation of a denial, which      "nothing prevents X"   → X affirmed
+#      affirms the construction         "X is not absent"      → X affirmed
+#                                       "X is not prohibited"  → X affirmed
+#
+# The vocabulary is a few explicit predicate classes. A word belongs to one
+# class only, and a class behaves the same before the claim and after it.
+# "unless" belongs to none: a qualified universal ("... unless overridden")
+# still asserts the universal as the default architecture. Nor does "anti":
+# "anti-COM" and "anti-pattern" are labels, and negate nothing that follows.
+#
+# Plain negations.
+NEGATOR = r"\b(?:no|not|never|nothing|none|neither|nor|cannot|without)\b"
+# Denying predicates: prohibition, and absence or retirement. Each denies the
+# construction it governs; negated, each affirms it.
+PROHIBITING = (
+    r"\b(?:prohibit(?:s|ed|ing|ions?)?|forbid(?:s|ding|den)?|forbade"
+    r"|prevent(?:s|ed|ing|ion)?|reject(?:s|ed|ing|ion)?"
+    r"|refus(?:e|es|ed|ing|al)|exclu(?:de|des|ded|ding|sion)"
+    r"|disallow(?:s|ed|ing)?|ban(?:s|ned|ning)?|bar(?:s|red|ring)?)\b"
+)
+ABSENCE = r"\b(?:absent|absence|retir(?:e|es|ed|ing|ement))\b"
+DENYING = rf"(?:{PROHIBITING}|{ABSENCE})"
+# Permission predicates: each affirms the construction it governs.
+PERMISSION = (
+    r"\b(?:permit(?:s|ted|ting)?|permission|allow(?:s|ed|ing)?"
+    r"|authori[sz](?:e|es|ed|ing|ation)|enabl(?:e|es|ed|ing))\b"
+)
+# Markers of a rejected alternative in constitutional prose ("must not
+# reintroduce X", "rather than X", "A ≠ X"). They deny what follows and compose
+# with nothing.
+CONTRAST = (
+    r"\b(?:reintroduc\w*|reinstat\w*|resurrect\w*|revive\w*|rather than"
+    r"|instead of)\b|≠"
 )
 # "not only X but also Y" asserts X and Y; its "not" negates nothing.
 NOT_ONLY = re.compile(r"\bnot only\b", re.IGNORECASE)
 
-# Polarity. A negative word is not a negative claim. Two things differ:
-#
-#   negating the prohibited construction   "X is not permitted"  → X denied
-#   negating the prohibition against it    "X is not prohibited" → X stands
-#
-# The second is a negation composed with a prohibition, and it affirms X. The
-# scan recognises it in two small, fixed shapes and no others: a negated
-# prohibiting predicate directly after the claim, and a negation whose object
-# is a prohibition ahead of it ("Nothing prevents X", "No rule forbids X").
-#
-# The words that prohibit, for that composition only.
-PROHIBITOR = (
-    r"\b(?:prohibit\w*|forbid\w*|forbade|prevent\w*|reject\w*|refus\w*"
-    r"|exclud\w*|disallow\w*|bans?|banned|bars?|barred)\b"
-)
-# The plain negations a prohibition can fall under.
-NEGATOR = r"\b(?:no|not|never|nothing|none|neither|nor|cannot|without)\b"
-# Ahead of the claim: a negation, then a prohibition — "No rule forbids X",
-# "Nothing prevents X", "No prohibition applies to X". The claim stands.
-PROHIBITION_NEGATED_AHEAD = re.compile(rf"{NEGATOR}.*?{PROHIBITOR}", re.IGNORECASE)
-# After the claim: a negated prohibiting predicate — "X is not prohibited",
-# "X is never forbidden", "X cannot be prohibited". The claim stands.
-PROHIBITION_NEGATED_AFTER = re.compile(
-    r"^\s*(?:(?:is|are|was|were|be|been)\s+(?:not|never)"
-    r"|(?:has|have)\s+(?:not|never)\s+been"
+# Ahead of the claim — the words since the last proposition boundary. The
+# first rule that applies decides:
+#   1. a negation, then a denying predicate  → AFFIRMED  "Nothing prevents X",
+#                                                        "No rule forbids X"
+#   2. a denying predicate                   → DENIED    "The architecture
+#                                                        prevents X"
+#   3. any other negation or contrast        → DENIED    "No X", "does not
+#                                                        permit X", "No rule
+#                                                        permits X"
+#   4. a permission predicate                → AFFIRMED  "permits X"
+#   5. otherwise                             → UNKNOWN
+NEGATED_DENIAL_AHEAD = re.compile(rf"{NEGATOR}.*?{DENYING}", re.IGNORECASE)
+DENIAL_AHEAD = re.compile(DENYING, re.IGNORECASE)
+NEGATION_AHEAD = re.compile(rf"{NEGATOR}|{CONTRAST}", re.IGNORECASE)
+PERMISSION_AHEAD = re.compile(PERMISSION, re.IGNORECASE)
+
+# After the claim — the predicate that directly follows it. The first rule
+# that applies decides:
+#   1. a negated denying predicate           → AFFIRMED  "X is not prohibited",
+#                                                        "X is not absent",
+#                                                        "X cannot be prohibited"
+#   2. a denying predicate                   → DENIED    "X is prohibited",
+#                                                        "X is absent", "X is
+#                                                        retired"
+#   3. the claim named as a prohibition      → DENIED    'names "X" among its
+#                                                        nine prohibitions'
+#   4. any other negated predicate           → DENIED    "X is not permitted",
+#                                                        "X does not exist"
+#   5. otherwise                             → UNKNOWN, and the words ahead
+#                                                        decide. A permission
+#                                                        after the claim adds
+#                                                        nothing: "No X is
+#                                                        permitted" is denied.
+COPULA = r"(?:is|are|was|were|be|been|being)"
+NEGATED_DENIAL_AFTER = re.compile(
+    rf"^\s*(?:{COPULA}\s+(?:not|never)|(?:has|have)\s+(?:not|never)\s+been"
     r"|(?:cannot|(?:can|could|may|might|must|shall|should|will|would|need)"
     r"\s+(?:not|never))\s+be)"
-    rf"\s+{PROHIBITOR}",
+    rf"\s+{DENYING}",
     re.IGNORECASE,
 )
-# After the claim: a predicate that denies the claim itself — "X is
-# prohibited", "X is not permitted", "X does not exist", "X cannot exist". It
-# is tried only once PROHIBITION_NEGATED_AFTER has not matched.
-CLAIM_DENIED_AFTER = re.compile(
-    r"^\s*(?:(?:is|are|was|were|be|been)\s+"
-    r"(?:not\b(?!\s+only)|never\b|prohibit|forbid|refus|reject|retir|exclud"
-    r"|absent)"
-    r"|(?:does|do|did|must|may|can|shall|will|would|should)\s+not\b(?!\s+only)"
-    r"|cannot\b|never\b)",
-    re.IGNORECASE,
-)
-# A claim named as one of the prohibitions it belongs to, as in
-# 'RMS §4 names "X" among its nine prohibitions'.
+DENIAL_AFTER = re.compile(rf"^\s*{COPULA}\s+{DENYING}", re.IGNORECASE)
 NAMED_AS_PROHIBITED = re.compile(
     r"^[^,;]*?\b(?:among|as one of|one of)\b[^,;]*\bprohibitions?\b",
+    re.IGNORECASE,
+)
+NEGATION_AFTER = re.compile(
+    rf"^\s*(?:{COPULA}\s+(?:not|never)\b(?!\s+only)"
+    r"|(?:does|do|did|must|may|can|shall|will|would|should)\s+not\b(?!\s+only)"
+    r"|cannot\b|never\b)",
     re.IGNORECASE,
 )
 
@@ -295,70 +337,88 @@ TABLE_SEPARATOR = re.compile(r"\s*\|[\s|:-]*\|?\s*")
 # A column header that asks the permission question its verdicts answer.
 PERMISSION_HEADER = re.compile(r"^(?:allowed|permitted|verdict)\??$", re.IGNORECASE)
 
-NEGATED, AFFIRMED = "negated", "affirmed"
+DENIED, AFFIRMED, UNKNOWN = "denied", "affirmed", "unknown"
 
 
-def _polarity(text: str) -> str:
-    """How the words leading up to a claim bear on it.
+def _reversal(phrase: str) -> str:
+    """Why a negated denying predicate affirms the claim, for the report."""
+    absence = re.search(ABSENCE, phrase, re.IGNORECASE)
+    return (
+        f"{phrase.strip()!r} negates "
+        f"{'its absence' if absence else 'the prohibition'}, not the claim"
+    )
 
-    ``AFFIRMED`` when a negation falls on a prohibition ahead of the claim
-    ("Nothing prevents", "No rule forbids"): the claim stands. ``NEGATED`` when
-    a negation reaches it ("No", "must not define"; "not only" set aside).
-    ``""`` when the words carry no negation.
-    """
-    text = NOT_ONLY.sub(" ", text)
-    if PROHIBITION_NEGATED_AHEAD.search(text):
-        return AFFIRMED
-    return NEGATED if NEGATION.search(text) else ""
+
+def _polarity_before_claim(prefix: str) -> tuple[str, str]:
+    """``(polarity, why)`` for the words leading up to a claim. See the rule
+    table at NEGATED_DENIAL_AHEAD; ``why`` explains an ``AFFIRMED``."""
+    text = NOT_ONLY.sub(" ", prefix)
+    reversal = NEGATED_DENIAL_AHEAD.search(text)
+    if reversal:
+        return AFFIRMED, _reversal(reversal.group(0))
+    if DENIAL_AHEAD.search(text) or NEGATION_AHEAD.search(text):
+        return DENIED, ""
+    permission = PERMISSION_AHEAD.search(text)
+    if permission:
+        return AFFIRMED, f"{permission.group(0)!r} permits it"
+    return UNKNOWN, ""
+
+
+def _polarity_after_claim(suffix: str) -> tuple[str, str]:
+    """``(polarity, why)`` for the predicate directly after a claim. See the
+    rule table at NEGATED_DENIAL_AFTER; ``why`` explains an ``AFFIRMED``."""
+    reversal = NEGATED_DENIAL_AFTER.match(suffix)
+    if reversal:
+        return AFFIRMED, _reversal(reversal.group(0))
+    if (
+        DENIAL_AFTER.match(suffix)
+        or NAMED_AS_PROHIBITED.match(suffix)
+        or NEGATION_AFTER.match(suffix)
+    ):
+        return DENIED, ""
+    return UNKNOWN, ""
 
 
 def _negates(text: str) -> bool:
-    """Whether ``text`` negates what follows it — not merely contains a
-    negative word. "No rule forbids" contains two and negates nothing."""
-    return _polarity(text) == NEGATED
+    """Whether ``text`` denies what follows it — not merely contains a
+    negative word. "No rule forbids" contains two and denies nothing."""
+    return _polarity_before_claim(text)[0] == DENIED
 
 
 def _claim_stands(
     proposition: str, match: re.Match[str], listed: re.Pattern[str]
 ) -> str | None:
-    """``None`` if the matched claim itself is negated; otherwise why it stands.
+    """``None`` if the matched claim is denied; otherwise why it stands.
 
-    The predicate directly after the claim is read first, and its polarity is
-    explicit: "X is not prohibited" negates the prohibition, so X stands; "X is
-    not permitted" negates X. The claim named as one of the prohibitions is
-    negated. Otherwise the words since the last proposition boundary decide:
-    "No X" negates X, "Nothing prevents X" affirms it. Only when the claim is a
-    list member (followed by a separator or the end) and its own words are a
-    bare noun phrase does a negation that governs the list reach it: the scan
-    walks back through the list and stops at the first segment that, its
-    ``listed`` terms set aside, is not a bare noun phrase. A claim with a
-    predicate of its own ("X applies to every Record") heads its own
-    proposition, and no earlier negation reaches it.
+    The single place polarity is decided. The predicate directly after the
+    claim is read first; if it is ``UNKNOWN``, the words since the last
+    proposition boundary decide. Only when the claim is a list member
+    (followed by a separator or the end) and its own words are a bare noun
+    phrase does polarity from earlier in the list reach it: the scan walks
+    back through the list and stops at the first segment with a polarity, or
+    at the first that, its ``listed`` terms set aside, is not a bare noun
+    phrase. A claim with a predicate of its own ("X applies to every Record")
+    heads its own proposition, and no earlier negation reaches it. A claim
+    whose polarity stays ``UNKNOWN`` stands.
     """
     after = proposition[match.end() :]
-    reversal = PROHIBITION_NEGATED_AFTER.match(after)
-    if reversal:
-        return (
-            f"is affirmed: {reversal.group(0).strip()!r} negates the "
-            "prohibition, not the claim"
-        )
-    if CLAIM_DENIED_AFTER.match(after) or NAMED_AS_PROHIBITED.match(after):
-        return None
-    segments = PROPOSITION_BREAK.split(proposition[: match.start()])
-    walk = [segments[-1]]
-    if LIST_POSITION.match(after) and NOUN_PHRASE.match(segments[-1]):
-        for segment in reversed(segments[:-1]):
-            walk.append(segment)
-            if not NOUN_PHRASE.match(listed.sub("X", segment)):
+    polarity, why = _polarity_after_claim(after)
+    if polarity == UNKNOWN:
+        segments = PROPOSITION_BREAK.split(proposition[: match.start()])
+        walk = [segments[-1]]
+        if LIST_POSITION.match(after) and NOUN_PHRASE.match(segments[-1]):
+            for segment in reversed(segments[:-1]):
+                walk.append(segment)
+                if not NOUN_PHRASE.match(listed.sub("X", segment)):
+                    break
+        for segment in walk:
+            polarity, why = _polarity_before_claim(segment)
+            if polarity != UNKNOWN:
                 break
-    for segment in walk:
-        polarity = _polarity(segment)
-        if polarity == AFFIRMED:
-            return (
-                f"is affirmed: {segment.strip()!r} negates a prohibition, not the claim"
-            )
-        if polarity == NEGATED:
-            return None
+    if polarity == DENIED:
+        return None
+    if polarity == AFFIRMED:
+        return f"is affirmed: {why}"
     return "is not locally negated"
 
 
@@ -474,7 +534,10 @@ def _positive_claims(text: str, pattern: re.Pattern[str]) -> list[str]:
     found: list[tuple[str, str, str]] = []
     for section in re.split(r"(?m)^(?=#{1,3} )", text):
         heading = section.splitlines()[0] if section.strip() else ""
-        if NEGATIVE_HEADING.search(heading) and _polarity(heading) != AFFIRMED:
+        if (
+            NEGATIVE_HEADING.search(heading)
+            and _polarity_before_claim(heading)[0] != AFFIRMED
+        ):
             continue
         for kind, statement, lead_negates, header in _statements(section):
             if kind == "row":
@@ -1526,6 +1589,141 @@ def test_p2_scan_keeps_structural_negation_and_reads_heading_polarity():
     )
     assert _positive_claims(permissive, pattern), (
         "a heading that negates a prohibition hid a positive claim"
+    )
+
+
+# One predicate, both polarities: (name, the claim denied, the claim affirmed).
+# Every predicate class must behave the same way before the claim and after it.
+PREDICATE_PAIRS = (
+    (
+        "prohibit ahead",
+        "The architecture prohibits a universal lifecycle.",
+        "No rule prohibits a universal lifecycle.",
+    ),
+    (
+        "forbid ahead",
+        "The architecture forbids a universal lifecycle.",
+        "No rule forbids a universal lifecycle.",
+    ),
+    (
+        "prevent ahead",
+        "The architecture prevents a universal lifecycle.",
+        "Nothing prevents a universal lifecycle.",
+    ),
+    (
+        "reject ahead",
+        "The architecture rejects a universal lifecycle.",
+        "No rule rejects a universal lifecycle.",
+    ),
+    (
+        "refuse ahead",
+        "The architecture refuses a universal lifecycle.",
+        "Nothing refuses a universal lifecycle.",
+    ),
+    (
+        "exclude ahead",
+        "The architecture excludes a universal lifecycle.",
+        "Nothing excludes a universal lifecycle.",
+    ),
+    (
+        "disallow ahead",
+        "The architecture disallows a universal lifecycle.",
+        "No policy disallows a universal lifecycle.",
+    ),
+    (
+        "ban ahead",
+        "The architecture bans a universal lifecycle.",
+        "Nothing bans a universal lifecycle.",
+    ),
+    (
+        "bar ahead",
+        "The architecture bars a universal lifecycle.",
+        "Nothing bars a universal lifecycle.",
+    ),
+    (
+        "prohibited after",
+        "A universal lifecycle is prohibited.",
+        "A universal lifecycle is not prohibited.",
+    ),
+    (
+        "forbidden after",
+        "A universal lifecycle is forbidden.",
+        "A universal lifecycle is not forbidden.",
+    ),
+    (
+        "rejected after",
+        "A universal lifecycle is rejected.",
+        "A universal lifecycle is not rejected.",
+    ),
+    (
+        "excluded after",
+        "A universal lifecycle is excluded.",
+        "A universal lifecycle is not excluded.",
+    ),
+    (
+        "disallowed after",
+        "A universal lifecycle is disallowed.",
+        "A universal lifecycle is not disallowed.",
+    ),
+    (
+        "banned after",
+        "A universal lifecycle is banned.",
+        "A universal lifecycle is not banned.",
+    ),
+    (
+        "barred after",
+        "A universal lifecycle is barred.",
+        "A universal lifecycle is not barred.",
+    ),
+    (
+        "absent after",
+        "A universal lifecycle is absent.",
+        "A universal lifecycle is not absent.",
+    ),
+    (
+        "retired after",
+        "A universal lifecycle is retired.",
+        "A universal lifecycle is not retired.",
+    ),
+    (
+        "schema absent after",
+        "A universal Record schema is absent.",
+        "A universal Record schema is not absent.",
+    ),
+    (
+        "canonicality retired after",
+        "Universal canonicality is retired.",
+        "Universal canonicality is not retired.",
+    ),
+    (
+        "permission ahead",
+        "The architecture does not permit a universal lifecycle.",
+        "The architecture permits a universal lifecycle.",
+    ),
+    (
+        "permission ahead, negated by its subject",
+        "No rule permits a universal lifecycle.",
+        "The architecture allows universal canonicality.",
+    ),
+)
+
+
+def test_p2_scan_predicate_polarity_is_symmetric():
+    """Each predicate class denies the claim it governs, and affirms it once
+    negated: "prevents X" / "nothing prevents X", "X is absent" / "X is not
+    absent", "X is prohibited" / "X is not prohibited"."""
+    asymmetric = [
+        f"{name}: {denied!r} → {_scan(denied) or 'clean'}; "
+        f"{affirmed!r} → {_scan(affirmed) or 'clean'}"
+        for name, denied, affirmed in PREDICATE_PAIRS
+        if _scan(denied) or not _scan(affirmed)
+    ]
+    assert not asymmetric, "\n  ".join(
+        ["predicate polarity is not symmetric:"] + asymmetric
+    )
+    report = _scan("A universal lifecycle is not absent.")
+    assert "'is not absent' negates its absence, not the claim" in report[0], (
+        f"the finding does not name the reversing predicate: {report}"
     )
 
 
