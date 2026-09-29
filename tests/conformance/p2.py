@@ -845,10 +845,19 @@ def test_p2_exactly_six_sovereign_record_models_agree_across_rms_039_040_041():
         re.MULTILINE,
     )
 
+    # 040's paths are shared: rows 060, 175, 253, 296, 343 and 361 place each
+    # model's specification at its stub's path. Each stub's Succession section
+    # records that the replacement keeps the Model row this check reads.
+    succession = (
+        "\n  040's stub paths are shared with the model specifications; each stub's "
+        "Succession section records that the replacement keeps its "
+        "'| Model | **X** — Name |' row."
+    )
     for name, found in (("039 §4", in_039), ("041 §3", in_041), ("040", stubs)):
         assert sorted(found) == sorted(models), (
             f"{name} disagrees with RMS §2 on the six Record Models.\n"
             f"  RMS §2: {sorted(models)}\n  {name}: {sorted(found)}"
+            + (succession if name == "040" else "")
         )
 
 
@@ -893,6 +902,33 @@ def test_p2_no_model_is_a_superclass_and_world_is_not_a_template():
     assert not contrary, "\n  ".join(
         ["P2 kernel regression: World or a model made a template or superclass:"]
         + contrary
+    )
+
+
+def test_p2_record_model_owns_what_rms_6_enumerates():
+    """Row 042 ``Val``: *what a Record Model owns, enumerated* (RMS §6; 042 §4).
+
+    042 §4 states RMS §6's enumeration in RMS §6's order. Both sides are parsed
+    from the documents, so the suite holds no list of dimensions of its own.
+    """
+    assert _val_of("042") == "what a Record Model owns, enumerated"
+    definition = _section(_read(RMS), "6. Record Model Definition")
+    owns = re.search(r"\bowns: (.*?)\.\s*$", definition, re.MULTILINE)
+    assert owns, "RMS §6 no longer enumerates what a Record Model owns"
+    source = [
+        re.sub(r"^(?:its|and) ", "", item.strip()) for item in owns.group(1).split(",")
+    ]
+    table = _section(_artifact("042"), "4. The Nine Ownership Dimensions")
+    stated = re.findall(r"^\| \d+ \| \*\*([^*]+)\*\* \|", table, re.MULTILINE)
+    assert [d.lower() for d in stated] == [d.lower() for d in source], (
+        "042 §4 no longer states RMS §6's ownership dimensions, in RMS §6's order.\n"
+        f"  RMS §6: {source}\n  042 §4: {stated}"
+    )
+    assert "canonicality meaning (if any)" in source, (
+        "RMS §6 no longer qualifies canonicality meaning with '(if any)'"
+    )
+    assert _says(table, "Dimension 7 carries a qualifier that MUST NOT be dropped."), (
+        "042 §4 no longer protects RMS §6's '(if any)' on canonicality meaning"
     )
 
 
@@ -1116,6 +1152,35 @@ def test_p2_record_is_not_canon_and_authority_is_domain_scoped():
     assert _val_of("051") == "authority domain-scoped; Record ≠ Canon"
     assert _says(_artifact("051"), "All authority is domain-scoped.")
     assert _section(_artifact("052"), "4. Record ≠ Canon")
+
+
+def test_p2_derived_state_is_rebuildable_and_never_authoritative():
+    """Row 053 ``Val``; Blueprint I-18, §29.6a; 053 §3, §9."""
+    assert _val_of("053") == "derived is rebuildable and never authoritative"
+    blueprint = _read(BLUEPRINT)
+    assert _says(
+        _section(blueprint, "29.6a"),
+        "Recomputable with no loss from authoritative sources.",
+    ), "Blueprint §29.6a no longer defines DERIVED as recomputable with no loss"
+    assert _says(
+        blueprint,
+        "Any state recording an authorial act is Production State "
+        "and survives every rebuild.",
+    ), "Blueprint I-18 no longer keeps authorial acts out of rebuildable state"
+
+    derived = _artifact("053")
+    core = _section(derived, "3. The Derived-State Core Rule")
+    assert _says(
+        core,
+        "Derived state is exactly what can be recomputed from its authoritative "
+        "inputs with no loss, and it is never authoritative.",
+    ), "053 §3 no longer states Derived as rebuildable and never authoritative"
+    assert _says(core, "state that records an authorial act is never Derived"), (
+        "053 §3 no longer keeps authored state out of Derived"
+    )
+    assert _section(derived, "9. Derived ≠ Cached"), (
+        "053 no longer keeps Derived apart from Cached"
+    )
 
 
 def test_p2_kind_admission_boundary_is_intact():
