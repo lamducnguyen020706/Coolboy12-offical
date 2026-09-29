@@ -300,6 +300,7 @@ also bind World is unresolved by the current sources (§7), and no condition dec
 | **C-057-08** | A `KIND-DEFINITION` is not read as admission. This contract does not define or assign the Registry authority to admit another model's Kind. | RMS §6.1, §13; Blueprint §13.6e |
 | **C-057-09** | No external component defines a kind. The condition is I-84's, at I-84's scope — external components — and is not a rule of definition ownership, `KIND-DEFINITION` ownership, or admission (§9). | I-84 |
 | **C-057-10** | Admission decides no package composition, and this contract establishes no general cross-model dependency or reference legality, which Artifact 058 governs. | Blueprint §13.6d; Roadmap rows 056, 058 |
+| **C-057-11** | *Withdrawn.* It stated that the source conditions and gaps recorded above are left unresolved. That describes the sources, not a construction, so it is not a condition of this contract; §5.3, §6, §7 and §8 still record them. The ID is not reused. | §5.3, §6, §7, §8 above |
 | **C-057-12** | No invariant is minted or amended. | Blueprint §36, §10.4; P-28; I-15 |
 
 Conformance to this contract is not conformance to the Record System: the other P2 contracts
