@@ -4,13 +4,19 @@
 Own: CONST · RM: all · T: doc · R: CONTRACT · SoT: AUTHORITATIVE · Auth: governing ·
 Canon: n/a · CD: no · Ph/St: P2/2a · Req: BR-20,RR-04 · BP: §13.7a · RMS: §3 ·
 H: 039 · S: — · LS: — · G: — · → all · Val: nine prohibitions verbatim ·
-Done: prohibitions binding · Why: **the anti-COM firewall** · Risk: CRITICAL · ∥: no
+Done: prohibitions binding · Why: **the firewall against the retired architecture** ·
+Risk: CRITICAL · ∥: no
+
+> **Header note.** `Why` gives Roadmap row 043's rationale in other words. The row names the retired
+> architecture by its abbreviation, which the exit-P0 firewall (Artifact 030) keeps out of
+> current-architecture text; the row itself stands unchanged in `docs/sources/`.
 
 ## 1. Constitutional Status
 
-This document is the **anti-COM firewall**. It exists to stop the Record System becoming the
-retired Canon Object Model under a new noun, by fixing the boundary between what the six Record
-Models may **share** and what each must **own**.
+This document is the **firewall against the retired architecture**. It exists to stop the Record
+System becoming that architecture again under a new noun — the Canon Object Model is retired
+(RMS §2) — by fixing the boundary between what the six Record Models may **share** and what each
+must **own**.
 
 It states one boundary precisely. It does not restate the Record System constitution: **Artifact
 039** (`docs/constitution/record_system.md`) governs that, and this document depends on it
@@ -119,7 +125,7 @@ storage capability      ≠   semantic authority
 
 ## 6. The Nine Prohibitions
 
-**These nine prohibitions are the core anti-COM firewall. They are reproduced verbatim from
+**These nine prohibitions are the core of this firewall. They are reproduced verbatim from
 Blueprint §13.7a and are binding as written.** They are stated as prohibitions rather than
 permissions because a list of permissions would be read as exhaustive.
 
@@ -154,7 +160,7 @@ permissions because a list of permissions would be read as exhaustive.
 
 No later artifact, schema, validator, or implementation may weaken, merge, split, or carve an
 exception into any of the nine. A proposal that requires one of them to bend is a proposal to
-reinstate the Canon Object Model, and is refused on that ground.
+bring back the retired architecture, and is refused on that ground.
 
 ---
 
