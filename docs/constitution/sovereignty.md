@@ -132,12 +132,12 @@ dependency             ≠   superclass
 | Two models share a mechanism | **YES**, sovereignty unaffected | S-5, I-103, Blueprint §13.7a |
 | Two models share implementation code | **YES**, unless the shared construction establishes semantic inheritance, semantic ownership, or specialization between models | S-6 |
 | A Record converts from one partition to another | **Deferred** — Artifact 045 | not decided here |
-| One model references another | **Deferred** — Artifacts 055 and 058 | not decided here |
+| One model references another | **Deferred** — legality model/Registry-owned (RMS §4); edges collected by Artifact 058 | not decided here |
 
-The deferred rows are deferred deliberately. Reference legality between models is Artifact
-055's and Artifact 058's to decide, and partition conversion is Artifact 045's; this contract
-neither permits nor forbids either, and a downstream artifact MUST NOT read silence here as
-either answer.
+The deferred rows are deferred deliberately. Reference legality between models is
+model/Registry-owned (RMS §4), and Artifact 058 collects the cross-model edges the sources state;
+partition conversion is Artifact 045's. This contract neither permits nor forbids either, and a
+downstream artifact MUST NOT read silence here as either answer.
 
 ## 6. World Is Not a Template
 
