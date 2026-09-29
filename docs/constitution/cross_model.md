@@ -228,8 +228,8 @@ Every allowed edge carries the handle rule (§6) and confers no ownership (§12)
 
 ### 8.2 Record-level references — not model edges
 
-Two source statements concern what a **Record** may carry, not an edge between Record Models. This
-contract records them at that level and derives no matrix row from either.
+Three source statements concern what a **Record** may carry, not an edge between Record Models.
+This contract records them at that level and derives no matrix row from any of them.
 
 - **`registry_ref`.** Every Record carries it (RMS §4, the universal envelope); Artifact 033: it
   *"Carries the Record's reference into the Registry"*. The field's meaning and resolution are 033's
@@ -243,6 +243,15 @@ contract records them at that level and derives no matrix row from either.
   reference is carried is not decided here. This contract does not expand the statement into
   per-model rows — no E → V, P → V or I → V row is added. Where a model-level statement governs
   the same references, the two meet: Roadmap §2.4 forbids W → V (§8.3).
+- **`knowledge_state`.** Blueprint §13.1 lists it among a Record's fields: *"DERIVED convenience
+  projection only. The authoritative epistemic record is always a separate Epistemic object."* The
+  closing paragraph of §13.9a (*"Where projection is allowed"*) lists *"`knowledge_state` on a
+  Record"* among its three places. Roadmap §2.4 forbids W → E, and C-058-05 binds that no World
+  record references an E Record. **Source condition recorded, not resolved:** no source says
+  whether a Derived projection of Epistemic state, carried on a World Record, is a reference to
+  an E Record. This contract does not decide it. C-058-05 binds references and is not read here
+  as permitting or forbidding the projection. Whether World Records carry the field is the World
+  Record Model's design work (row 175, P7); the Epistemic side is row 253's (P10).
 
 ### 8.3 W → V — source conflict
 
@@ -346,6 +355,16 @@ RMS §10.3 (`FROZEN`, correcting v0.1's *"may never reference a kind"*):
 - **Registry MAY NOT:** *"own domain instances · depend on runtime instances · mutate domain
   instances · use domain instances as semantic authority."*
 - *"R → R definitions = ALLOWED. R → domain instances = FORBIDDEN."*
+
+**Source condition recorded, not resolved — the Blueprint's downward-only wording.** RMS §10.3
+corrects RMS v0.1. The Blueprint still carries the older form: §9.4 and §13.6e state that *"a
+Registry definition may never reference a kind, a subtype, or an instance; a kind may never
+reference an instance"*, and I-75 restates it. Read literally, that forbids the references to
+declared Kinds that RMS §10.3 allows. This contract restates RMS §10.3 as RMS §10.3 states it and
+does not reconcile the two wordings. The Registry's own P3 contracts hold that work: rows 062
+(*"downward-only"*), 063 (the reference boundary, whose `Val` restates RMS §10.3) and 111
+(*"downward-only; asymmetric; no cycles"*). The sources agree on the rest: the Registry never
+references, owns, mutates or takes authority from a domain instance (C-058-08).
 
 **Three categories, kept apart.**
 
@@ -472,9 +491,11 @@ via the governed path (RMS §8.2); the reference makes none.
 *"reader-facing revelation is ordered by issue ordinal"*. A P `SCHEDULE` referencing an `ISSUE` is
 a P → I edge, which Roadmap §2.4 forbids (§8.1).
 
-**Example C — Registry.** A `KIND-DEFINITION` may reference the declared Kind `CHARACTER` — a
-Registry declaration reference (RMS §10.3; §11). It may not reference a particular `W-CH-…`
-Record, a domain instance, or take its meaning from one.
+**Example C — Registry.** Under RMS §10.3, a `KIND-DEFINITION` may reference the declared Kind
+`CHARACTER` — a Registry declaration reference (§11). The Blueprint's downward-only wording reads
+otherwise, and §11 records that condition without resolving it. Under either wording, the
+definition may not reference a particular `W-CH-…` Record, a domain instance, or take its meaning
+from one.
 
 **Example D — I → W.** An `ARTICLE` references a World `EVENT`. Blueprint §13.6a: *"That never
 makes an issue the owner of the event."* Whatever the article asserts, *"Nothing in an issue is true
@@ -505,6 +526,8 @@ places the `EVENT` in no Issue package (056; C-058-12) and admits no Kind (057; 
 | W → E, W → P forbidden | Roadmap §2.4 |
 | Visual never mutates World | RMS §11.2; I-89 |
 | Registry declaration references; R → domain instances forbidden | RMS §10.3, §24 |
+| Blueprint downward-only wording vs RMS §10.3 declaration references — recorded, not resolved | Blueprint §9.4, §13.6e; I-75; RMS §10.3; Roadmap rows 062, 063, 111 |
+| Record-level `knowledge_state` projection vs the W → E prohibition — recorded, not resolved | Blueprint §13.1, §13.9a; Roadmap §2.4; Roadmap rows 175, 253 |
 | Record-level `registry_ref`; Record-level visual references | RMS §4; Artifact 033; Blueprint §13.1, §13.6c |
 | W → V unresolved: Blueprint Record-level permission into the V partition vs Roadmap W → V prohibition | Blueprint §13.1, §13.6c; Roadmap §2.4, §0.2; RMS §7, §9.1; I-17 |
 | Manifestation-blindness | Blueprint §11, §13.6a rule 3; I-17; RMS §7 |
@@ -526,11 +549,13 @@ by synthesis of two Blueprint statements, P Records of Kind READER-MODEL — no 
 references W, E and P Records and owns none of them, and references V semantics without any
 I → V Record edge being established; no World record references an issue; the Roadmap forbids
 W → E, W → P, P → I and V → I; V never mutates W. The Registry references definitions and
-declarations, never domain instances (§11). Nothing becomes canon by being published, and no
-reference changes who owns a Record. W → V is in conflict between the governing sources, and the
-edges Deliverable J would hold are not stated; this contract decides neither. Row 058's acceptance
-target, *"matrix normative"*, is met: the matrix is binding. The open source state — W → V and the
-unstated edges — remains open, recorded and not resolved here.
+declarations, never domain instances (§11), as RMS §10.3 states it; the Blueprint's older
+downward-only wording is recorded at §11 and not reconciled. Nothing becomes canon by being
+published, and no reference changes who owns a Record. W → V is in conflict between the governing
+sources, and the edges Deliverable J would hold are not stated; this contract decides neither. Row
+058's acceptance target, *"matrix normative"*, is met: the matrix is binding. The open source
+state — W → V, the unstated edges, and the conditions recorded at §8.2 and §11 — remains open,
+recorded and not resolved here.
 
 ---
 
