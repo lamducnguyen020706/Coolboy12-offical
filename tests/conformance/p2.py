@@ -158,10 +158,43 @@ def _six_models() -> list[tuple[str, str]]:
 # The regression scan: a positive claim a P2 artifact must not make
 # ---------------------------------------------------------------------------
 
+PROHIBITION_ALIASES = {
+    # The two governing sources name two of the nine in different words. Keys
+    # are RMS §4's labels as parsed; every alias is a governing source's own
+    # wording, recognised so a claim cannot pass by using the other source's.
+    #
+    # RMS §4: "universal semantic schema".
+    # Blueprint §13.7a and §13 intro: "No universal Record schema."
+    "universal semantic schema": ("universal record schema",),
+    # RMS §4: "universal identity *composition*".
+    # Blueprint §13.7a, §13.9a: "a universal identity grammar is not a
+    #   universal Record semantics"; RMS §5: "UNIVERSAL IDENTITY GRAMMAR ≠
+    #   UNIVERSAL SEMANTIC MODEL"; Blueprint §13 and RMS §6 name "identity
+    #   semantics" as what the six models do not share and each model owns.
+    #
+    # "universal identity grammar" is deliberately absent: RMS §5 and
+    # Blueprint §13.7a and §13.9a make the grammar universal (AD-1, resolved).
+    # The Blueprint's §13 intro still lists "no universal identity grammar";
+    # that source-internal inconsistency is reported, not decided here.
+    "universal identity composition": (
+        "universal record semantics",
+        "universal semantic model",
+        "universal identity semantics",
+    ),
+}
+
+# "unless" is not here: a qualified universal ("... unless overridden") still
+# asserts the universal as the default architecture.
 NEGATION = re.compile(
-    r"\b(no|not|never|nor|none|nothing|without|neither|cannot|unless|anti"
+    r"\b(no|not|never|nor|none|nothing|without|neither|cannot|anti"
     r"|prohibit\w*|forbid\w*|refus\w*|reject\w*|retire\w*|reintroduc\w*"
     r"|reinstat\w*|resurrect\w*|revive\w*|rather than|instead of)\b|≠",
+    re.IGNORECASE,
+)
+# A negation governs only its own clause. A prose statement is split here so a
+# "no" in one clause cannot excuse a universal claimed in the next.
+CLAUSE_BREAK = re.compile(
+    r";|\s[—–]\s|,?\s+\b(?:but|however|although|though|whereas|while|yet)\b",
     re.IGNORECASE,
 )
 NEGATIVE_HEADING = re.compile(
@@ -172,19 +205,21 @@ NEGATIVE_HEADING = re.compile(
 LIST_ITEM = re.compile(r"^\s*(?:[-*+]|\d+\.)\s")
 
 
-def _statements(section: str) -> list[str]:
-    """A section's statements: table rows, list items with their lead-in,
-    and prose sentences. A list inherits the sentence that introduces it."""
+def _statements(section: str) -> list[tuple[str, bool]]:
+    """A section's statements, each flagged ``True`` if it is a table row:
+    table rows, list items with their lead-in, and prose sentences. A list
+    inherits the sentence that introduces it."""
     blocks: list[list[str]] = [[]]
     for line in section.splitlines()[1:]:
         if line.strip():
             blocks[-1].append(line)
         elif blocks[-1]:
             blocks.append([])
-    statements, lead = [], ""
+    statements: list[tuple[str, bool]] = []
+    lead = ""
     for block in (b for b in blocks if b):
         if all(line.lstrip().startswith("|") for line in block):
-            statements += [_flat(line) for line in block]
+            statements += [(_flat(line), True) for line in block]
             lead = ""
         elif LIST_ITEM.match(block[0]):
             items: list[list[str]] = []
@@ -192,32 +227,57 @@ def _statements(section: str) -> list[str]:
                 if LIST_ITEM.match(line) or not items:
                     items.append([])
                 items[-1].append(line)
-            statements += [_flat(lead + " " + " ".join(item)) for item in items]
+            statements += [
+                (_flat(lead + " " + " ".join(item)), False) for item in items
+            ]
         else:
             sentences = re.split(r"(?<=[.!?])\s+", _flat(" ".join(block)))
-            statements += sentences
+            statements += [(sentence, False) for sentence in sentences]
             lead = sentences[-1] if sentences[-1].endswith(":") else ""
     return statements
 
 
 def _unnegated(text: str, pattern: re.Pattern[str]) -> list[str]:
-    """Statements that name ``pattern`` with no negation anywhere around them."""
+    """Clauses that name ``pattern`` with no negation governing that clause.
+
+    A negation counts only inside the clause that names the claim, inside the
+    lead-in of the list the claim sits in, or in the section heading. A table
+    row is judged whole, because its verdict (``NO``, ``Never``, ``≠``) sits in
+    a cell of its own.
+    """
     found = []
     for section in re.split(r"(?m)^(?=#{1,3} )", text):
         heading = section.splitlines()[0] if section.strip() else ""
         if NEGATIVE_HEADING.search(heading):
             continue
-        found += [
-            statement
-            for statement in _statements(section)
-            if pattern.search(statement) and not NEGATION.search(statement)
-        ]
+        for statement, is_row in _statements(section):
+            clauses = [statement] if is_row else CLAUSE_BREAK.split(statement)
+            found += [
+                clause
+                for clause in clauses
+                if pattern.search(clause) and not NEGATION.search(clause)
+            ]
     return found
 
 
-def _prohibited_pattern() -> re.Pattern[str]:
-    names = "|".join(re.escape(name) for name in _nine_prohibitions())
-    return re.compile(names, re.IGNORECASE)
+def _prohibition_names(label: str) -> tuple[str, ...]:
+    """RMS §4's label for one prohibition, and its source-grounded aliases."""
+    return (label, *PROHIBITION_ALIASES.get(label, ()))
+
+
+def _prohibited_pattern(labels: list[str] | None = None) -> re.Pattern[str]:
+    """The claims RMS §4 prohibits, under either governing source's name."""
+    names = [
+        name
+        for label in (labels or _nine_prohibitions())
+        for name in _prohibition_names(label)
+    ]
+    assert set(PROHIBITION_ALIASES) <= set(_nine_prohibitions()), (
+        "an alias names no RMS §4 prohibition"
+    )
+    return re.compile(
+        "|".join(rf"\b{re.escape(name)}\b" for name in names), re.IGNORECASE
+    )
 
 
 def _contrary_claims(pattern: re.Pattern[str]) -> list[str]:
@@ -258,13 +318,52 @@ def test_p2_nine_prohibitions_hold():
     assert len(stated) == len(nine), (
         f"043 §6 states {len(stated)} prohibitions; RMS §4 freezes {len(nine)}"
     )
-    blueprint = _flat(_section(_read(BLUEPRINT), "13.7a"))
-    drifted = [item for item in stated if item not in blueprint]
-    assert not drifted, f"043 §6 no longer matches Blueprint §13.7a: {drifted}"
 
-    summary = _flat(_section(_artifact("039"), "9. What the Record System")).lower()
-    missing = [name for name in nine if f"no {name}" not in summary]
-    assert not missing, f"039 §9 no longer states RMS §4's prohibitions: {missing}"
+    # Blueprint §13.7a's own list of the nine, in its own order.
+    listed = _section(_read(BLUEPRINT), "13.7a").split("What is *not* shared", 1)
+    assert len(listed) == 2, "Blueprint §13.7a lost its list of what is not shared"
+    bullets: list[list[str]] = []
+    for line in listed[1].splitlines():
+        if line.startswith("- **"):
+            bullets.append([line])
+        elif bullets and line.strip() and not line.startswith(("- ", "**")):
+            bullets[-1].append(line)
+        elif bullets and line.startswith("**"):
+            break
+    blueprint = [_flat(" ".join(bullet)[2:]) for bullet in bullets]
+    assert stated == blueprint, (
+        "043 §6 no longer reproduces Blueprint §13.7a item for item.\n"
+        + "\n".join(
+            f"  {n}: 043 {a[:60]!r} / Blueprint {b[:60]!r}"
+            for n, (a, b) in enumerate(zip(stated, blueprint), 1)
+            if a != b
+        )
+    )
+
+    # Rule for rule: RMS §4's n-th prohibition is the Blueprint's n-th, named
+    # in either source's words (PROHIBITION_ALIASES).
+    misaligned = [
+        f"{n}: RMS {label!r} / Blueprint {text[:70]!r}"
+        for n, (label, text) in enumerate(zip(nine, blueprint), 1)
+        if not any(name in text.lower() for name in _prohibition_names(label))
+    ]
+    assert not misaligned, "\n  ".join(
+        ["RMS §4 and Blueprint §13.7a / 043 §6 no longer align rule for rule:"]
+        + misaligned
+    )
+
+    summary = _section(_artifact("039"), "9. What the Record System")
+    roster = next(
+        (p for p in summary.split("\n\n") if p.count("·") == len(nine) - 1), ""
+    )
+    summarised = [
+        re.sub(r"^no ", "", _flat(item).rstrip("."), flags=re.IGNORECASE).lower()
+        for item in roster.split("·")
+    ]
+    assert summarised == nine, (
+        f"039 §9 no longer summarises RMS §4 rule for rule.\n"
+        f"  RMS §4: {nine}\n  039 §9: {summarised}"
+    )
 
     contrary = _contrary_claims(_prohibited_pattern())
     assert not contrary, "\n  ".join(
@@ -386,6 +485,11 @@ def test_exit_p2_gate_covers_its_val_and_carries_no_unresolved_check():
     out of row 059's own ``Val``, in both directions, so the mapping cannot
     drift from the Roadmap; each proof must be this module's live definition;
     and each is called here, so a failing clause fails exit-P2.
+
+    **Gate and suite.** The named exit gate directly invokes only the clauses
+    declared in row 059's ``Val``. Supporting tests remain part of ``Done:
+    green``, because pytest must report the entire Artifact 059 suite green;
+    they are not thereby Roadmap gate clauses.
     """
     val = _val_of("059")
 
@@ -562,6 +666,109 @@ def test_p2_universal_envelope_is_the_bootstrap_set_and_no_more():
     assert _says(rms, "The universal envelope is the bootstrap set and no more")
     assert _says(rms, "tier and status are NOT universal envelope fields")
     assert _says(_section(_read(BLUEPRINT), "13.7a"), "No universal Record schema.")
+
+
+# ---------------------------------------------------------------------------
+# Supporting conformance — three of the nine, each proven on its own
+# ---------------------------------------------------------------------------
+
+
+def _claims_of(label: str) -> list[str]:
+    """Contrary claims naming one RMS §4 prohibition, under either name."""
+    assert label in _nine_prohibitions(), f"RMS §4 names no prohibition {label!r}"
+    return _contrary_claims(_prohibited_pattern([label]))
+
+
+def test_p2_no_universal_kind_taxonomy():
+    """Blueprint §13.7a, I-106; RMS §5, §6; 044 §15; 057 §2, §4.
+
+    Each model owns its taxonomy; only World's is established; and World's
+    §13.11 admission treatment stays World's own, not a rule for every model.
+    """
+    assert _says(
+        _section(_read(BLUEPRINT), "13.7a"),
+        "No universal kind taxonomy. Each model owns its own",
+    )
+    assert _says(
+        _read(BLUEPRINT),
+        "Only the World taxonomy is established; every other roster names a boundary",
+    )
+    rms = _read(RMS)
+    assert _says(rms, "owns: its Kind taxonomy")
+    assert _says(
+        _section(rms, "5. Universal Identity Grammar"),
+        "Model-owned: Kind meaning · Kind taxonomy",
+    )
+    assert _says(
+        _artifact("044"),
+        "| That Kind means a class of Records within one "
+        "model | Which Kinds exist in a model, and what each means |",
+    )
+    admission = _artifact("057")
+    assert _says(admission, "It admits no Kind and decides no model's roster")
+    assert _says(
+        admission,
+        "For World, Blueprint §13.11 separately defines an "
+        "eight-question admission treatment",
+    )
+
+    contrary = _claims_of("universal kind taxonomy")
+    assert not contrary, "\n  ".join(
+        ["P2 kernel regression: a universal Kind taxonomy is claimed:"] + contrary
+    )
+
+
+def test_p2_no_universal_state_model():
+    """Blueprint §13.7a; RMS §4, §7; 044 §15. World's mutation classes are
+    World's; every other model defines its own state vocabulary."""
+    assert _says(
+        _section(_read(BLUEPRINT), "13.7a"),
+        "No universal state model. "
+        "Locked / world-state / derived is a World field-mutation-class "
+        "split and is not claimed elsewhere.",
+    )
+    rms = _read(RMS)
+    assert _says(
+        rms,
+        "Field mutation classes: locked / world-state / derived — a "
+        "World classification, not a universal state model.",
+    )
+    assert _says(rms, "other models define their own state vocabularies")
+    assert _says(
+        _artifact("044"),
+        "| That State is a category | The actual states, "
+        "and the transitions between them |",
+    )
+
+    contrary = _claims_of("universal state model")
+    assert not contrary, "\n  ".join(
+        ["P2 kernel regression: a universal state model is claimed:"] + contrary
+    )
+
+
+def test_p2_no_universal_semantic_record_schema():
+    """RMS §4 and Blueprint §13.7a name one prohibition in two words — semantic
+    schema, Record schema. The seven-field envelope is its ceiling, not a
+    universal schema; 043 §6 and 039 §9 carry the prohibition."""
+    rms = _read(RMS)
+    assert _says(rms, "The universal envelope is the bootstrap set and no more")
+    assert _says(rms, "universal semantic schema")
+    blueprint = _read(BLUEPRINT)
+    assert _says(_section(blueprint, "13.7a"), "No universal Record schema.")
+    assert _says(blueprint, "It is not a universal Record schema"), (
+        "Blueprint §13.1 no longer denies that the World envelope is universal"
+    )
+    assert _says(
+        _section(_artifact("043"), "6. The Nine Prohibitions"),
+        "No universal Record schema.",
+    )
+    assert _says(_artifact("039"), "no universal semantic schema")
+
+    contrary = _claims_of("universal semantic schema")
+    assert not contrary, "\n  ".join(
+        ["P2 kernel regression: a universal semantic/Record schema is claimed:"]
+        + contrary
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -750,15 +957,21 @@ def test_p2_the_suite_is_proof_and_owns_no_rule_it_checks():
         f"the suite imports past a static proof: {sorted(imported)}"
     )
 
-    rosters = [
-        node.lineno
-        for node in ast.walk(tree)
-        if isinstance(node, (ast.List, ast.Tuple, ast.Set))
-        and sum(
-            isinstance(e, ast.Constant) and isinstance(e.value, str) for e in node.elts
+    def strings(node: ast.AST) -> int:
+        if isinstance(node, ast.Dict):
+            elements = [*node.keys, *node.values]
+        elif isinstance(node, (ast.List, ast.Tuple, ast.Set)):
+            elements = node.elts
+        else:
+            return 0
+        return sum(
+            isinstance(e, ast.Constant) and isinstance(e.value, str) for e in elements
         )
-        >= 6
-    ]
+
+    # A literal collection of six or more strings is the shape a copied roster
+    # takes — six models, nine prohibitions, fourteen questions. Scoped to
+    # literals at their own level; it is a guard, not a proof of intent.
+    rosters = [node.lineno for node in ast.walk(tree) if strings(node) >= 6]
     assert not rosters, f"the suite holds its own roster at lines {rosters}"
 
 
@@ -777,6 +990,104 @@ def test_p2_regression_scan_catches_a_planted_contrary_claim():
     assert _unnegated(template, re.compile(r"\btemplate\b")), (
         "the scan missed World made a template"
     )
+
+
+def _scan(sentence: str) -> list[str]:
+    """The scan applied to one sentence set in an ordinary section."""
+    return _unnegated(f"## 3. Scope\n\n{sentence}\n", _prohibited_pattern())
+
+
+# Each case pairs a prohibited universal with a clause that is negative or
+# qualified but says nothing against it — the false-negative paths of a
+# sentence-wide negation test.
+ADVERSARIAL_CASES = (
+    (
+        "universal lifecycle + unrelated negation",
+        "All Record Models share a universal lifecycle, but no universal History "
+        "Record exists.",
+    ),
+    (
+        "universal canonicality + unless",
+        "All Records share universal canonicality unless otherwise specified.",
+    ),
+    ("universal Record schema", "Every model uses one universal Record schema."),
+    (
+        "universal identity semantics",
+        "All six Record Models share universal identity semantics.",
+    ),
+    (
+        "universal state model + unrelated negation",
+        "Every model shares one universal state model, but no model may bypass "
+        "validation.",
+    ),
+    (
+        "universal Kind taxonomy + unrelated clause",
+        "Every model uses one universal Kind taxonomy, although no model owns another.",
+    ),
+    (
+        "universal canonicality + although",
+        "Universal canonicality applies to every Record, although publication "
+        "never creates World canon.",
+    ),
+)
+
+# Each control negates the prohibited claim itself, and must stay clean.
+NEGATIVE_CONTROLS = (
+    ("no universal lifecycle", "There is no universal lifecycle."),
+    ("prohibited canonicality", "Universal canonicality is prohibited."),
+    ("no Record schema", "No universal Record schema is permitted."),
+    (
+        "grammar is not semantics",
+        "Universal identity grammar does not create universal identity semantics.",
+    ),
+    ("no state model", "The architecture has no universal state model."),
+    (
+        "no Kind taxonomy",
+        "No universal Kind taxonomy exists; each model owns its own.",
+    ),
+    ("not permitted", "A universal lifecycle is not permitted."),
+    (
+        "no model inherits",
+        "No Record Model inherits a universal canonicality model.",
+    ),
+)
+
+
+def test_p2_scan_finds_a_prohibited_universal_beside_an_unrelated_negation():
+    """Negation governs its own clause, and ``unless`` qualifies a universal
+    without denying it. Every case here must be caught."""
+    missed = [name for name, sentence in ADVERSARIAL_CASES if not _scan(sentence)]
+    assert not missed, f"the scan let a prohibited universal pass: {missed}"
+
+
+def test_p2_scan_accepts_a_prohibited_universal_that_is_negated():
+    """The same scan must not flag a claim its own clause negates."""
+    flagged = [
+        f"{name}: {_scan(sentence)}"
+        for name, sentence in NEGATIVE_CONTROLS
+        if _scan(sentence)
+    ]
+    assert not flagged, f"the scan flagged a negated statement: {flagged}"
+
+
+def test_p2_identity_grammar_is_universal_and_identity_semantics_is_not():
+    """RMS §5: *UNIVERSAL IDENTITY GRAMMAR ≠ UNIVERSAL SEMANTIC MODEL*.
+
+    Sharing the grammar is the architecture and must pass; sharing identity
+    semantics is the prohibition and must fail — under RMS §4's label or the
+    Blueprint's wording alike."""
+    grammar = _read(RMS).split("`FROZEN` (AD-1, §13.9a, I-82): **`", 1)[1]
+    grammar = grammar.split("`", 1)[0]
+    assert grammar.startswith("[PARTITION]-"), "RMS §5 lost its identity grammar"
+    assert not _scan(
+        f"All six Record Models share the universal identity grammar {grammar}."
+    ), "the scan flagged the universal grammar itself"
+    for claim in (
+        "All six Record Models share universal identity semantics.",
+        "All six Record Models share a universal identity composition.",
+        "The grammar gives all six a universal Record semantics.",
+    ):
+        assert _scan(claim), f"the scan missed a universal identity semantics: {claim}"
 
 
 def test_p2_every_val_clause_is_independently_gated():
