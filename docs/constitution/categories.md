@@ -29,7 +29,7 @@ becomes one.
 
 Scope, kept distinct from its dependency: **Artifact 039** states what the Record System *is*.
 This artifact states **what kinds of architectural things can appear inside it.** It does not
-restate the six-model architecture, the retirement of the Canon Object Model, or the sovereignty
+restate the six-model architecture, the retirement recorded at 039 §10, or the sovereignty
 boundaries; 039 governs all three and is not amended here.
 
 ## 2. Constitutional Rule
@@ -200,6 +200,16 @@ becoming a Record, and without acquiring authority over what those Records mean.
 that begins deciding meaning has stopped being a Primitive; Artifact 043 §8's facility-or-claim
 test governs that moment. A Primitive never acquires a Record schema, universal or otherwise.
 
+**Source condition — two uses of "primitive", recorded, not resolved.** This category is RMS
+§6.1's: *"A system capability"*, tested by *"Operates on Records; is not one"*. Blueprint §9.3
+uses the word for something narrower: *"Primitives are constitutionally fixed at two"* — the
+Workflow Composer and the Context Builder, each *"a mechanism through which all work passes"* —
+and calls facilities that are *"each foundational and each avoidable by some work"*
+capabilities. The two uses differ in scope. A facility classified here as a Primitive, including
+every example above, is not thereby one of Blueprint §9.3's two, and this category admits no
+third: *"No third primitive may be admitted without Constitutional Amendment"* (§9.3, §10.4).
+The sources do not reconcile the two terms, and this artifact does not.
+
 ## 12. The Category Decision Test
 
 When a new noun appears, classify before designing:
@@ -257,7 +267,7 @@ Primitive               ≠  Record
 architectural category  ≠  universal semantic schema
 ```
 
-## 15. Sovereignty and the Anti-COM Boundary
+## 15. Sovereignty and the Boundary Against the Retired Architecture
 
 The **category vocabulary is common architecture**. The **meaning** carried by Records remains
 owned by the Record Model that owns them.
