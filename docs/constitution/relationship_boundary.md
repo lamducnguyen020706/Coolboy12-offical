@@ -361,7 +361,7 @@ required to use a Relationship Record; World is no model's template (I-101).
 | 17 | A universal relationship schema | §13.7a; RMS §4 |
 | 18 | A universal relationship Record subtype or Kind | RMS §4; I-102 |
 | 19 | Designing the World Relationship Record's schema here | Roadmap rows 197–199 |
-| 20 | Reopening the retired Canon Object Model | Blueprint §13.6d; Artifact 039 |
+| 20 | Reopening the retired architecture — the Canon Object Model is retired (RMS §2) | Blueprint §13.6d; Artifact 039 |
 | 21 | A reification criterion not in RMS §15, RMS §6.1 or Artifact 044 | this contract, §5.1 |
 
 ## 15. Conformance Conditions
