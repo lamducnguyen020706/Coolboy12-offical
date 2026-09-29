@@ -34,14 +34,18 @@ Implementation decision: every check is static, deterministic, offline and
 read-only. It reads repository text and imports nothing from ``coolboy12``.
 
 The regression scan is a bounded structural guard, not a parser of meaning.
-Negation is judged against each matched prohibited claim, not against the
-sentence, clause or table row that holds it. A claim is excused only by a
-negation in its own proposition, a negating predicate directly after it, a
-negation governing the list it is a bare member of, a verdict cell directly
-beside its own cell, the negative lead-in of its list item, or a negative
-section heading. "anti" negates nothing, and "not only X" asserts X. A claim
-reworded past the prohibited names is outside its reach; the positive checks
-exist for that reason.
+It recognises the governing sources' own vocabulary and a finite set of local
+polarity constructions used by controlled constitutional prose; it does not
+attempt general natural-language entailment. Negation is judged against each
+matched prohibited claim, not against the sentence, clause or table row that
+holds it. A claim is excused only by a negation in its own proposition, a
+predicate directly after it that denies it, a negation governing the list it
+is a bare member of, a verdict cell governing its concept cell, the negative
+lead-in of its list item, or a negative section heading. Polarity is explicit:
+"X is not permitted" negates X, but "X is not prohibited", "Nothing prevents X"
+and "No rule forbids X" negate the prohibition, and X stands. "anti" negates
+nothing, and "not only X" asserts X. A claim reworded past the prohibited
+names is outside its reach; the positive checks exist for that reason.
 """
 
 from __future__ import annotations
@@ -199,6 +203,55 @@ NEGATION = re.compile(
 )
 # "not only X but also Y" asserts X and Y; its "not" negates nothing.
 NOT_ONLY = re.compile(r"\bnot only\b", re.IGNORECASE)
+
+# Polarity. A negative word is not a negative claim. Two things differ:
+#
+#   negating the prohibited construction   "X is not permitted"  → X denied
+#   negating the prohibition against it    "X is not prohibited" → X stands
+#
+# The second is a negation composed with a prohibition, and it affirms X. The
+# scan recognises it in two small, fixed shapes and no others: a negated
+# prohibiting predicate directly after the claim, and a negation whose object
+# is a prohibition ahead of it ("Nothing prevents X", "No rule forbids X").
+#
+# The words that prohibit, for that composition only.
+PROHIBITOR = (
+    r"\b(?:prohibit\w*|forbid\w*|forbade|prevent\w*|reject\w*|refus\w*"
+    r"|exclud\w*|disallow\w*|bans?|banned|bars?|barred)\b"
+)
+# The plain negations a prohibition can fall under.
+NEGATOR = r"\b(?:no|not|never|nothing|none|neither|nor|cannot|without)\b"
+# Ahead of the claim: a negation, then a prohibition — "No rule forbids X",
+# "Nothing prevents X", "No prohibition applies to X". The claim stands.
+PROHIBITION_NEGATED_AHEAD = re.compile(rf"{NEGATOR}.*?{PROHIBITOR}", re.IGNORECASE)
+# After the claim: a negated prohibiting predicate — "X is not prohibited",
+# "X is never forbidden", "X cannot be prohibited". The claim stands.
+PROHIBITION_NEGATED_AFTER = re.compile(
+    r"^\s*(?:(?:is|are|was|were|be|been)\s+(?:not|never)"
+    r"|(?:has|have)\s+(?:not|never)\s+been"
+    r"|(?:cannot|(?:can|could|may|might|must|shall|should|will|would|need)"
+    r"\s+(?:not|never))\s+be)"
+    rf"\s+{PROHIBITOR}",
+    re.IGNORECASE,
+)
+# After the claim: a predicate that denies the claim itself — "X is
+# prohibited", "X is not permitted", "X does not exist", "X cannot exist". It
+# is tried only once PROHIBITION_NEGATED_AFTER has not matched.
+CLAIM_DENIED_AFTER = re.compile(
+    r"^\s*(?:(?:is|are|was|were|be|been)\s+"
+    r"(?:not\b(?!\s+only)|never\b|prohibit|forbid|refus|reject|retir|exclud"
+    r"|absent)"
+    r"|(?:does|do|did|must|may|can|shall|will|would|should)\s+not\b(?!\s+only)"
+    r"|cannot\b|never\b)",
+    re.IGNORECASE,
+)
+# A claim named as one of the prohibitions it belongs to, as in
+# 'RMS §4 names "X" among its nine prohibitions'.
+NAMED_AS_PROHIBITED = re.compile(
+    r"^[^,;]*?\b(?:among|as one of|one of)\b[^,;]*\bprohibitions?\b",
+    re.IGNORECASE,
+)
+
 # A statement is split into clauses first; a list's negative lead-in reaches
 # only the first clause of each item.
 CLAUSE_BREAK = re.compile(
@@ -208,37 +261,26 @@ CLAUSE_BREAK = re.compile(
 # Within a clause, a claim's own proposition runs back to the last of these:
 # "X, and no Y" and "X, with no Y" put Y's negation out of X's reach. A
 # negation before that point reaches the claim only across a list: see
-# _claim_is_negated. "or" is not a boundary: "no X or Y" negates both.
+# _claim_stands. "or" is not a boundary: "no X or Y" negates both.
 PROPOSITION_BREAK = re.compile(
     r"[,(]|\b(?:and|with|also|plus|including|then)\b", re.IGNORECASE
 )
 # What may follow a list member: a separator, a closing mark, or the end.
 LIST_POSITION = re.compile(r"^[\s\"'”’)*]*(?:[,.;:·)]|\b(?:and|or|nor)\b|$)")
-# A bare noun phrase — a list member once its prohibited term is set aside:
-# an optional determiner and at most two further words, and no verb.
+# A bare noun phrase — a list member or a concept label once its prohibited
+# term is set aside: an optional determiner and at most two further words.
 NOUN_PHRASE = re.compile(
     r"^[\s\"'“”‘’-]*(?:(?:a|an|the|any|one|every|each|its|their|either|nor)\s+)*"
     r"(?:[\w§.-]+\s*){0,2}[\"'“”‘’]*\s*$",
     re.IGNORECASE,
 )
-# A claim named as one of the prohibitions it belongs to, as in
-# 'RMS §4 names "X" among its nine prohibitions'.
-NAMED_AS_PROHIBITED = re.compile(
-    r"^[^,;]*?\b(?:among|as one of|one of)\b[^,;]*\bprohibitions?\b",
+# A verb that makes a cell a proposition rather than a concept label.
+POSITIVE_PREDICATE = re.compile(
+    r"\b(?:shares?|uses?|appl(?:y|ies)|defines?|inherits?|provides?|permits?"
+    r"|allows?|is|are|has|have)\b",
     re.IGNORECASE,
 )
-# A predicate directly after the claim can negate it: "X is not permitted",
-# "X is prohibited", "X does not exist".
-PREDICATE_NEGATION = re.compile(
-    r"^\s*(?:(?:is|are|was|were|be|been)\s+"
-    r"(?:not\b(?!\s+only)|never\b|prohibit|forbid|refus|reject|retir|exclud"
-    r"|absent)"
-    r"|(?:does|do|did|must|may|can|shall|will|would|should)\s+not\b(?!\s+only)"
-    r"|cannot\b|never\b)",
-    re.IGNORECASE,
-)
-# A table cell that is nothing but a verdict governs the concept in the cell
-# beside it — and only that cell.
+# A table cell that is nothing but a verdict.
 VERDICT_CELL = re.compile(
     r"^(?:no|never|none|forbidden|prohibited|refused|not permitted|✗)\.?$",
     re.IGNORECASE,
@@ -249,52 +291,85 @@ NEGATIVE_HEADING = re.compile(
     re.IGNORECASE,
 )
 LIST_ITEM = re.compile(r"^\s*(?:[-*+]|\d+\.)\s")
+TABLE_SEPARATOR = re.compile(r"\s*\|[\s|:-]*\|?\s*")
+# A column header that asks the permission question its verdicts answer.
+PERMISSION_HEADER = re.compile(r"^(?:allowed|permitted|verdict)\??$", re.IGNORECASE)
+
+NEGATED, AFFIRMED = "negated", "affirmed"
+
+
+def _polarity(text: str) -> str:
+    """How the words leading up to a claim bear on it.
+
+    ``AFFIRMED`` when a negation falls on a prohibition ahead of the claim
+    ("Nothing prevents", "No rule forbids"): the claim stands. ``NEGATED`` when
+    a negation reaches it ("No", "must not define"; "not only" set aside).
+    ``""`` when the words carry no negation.
+    """
+    text = NOT_ONLY.sub(" ", text)
+    if PROHIBITION_NEGATED_AHEAD.search(text):
+        return AFFIRMED
+    return NEGATED if NEGATION.search(text) else ""
 
 
 def _negates(text: str) -> bool:
-    """Whether ``text`` carries a negation, once "not only" is set aside."""
-    return bool(NEGATION.search(NOT_ONLY.sub(" ", text)))
+    """Whether ``text`` negates what follows it — not merely contains a
+    negative word. "No rule forbids" contains two and negates nothing."""
+    return _polarity(text) == NEGATED
 
 
-def _claim_is_negated(
+def _claim_stands(
     proposition: str, match: re.Match[str], listed: re.Pattern[str]
-) -> bool:
-    """Whether the matched claim itself is negated.
+) -> str | None:
+    """``None`` if the matched claim itself is negated; otherwise why it stands.
 
-    Only these routes count. A negating predicate directly after the claim
-    ("X is not permitted"), or the claim named as one of the prohibitions. A
-    negation in the claim's own proposition — the words since the last
-    proposition boundary. Or, when the claim is a list member (followed by a
-    separator or the end) and its own words are a bare noun phrase, a negation
-    that governs the list: the scan walks back through the list and stops at
-    the first segment that, its ``listed`` terms set aside, is not a bare noun
-    phrase — a segment with a verb is a proposition of its own. A claim with a
+    The predicate directly after the claim is read first, and its polarity is
+    explicit: "X is not prohibited" negates the prohibition, so X stands; "X is
+    not permitted" negates X. The claim named as one of the prohibitions is
+    negated. Otherwise the words since the last proposition boundary decide:
+    "No X" negates X, "Nothing prevents X" affirms it. Only when the claim is a
+    list member (followed by a separator or the end) and its own words are a
+    bare noun phrase does a negation that governs the list reach it: the scan
+    walks back through the list and stops at the first segment that, its
+    ``listed`` terms set aside, is not a bare noun phrase. A claim with a
     predicate of its own ("X applies to every Record") heads its own
     proposition, and no earlier negation reaches it.
     """
     after = proposition[match.end() :]
-    if PREDICATE_NEGATION.match(after) or NAMED_AS_PROHIBITED.match(after):
-        return True
+    reversal = PROHIBITION_NEGATED_AFTER.match(after)
+    if reversal:
+        return (
+            f"is affirmed: {reversal.group(0).strip()!r} negates the "
+            "prohibition, not the claim"
+        )
+    if CLAIM_DENIED_AFTER.match(after) or NAMED_AS_PROHIBITED.match(after):
+        return None
     segments = PROPOSITION_BREAK.split(proposition[: match.start()])
-    if _negates(segments[-1]):
-        return True
-    if not (LIST_POSITION.match(after) and NOUN_PHRASE.match(segments[-1])):
-        return False
-    for segment in reversed(segments[:-1]):
-        if _negates(segment):
-            return True
-        if not NOUN_PHRASE.match(listed.sub("X", segment)):
-            return False
-    return False
+    walk = [segments[-1]]
+    if LIST_POSITION.match(after) and NOUN_PHRASE.match(segments[-1]):
+        for segment in reversed(segments[:-1]):
+            walk.append(segment)
+            if not NOUN_PHRASE.match(listed.sub("X", segment)):
+                break
+    for segment in walk:
+        polarity = _polarity(segment)
+        if polarity == AFFIRMED:
+            return (
+                f"is affirmed: {segment.strip()!r} negates a prohibition, not the claim"
+            )
+        if polarity == NEGATED:
+            return None
+    return "is not locally negated"
 
 
-def _statements(section: str) -> list[tuple[str, str, bool]]:
-    """A section's statements as ``(kind, text, lead_negates)``.
+def _statements(section: str) -> list[tuple[str, str, bool, str]]:
+    """A section's statements as ``(kind, text, lead_negates, header)``.
 
-    ``kind`` is ``"row"`` for a table row (kept raw, so its cells survive),
-    ``"item"`` for a list item and ``"prose"`` for a sentence. ``lead_negates``
-    is true only for a list item whose introducing sentence ends in a colon and
-    is itself negative: that is structural inheritance, and nothing else is.
+    ``kind`` is ``"row"`` for a table row (kept raw, so its cells survive, and
+    carrying its table's header row as ``header``), ``"item"`` for a list item
+    and ``"prose"`` for a sentence. ``lead_negates`` is true only for a list
+    item whose introducing sentence ends in a colon and itself negates what
+    follows: that is structural inheritance, and nothing else is.
     """
     blocks: list[list[str]] = [[]]
     for line in section.splitlines()[1:]:
@@ -302,11 +377,13 @@ def _statements(section: str) -> list[tuple[str, str, bool]]:
             blocks[-1].append(line)
         elif blocks[-1]:
             blocks.append([])
-    statements: list[tuple[str, str, bool]] = []
+    statements: list[tuple[str, str, bool, str]] = []
     lead = ""
     for block in (b for b in blocks if b):
         if all(line.lstrip().startswith("|") for line in block):
-            statements += [("row", line, False) for line in block]
+            headed = len(block) > 1 and TABLE_SEPARATOR.fullmatch(block[1])
+            header = block[0] if headed else ""
+            statements += [("row", line, False, header) for line in block]
             lead = ""
         elif LIST_ITEM.match(block[0]):
             items: list[list[str]] = []
@@ -315,68 +392,102 @@ def _statements(section: str) -> list[tuple[str, str, bool]]:
                     items.append([])
                 items[-1].append(line)
             inherited = bool(lead) and _negates(CLAUSE_BREAK.split(lead)[-1])
-            statements += [("item", _flat(" ".join(item)), inherited) for item in items]
+            statements += [
+                ("item", _flat(" ".join(item)), inherited, "") for item in items
+            ]
         else:
             sentences = re.split(r"(?<=[.!?])\s+", _flat(" ".join(block)))
-            statements += [("prose", sentence, False) for sentence in sentences]
+            statements += [("prose", sentence, False, "") for sentence in sentences]
             lead = sentences[-1] if sentences[-1].endswith(":") else ""
     return statements
 
 
+def _cells(row: str) -> list[str]:
+    return [_flat(cell) for cell in row.strip().strip("|").split("|")]
+
+
 def _cell_claims(
-    row: str, pattern: re.Pattern[str], listed: re.Pattern[str]
-) -> list[tuple[str, str]]:
-    """Positive claims in one table row, judged cell by cell."""
-    if re.fullmatch(r"\s*\|[\s|:-]*\|?\s*", row):
+    row: str, header: str, pattern: re.Pattern[str], listed: re.Pattern[str]
+) -> list[tuple[str, str, str]]:
+    """Positive claims in one table row, judged cell by cell.
+
+    A verdict cell governs only the cell directly to its left, and only in a
+    concept | verdict relation: when that cell is a bare concept label
+    ("| Universal lifecycle | NO |"), or when the verdict's column header asks
+    the permission question itself ("| Relation | Allowed |", as in 041 §4). A
+    proposition under any other header ("All models share a universal
+    lifecycle"), and any rationale to the right of a verdict, is judged on its
+    own words; the verdict beside it does not excuse it.
+    """
+    if TABLE_SEPARATOR.fullmatch(row):
         return []
-    cells = [_flat(cell) for cell in row.strip().strip("|").split("|")]
+    cells = _cells(row)
+    titles = _cells(header) if header else []
     found = []
     for n, cell in enumerate(cells):
-        beside = [cells[i] for i in (n - 1, n + 1) if 0 <= i < len(cells)]
-        verdict = any(VERDICT_CELL.match(other) for other in beside)
-        found += [
-            (match.group(0), cell)
-            for match in pattern.finditer(cell)
-            if not verdict and not _claim_is_negated(cell, match, listed)
-        ]
+        verdict_beside = any(
+            VERDICT_CELL.match(cells[i]) for i in (n - 1, n + 1) if 0 <= i < len(cells)
+        )
+        concept = bool(NOUN_PHRASE.match(listed.sub("X", cell))) and not (
+            POSITIVE_PREDICATE.search(cell)
+        )
+        asked = n + 1 < len(titles) and PERMISSION_HEADER.match(titles[n + 1])
+        if (
+            (concept or asked)
+            and n + 1 < len(cells)
+            and VERDICT_CELL.match(cells[n + 1])
+        ):
+            continue
+        for match in pattern.finditer(cell):
+            reason = _claim_stands(cell, match, listed)
+            if reason and verdict_beside and reason == "is not locally negated":
+                reason = (
+                    "stands in a proposition or rationale cell; the adjacent "
+                    "verdict governs only a concept label to its left"
+                )
+            if reason:
+                found.append((match.group(0), reason, cell))
     return found
 
 
 def _positive_claims(text: str, pattern: re.Pattern[str]) -> list[str]:
     """Each place ``text`` asserts a claim ``pattern`` names, not negated.
 
+    A bounded structural regression guard over controlled constitutional
+    prose. It recognises the governing sources' own vocabulary and a finite set
+    of local polarity constructions; it does not attempt general
+    natural-language entailment.
+
     Negation is judged against the matched claim itself: in its own words, in
-    a directly following predicate, in a verdict cell beside it, in the
-    negative lead-in of the list it belongs to (first clause of the item
-    only), or in a negative section heading. An unrelated negation elsewhere in
-    the sentence, clause or row does not excuse it.
+    a directly following predicate, in a verdict cell that governs its concept
+    cell, in the negative lead-in of the list it belongs to (first clause of the
+    item only), or in a negative section heading. A heading that negates a
+    prohibition ("What S-6 does not prohibit") is not negative. An unrelated
+    negation elsewhere in the sentence, clause or row does not excuse a claim,
+    and a negated prohibition affirms it.
     """
     # A list may mix the scanned claim with other prohibited names; all of
     # them count as list members when a negation is traced back across it.
     listed = re.compile(
         f"{pattern.pattern}|{_prohibited_pattern().pattern}", re.IGNORECASE
     )
-    found: list[tuple[str, str]] = []
+    found: list[tuple[str, str, str]] = []
     for section in re.split(r"(?m)^(?=#{1,3} )", text):
         heading = section.splitlines()[0] if section.strip() else ""
-        if NEGATIVE_HEADING.search(heading):
+        if NEGATIVE_HEADING.search(heading) and _polarity(heading) != AFFIRMED:
             continue
-        for kind, statement, lead_negates in _statements(section):
+        for kind, statement, lead_negates, header in _statements(section):
             if kind == "row":
-                found += _cell_claims(statement, pattern, listed)
+                found += _cell_claims(statement, header, pattern, listed)
                 continue
             for n, clause in enumerate(CLAUSE_BREAK.split(statement)):
                 if lead_negates and n == 0:
                     continue
-                found += [
-                    (match.group(0), clause.strip())
-                    for match in pattern.finditer(clause)
-                    if not _claim_is_negated(clause, match, listed)
-                ]
-    return [
-        f"positive claim {phrase!r} is not locally negated: {where!r}"
-        for phrase, where in found
-    ]
+                for match in pattern.finditer(clause):
+                    reason = _claim_stands(clause, match, listed)
+                    if reason:
+                        found.append((match.group(0), reason, clause.strip()))
+    return [f"{phrase!r} {reason}: {where!r}" for phrase, reason, where in found]
 
 
 def _prohibition_names(label: str) -> tuple[str, ...]:
@@ -1262,6 +1373,160 @@ def test_p2_scan_accepts_a_prohibited_universal_that_is_negated():
         if _scan(sentence)
     ]
     assert not flagged, f"the scan flagged a negated statement: {flagged}"
+
+
+# Polarity. Each group is (name, sentence) pairs: a negative word near a claim
+# is not a negative claim, and a negated prohibition affirms what it no longer
+# prohibits.
+POST_MATCH_VIOLATIONS = (
+    ("not prohibited", "A universal lifecycle is not prohibited."),
+    ("not forbidden", "A universal lifecycle is not forbidden."),
+    ("not rejected", "A universal lifecycle is not rejected."),
+    ("never prohibited", "A universal lifecycle is never prohibited."),
+    ("cannot be prohibited", "A universal lifecycle cannot be prohibited."),
+    ("schema not prohibited", "A universal Record schema is not prohibited."),
+    ("canonicality not forbidden", "Universal canonicality is not forbidden."),
+)
+POST_MATCH_CONTROLS = (
+    ("is prohibited", "A universal lifecycle is prohibited."),
+    ("is forbidden", "A universal lifecycle is forbidden."),
+    ("is not permitted", "A universal lifecycle is not permitted."),
+    ("is not allowed", "A universal lifecycle is not allowed."),
+    ("does not exist", "A universal lifecycle does not exist."),
+    ("is absent", "A universal lifecycle is absent."),
+    ("must not define", "The architecture must not define a universal lifecycle."),
+)
+PRE_MATCH_VIOLATIONS = (
+    ("nothing prevents", "Nothing prevents a universal lifecycle."),
+    ("no rule forbids", "No rule forbids a universal lifecycle."),
+    ("no prohibition applies", "No prohibition applies to a universal lifecycle."),
+    ("nothing prevents canonicality", "Nothing prevents universal canonicality."),
+    ("no rule forbids a schema", "No rule forbids a universal Record schema."),
+    (
+        "nothing prevents identity semantics",
+        "Nothing prevents all models from sharing universal identity semantics.",
+    ),
+)
+PRE_MATCH_CONTROLS = (
+    ("nothing permits", "Nothing permits a universal lifecycle."),
+    ("no rule permits", "No rule permits a universal lifecycle."),
+    ("no policy allows", "No policy allows universal canonicality."),
+    ("nothing authorizes", "Nothing authorizes a universal Record schema."),
+)
+TABLE_VIOLATIONS = (
+    (
+        "rationale beside NO",
+        (
+            "| Rule | Status | Rationale |\n|---|---|---|\n"
+            "| Lifecycle | NO | All models share a universal lifecycle |"
+        ),
+    ),
+    (
+        "claim right of NO",
+        (
+            "| Status | Claim |\n|---|---|\n"
+            "| NO | Universal canonicality applies to all Records |"
+        ),
+    ),
+    (
+        "explanation beside Forbidden",
+        (
+            "| Concern | Constraint | Explanation |\n|---|---|---|\n"
+            "| State | Forbidden | Every model uses one universal state model |"
+        ),
+    ),
+    (
+        "proposition left of NO under a non-permission header",
+        (
+            "| Claim | Status |\n|---|---|\n"
+            "| All models share a universal lifecycle | NO |"
+        ),
+    ),
+)
+TABLE_CONTROLS = (
+    (
+        "concept | NO",
+        "| Concern | Status |\n|---|---|\n| Universal lifecycle | NO |",
+    ),
+    (
+        "concept | Forbidden",
+        "| Concern | Status |\n|---|---|\n| Universal canonicality | Forbidden |",
+    ),
+    (
+        "cell negates itself",
+        "| Concern | Rule |\n|---|---|\n| Lifecycle | No universal lifecycle |",
+    ),
+    (
+        "relation | Allowed: NO (041 §4 shape)",
+        (
+            "| Relation | Allowed | Basis |\n|---|---|---|\n"
+            "| Every model shares a universal lifecycle | **NO** | RMS §4 |"
+        ),
+    ),
+)
+
+
+def _misjudged(cases: tuple[tuple[str, str], ...], *, violation: bool) -> list[str]:
+    """The cases the scan judges the wrong way, each with what it reported."""
+    return [
+        f"{name}: {_scan(sentence) or 'no finding'}"
+        for name, sentence in cases
+        if bool(_scan(sentence)) is not violation
+    ]
+
+
+def test_p2_scan_distinguishes_claim_negation_from_prohibition_negation():
+    """ "X is not permitted" negates X. "X is not prohibited" negates the
+    prohibition, so X stands — and the report says which it was."""
+    missed = _misjudged(POST_MATCH_VIOLATIONS, violation=True)
+    assert not missed, f"a negated prohibition passed as a negated claim: {missed}"
+    flagged = _misjudged(POST_MATCH_CONTROLS, violation=False)
+    assert not flagged, f"a negated claim was flagged: {flagged}"
+    report = _scan("A universal lifecycle is not prohibited.")
+    assert "'is not prohibited' negates the prohibition, not the claim" in report[0], (
+        f"the finding does not name the reversing predicate: {report}"
+    )
+
+
+def test_p2_scan_handles_pre_match_polarity_reversal():
+    """ "No X exists" negates X. "Nothing prevents X" and "No rule forbids X"
+    negate a prohibition ahead of X, and X stands."""
+    missed = _misjudged(PRE_MATCH_VIOLATIONS, violation=True)
+    assert not missed, f"a negated prohibition ahead of a claim passed: {missed}"
+    flagged = _misjudged(PRE_MATCH_CONTROLS, violation=False)
+    assert not flagged, f"a negated permission was flagged: {flagged}"
+
+
+def test_p2_table_verdict_only_governs_a_concept_cell():
+    """A verdict governs the concept to its left, not a proposition or a
+    rationale beside it."""
+    missed = _misjudged(TABLE_VIOLATIONS, violation=True)
+    assert not missed, f"an adjacent verdict excused a positive claim: {missed}"
+    flagged = _misjudged(TABLE_CONTROLS, violation=False)
+    assert not flagged, f"a governed concept cell was flagged: {flagged}"
+
+
+def test_p2_scan_keeps_structural_negation_and_reads_heading_polarity():
+    """A negative list lead-in and a negative heading still govern what they
+    introduce. A heading that negates a prohibition does not."""
+    pattern = _prohibited_pattern()
+    lead_in = (
+        "## 3. Scope\n\nThe Record System does not have:\n\n"
+        "- a universal lifecycle\n- universal canonicality\n"
+        "- a universal state model\n"
+    )
+    assert not _positive_claims(lead_in, pattern), "the list lost its lead-in"
+    heading = (
+        "## 9. What the Record System Explicitly Does Not Have\n\n"
+        "- universal lifecycle\n- universal canonicality\n"
+    )
+    assert not _positive_claims(heading, pattern), "the heading lost its negation"
+    permissive = (
+        "### What S-6 does not prohibit\n\nEvery model shares a universal lifecycle.\n"
+    )
+    assert _positive_claims(permissive, pattern), (
+        "a heading that negates a prohibition hid a positive claim"
+    )
 
 
 def test_p2_identity_grammar_is_universal_and_identity_semantics_is_not():
