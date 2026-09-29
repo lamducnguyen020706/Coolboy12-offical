@@ -344,7 +344,7 @@ Each row names a boundary this contract **defers to** and does not anticipate.
 
 | Artifact | What it owns | What 045 therefore does not state |
 |---|---|---|
-| **039** | the Record System constitution | the six-model architecture, COM's retirement, the v1.0 model roster |
+| **039** | the Record System constitution | the six-model architecture, the retirement recorded at its §10, the v1.0 model roster |
 | **041** | the six-model sovereignty contract | why no model is a specialization or template of another |
 | **042** | the formal Record Model definition | what a Record Model *is*, and the nine dimensions it owns |
 | **043** | the mechanism vs semantics boundary | the nine prohibitions, and what sharing a mechanism does not confer |
@@ -429,7 +429,9 @@ cite it as having done so:
 3. any Kind taxonomy or roster — Blueprint §13.6, each model, I-106
 4. field schemas for any Record
 5. package schemas or package composition — **Artifact 056**, I-107
-6. relationship schema or relationship legality — **Artifact 055**
+6. relationship schema or relationship legality — **Artifact 055** draws the relationship boundary
+   and defines neither; legality is model/Registry-owned (RMS §4), and each relationship's
+   Registry-defined type carries its legality constraints (Blueprint §13.3; Artifacts 079, 080)
 7. lifecycle rules for any Record Model
 8. state semantics or any state vocabulary
 9. canonicality semantics — **Artifact 052**, I-104
