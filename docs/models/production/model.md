@@ -38,6 +38,26 @@ relationships, temporal or provenance semantics, authority, canonicality, packag
 or validation rules is stated here. Artifact 039 §11 names the artifact that owns
 each of those boundaries, and this model's own design work states the rest.
 
+## Succession
+
+This path is shared. Roadmap row **296**, the Production Record Model specification
+(P11/11a), is placed at `docs/models/production/model.md` and names Artifact 040 as a
+hard dependency, so it replaces this stub in place rather than beside it.
+
+The replacement is held to what Artifact 040 establishes here. A specification written
+at this path that drops the identity anchor — the **Model** and **Partition** rows and
+the semantic question — leaves row 040's `Val` (*each names its own semantic question*)
+unmet at 040's own path, and turns red the exit-P2 suite (Artifact 059), which reads the
+**Model** row to confirm the six models. Row 040's `Why` is why the anchor comes first:
+*each model's identity precedes its content*.
+
+**Unlock-list note.** The `→` field above reproduces Roadmap row 040 as written. Four of
+its numbers do not name a model specification under the Roadmap's current numbering —
+152 is the Mutation Coordinator, 248 the observability and sensitivity projections, 344
+the V Kind taxonomy, 353 the analysis → evidence chain — while the rows that build on
+these stubs are 175, 253, 296, 060, 343 and 361. Recorded, not corrected: the field is
+the Roadmap's.
+
 ---
 
 *Artifact 040 · P2/2a · SoT: AUTHORITATIVE · Canon: n/a. This document is not a
