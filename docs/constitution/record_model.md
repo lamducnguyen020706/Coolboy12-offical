@@ -69,7 +69,7 @@ artifact named in the table's third column.
 | 1 | **Kind taxonomy** | which Kinds exist within the model, and what each means | any model's concrete Kind roster — the model's own design work; the admission test is **057** |
 | 2 | **Identity semantics** | what constitutes the identity of a Record in that model | the identity grammar (**034**) and the identity semantics boundary (**046**) |
 | 3 | **State and lifecycle** | the model's state vocabulary and what its transitions mean | any concrete state machine — the model's own design work |
-| 4 | **Relationship packaging** | how the model represents and packages relationships among its Records | relationship legality — **055** |
+| 4 | **Relationship packaging** | how the model represents and packages relationships among its Records | the relationship boundary — **055**; relationship legality — model/Registry-owned (RMS §4), each relationship's Registry-defined type carrying its legality constraints (Blueprint §13.3; **079**, **080**) |
 | 5 | **Temporal architecture** | the model's own account of time, history, and version | the temporal vocabulary (**049**) and the temporal obligation (**054**) |
 | 6 | **Provenance meaning** | what provenance *means* in that model | provenance capture, which is a mechanism — **047**; the meaning boundary — **048** |
 | 7 | **Canonicality meaning (if any)** | what canonical means in that model, **for models that have canonicality at all** | the canonicality framework — **052**; authority — **051** |
@@ -185,7 +185,8 @@ This document defines the category and enumerates the ownership. It does **not**
 | concrete schemas and fields | model-specific design work |
 | lifecycle state machines | model-specific design work |
 | identity semantics in detail | **046** (grammar: **034**) |
-| relationship legality | **055** |
+| the relationship boundary | **055** |
+| relationship legality | model/Registry-owned (RMS §4); each relationship's Registry-defined type carries its legality constraints (Blueprint §13.3; **079**, **080**) |
 | the temporal contract | **049**, **054** |
 | provenance meaning in detail | **048** (capture mechanism: **047**) |
 | the canonicality and authority frameworks | **052**, **051** |
