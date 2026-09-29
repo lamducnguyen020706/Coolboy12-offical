@@ -379,7 +379,7 @@ no reader may cite it as having done so:
 16. storage architecture, persistence, database keys, or indexes
 17. serialization format, transport representation, or storage implementation
 18. runtime implementation of any kind
-19. any reintroduction of the retired Canon Object Model — retired at RMS §2
+19. any reintroduction of the retired architecture — the Canon Object Model is retired at RMS §2
 
 **None of these exclusions weakens the universal rules in §4 and §6.** Spine law 9 and the
 capture obligation are constitutional and bind every model; excluding a *semantic* from this
