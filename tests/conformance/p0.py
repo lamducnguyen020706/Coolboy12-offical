@@ -760,7 +760,18 @@ _OWNERSHIP_USE = re.compile(
 #                  retired term it forbids.
 #
 # And within those directories the scan reads three extensions — .md, .py and
-# .json — plus __pycache__, which is bytecode this suite's own imports create.
+# .json — and skips two kinds of directory that tooling generates and no
+# artifact authors:
+#
+#   __pycache__     bytecode this suite's own imports create.
+#   src/*.egg-info  the packaging metadata setuptools writes when Artifact
+#                   005's project is installed for development — beside the
+#                   package, because [tool.setuptools.packages.find] sets
+#                   where = ["src"] — and that .gitignore already excludes as
+#                   "Python packaging metadata". A clean checkout has none, so
+#                   before this exclusion the gate failed in any environment
+#                   that had installed the project, on files nobody wrote.
+#
 # Stating that here because the scope must be exactly what runs: every current
 # architecture file in the repository today is one of those three, and
 # ``test_p0_com_scan_covers_the_current_architecture_surface`` asserts that,
@@ -768,6 +779,20 @@ _OWNERSHIP_USE = re.compile(
 CURRENT_ARCHITECTURE = ("CLAUDE.md", "docs", "src", ".claude")
 EXCLUDED_FROM_SCAN = ("docs/sources",)
 SCANNED_SUFFIXES = (".md", ".py", ".json")
+
+
+def is_generated(path: Path) -> bool:
+    """Tool output inside the surface: exactly the two kinds named above.
+
+    Confined to ``src/`` for the egg-info case, where setuptools writes it, so
+    an authored file under a directory that merely ends in ``.egg-info``
+    anywhere else is still read.
+    """
+    parts = path.relative_to(REPO_ROOT).parts
+    return "__pycache__" in parts or (
+        len(parts) > 1 and parts[0] == "src" and parts[1].endswith(".egg-info")
+    )
+
 
 # Prohibition constructions that BIND TO ONE OCCURRENCE.
 #
@@ -955,7 +980,7 @@ def architecture_files() -> list[Path]:
                 child for child in sorted(path.rglob("*"))
                 if child.is_file()
                 and child.suffix in SCANNED_SUFFIXES
-                and "__pycache__" not in child.parts
+                and not is_generated(child)
                 and not any(
                     child.is_relative_to(REPO_ROOT / excluded)
                     for excluded in EXCLUDED_FROM_SCAN
@@ -993,7 +1018,7 @@ def test_p0_com_scan_covers_the_current_architecture_surface():
         if (REPO_ROOT / entry).is_dir()
         and child.is_file()
         and child.suffix not in SCANNED_SUFFIXES
-        and "__pycache__" not in child.parts
+        and not is_generated(child)
         and not any(
             child.is_relative_to(REPO_ROOT / excluded) for excluded in EXCLUDED_FROM_SCAN
         )
@@ -1002,6 +1027,26 @@ def test_p0_com_scan_covers_the_current_architecture_surface():
         "current architecture holds files the COM scan does not read — either add the "
         f"extension to SCANNED_SUFFIXES or state why it is excluded: {unread}"
     )
+
+    # The generated-directory exclusion stays as narrow as its reason. The
+    # egg-info case rests on the directory being untracked tool output, so it
+    # holds only while .gitignore still declares it; and it is confined to
+    # src/, so an authored file elsewhere cannot hide behind the name.
+    ignored = (REPO_ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+    assert "*.egg-info/" in ignored, (
+        "src/*.egg-info is skipped as generated, untracked packaging metadata, but "
+        ".gitignore no longer excludes it — restate the reason or drop the exclusion"
+    )
+    assert is_generated(REPO_ROOT / "src/coolboy12.egg-info/PKG-INFO")
+    assert is_generated(REPO_ROOT / "src/coolboy12/kernel/__pycache__/sot.pyc")
+    for authored in (
+        "docs/notes.egg-info/scope.md",
+        "src/coolboy12/x.egg-info/rule.py",
+        "docs/constitution/partition.md",
+    ):
+        assert not is_generated(REPO_ROOT / authored), (
+            f"the generated-directory exclusion reaches an authored path: {authored}"
+        )
 
 
 def normalize(line: str) -> str:
