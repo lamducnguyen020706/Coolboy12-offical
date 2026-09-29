@@ -198,6 +198,15 @@ Derived: §29.8 describes exactly that drift — *"A store acquires one authored
 second, and remains nominally derived for years until the day it is deleted and something is
 missing."*
 
+**Source condition recorded, not resolved — *published output*.** Blueprint §9.1 names
+*"published output"* as Derived, and §12.4 repeats it. §29.6a does not: it classifies *"Issue
+records about the artifact"* as AUTHORITATIVE and only *"generated publication projections"* as
+DERIVED, and §13.6a states *"Issue is durable and provenanced, never rebuilt."* This contract's
+test does not change under either wording. What can be rebuilt with no loss from authoritative
+inputs — a generated projection of a publication — may be Derived; the Issue record of what was
+published cannot be: it is AUTHORITATIVE and never rebuilt (§13.6a, §29.6a; §14 item 16 below).
+The sources do not align the two lists, and this contract does not align them.
+
 ## 7. Rebuildability and the No-Loss Test
 
 ### 7.1 The test
@@ -514,6 +523,7 @@ conformant to the Record System: the other P2 contracts carry their own conditio
 | P6 derived-layer contracts, P8 derived layer and P18 rebuild drills downstream | Roadmap rows 158, 167–174, 219–230, 472–473 |
 | Inputs stated two ways — recorded, not resolved | P-26; Blueprint §9.1, §12.4, §29.8; Roadmap rows 172, 226 |
 | The drill's *derived store* includes rendering caches — recorded, not resolved | Blueprint §29.8, §29.6a |
+| *Published output* Derived in §9.1 and §12.4; Issue records AUTHORITATIVE in §29.6a — recorded, not resolved | Blueprint §9.1, §12.4, §29.6a, §13.6a |
 | `DEV-ENV` used for repository and implementation artifacts, not as a data class | Roadmap §0.6, PART I; Blueprint §29.6a |
 
 ## 18. What This Contract Does Not Define
