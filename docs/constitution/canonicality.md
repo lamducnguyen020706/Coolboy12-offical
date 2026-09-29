@@ -4,8 +4,12 @@
 RM: all · T: doc · R: CONTRACT · SoT: AUTHORITATIVE · Auth: governing · Canon: n/a · CD: no ·
 Ph/St: P2/2c · Req: BR-22 · BP: §13.7c · RMS: §17 · H: 051 · S: — · LS: — · G: — ·
 → 145, all models · Val: six meanings tabulated; P and I never canonical ·
-Done: per-model meaning fixed · Why: **a universal boolean here reintroduces COM** ·
-Risk: CRITICAL · ∥: no
+Done: per-model meaning fixed ·
+Why: **a universal boolean here reintroduces the retired architecture** · Risk: CRITICAL · ∥: no
+
+> **Header note.** `Why` gives Roadmap row 052's rationale in other words. The row names the retired
+> architecture by its abbreviation, which the exit-P0 firewall (Artifact 030) keeps out of
+> current-architecture text; the row itself stands unchanged in `docs/sources/`.
 
 ## 1. Purpose
 
@@ -13,9 +17,9 @@ This artifact answers one question: **what "canonical" constitutionally means in
 sovereign Record Models, and what canonicality is not.** The detailed semantics within each model
 remain that model's.
 
-Row 052 states why the answer must be fixed per model: *"a universal boolean here reintroduces
-COM"* — the retired Canon Object Model, whose defining error was one canonical flag over every
-object. Blueprint §13.7c is the source this contract makes operational:
+Row 052 states why the answer must be fixed per model: a universal boolean here would reintroduce
+the retired architecture. The Canon Object Model is retired (RMS §2); its defining error was one
+canonical flag over every object. Blueprint §13.7c is the source this contract makes operational:
 
 > *"**Canonicality is a status property whose meaning is defined by the Record Model that has one.
 > It is not a universal boolean and not a property every Record carries.**"*
@@ -213,7 +217,7 @@ stored; it is architectural. A universal boolean would impose one shared canonic
 and one shared status semantics, on six models whose canonicality meanings differ — and on two
 models for which canonicality does not exist as a status at all. It is also incompatible with Visual
 as a model, because Visual's canonicality is decided by Kind. That is semantic universalization: the
-retired Canon Object Model's error (row 052), and what Blueprint §13.7c forbids — canonicality *"is
+retired architecture's error (row 052), and what Blueprint §13.7c forbids — canonicality *"is
 not a universal boolean and not a property every Record carries."* §13.7c draws the same consequence
 for status vocabularies: *"A `status` vocabulary admitting `CANON` in every partition would be false
 in two of six"*.
