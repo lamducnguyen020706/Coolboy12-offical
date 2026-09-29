@@ -407,6 +407,12 @@ generating a benchmark ≠  measuring the benchmark
 
 Do not claim runtime validation unless runtime validation actually occurred.
 
+**Earlier gates stay proven.** Before reporting a validation result or asking for a freeze, run
+every phase conformance suite that exists — `tests/conformance/p0.py`, `p1.py`, and on — not only
+the current phase's. Each is at its Roadmap path, which pytest does not collect by default, so name
+each file. A passed gate that has gone red is a regression the current work caused or exposed:
+report it. Never narrow a suite to restore green.
+
 **Git:** `git status` before work → work → `git diff` / `git status` after work.
 
 - Do not modify files outside the current artifact's scope.
