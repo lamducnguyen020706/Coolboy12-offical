@@ -87,8 +87,6 @@ layers, and it does not drop one. The table's own counts decide the grouping:
    Five rows stand above Derived, so *"four"* counts them as one again.
 2. **Kind semantics** depends on *"Registry"*, not on either of the first two rows by name, so the
    table names those two rows together as the layer a Kind depends on.
-3. The second row is named **peer** semantic authorities: peers of the base, meaning *"shared but …
-   not a field-definition module"*.
 
 Read that way, every count in the table holds. **The five conceptual layers of this contract
 are:**
@@ -124,8 +122,13 @@ are:**
 **L1–L3 are the definition-bearing portion of the contract.** §9.4 lists what the Registry holds:
 *"kind definitions, subtype definitions, relationship-type definitions with their participant roles
 and ownership rule (Section 13), shared field definitions, controlled value sets,
-change-and-operation semantics, and indicator semantics for world-state."* Those definitions are
-Registry Records (RMS §10; I-105).
+change-and-operation semantics, and indicator semantics for world-state."* Where the current
+Registry taxonomy provides an admitted Registry Kind, the governed definitions represented in L1–L3
+are Registry Records (RMS §10, §10.1; I-105). This contract infers no new Registry Kind or
+definition family for semantic material the current taxonomy does not map. In particular, §9.4
+names change-and-operation semantics within the peer semantic authorities, but neither RMS §10.1
+nor the current Roadmap establishes a dedicated Registry Kind or definition-family mapping for it:
+that mapping is not established by current sources (§14.2).
 
 - **L1** is Registry's own definition domain: shared field meaning and the peer semantic
   authorities.
@@ -155,7 +158,8 @@ its own, and this contract does not decide whether or how Registry's own Records
 Registry semantics.
 
 L4 and L5 appear in the contract because they depend on the definitions, and the rule of the
-contract binds that dependency (§7). Semantic dependency transfers neither to Registry.
+contract binds that dependency (§7). Semantic dependency transfers no Record ownership to
+Registry.
 
 ## 5. Layer Ordering
 
