@@ -140,11 +140,22 @@ Holding a `KIND-DEFINITION` or `SUBTYPE-DEFINITION` transfers none of the owning
 subtype domain semantics, taxonomy, admission, instances, lifecycle, authority, canonicality or
 package architecture to Registry (Artifact 061 §4, §7; Artifact 057 §9).
 
-**L4 and L5 are not Registry content.** *"The Registry holds no instances"* (§9.4): L4 is held by
-the Record Models whose Records use the definitions — W, E, P, V, I — and never by Registry
-(RMS §10.3; I-105; Artifact 061 §7). L5 is Derived: recomputed and never authoritative (§12.4;
-§29.6a; Artifact 053). They appear in the contract because they depend on the definitions, and the
-rule of the contract binds that dependency (§7). Appearing in it makes neither of them Registry's.
+**L4 — ownership follows the Record.** L4 denotes one Record's actual values (*"One record's actual
+values"*). Ownership at L4 stays with the Record Model that owns that Record (I-16; Artifact 045).
+A W, E, P, V or I Record that resolves against Registry definitions gives Registry no ownership of
+it (RMS §10.3; I-105; Artifact 061 §7). Registry's own definition Records are Records and
+remain R-owned (RMS §10; Artifacts 060, 061). §9.4's *"The Registry holds no instances"* predates
+Registry's promotion to a Record Model (§13.6e). This contract reads it, as RMS §10.3 bounds it, to
+mean that Registry holds none of the domain instances its definitions describe — Registry defines
+`CHARACTER` and never holds a World Character. It is not read to deny that Registry has Records of
+its own, and this contract does not decide whether or how Registry's own Records occupy L4.
+
+**L5 — not Registry definition content.** Derived / projection is recomputed and never authoritative
+(§12.4; §29.6a; Artifact 053). It is not Registry definition content merely because it depends on
+Registry semantics.
+
+L4 and L5 appear in the contract because they depend on the definitions, and the rule of the
+contract binds that dependency (§7). Semantic dependency transfers neither to Registry.
 
 ## 5. Layer Ordering
 
@@ -163,7 +174,7 @@ L2  Kind semantics                         DEPENDS-ON  L1 (the source: "Registry
 L3  Subtype semantics                      DEPENDS-ON  L1; its own kind in L2
  ↓
 L4  Instance data                          DEPENDS-ON  L1, L2, L3 (the source: "All three above")
-                                           held by the owning Record Model, never by Registry
+                                           owned by the Record Model that owns the Record
  ↓
 L5  Derived / projection                   DEPENDS-ON  L1–L4 (the source: "All four above")
                                            non-authoritative; nothing DEPENDS-ON L5
@@ -171,9 +182,10 @@ L5  Derived / projection                   DEPENDS-ON  L1–L4 (the source: "All
 
 **What "downward-only" means.** Meaning is defined at L1 and specialized downward: *"adding,
 refining, or splitting a Registry definition changes meaning for everything below it … and cannot
-invalidate anything above it"* (§9.4). A lower conceptual layer may consume semantics from the
-layers above it that its source row lists — not only from the layer immediately above. **An upper
-conceptual layer never takes defining semantic authority from a lower conceptual layer.**
+invalidate anything above it"* (§9.4). A layer may consume semantics from the lower-numbered
+layers that its source row lists — not only from the one immediately before it; a layer nearer L5
+DEPENDS-ON applicable layers nearer L1. **No layer takes defining semantic authority from a
+higher-numbered layer.**
 
 ## 6. Layer Responsibility Matrix
 
@@ -183,7 +195,7 @@ conceptual layer never takes defining semantic authority from a lower conceptual
 | **L1** 1b Peer semantic authorities | relationship type and participant-role semantics; change and operation semantics; indicator semantics | RFS | L2–L5 | everything below | relationship-type, indicator and change-and-operation definitions | Registry definition domain; relationship instances and indicator values stay with their owning model (RMS §15, §10.7) | relationship types 079–080; indicators 086–087 |
 | **L2** Kind semantics | what is true of every Record of one kind | L1 | L3, L4, L5 | L3, L4, L5 | the governed `KIND-DEFINITION` | the owning Record Model: its Kind taxonomy, the Kind's domain semantics, its instances | kind definitions 068–069; roster 064 |
 | **L3** Subtype semantics | what is true of one specialization of a kind | L1; its own kind in L2 | L4, L5 | L4, L5 | the governed `SUBTYPE-DEFINITION`, where applicable | the owning Record Model: the domain semantics of its Records that use the subtype | subtype definitions 070–071 |
-| **L4** Instance data | one Record's actual values | L1, L2, L3 | L5 | L5 | none — no instance ownership | the owning Record Model — never Registry | each model's own specification |
+| **L4** Instance data | one Record's actual values | L1, L2, L3 | L5 | L5 | none — semantic dependency transfers no Record ownership | the Record Model that owns the Record; Registry acquires no ownership of another model's Record, and its own R Records remain R-owned | each model's own specification |
 | **L5** Derived / projection | recomputed views | L1–L4 | — | nothing | none implied | inputs owned by their models; the projection itself non-authoritative | Artifact 053; P6/P8 derived layer |
 
 **Cells the source does not fill are not filled here.** The table does not say whether a
@@ -195,8 +207,8 @@ general. Same-layer dependency and cycles are **not established here**; row 111 
 and the downstream columns above follow those names. RMS §10.1 freezes fourteen Registry Kinds; the
 §9.4 rows do not place `MODEL-DEFINITION`, `SCHEMA-DEFINITION`, `CONTROLLED-VOCABULARY`,
 `IDENTITY-GRAMMAR`, `VALIDATION-RULE`, `CONSTRAINT-DEFINITION`, `CAPABILITY-DEFINITION`,
-`DERIVATION-RULE` or `SIMULATION-MODEL-DEFINITION`. Their layer placement is **not established
-here** (§14.2).
+`DERIVATION-RULE` or `SIMULATION-MODEL-DEFINITION`. Their layer placement is **not established by
+current sources**, and this contract assigns it to no artifact (§14.2).
 
 ## 7. Dependency Rules
 
@@ -241,8 +253,8 @@ A depends semantically on B     ≠     A owns B
 
 - A Subtype that depends on its Kind does not own the `KIND-DEFINITION`. Both remain Registry
   Records, owned by the Registry Record Model as its own Records (Artifact 061 §4).
-- An instance in L4 depends on definitions in L1–L3. Registry thereby owns no L4 Record: *"Registry
-  governs the definitions. Each Record Model owns its Records."* (§13.6e; I-105; 061 §4)
+- A Record at L4 depends on definitions in L1–L3. The dependency gives Registry no ownership of it:
+  *"Registry governs the definitions. Each Record Model owns its Records."* (§13.6e; I-105; 061 §4)
 - The dependency transfers no W, E, P, V or I Record to Registry, and no R Record to any other model
   (I-16; Artifact 045 §9).
 
@@ -309,14 +321,19 @@ Layer position is not a ranking of anything else:
 
 | Layer order does not mean | Why | Source |
 |---|---|---|
-| a lower layer (nearer L1) is more authoritative | authority is domain-scoped; order measures dependency only | RMS §17; Artifact 051 §7 |
-| a lower layer is more canonical, or closer to World Truth | Registry is canonical *"about meaning"*, never about the world | Blueprint §13.7c; I-88; Artifact 052 |
-| a higher layer (nearer L5) is less authoritative | L2–L4 are not ranked by it | Artifact 061 §11 |
-| a later layer is Derived | only L5 is Derived; L4 is the owning model's authoritative data | §9.4; §29.6a; Artifact 053 |
-| an earlier layer is `AUTHORITATIVE` for that reason | source-of-truth class is set per data class | §29.6a; Artifact 050 |
+| a layer nearer L1 is more authoritative | authority is domain-scoped; order measures dependency only | RMS §17; Artifact 051 §7 |
+| a layer nearer L1 is more canonical, or closer to World Truth | Registry is canonical *"about meaning"*, never about the world | Blueprint §13.7c; I-88; Artifact 052 |
+| a layer nearer L5 is less authoritative | L2–L4 are not ranked by it | Artifact 061 §11 |
+| a layer nearer L5 is Derived | only L5 is Derived, by its own source rule | §9.4; §29.6a; Artifact 053 |
+| a layer's position assigns a source-of-truth class | no position assigns `AUTHORITATIVE`, `DERIVED`, `CACHED`, `TEMPORARY` or `EXTERNAL`; a Record's class is assigned independently | §29.6a; RMS §4; Artifact 050 |
 | constitutional superiority | the Spine and the one Authority are untouched by it | Spine law 3; Artifact 051 §6 |
 
-The one class the contract states is L5's: *"Nothing — non-authoritative"*.
+Layer ordering creates no authority ranking, no canonicality ranking and no source-of-truth
+ranking. A Record's source-of-truth class is assigned independently, under Artifact 050,
+Blueprint §29.6a and RMS §4; L4 membership assigns none. L5's non-authoritative character is a
+specific source rule for Derived / projection — §9.4's *"Nothing — non-authoritative"*, and
+Artifact 053's discipline that Derived is never authoritative — not an inference from its being
+the last layer.
 
 ## 12. Definition-Family Handoffs
 
@@ -336,7 +353,7 @@ This contract writes none of their schemas, fields, lifecycles or semantics.
 | # | Invalid inference | Why it fails | Source |
 |---|---|---|---|
 | 1 | Registry's layers are universal Record layers | they order Registry definitions; no model inherits them | I-101; RMS §2, §4 |
-| 2 | A higher layer owns a lower layer, or the reverse | dependency is not ownership | §13.6e; I-105 |
+| 2 | A layer owns a layer it depends on, or one that depends on it | dependency is not ownership | §13.6e; I-105 |
 | 3 | Semantic dependency transfers Record ownership | Records stay with their partition's model | I-16; 045 §9 |
 | 4 | Semantic dependency permits a Record reference | references are 063's | row 063 |
 | 5 | Semantic dependency permits a cross-model edge | edges are 058's | Artifact 058 |
@@ -368,9 +385,10 @@ This contract writes none of their schemas, fields, lifecycles or semantics.
 
 ### 14.2 Source gaps
 
-- **Layer placement of Kinds the rows do not name** (§6). No source or Roadmap row places them. Row
-  064 (the roster) and row 111 (definition-dependency rules) are the nearest owners; neither is
-  assigned it here.
+- **Layer placement of Kinds the rows do not name** (§6) — **not established by current sources.**
+  No source or Roadmap row places them. This contract assigns the placement to no artifact: row
+  064's `Val` is *"exactly fourteen Kinds, each with admission rationale"*, and row 111's is
+  *"downward-only; asymmetric; no cycles"*; neither names layer placement.
 - **Change-and-operation semantics** (Peer row) corresponds to no RMS §10.1 Kind and no family row.
   Recorded; the roster is 064's.
 - **Same-layer dependency and cycles** — not established by §9.4; row 111 owns *"no cycles"*. This
@@ -383,7 +401,7 @@ This contract writes none of their schemas, fields, lifecycles or semantics.
 | **C-062-01** | There are exactly five conceptual layers. All six source rows are preserved; L1 comprises RFS (1a) and the peer semantic authorities (1b) as distinct internal strata. | §9.4 |
 | **C-062-02** | The order is L1, L2, L3, L4, L5. Inside L1, RFS depends on nothing within this contract, and Peer semantic authorities DEPEND-ON RFS. | §9.4 |
 | **C-062-03** | A layer depends only on the layers its source row lists, all above it: Kind semantics on L1; Subtype semantics on L1 and its own kind; Instance data on L1–L3; Derived / projection on L1–L4. | §9.4; §13.6e |
-| **C-062-04** | No conceptual layer semantically depends on a lower conceptual layer; L1 does not depend on L2, L3, L4 or L5. | §9.4; I-75; row 062 `Val` |
+| **C-062-04** | No conceptual layer semantically depends on a higher-numbered layer; L1 does not depend on L2, L3, L4 or L5. | §9.4; I-75; row 062 `Val` |
 | **C-062-05** | No Registry definition depends on, or takes its meaning from, a domain instance. | §9.4; RMS §10.3 |
 | **C-062-06** | Derived / projection is terminal and non-authoritative: nothing depends on L5. | §9.4; §12.4 |
 | **C-062-07** | Semantic dependency transfers no Record ownership. | §13.6e; I-105; I-16 |
@@ -391,15 +409,15 @@ This contract writes none of their schemas, fields, lifecycles or semantics.
 | **C-062-09** | Semantic dependency establishes no cross-model edge. | Artifact 058 |
 | **C-062-10** | Layer position is not an authority ranking. | RMS §17; 051 |
 | **C-062-11** | Layer position is not a canonicality ranking. | §13.7c; 052 |
-| **C-062-12** | Layer position is not a source-of-truth class; only L5 is stated non-authoritative. | §29.6a; 050; 053 |
+| **C-062-12** | Layer position does not determine source-of-truth classification; a Record's class is assigned independently. L5 Derived / projection is non-authoritative by its own source rule, not by position. | §29.6a; RMS §4; 050; 053 |
 | **C-062-13** | The layers do not apply as a semantic architecture to W, E, P, V or I. | I-101; RMS §2 |
 | **C-062-14** | The universal envelope remains exactly seven fields; no field — layer, `status`, `tier`, schema or other — is added to it or to any Record, and shared field semantics imply no universal field presence. | RMS §4 |
 | **C-062-15** | `status` remains World-owned and is not universalized; no universal state vocabulary or lifecycle is created. | RMS §4 (FG-V7-03) |
-| **C-062-16** | Registry holds the governed `KIND-DEFINITION` and `SUBTYPE-DEFINITION`; that transfers no model's Kind taxonomy, Kind or subtype domain semantics, or instances. Registry holds no L4 instance. | §9.4; §13.6e; RMS §10; I-105; Artifact 061 |
-| **C-062-17** | W, E, P, V and I retain their Records. | §13.6e; I-105 |
+| **C-062-16** | Registry holds the governed `KIND-DEFINITION` and `SUBTYPE-DEFINITION`; that transfers no model's Kind taxonomy, Kind or subtype domain semantics, or instances. | §9.4; §13.6e; RMS §10; I-105; Artifact 061 |
+| **C-062-17** | L4 ownership remains with the Record Model that owns the Record: no semantic dependency transfers it to Registry, W, E, P, V and I retain their Records, and Registry's own R Records remain R-owned. | §13.6e; I-16; I-105; Artifacts 060, 061 |
 | **C-062-18** | No Relationship Record arises from a layer dependency. | §13.2; I-102 |
 | **C-062-19** | Runtime validation and resolution stay outside the layers. | §9.4; RMS §4, §10.6 |
-| **C-062-20** | The Kind roster and Kind layer placement are not decided here (064). | row 064 |
+| **C-062-20** | Artifact 064 owns the exact fourteen-Kind roster and admission rationale. Layer placement for Registry Kinds not placed by Blueprint §9.4 is not established by this contract and is not assigned to 064, or to any artifact, here. | row 064; §9.4 |
 | **C-062-21** | Governance is not decided here (065). | row 065 |
 | **C-062-22** | Exact reference legality is not decided here (063). | row 063 |
 | **C-062-23** | The five-layer downward-only semantic direction is settled by this contract. Artifact 111 owns detailed Registry-definition dependency rules — same-layer dependency, asymmetry, cycle prohibition and concrete dependency-graph constraints — and does not reopen the layer order. | row 062 `Val`; row 111 |
@@ -412,7 +430,7 @@ This contract writes none of their schemas, fields, lifecycles or semantics.
 | Artifact | May assume from 062 | Must still define |
 |---|---|---|
 | **063** reference boundary | the settled layer order and downward-only semantic direction; no definition depends on or takes meaning from an instance; dependency ≠ reference; a legal declaration reference is no upward dependency (D-9) | what R may and may not reference; the §14.1 wording conflict, as a reference question |
-| **064** Kind taxonomy | the layers; which contents the §9.4 rows name | the fourteen Kinds, their admission rationale, and any layer placement the rows do not give |
+| **064** Kind taxonomy | that 062's five-layer contract exists; which contents the §9.4 rows name | the exact fourteen Kinds and each admission rationale. It inherits from 062 no obligation to place every Kind in a layer. |
 | **065** governance | that layers carry no authority ranking | who may propose, approve, deprecate |
 | **111** dependency direction | the five layers and their downward-only direction, settled (D-1 to D-9) | asymmetry and no-cycle rules; same-layer dependency; concrete dependency-graph constraints |
 | **112–117** | the contract they enforce and implement | validation, binding, resolution, kernel |
@@ -422,7 +440,7 @@ This contract writes none of their schemas, fields, lifecycles or semantics.
 | Row 062 | Status | Where it is met |
 |---|---|---|
 | `Val`: *"five semantic layers"* | **SATISFIED** — five conceptual layers are fixed; the six source rows are kept through L1's internal strata | §4; C-062-01, C-062-02 |
-| `Val`: *"downward-only"* | **SATISFIED** — no upper layer takes defining semantic authority from a lower one; exact reference legality is a separate question, owned by 063 | §5, §7; C-062-03 to C-062-06, C-062-23, C-062-26 |
+| `Val`: *"downward-only"* | **SATISFIED** — no layer takes defining semantic authority from a higher-numbered layer; exact reference legality is a separate question, owned by 063 | §5, §7; C-062-03 to C-062-06, C-062-23, C-062-26 |
 | `Done`: *"contract"* | **SATISFIED** — layer responsibilities, the dependency law, the ownership boundary, the reference distinction and the handoffs are normative | §6–§13, §16; C-062-01 to C-062-26 |
 | `Why`: *"Blueprint's own Registry layering"* | **SATISFIED** — the layers are §9.4's | §3, §4.1 |
 | `H: 061` | **SATISFIED** — every rule respects the authority boundary | §4.3, §8, §11, §13 |
