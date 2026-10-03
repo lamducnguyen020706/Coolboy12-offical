@@ -108,12 +108,12 @@ instances"*.
 
 | ID | Rule | Source |
 |---|---|---|
-| **RB-1** | A Registry definition may reference a target only if the target falls within one of the five admissible categories of §8 and is declared. The categories are closed: a target in none of them is not a legal Registry reference target. | RMS §10.3; rows 066–107 *"references only declared entities (063)"* |
+| **RB-1** | A Registry reference target is category-admissible only if it falls within one of RMS §10.3's five categories (§8). For *other Registry definitions*, this contract adds no declared-status predicate beyond the target actually being a Registry definition. For Record Models, Kinds, schemas and semantic contracts, *declared* is part of the RMS §10.3 category and must be established before the target is admissible. The categories are closed: a target in none of them is not a legal Registry reference target. | RMS §10.3; rows 066–107 *"references only declared entities (063)"*; SC-063-H |
 | **RB-2** | A Registry definition never references a domain instance. | RMS §10.3; Roadmap §2.4; row 112 |
 | **RB-3** | A Registry definition never owns, mutates, or takes semantic authority from a domain instance, whatever field, label or purpose carries the citation. | RMS §10.3; I-105; Blueprint §9.4 |
 | **RB-4** | A Registry definition never depends on a runtime instance, and a runtime instance is not a legal Registry reference target. | RMS §10.3; row 121; RB-1 |
 | **RB-5** | An admissible target category is necessary but not sufficient for any concrete reference. The applicable definition-family contract decides whether that family carries the particular reference relation. If that relation is also a semantic dependency, Artifact 062's layer law and Artifact 111's dependency rules additionally constrain the dependency. A reference that is not a semantic dependency is not made subject to 111 merely because it is a reference. | rows 066–107, 111; Artifact 062 §7, D-9 |
-| **RB-6** | Where a target cannot be shown to fall within an admissible category, the reference is not legal. Undetermined is not permitted. | RB-1 |
+| **RB-6** | Where a target cannot be shown to fall within an admissible category, or, for a declaration-qualified category, its declared status cannot be established, the reference is not legal. Undetermined is not permitted. | RB-1 |
 
 **Fail-closed.** RB-1 and RB-6 make the boundary closed at the category level: *"references only
 declared entities"* is the Roadmap's own wording for every definition family. Nothing is legal
@@ -151,10 +151,15 @@ values"* (RMS §10.7).
 ```
 1. Is the target a Record of W, E, P, V or I?          yes → FORBIDDEN (RB-2)
 2. Is it a runtime instance?                           yes → FORBIDDEN (RB-4)
-3. Is it in one of the five categories of §8?          no  → not legal (RB-1, RB-6)
-4. Is declared status established by the authoritative
-   source for that declaration type?                   no or undetermined → not legal (RB-1, RB-6)
-5. Category admissible and declared                        → passes this contract; the family
+3. Is it in one of the five categories of §8?          no or undetermined → not legal (RB-1, RB-6)
+4a. Other Registry definition: is it actually a
+    Registry definition?                               no or undetermined → not legal (RB-1, RB-6)
+                                                       yes → category-admissible
+4b. Record Model, Kind, schema or semantic contract:
+    is the source-required declared status
+    established?                                       no or undetermined → not legal (RB-1, RB-6)
+                                                       yes → category-admissible
+5. Category-admissible                                     → passes this contract; the family
                                                              contract decides the concrete
                                                              relation, and 062 and 111 decide it
                                                              only if it is also a semantic
@@ -173,7 +178,9 @@ universal class of declarations, and no field.
 ## 7. Normative Reference Matrix
 
 This is the matrix row 063's `Done` requires. *ADMISSIBLE* means the target category passes this
-contract's reference boundary, provided the target's declared status is established (RB-1). A
+contract's reference boundary — for the four categories RMS §10.3 qualifies as *declared*, once that
+declared status is established; for other Registry definitions, once the target is shown to be a
+Registry definition (RB-1). A
 concrete reference must also be permitted by the applicable definition-family contract; if that
 concrete reference is also a semantic dependency, 062 and 111 additionally govern its legality
 (RB-5). Neither 062 nor 111 is a filter on every reference. *ADMISSIBLE* never means
@@ -181,9 +188,9 @@ unrestricted. *FORBIDDEN* is absolute: no family, approval or label lifts it.
 
 | # | Target category | Registry reference | Conditions | Ownership consequence | Dependency consequence | Authority consequence | Downstream enforcement |
 |---|---|---|---|---|---|---|---|
-| 1 | **Other Registry definition** (an R Record) | **ADMISSIBLE** | the target is a Registry definition Record whose declared status is established; whether a family carries the concrete relation is that family contract's | none: each Record stays R-owned and separately governed | reference legality alone determines no semantic dependency; if the concrete relation is also a semantic dependency, 062 D-1 to D-9 and 111 (*"downward-only; asymmetric; no cycles"*) govern that dependency | none: neither definition becomes the other's authority by reference alone | families 066–107; 112; 121; 111 for relations that are dependencies |
+| 1 | **Other Registry definition** (an R Record) | **ADMISSIBLE** | the target is actually a Registry definition Record; this contract adds no separate declared-status requirement for this category (SC-063-H); whether a family carries the concrete relation is that family contract's | none: each Record stays R-owned and separately governed | reference legality alone determines no semantic dependency; if the concrete relation is also a semantic dependency, 062 D-1 to D-9 and 111 (*"downward-only; asymmetric; no cycles"*) govern that dependency | none: neither definition becomes the other's authority by reference alone | families 066–107; 112; 121; 111 for relations that are dependencies |
 | 2 | **Declared Record Model** | **ADMISSIBLE** | the target is one of the six constitutionally established models (RMS §2; I-101); which families carry a Model reference is downstream | none: no model, partition or Record of that model passes to Registry | reference legality alone determines no semantic dependency; Registry depends on the other models *"for nothing"* (§13.6e) | no sovereignty conferred or held: a `MODEL-DEFINITION` neither creates nor grants a model (Artifact 061 §7 row 7) | families that carry a Model reference (066–107); 112 |
-| 3 | **Declared Kind** — the Kind, not a Record of it | **ADMISSIBLE** | the Kind's declared status is established by its owning model's authoritative Kind, taxonomy and admission architecture, which this contract does not define (SC-063-H); naming it is not admitting it (Artifact 057 §9); which families carry a Kind reference is downstream | none: the Kind's taxonomy, admission and instances stay with the owning model | naming a declared Kind is not by itself a semantic dependency on L2 or L3 (062 D-9) | the named Kind is not semantic authority for the definition that names it (062 D-9) | families that carry a Kind reference (066–107); 112; 121 |
+| 3 | **Declared Kind** — the Kind, not a Record of it | **ADMISSIBLE** | the Kind's declared status is established by the owning Record Model's authoritative Kind architecture, as the governing sources and downstream model contracts define it; this contract defines no proof formula (SC-063-H); naming it is not admitting it (Artifact 057 §9); which families carry a Kind reference is downstream | none: the Kind's taxonomy, admission and instances stay with the owning model | naming a declared Kind is not by itself a semantic dependency on L2 or L3 (062 D-9) | the named Kind is not semantic authority for the definition that names it (062 D-9) | families that carry a Kind reference (066–107); 112; 121 |
 | 4 | **Declared schema** | **ADMISSIBLE** | the schema's declared status is established; schema definition and schema implementation stay apart (RMS §10.2); which family references which schema is downstream | none: no ownership of the Records that conform to it | reference legality alone determines no semantic dependency; if the concrete relation is one, 062 and 111 govern it | no execution authority: *"Registry does not execute schemas."* (RMS §10.2); conformance makes no Record a legal target | families that carry a schema reference (066–107); 112 |
 | 5 | **Declared semantic contract** | **ADMISSIBLE** | the contract's declared status is established; RMS §10.5 identifies `CAPABILITY-DEFINITION` Records — a Registry definition family — as semantic contracts, and the sources enumerate no other kind of semantic contract (SC-063-F) | none | reference legality alone determines no semantic dependency; if the concrete relation is one, 062 and 111 govern it | no runtime control and no modelhood (RMS §10.5, §19) | families that carry such a reference (066–107); 112 |
 | 6 | **Domain instance** — any Record of W, E, P, V or I | **FORBIDDEN** | always: whether or not it resolves, whatever its Kind, content or label | Registry never owns it (RMS §10.3; I-105) | Registry never depends on it (row 063 `Val`; 062 D-3) | never semantic authority; never mutated through the reference (RMS §10.3) | 112 (*"rejects any definition referencing a domain instance"*); 121; 122; X-09 |
@@ -240,22 +247,30 @@ the Bootstrap Meta-Contract outside the ordinary Registry Record ontology — *"
 Meta-Contract is NOT a Record."* and *"There is no circular self-definition requirement."* — and
 nothing here draws it into the Registry reference graph (SC-063-F).
 
-**Being declared is a precondition, not a process.** A target must be declared before a reference
-to it is legal; the Roadmap lists the reverse order as an anti-ordering — X-05, *"Consumer before
-provider"*: *"Resolving definitions that do not exist"*. This contract treats *declared* as a
-required precondition and defines no universal declaration workflow or proof format (SC-063-H):
+**Declared qualification is category-specific, not universal.** RMS §10.3 qualifies four
+categories as *declared* and does not apply the word to *other Registry definitions*. Where RMS
+§10.3 qualifies a category as declared, that declared status is a precondition and must be
+established; this contract defines no universal declaration state, workflow or proof format
+(SC-063-H):
 
+- **Other Registry definitions.** The target must actually be a Registry definition. This contract
+  adds no separate declared state.
 - **Record Models.** The six are constitutionally established (RMS §2; I-101).
-- **Kinds.** Declared status is established by the owning model's authoritative Kind, taxonomy and
-  admission architecture. This contract does not define how a Kind acquires or proves it. That a
-  Kind code parses, resolves, appears in prose, appears in a roster, or has a `KIND-DEFINITION` is
-  not by itself made proof of declared status by this contract — which does not say that any of
-  them can never be.
+- **Kinds.** A declared Kind is an admissible target category. This contract does not define which
+  artifact, state, ceremony, roster condition or combination proves declared status for every
+  Record Model. Declared status must be established by the owning Record Model's authoritative Kind
+  architecture, as the governing sources and downstream model contracts define it. That a Kind code
+  parses, resolves, appears in prose, appears in a roster, or has a `KIND-DEFINITION` is not by
+  itself made proof of declared status by this contract — which does not say that any of them can
+  never be. If declared status cannot be established, this contract does not legalize the
+  reference.
 - **Schemas and semantic contracts.** How they acquire declared status is not established here.
 - **Governance.** Who proposes, approves or deprecates any declaration is 065's and 108–110's.
 
-The concrete representation of declared status, and how a validator proves it, are downstream
-(the family schemas; 112).
+The concrete representation of declared status, and how it is proved, are downstream and assigned
+to no artifact here. Separately, a definition that names a provider that does not yet exist is the
+Roadmap's X-05 anti-ordering — *"Consumer before provider"*: *"Resolving definitions that do not
+exist"*.
 
 ## 9. Forbidden Domain-Instance Boundary
 
@@ -318,8 +333,9 @@ resolution."* Artifact 058 §6: *"Resolving is not permission."*
 - `W-CH-000001-Maximus` may resolve perfectly through the shared mechanism. As a Registry reference
   target it is still FORBIDDEN, because it is a domain instance.
 - A target that cannot be established — unresolvable, or in no known reference form — is not legal
-  either: a definition that names what does not exist is the X-05 anti-ordering. Establishing the
-  target is necessary for use and never sufficient for legality.
+  either (RB-1, RB-6); a definition that names a provider that does not yet exist is, in addition,
+  the X-05 anti-ordering. Establishing the target is necessary for use and never sufficient for
+  legality.
 
 **Handle, not semantics.** Where a target is a Record, the handle is a resolvable ID: *"A resolvable
 ID is the only legal cross-model handle"* (RMS §4). This contract adds no embedded object, pointer,
@@ -387,7 +403,7 @@ governance act must respect:
 |---|---|---|
 | **GC-1** | No governance act may approve a Registry reference that §7 forbids or that falls outside the admissible categories. | RMS §10.3; RB-1 |
 | **GC-2** | No approval role may waive the domain-instance prohibition. Lifting it would be an amendment of RMS §10.3, which is `FROZEN`, not an act of Registry governance. | RMS §10.3; Blueprint §9.4 |
-| **GC-3** | A reference becomes legal only once its target is declared. | RB-1; X-05 |
+| **GC-3** | Where RMS §10.3 requires a declared target category, governance cannot treat the reference as legal until that declared status is established. For other Registry definitions, the target must be an actual Registry definition; this contract adds no separate declaration state. | RB-1; SC-063-H |
 | **GC-4** | A changed reference target is judged afresh against this boundary; legality is not inherited from the reference it replaces. | RB-1 |
 | **GC-5** | Approval makes no domain instance into a declaration and no current value into a definition's meaning. | RMS §10.3, §10.7 |
 
@@ -443,7 +459,7 @@ instance or session (row 8).
 | A `WSVR-INDICATOR-DEFINITION` whose range is set from the current WSV value | **FORBIDDEN** | domain state as semantic authority (row 7) |
 | A `CAPABILITY-DEFINITION` → one running Context Builder session | **FORBIDDEN** | runtime instance (RB-4) |
 | A Registry definition → a target in no admissible category | **not legal** | closed categories (RB-1, RB-6) |
-| A Registry definition → a definition not yet declared | **not legal** | X-05 (GC-3) |
+| A Registry definition → a Record Model, Kind, schema or semantic contract whose declared status cannot be established | **not legal** | declaration-qualified category (RB-1, RB-6) |
 
 **Resolution does not rescue it.** `W-CH-000001-Maximus` resolves through the shared mechanism. The
 reference is still FORBIDDEN: resolution answered *does it exist*; this boundary answers *may a
@@ -453,40 +469,43 @@ Registry definition name it*, and the answer is no.
 
 No code is written here. These are the requirements this contract places on later artifacts.
 
-**Establishing the target.** How a target is established depends on its reference form, which is
-not uniform and not established here (SC-063-G). A Record- or ID-backed target is resolved by the
-shared mechanism (RMS §4; for definitions, the Registry resolution service, row 115). A non-Record
-declaration form, where a downstream schema or family contract defines one, is verified by the
-representation that contract defines; this contract invents none. In both cases existence or
-resolution answers *does the target exist*, never *is the reference legal*, and no component may
-treat it as legality.
+**Establishing the target.** Target establishment is mechanical support. Where mechanical
+resolution applies, the checker must establish enough target identity and existence to apply this
+boundary; where the target uses a non-Record declaration form a downstream contract defines, it is
+established by that form (SC-063-G). This contract requires only that legality is never inferred
+from successful establishment: existence or resolution answers *does the target exist*, never *is
+the reference legal*. The resolver implementation any later artifact uses belongs to that
+artifact's own dependency graph; this contract makes Artifact 112 depend on no resolver artifact.
 
-**Reference validator — row 112** (*"rejects any definition referencing a domain instance"*). Input:
-a Registry definition and one reference target. It decides:
+**Reference validator — row 112** (`H: 063,111`; *"rejects any definition referencing a domain
+instance"*). This contract assigns 112 the Registry reference boundary — for a Registry definition
+and one reference target:
 
 ```
-1. establish the target by its source-defined reference form:
-     Record/ID target       → resolve mechanically (shared mechanism)
-     non-Record declaration → verify by its downstream-defined form
-     failure or unknown form → reject (fail closed; X-05)
-2. is the target a Record of W, E, P, V or I?     yes → reject (RB-2), although step 1 succeeded
-3. is it a runtime instance?                      yes → reject (RB-4)
-4. is it in an admissible RMS §10.3 category,
-   with declared status established?              no or undetermined → reject (RB-1, RB-6)
-5. does the applicable family contract permit
-   this concrete reference relation?              no → reject (RB-5)
-6. if the relation is also a semantic dependency:
-   do 062 and 111 permit that dependency?         no → reject (RB-5)
-7. otherwise                                      → legal
+A. establish enough target identity and category information
+   to apply this boundary                         cannot be established → not legal (RB-1, RB-6)
+B. is the target a Record of W, E, P, V or I?     yes → reject (RB-2), even if A resolved it
+C. is it a runtime instance?                      yes → reject (RB-4)
+D. is it in an admissible RMS §10.3 category?     no or undetermined → reject (RB-1, RB-6)
+E. for Record Models, Kinds, schemas and semantic
+   contracts: is declared status established?     no or undetermined → reject (RB-1, RB-6)
+F. if the relation is known to be a semantic
+   dependency: do 062 and 111 permit it?          no → reject (RB-5)
+                                                  otherwise → the 063/111 boundary holds
 ```
 
-Steps 2–4 are this contract's. Step 5 is the family contracts' (066–107). Step 6 applies only to a
-relation that is also a semantic dependency; a reference that is not one never reaches it. Row 112
-implements the combination (`H: 063,111`) and does not treat every reference as a dependency.
-Because a Record's identity is partition-first (RMS §5; Artifact 034) and every Record carries
-exactly one partition (I-16), a target that resolves to a Record whose partition is W, E, P, V or I
-is a domain instance; the validator needs no Kind roster to decide step 2. Exact error mechanics are
-112's.
+Steps A–E are this contract's; step F applies only to a relation already known to be a semantic
+dependency, and a reference that is not one never reaches it. Because a Record's identity is
+partition-first (RMS §5; Artifact 034) and every Record carries exactly one partition (I-16), a
+target that resolves to a Record whose partition is W, E, P, V or I is a domain instance; no Kind
+roster is needed to decide step B. Exact error mechanics are 112's.
+
+**Family-specific relations — a separate concern.** Whether the applicable definition family
+permits the concrete reference relation is decided by that family contract (066–107; RB-5). It is a
+validation concern distinct from the boundary above. This contract does not assign the mechanical
+enforcement of every family-specific relation to Artifact 112, whose `H` is 063 and 111, and does
+not name another owner where the Roadmap names none. Row 116's `Val` is *"definitions well-formed
+and legal"*; how family-specific relations are enforced is for the Roadmap and later artifacts.
 
 **Dependency rules — row 111.** Passing this contract establishes reference-target admissibility
 only. The applicable family contract still decides whether the concrete reference relation exists.
@@ -538,6 +557,12 @@ None of these tests or validators is created here.
 | 24 | A Kind appears in a roster, so this contract treats it as declared. | 063 defines no declaration proof | §8; SC-063-H |
 | 25 | A category example in this contract grants a concrete reference between two definition families. | concrete relations are the family contracts' | §8; RB-5 |
 | 26 | Every declaration target resolves through the ordinary Record resolver. | the reference form is not established | §18; SC-063-G |
+| 27 | All five target categories require the same declared state. | RMS §10.3 qualifies four, not *other Registry definitions* | RB-1; SC-063-H |
+| 28 | A Registry definition must be separately declared before any R → R reference. | not established by RMS §10.3 | RB-1; SC-063-H |
+| 29 | Artifact 112 owns every family-specific reference relation. | not assigned by the Roadmap or here | §18 |
+| 30 | Artifact 112 requires Artifact 115. | 112's `H` is 063 and 111 | §18; SC-063-G |
+| 31 | This contract defines a universal proof formula for a declared Kind. | the proof mechanism is not established | §8; SC-063-H |
+| 32 | X-05 is the source of all fail-closed reference behaviour. | the local basis is RB-1 and RB-6; X-05 is consumer-before-provider | RB-1, RB-6; §8 |
 
 ## 20. Source-Condition and Conflict Register
 
@@ -594,22 +619,33 @@ classifies neither and assigns neither to an artifact.
 How a Registry definition names a declaration that is not a Record — a declared Model or Kind
 directly, or through its R definition — is not established by current sources. This contract
 therefore does not require every declaration reference to resolve through the ordinary Record
-resolver, and invents no URI, handle, string syntax or discriminator field. Row 112 consumes the
-concrete reference form that the applicable downstream schema or family contract supplies. This
-contract fixes legality, not form.
+resolver, and invents no URI, handle, string syntax or discriminator field. Whatever checks a
+reference uses the concrete reference form that the applicable downstream schema or family contract
+defines; this contract adds no dependency of Artifact 112 on those contracts or on Artifact 115.
+This contract fixes legality, not form.
 
-### SC-063-H — acquiring and proving declared status
+### SC-063-H — declaration qualification
 
-RMS §10.3 requires declared Models, Kinds, schemas and semantic contracts. The current sources give
-no one declaration mechanism for all four, so this contract treats *declared* as a required
-precondition without inventing a universal declaration workflow or proof format:
+RMS §10.3 qualifies four categories as *declared*: Record Models, Kinds, schemas and semantic
+contracts. It does not apply the word to *other Registry definitions*. This contract therefore
+creates no universal declaration state across the five categories. For the four categories RMS
+qualifies as declared, declared status is a legal precondition; how it is proved is owned by the
+sources or downstream where current sources do not establish the mechanism. For other Registry
+definitions, this contract requires only that the target actually be a Registry definition.
 
-- the six Record Models are constitutionally established (RMS §2; I-101);
-- a Kind's declared status is established by the owning model's authoritative Kind, taxonomy and
-  admission architecture; this contract does not equate roster presence, parsing, resolution or a
-  `KIND-DEFINITION` with declaration, and does not say they can never establish it;
-- schema and semantic-contract declaration mechanics are not established here;
-- governance actors and process are 065's and 108–110's.
+- **Record Models:** the six are constitutionally established (RMS §2; I-101).
+- **Kinds:** current sources require the target to be *declared* but define no one
+  declaration-proof mechanism across all Record Models. This contract requires declared status
+  without inventing the proof formula; the owning model's Kind architecture and downstream model
+  contracts supply whatever proof the governing architecture establishes. It does not equate roster
+  presence, parsing, resolution or a `KIND-DEFINITION` with declaration, and does not say they can
+  never establish it.
+- **Schemas and semantic contracts:** declaration mechanics are not established here.
+- **Governance:** actors and process are 065's and 108–110's.
+
+Rows 066–107 each carry *"references only declared entities (063)"*. This contract reads that
+phrase as pointing to the categories stated here, not as adding a declared state to Registry
+definitions — a reading, recorded as one.
 
 ## 21. Conformance Conditions
 
@@ -648,10 +684,14 @@ precondition without inventing a universal declaration workflow or proof format:
 | **C-063-31** | The applicable definition-family contract decides whether a concrete reference relation exists; no category example here grants one. | RB-5; rows 066–107 |
 | **C-063-32** | 062 and 111 apply to a reference relation only if it is also a semantic dependency; 111 is not a gate on every reference. | RB-5; Artifact 062 D-9; row 111 |
 | **C-063-33** | This contract does not equate Kind roster presence, parsing, resolution or a `KIND-DEFINITION` with declared status. | SC-063-H |
-| **C-063-34** | Declared status is a required precondition; its proof mechanism remains source- or downstream-owned where not established. | RMS §10.3; SC-063-H |
+| **C-063-34** | For the four categories RMS §10.3 qualifies as declared, declared status is a required precondition; its proof mechanism remains source- or downstream-owned where not established, and no universal proof formula for a declared Kind is defined. If declaration cannot be authoritatively established, the target is not legalized. | RMS §10.3; SC-063-H |
 | **C-063-35** | Reference representation may differ by target type; no universal reference form is invented, and not every target resolves through the Record resolver. | SC-063-G |
-| **C-063-36** | Row 112 enforces this contract with family rules and, for dependencies only, 062 and 111; it does not treat every reference as a dependency. | row 112; §18 |
+| **C-063-36** | Row 112 enforces the Registry reference boundary assigned by 063 and, for relations known to be semantic dependencies, 111; it does not treat every reference as a dependency. This contract does not assign all family-specific relation validation to 112. | row 112; §18 |
 | **C-063-37** | Row 113's constraint-to-rule binding is not pre-decided, and no `CONSTRAINT-DEFINITION` ↔ `VALIDATION-RULE` reference is granted. | row 113; RMS §10.6 |
+| **C-063-38** | Another Registry definition is an admissible target without a separate declared-state requirement from this contract; it must actually be a Registry definition. | RMS §10.3; RB-1 |
+| **C-063-39** | Declared status is required only for the RMS §10.3 categories qualified as declared; no universal declaration state across the five categories is created. | RMS §10.3; SC-063-H |
+| **C-063-40** | This contract creates no dependency of Artifact 112 on Artifact 115 or on rows 066–107; the resolver implementation is outside it. | row 112; §18 |
+| **C-063-41** | Unknown or unestablished target category or declared status is rejected under RB-1 and RB-6; X-05 is cited only for consumer-before-provider. | RB-1, RB-6; PART IX |
 
 ## 22. Downstream Handoff
 
@@ -662,7 +702,7 @@ precondition without inventing a universal declaration workflow or proof format:
 | **066–107** families | the five admissible categories, the forbidden class, RB-1 to RB-6 | which concrete reference relations each family carries, within the admissible categories; the field form of each reference (SC-063-G) |
 | **108–110** evolution | GC-4 | how references behave across versions, supersession and deprecation |
 | **111** dependency | that legality and dependency are separate; R → R is admissible at the category level; 111 applies to relations that are also semantic dependencies | concrete direction, asymmetry, cycles, same-layer dependency |
-| **112** reference validator | the check of §18 (steps 2–4) and the matrix of §7 | the code; error mechanics; the combination with family rules (step 5) and, for dependencies only, 062 and 111 (step 6); consuming each target's reference form |
+| **112** reference validator | the boundary of §18 (steps A–E) and the matrix of §7; for relations known to be semantic dependencies, the 062/111 constraints (step F) | the code; error mechanics. Concrete family-specific relations stay with the family contracts and the downstream validation path; 063 adds no dependency on 066–107 or 115 |
 | **113** binder | nothing about constraint–rule references | *"a constraint resolves to exactly one rule"* |
 | **121** negative tests | the FORBIDDEN rows of §7 and §17's cases, including a resolving forbidden target | the tests, and which runtime objects they exercise |
 | **122** boundary tests | §12's non-transfers | the tests |
