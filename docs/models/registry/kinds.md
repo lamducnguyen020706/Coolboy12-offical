@@ -59,7 +59,7 @@ Kind is added (459). No schema, field, Registry data, validator, algorithm or te
 | RMS §10.1 | the fourteen Kinds, *"CLOSED at fourteen"*, `FROZEN`; `MODEL-DEFINITION` *"closes FG-V7-07 — the Kind exists"* |
 | RMS §13; RMS §6.1 | the Kind Admission Test's fourteen questions; a Kind is *"A class of Record within one model"*; final counts R 14 |
 | RMS §10, §10.2, §10.4–§10.7, §19; RMS §27 | definition Records are not configuration; schema, bootstrap, capability, constraint/validation, WSV/WSVR boundaries; *"MODEL-DEFINITION is a Registry Kind"* |
-| Blueprint §9.4; §13.6; §13.6e; §13.9a; §13.10 | the Registry layer; the earlier ten-item roster; Registry definition categories; FG-V7-07 OPEN; identity grammar; the WSV family |
+| Blueprint §9.4; §13.6; §13.6e; §13.9a | the Registry layer; the earlier ten-item roster; Registry definition categories and the WSV attribute table; FG-V7-07 OPEN; identity grammar. §13.10 is flagged PROPOSED and is not relied on (SC-064-K) |
 | Roadmap row 064; PART III (LS-1 to LS-6); rows 065–117, 459 | this artifact's metadata; the lockstep pairs; each family's assigned responsibility |
 | Artifact 057 | the fourteen questions bound to R (C-057-01); classification ≠ admission; `KIND-DEFINITION` ≠ admission (C-057-08); no sufficiency rule (§5.3); no non-World ceremony (§8) |
 | Artifact 060 | Registry is sovereign; definitions are Records; the roster is 064's |
@@ -358,14 +358,14 @@ Record per indicator."* §13.6e: *"An indicator definition is a Registry Record.
 | 4 | what persistent state | type, unit, range, constraints and semantics; never values | RMS §10.7; row 086 |
 | 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | Registry owns indicator meaning; World owns the current value | RMS §10.7; Artifact 061 §7 row 5 |
-| 7 | what references it | each indicator in WSV, from which WSVR is *"reached from each indicator's registry reference"* — the one incoming reference the sources state for a Registry Kind; LS-5 is lockstep and adds none | §13.10 |
+| 7 | what references it | not established — Blueprint §13.10 says WSVR is reached from each indicator's registry reference, but §13.10 is flagged PROPOSED, an indicator is not a Record, and RMS §10.7 does not restate the reference; LS-5 is lockstep and adds none | §13.10 (PROPOSED); RMS §10.7; SC-064-K |
 | 8 | why not a field | *"not a field of the Record carrying the value"* | §13.6e |
 | 9 | why not a state | the current value is World state; the definition is not | RMS §10.7; I-108 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | its own Kind; meaning and behaviour are kept apart from `SIMULATION-MODEL-DEFINITION` | RMS §10.1, §10.7 |
 | 12 | why not a projection | authoritative definition content | F-5 |
 | 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
-| 14 | what breaks if it is not first-class | indicator meaning moves into WSV — *"the state record has started becoming the model"* | §13.10 |
+| 14 | what breaks if it is not first-class | indicator meaning falls back into code or into the Record carrying the value, and the World/Registry split row 086 names is lost | §13.6e; RMS §10.7; row 086 `Why` |
 
 ## 17. VALIDATION-RULE
 
@@ -472,18 +472,18 @@ Model**"*; its `Why`: *"simulation is definition + consumption"*.
 |---|---|---|---|
 | 1 | what semantic object | the governed definition of a simulation model | RMS §10.7; §13.6e |
 | 2 | what semantic question | how does an indicator behave — dependencies, equations, thresholds? | §13.6e |
-| 3 | why independent identity | behaviour is held apart from meaning and value; each model definition is governed (F-1) | §13.10; F-1 |
-| 4 | what persistent state | the defined behaviour; never values | §13.10; row 098 |
+| 3 | why independent identity | behaviour is held apart from meaning and value — how an indicator behaves is a `SIMULATION-MODEL-DEF`, an R Record — and each definition is governed (F-1) | §13.6e; F-1 |
+| 4 | what persistent state | the defined behaviour; never values | RMS §10.7; row 098 |
 | 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | Registry governs the definition; World owns the values; no Simulation Record Model | RMS §10.7; Artifact 061 §7 row 11; row 098 |
-| 7 | what references it | not established — LS-5 is lockstep; the sources set an authority split — meaning, behaviour, value — not a reference graph | LS-5; §13.10 |
-| 8 | why not a field | a governed definition, not a field of WSV | §13.10 (*"Do not put model definitions into WSV"*) |
-| 9 | why not a state | behaviour, not state | §13.10 |
+| 7 | what references it | not established — LS-5 is lockstep; the sources set an authority split — meaning, behaviour, value — not a reference graph | LS-5; §13.6e; RMS §10.7 |
+| 8 | why not a field | a governed R Record, not a field of the World Record holding the values | §13.6e; RMS §10.7 |
+| 9 | why not a state | behaviour, not state: World owns the current values | §13.6e; RMS §10.7 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | its own Kind; kept apart from `WSVR-INDICATOR-DEFINITION` | RMS §10.1, §10.7 |
 | 12 | why not a projection | authoritative definition content; a simulation run is not a Registry Record | F-5; row 098 |
 | 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
-| 14 | what breaks if it is not first-class | model definitions go into WSV, or a Simulation Record Model is invented | §13.10; row 098 |
+| 14 | what breaks if it is not first-class | behaviour has no governed home and falls into World state or code, or a Simulation Record Model is invented | RMS §10.7; row 098 |
 
 ## 22. LS-1 and the Kind vs KIND-DEFINITION Boundary
 
@@ -569,6 +569,7 @@ are a Roadmap decomposition condition, recorded at SC-064-J and not repaired her
 | 35 | A half-landed LS-1 pair is complete. | Artifact 003; SC-064-D |
 | 36 | `LS: LS-1` on a non-roster row makes that row's subject a Kind. | SC-064-J |
 | 37 | Every row of 066–107 must define fields, references, constraints and cardinality. | §27 |
+| 38 | A statement in a Blueprint subsection flagged PROPOSED is settled architecture. | SC-064-K |
 
 ## 25. Source Conditions and Gaps
 
@@ -656,6 +657,15 @@ DECISION — a governing source or authorial architecture decision is required.
 | **Treatment** | The fourteen-Kind taxonomy stands; RMS §10.1 governs the taxonomy over Roadmap decomposition. These rows are not promoted to Kinds, and their metadata is neither repaired nor reinterpreted here. What LS-1 means on them requires Roadmap clarification outside this artifact. |
 | **Route** | ROADMAP ISSUE — outside this artifact; not blocking the roster. |
 
+### SC-064-K — Blueprint §13.10 is PROPOSED
+
+Blueprint §13.10 is headed **PROPOSED**: *"This subsection records a resolution that is PROPOSED,
+not settled."* The Roadmap keeps the flag open (DG-02), and RMS Appendix H records it as PC-2; RMS
+§10.7 closes WSV granularity but does not restate §13.10's other statements. **Treatment:** no
+answer in this contract rests on §13.10. Its statement that WSVR is reached from each indicator's
+registry reference is recorded in `WSVR-INDICATOR-DEFINITION`'s question 7 and not relied on; the
+WSV-family answers rest on §13.6e's WSV attribute table, RMS §10.7 and rows 086 and 098.
+
 ## 26. Conformance Conditions
 
 | ID | Condition | Source |
@@ -703,6 +713,8 @@ DECISION — a governing source or authorial architecture decision is required.
 | **C-064-41** | LS-1 completion is not claimed unless the concrete partner is source-assigned and landed. | SC-064-D |
 | **C-064-42** | This contract does not enlarge any 066–107 row's own `Val` or `Done`. | §27 |
 | **C-064-43** | Non-roster rows carrying LS-1 metadata are not promoted into Registry Kinds. | SC-064-J |
+| **C-064-44** | No answer rests on Blueprint §13.10 while it is flagged PROPOSED. | SC-064-K |
+| **C-064-45** | Structural question coverage (196 rows) and source-resolved answers are reported separately and never merged into one count. | §6; §28 |
 
 ## 27. Downstream Handoff
 
