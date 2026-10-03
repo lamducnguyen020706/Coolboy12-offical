@@ -1976,6 +1976,16 @@
       "type": "prompt",
       "source": "UserPromptSubmit",
       "completion_recorded": false
+    },
+    {
+      "event_id": "0a97ad7223c3682b8db83d30",
+      "timestamp": "2026-10-04T01:48:12+07:00",
+      "summary": "Prompt received",
+      "artifact": null,
+      "phase": null,
+      "type": "prompt",
+      "source": "UserPromptSubmit",
+      "completion_recorded": false
     }
   ]
 }
