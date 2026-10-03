@@ -13,8 +13,9 @@ why does each hold first-class Kind status under the Kind Admission Test?**
 
 The roster is not discovered here. RMS §10.1 already states it: *"Final Kind taxonomy — CLOSED at
 fourteen"*, `FROZEN`. Artifact 057 binds RMS §13's fourteen questions to every Registry Kind
-(C-057-01). This contract records the source-frozen roster and, for each Kind, a source-grounded
-answer to each of the fourteen questions:
+(C-057-01). This contract records the source-frozen roster and, for each Kind, every one of the
+fourteen questions — source-grounded answers to thirteen, and an exposed source gap for question 13
+(SC-064-I):
 
 ```
 RMS §10.1 roster (fourteen, FROZEN)  +  Artifact 057 / RMS §13 (fourteen questions)  =  064
@@ -92,26 +93,27 @@ is row 459's, not this contract's (SC-064-A, SC-064-C).
 
 Exactly fourteen rows, in RMS §10.1 order. No other row is a Registry Kind.
 
-| # | Kind | Source-established responsibility | Admission rationale | Detailed downstream owner |
+| # | Kind | Source-established responsibility | Admission rationale | Related downstream rows |
 |---|---|---|---|---|
-| 1 | `MODEL-DEFINITION` | governed meaning about a declared Record Model; closes FG-V7-07 | §8 — 14 of 14 answered | 066–067 |
-| 2 | `KIND-DEFINITION` | what a Kind means; the Registry partner of every Kind spec (LS-1) | §9 — 14 of 14 answered | 068–069 |
-| 3 | `SUBTYPE-DEFINITION` | what one specialization of a Kind means | §10 — 14 of 14 answered | 070–071 |
-| 4 | `FIELD-DEFINITION` | what a field means (LS-2) | §11 — 14 of 14 answered | 072–073; 078 |
-| 5 | `SCHEMA-DEFINITION` | a schema's definition; Registry does not execute it | §12 — 14 of 14 answered | 076–077; 078 |
-| 6 | `RELATIONSHIP-TYPE-DEFINITION` | what a relationship type is and which role owns it (LS-3) | §13 — 14 of 14 answered | 079–080 |
-| 7 | `CONTROLLED-VOCABULARY` | what a value or term means; per-kind value sets | §14 — 14 of 14 answered | 081–082 |
-| 8 | `IDENTITY-GRAMMAR` | the grammar's roster and its per-partition kind codes | §15 — 14 of 14 answered | 085; 117 |
-| 9 | `WSVR-INDICATOR-DEFINITION` | what a world-state indicator means (LS-5) | §16 — 14 of 14 answered | 086–087 |
-| 10 | `VALIDATION-RULE` | a mechanism or procedure for checking a condition (LS-4) | §17 — 14 of 14 answered | 090–091 |
-| 11 | `CONSTRAINT-DEFINITION` | a condition that must hold (LS-4) | §18 — 14 of 14 answered | 088–089 |
-| 12 | `CAPABILITY-DEFINITION` | a capability's semantic contract (LS-6) | §19 — 14 of 14 answered | 092–093 |
-| 13 | `DERIVATION-RULE` | what may be recomputed, and how derived state is computed | §20 — 14 of 14 answered | 096–097 |
-| 14 | `SIMULATION-MODEL-DEFINITION` | what a simulation model is; how an indicator behaves (LS-5) | §21 — 14 of 14 answered | 098–099; 100 |
+| 1 | `MODEL-DEFINITION` | governed meaning about a declared Record Model; closes FG-V7-07 | §8 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 066–067 |
+| 2 | `KIND-DEFINITION` | what a Kind means; the Registry partner of every Kind spec (LS-1) | §9 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 068–069 |
+| 3 | `SUBTYPE-DEFINITION` | what one specialization of a Kind means | §10 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 070–071 |
+| 4 | `FIELD-DEFINITION` | what a field means (LS-2) | §11 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 072–073; 078 |
+| 5 | `SCHEMA-DEFINITION` | a schema's definition; Registry does not execute it | §12 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 076–077; 078 |
+| 6 | `RELATIONSHIP-TYPE-DEFINITION` | what a relationship type is and which role owns it (LS-3) | §13 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 079–080 |
+| 7 | `CONTROLLED-VOCABULARY` | what a value or term means; per-kind value sets | §14 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 081–082 |
+| 8 | `IDENTITY-GRAMMAR` | the grammar's roster and its per-partition kind codes | §15 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 085; 117 |
+| 9 | `WSVR-INDICATOR-DEFINITION` | what a world-state indicator means (LS-5) | §16 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 086–087 |
+| 10 | `VALIDATION-RULE` | a mechanism or procedure for checking a condition (LS-4) | §17 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 090–091 |
+| 11 | `CONSTRAINT-DEFINITION` | a condition that must hold (LS-4) | §18 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 088–089 |
+| 12 | `CAPABILITY-DEFINITION` | a capability's semantic contract (LS-6) | §19 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 092–093 |
+| 13 | `DERIVATION-RULE` | what may be recomputed, and how derived state is computed | §20 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 096–097 |
+| 14 | `SIMULATION-MODEL-DEFINITION` | what a simulation model is; how an indicator behaves (LS-5) | §21 — 14 questions covered; 13 source-grounded, Q13 open at source (SC-064-I) | 098–099; 100 |
 
-**Count: fourteen.** R 14 is also RMS §13's final count. The downstream column names the family
-rows whose `Val`, `Done` or name assigns that Kind's detail; it grants them nothing beyond their own
-rows.
+**Count: fourteen.** R 14 is also RMS §13's final count. The last column lists related Roadmap rows
+whose own `Val`, `Done` or name concerns that Kind; it grants them nothing beyond their own rows,
+and a row's name is not the Kind's name (§23). **Rationale status:** every question is represented
+for every Kind; question 13 is not source-resolved for any Registry Kind (SC-064-I).
 
 ## 7. Admission Method
 
@@ -126,10 +128,15 @@ are documentation grounded in the sources, not a new admission algorithm:
 - **Where an answer is model-level.** Some questions — chiefly lifecycle — are answered by the
   sources for Registry definitions as a whole, not per Kind. Those answers say so, and the
   per-Kind detail is left to its named owner rather than invented (SC-064-B).
-- **Question 13, read for Registry Kinds.** Every Registry Kind is a class of Registry definition
-  Records, so *why not a Registry definition* is read here as: why does this subject need its own
-  Kind rather than being carried as Records of another Registry Kind? This is a reading, recorded
-  as one (SC-064-I).
+- **Question 7 records only references.** *What references it* is answered only by an incoming
+  reference relation a source establishes. Lockstep (LS-1 to LS-8), a Roadmap `→` unlock, a build
+  dependency, semantic consumption and an admissible target category (Artifact 063) are not
+  reference evidence. Where no incoming reference is source-established, the row says so and leaves
+  the relation to the applicable family.
+- **Question 13 is not rewritten.** RMS §13 asks every Kind *why not a Registry definition*, and
+  Artifact 057 carries it unchanged. For a Kind whose Records are themselves Registry definitions,
+  the sources state no Registry-specific application of the question. This contract does not
+  supply one; each Kind's row records the source gap (SC-064-I).
 
 **Shared source facts.** Several answers rest on facts that hold for every Registry Kind. They are
 named once and cited by label; each row still states its own answer.
@@ -139,7 +146,7 @@ named once and cited by label; each row still states its own answer.
 | **F-1** | Registry definitions are Records: *"A kind definition is not a constant in source code"*; they *"needed identity, provenance, history, a gate, and a linter, and calling them infrastructure meant they were governed by convention instead of by rule"*. | §13.6e |
 | **F-2** | Registry Records are semantic-definition Records — *"not configuration, not code constants, not metadata, not a catalog, not runtime."* | RMS §10 |
 | **F-3** | *"Registry governs the definitions. Each Record Model owns its Records."* Registry owns its own R Records; it never owns another model's Records. | §13.6e; I-105; Artifact 061 §7 |
-| **F-4** | A definition has *"a governed change path, and a temporal account"*. Evolution, versioning, supersession and deprecation are rows 108–110 (*"temporal account without a World History Record"*; *"consumers pin a version"*; *"deprecated ≠ deleted"*). | §13.6e; rows 108–110 |
+| **F-4** | Registry definitions share the obligation to have *"a governed change path, and a temporal account"*. Rows 108–110 define the Registry evolution, versioning, supersession and deprecation model downstream (*"temporal account without a World History Record"*; *"consumers pin a version"*; *"deprecated ≠ deleted"*). This contract defines no per-Kind lifecycle states. | §13.6e; rows 108–110 |
 | **F-5** | Definitions are authoritative about meaning; Registry is canon about meaning, never about the world. Derived output is recomputed and never authoritative. | §13.6; Artifact 052 §5.4; §29.6a; Artifact 053 |
 | **F-6** | `status` is World-owned and not universal; a definition is not a state value of another Record. | RMS §4 |
 | **F-7** | Relationship Record and History Record are World concepts; a Registry definition is a semantic object, not an edge between Records. | I-102; Artifact 055 |
@@ -157,15 +164,15 @@ sovereignty. Row 066: *"six models definable"*.
 | 2 | what semantic question | what is this Record Model, as the Registry defines it? | RMS §6 (R's question); row 066 |
 | 3 | why independent identity | each model's definition is a distinct definition with its own identity and provenance (F-1); the six are definable one by one | F-1; row 066 `Done` |
 | 4 | what persistent state | the governed meaning about one declared model; family content is 066's | F-1; row 066 |
-| 5 | what lifecycle | the Registry definition lifecycle — governed change, temporal account; Kind-specific detail is 108–110's | F-4 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | Registry governs the definition; the model's sovereignty is constitutional and neither granted nor held by the Record | F-3; Artifact 061 §7 row 7; RMS §2 |
-| 7 | what references it | Registry definitions that name a model (an R → R reference, Artifact 063 §8.2); concrete relations are the families' | RMS §10.3; Artifact 063 |
+| 7 | what references it | not established — declared Record Models are admissible targets and `MODEL-DEFINITION` Records are R → R targets (Artifact 063 §8.2), but naming a model is not referencing its `MODEL-DEFINITION`; concrete incoming references are the families' | RMS §10.3; Artifact 063 §8.2 |
 | 8 | why not a field | a model definition is a governed Record, not a field or a constant | F-1; F-2 |
 | 9 | why not a state | it is a definition, not a state of any Record | F-6 |
 | 10 | why not a relationship | it defines one subject; it is not an edge between Records | F-7 |
 | 11 | why not a subtype | RMS §10.1 lists it as its own Kind; it defines a model, not a specialization of a Kind | RMS §10.1 |
 | 12 | why not a projection | it is authoritative definition content, not recomputed output | F-5 |
-| 13 | why not a Registry definition (§7 reading) | no other Kind defines a Record Model; §13.6e left this exact Kind OPEN because none of its categories covered it, and RMS closes it as a Kind | §13.6e; RMS §10.1, §27 |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | FG-V7-07 reopens; the six models have no governed definition (row 066 `Why`: *"closes FG-V7-07"*) | RMS §27; row 066 |
 
 ## 9. KIND-DEFINITION
@@ -180,17 +187,17 @@ not admission.
 |---|---|---|---|
 | 1 | what semantic object | the governed definition of what one Kind means | §13.6e; Artifact 057 §4 |
 | 2 | what semantic question | what is a Record of this Kind? | §13.6e category table |
-| 3 | why independent identity | each Kind has its own definition, paired one-to-one with its Kind spec (LS-1); a definition needs identity and provenance (F-1) | LS-1; F-1 |
+| 3 | why independent identity | each Kind's meaning is a distinct governed subject with its own provenance and change path | F-1; §13.6e |
 | 4 | what persistent state | the defined meaning of one Kind; content is 068's | F-1; row 068 |
-| 5 | what lifecycle | the Registry definition lifecycle; Kind-specific detail is 108–110's | F-4 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | definition authority only: the owning model keeps its taxonomy, admission and Records; a `KIND-DEFINITION` is not admission | F-3; Artifact 061 §7 row 1; C-057-08 |
-| 7 | what references it | its Kind spec, by lockstep (LS-1) | LS-1 |
+| 7 | what references it | not established — LS-1 pairs each Kind spec with its `KIND-DEFINITION` as an authoring obligation, not a reference edge; any concrete reference is the family's | LS-1; Artifact 003 (`LS`) |
 | 8 | why not a field | *"A kind definition is not a constant in source code"* | F-1 |
 | 9 | why not a state | a definition, not a state value | F-6 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | Kind meaning and subtype meaning are separate source rows (§9.4) and separate Kinds (RMS §10.1) | §9.4; RMS §10.1 |
 | 12 | why not a projection | authoritative definition content | F-5 |
-| 13 | why not a Registry definition (§7 reading) | it is the one Kind whose subject is a Kind's meaning; LS-1 pairs every Kind with a `KIND-DEFINITION` specifically | LS-1; row 068 `Why` |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | LS-1 has no Registry partner (row 068 `Why`: *"LS-1 partner for all 49 Kinds"*); Kind meaning returns to convention | LS-1; F-1 |
 
 ## 10. SUBTYPE-DEFINITION
@@ -206,15 +213,15 @@ domain semantics of its Records that use the subtype.
 | 2 | what semantic question | what is true of this specialization of a Kind? | §9.4 *Subtype semantics* row |
 | 3 | why independent identity | each subtype definition is distinct and must be governed and provenanced (F-1) | F-1; row 070 |
 | 4 | what persistent state | the defined meaning of one subtype; content is 070's | row 070 |
-| 5 | what lifecycle | the Registry definition lifecycle; detail is 108–110's | F-4 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | Registry governs the definition; the owning model keeps the domain semantics of its Records using the subtype | F-3; Artifact 062 §4.3 |
-| 7 | what references it | Records of the owning model that use the subtype; concrete relations are the families' | §9.4; row 071 `→` |
+| 7 | what references it | not established — §9.4 makes instances and projections depend on subtype semantics — a dependency, not a Record reference; row 071's `→` is an unlock | §9.4; row 071 |
 | 8 | why not a field | a governed definition, not a field or constant | F-1; F-2 |
 | 9 | why not a state | a definition, not a state | F-6 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | it defines subtypes; it is not itself a specialization of `KIND-DEFINITION` — the sources keep the two rows and the two Kinds apart | §9.4; RMS §10.1 |
 | 12 | why not a projection | authoritative definition content | F-5 |
-| 13 | why not a Registry definition (§7 reading) | subtype meaning is a distinct source layer from Kind meaning; RMS lists a separate Kind for it | §9.4; RMS §10.1 |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | specializations have no governed home and are pushed up into Kinds — row 070's *"V asset forms are subtypes, not Kinds"* fails | row 070 `Why`; P-7 ladder (Artifact 057 §6) |
 
 ## 11. FIELD-DEFINITION
@@ -229,15 +236,15 @@ Registry FIELD-DEFINITION"*. Row 078: *"a field definition owns meaning and doma
 | 2 | what semantic question | what does this field mean, and over what domain? | row 078 `Done` |
 | 3 | why independent identity | each field definition is shared meaning that must be governed once, not restated per Record (F-1; §9.4's three documents that *"define the same term differently"*) | F-1; §9.4 |
 | 4 | what persistent state | one field's meaning and domain; content is 072's | row 078; row 072 |
-| 5 | what lifecycle | the Registry definition lifecycle; detail is 108–110's | F-4 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | Registry governs the definition; the model owns the values its Records carry | F-3; Artifact 061 §7 row 2 |
-| 7 | what references it | each model's field architecture, by lockstep (LS-2) | LS-2 |
+| 7 | what references it | not established — LS-2 pairs model field architecture with `FIELD-DEFINITION` (lockstep); whether that architecture carries a concrete reference is downstream | LS-2 |
 | 8 | why not a field | the definition of a field is not itself a field of the Records that carry it | §13.6e; F-2 |
 | 9 | why not a state | a definition, not a state | F-6 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
-| 11 | why not a subtype | its own Kind in RMS §10.1; not a specialization of another definition Kind | RMS §10.1 |
+| 11 | why not a subtype | a subtype specializes a Kind; a field definition specializes no Kind — it defines field meaning shared across kinds | §9.4 (RFS and *Subtype semantics* rows) |
 | 12 | why not a projection | authoritative definition content | F-5 |
-| 13 | why not a Registry definition (§7 reading) | field meaning is distinct from schema composition: *"a field definition owns meaning and domain"*, a schema *"composes field definitions"* | row 078; RMS PC-3 |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | LS-2 has no Registry partner (row 072 `Why`: *"LS-2 partner for all field architecture"*) | LS-2; row 072 |
 
 ## 12. SCHEMA-DEFINITION
@@ -254,13 +261,13 @@ implementation is not Registry runtime."* and *"Registry does not execute schema
 | 4 | what persistent state | the schema's defined content; detail is 076's | RMS §10.2; row 076 |
 | 5 | what lifecycle | RMS §10.2 names version and supersession; their rules are 108–110's | RMS §10.2; F-4 |
 | 6 | what authority | Registry defines the schema; the Records that conform stay with their model; no execution authority | F-3; Artifact 061 §7 row 8; RMS §10.2 |
-| 7 | what references it | model schemas (row 077 `→` *"all model schemas"*); concrete relations are the families' | row 077 |
+| 7 | what references it | not established — row 077's `→` *"all model schemas"* is an unlock; the *"validation references"* RMS §10.2 lists are references a schema defines, not references to it | row 077; RMS §10.2 |
 | 8 | why not a field | a schema composes fields and owns cardinality, requiredness and order; it is not one field | row 078 |
 | 9 | why not a state | a definition, not a state | F-6 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | its own Kind; not a specialization of `FIELD-DEFINITION` (row 078 separates them) | RMS §10.1; row 078 |
 | 12 | why not a projection | authoritative definition content; the runtime that executes it is not a Record | F-5; RMS §10.2 |
-| 13 | why not a Registry definition (§7 reading) | composition is a distinct subject from field meaning: *"Registry SCHEMA-DEFINITION and FIELD-DEFINITION overlap at the edges"*, resolved by row 078 without merging them | RMS PC-3; row 078 |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | schema meaning falls back into runtime or configuration — row 076's *"schema/runtime ambiguity"* reopens | RMS §10.2; row 076 `Why` |
 
 ## 13. RELATIONSHIP-TYPE-DEFINITION
@@ -276,15 +283,15 @@ owning role** declared"*.
 | 2 | what semantic question | what is this relationship type, and which role owns it? | §13.6e category table |
 | 3 | why independent identity | each type is shared meaning that models resolve against; it needs identity and provenance (F-1) | F-1; LS-3 |
 | 4 | what persistent state | the type's meaning, participant roles and owning role | row 079 |
-| 5 | what lifecycle | the Registry definition lifecycle; detail is 108–110's | F-4 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | definition authority only; the model decides whether it uses Relationship Records and owns the edges its Records hold | F-3; Artifact 061 §7 row 3; RMS §15 |
-| 7 | what references it | each model's relationships, by lockstep (LS-3) | LS-3 |
+| 7 | what references it | not established — LS-3 pairs each relationship with its type definition (lockstep); runtime relationship ownership stays with the model | LS-3; RMS §15 |
 | 8 | why not a field | a type definition with roles is a governed Record, not a field | F-1; F-2 |
 | 9 | why not a state | a definition, not a state | F-6 |
 | 10 | why not a relationship | it defines relationship types; it is not a relationship instance, and a Relationship Record is World's | F-7; RMS §15 |
 | 11 | why not a subtype | its own Kind in RMS §10.1 and its own §13.6e category | RMS §10.1; §13.6e |
 | 12 | why not a projection | authoritative definition content | F-5 |
-| 13 | why not a Registry definition (§7 reading) | relational meaning is its own §13.6e category (*Relational definition*), distinct from structural and semantic definitions | §13.6e |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | LS-3 has no Registry partner; owning roles go undeclared (row 079 `Why`: *"LS-3 partner"*) | LS-3; row 079 |
 
 ## 14. CONTROLLED-VOCABULARY
@@ -300,15 +307,15 @@ prohibited"*. Artifact 061 §7 row 9.
 | 2 | what semantic question | what does this value or term mean, for this Kind? | §13.6e; §9.4 |
 | 3 | why independent identity | value sets are per-kind and may diverge, so each set is a distinct governed object | §9.4; row 081 |
 | 4 | what persistent state | one vocabulary's values and their meaning; content is 081's | row 081 |
-| 5 | what lifecycle | the Registry definition lifecycle — *"extends by ordinary Registry change"*; detail is 108–110's | §13.6e; F-4 |
+| 5 | what lifecycle | participates in Registry's definition evolution — the roster *"extends by ordinary Registry change"*; per-Kind lifecycle detail is 108–110's | §13.6e; F-4 |
 | 6 | what authority | Registry governs the vocabulary; the model decides which value its Records carry | F-3; Artifact 061 §7 row 9 |
-| 7 | what references it | Kinds whose values it governs; for example the Visual asset forms (*"a Registry-governed subtype vocabulary"*, RMS §11.1; PC-4) | RMS §11.1; PC-4; row 082 `→` |
+| 7 | what references it | not established — PC-4 orders the Visual subtype vocabulary before V artifacts (sequencing); row 082's `→` is an unlock | PC-4; row 082 |
 | 8 | why not a field | a vocabulary is shared meaning that many Records' fields use; it is not one Record's field | §9.4; F-2 |
 | 9 | why not a state | it defines values; it is not a state of a Record, and `status` stays World-owned | F-6 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | its own Kind and its own §13.6e category (*Semantic definition*) | RMS §10.1; §13.6e |
 | 12 | why not a projection | authoritative definition content | F-5 |
-| 13 | why not a Registry definition (§7 reading) | value meaning is a distinct category from field meaning, which owns the field, not its per-kind values (§9.4: *"Shared structure, independent vocabulary"*) | §9.4; §13.6e |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | terms are defined in several places and diverge — *"Three different documents were therefore free to define the same term differently, and did."* — or are forced into one union | §9.4 |
 
 ## 15. IDENTITY-GRAMMAR
@@ -325,15 +332,15 @@ here (§13.9a; Artifact 034).
 | 2 | what semantic question | what grammar, partitions and kind codes does identity use? | §13.6e; §13.9a |
 | 3 | why independent identity | the grammar is governed as a Record, not hard-coded (row 085 `Why`) | row 085; F-1 |
 | 4 | what persistent state | the recorded grammar and the kind-code mapping | §13.6e; Artifact 061 §7 row 12 |
-| 5 | what lifecycle | the Registry definition lifecycle for the recorded grammar; the grammar itself is constitutional (AD-1) and is not changed here | F-4; §13.9a |
+| 5 | what lifecycle | the recorded grammar participates in Registry's definition evolution (F-4); the grammar itself is constitutional (AD-1) and is not changed here | F-4; §13.9a |
 | 6 | what authority | Registry records and governs the mapping; each model owns its Kind taxonomy and meaning — *"the kind taxonomy and the meaning of any kind are owned by the Record Model"* | §13.9a; Artifact 061 §7 row 12 |
-| 7 | what references it | the identity parser, which must enforce the recorded grammar (row 117 `Val`) | row 117 |
+| 7 | what references it | not established — row 117 binds the parser to the recorded grammar — enforcement, not a Record reference | row 117 |
 | 8 | why not a field | the grammar is shared by every Record's identity; it is not one Record's field | §13.9a |
 | 9 | why not a state | a definition, not a state | F-6 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | its own Kind and its own §13.6e category (*Identity definition*) | RMS §10.1; §13.6e |
 | 12 | why not a projection | authoritative definition content | F-5 |
-| 13 | why not a Registry definition (§7 reading) | the grammar and kind-code roster are their own §13.6e category, distinct from the meaning of any one Kind | §13.6e |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | the grammar is hard-coded, and record and code drift (row 117 `Why`: *"prevents grammar drift between record and code"*) | rows 085, 117 |
 
 ## 16. WSVR-INDICATOR-DEFINITION
@@ -349,15 +356,15 @@ Record per indicator."* §13.6e: *"An indicator definition is a Registry Record.
 | 2 | what semantic question | what does this indicator mean — type, unit, range, constraints, semantics? | RMS §10.7 |
 | 3 | why independent identity | meaning is held apart from the value: *"It is not an arbitrary property embedded in source code and not a field of the Record carrying the value."* | §13.6e |
 | 4 | what persistent state | type, unit, range, constraints and semantics; never values | RMS §10.7; row 086 |
-| 5 | what lifecycle | the Registry definition lifecycle; detail is 108–110's | F-4 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | Registry owns indicator meaning; World owns the current value | RMS §10.7; Artifact 061 §7 row 5 |
-| 7 | what references it | each indicator in WSV, *"reached from each indicator's registry reference"*; LS-5 | §13.10; LS-5 |
+| 7 | what references it | each indicator in WSV, from which WSVR is *"reached from each indicator's registry reference"* — the one incoming reference the sources state for a Registry Kind; LS-5 is lockstep and adds none | §13.10 |
 | 8 | why not a field | *"not a field of the Record carrying the value"* | §13.6e |
 | 9 | why not a state | the current value is World state; the definition is not | RMS §10.7; I-108 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | its own Kind; meaning and behaviour are kept apart from `SIMULATION-MODEL-DEFINITION` | RMS §10.1, §10.7 |
 | 12 | why not a projection | authoritative definition content | F-5 |
-| 13 | why not a Registry definition (§7 reading) | indicator meaning is its own §13.6e category; the WSV family holds meaning, behaviour and value in three places, each of which *"Never holds"* the others | §13.6e; §13.10 |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | indicator meaning moves into WSV — *"the state record has started becoming the model"* | §13.10 |
 
 ## 17. VALIDATION-RULE
@@ -372,15 +379,15 @@ condition"*; its `Why`: *"separate from 088 by constitution"*. LS-4. Artifact 06
 | 2 | what semantic question | how is a condition checked? | RMS §10.6; row 090 |
 | 3 | why independent identity | it is a separate tier from the condition it checks and from the runtime that runs it | RMS §10.6, §20 |
 | 4 | what persistent state | the defined checking mechanism; content is 090's | row 090 |
-| 5 | what lifecycle | the Registry definition lifecycle; detail is 108–110's | F-4 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | Registry owns the definition; runtime validators implement validation; each model owns its own semantic validation | RMS §10.6; Artifact 061 §7 row 4 |
-| 7 | what references it | LS-4 (constraint ↔ rule ↔ validator); row 113's binder resolves a constraint to a rule | LS-4; row 113 |
+| 7 | what references it | not established — LS-4 is lockstep; row 113's binder later establishes how a constraint resolves to a rule, and this contract grants no reference in either direction | LS-4; row 113 |
 | 8 | why not a field | a governed mechanism definition, not a field | F-1; F-2 |
 | 9 | why not a state | a definition, not a state | F-6 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | RMS §10.6 forbids collapsing it with the condition; it is its own Kind | RMS §10.6 |
 | 12 | why not a projection | authoritative definition content; implementation validation is runtime | F-5; RMS §20 |
-| 13 | why not a Registry definition (§7 reading) | it cannot be carried as a `CONSTRAINT-DEFINITION`: *"These are never collapsed."* | RMS §10.6 |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | the check collapses into the condition or into code — LS-4 loses a member | RMS §10.6; LS-4 |
 
 ## 18. CONSTRAINT-DEFINITION
@@ -394,15 +401,15 @@ condition"*; its `Why`: *"separate from 088 by constitution"*. LS-4. Artifact 06
 | 2 | what semantic question | what must hold? | RMS §10.6; §13.6e |
 | 3 | why independent identity | the condition is a separate tier from the mechanism that checks it | RMS §10.6, §20 |
 | 4 | what persistent state | the defined condition; content is 088's | row 088 |
-| 5 | what lifecycle | the Registry definition lifecycle; detail is 108–110's | F-4 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | Registry owns the definition; a constitutional invariant stays the Blueprint's tier | RMS §20; F-3 |
-| 7 | what references it | LS-4; row 113's binder (*"a constraint resolves to exactly one rule"*) | LS-4; row 113 |
+| 7 | what references it | not established — LS-4 is lockstep; row 113's binder (*"a constraint resolves to exactly one rule"*) establishes that relation later, not here | LS-4; row 113 |
 | 8 | why not a field | a governed condition, not a field | F-1; F-2 |
 | 9 | why not a state | a condition is not a state value | F-6 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | its own Kind; never collapsed with `VALIDATION-RULE` | RMS §10.6 |
 | 12 | why not a projection | authoritative definition content | F-5 |
-| 13 | why not a Registry definition (§7 reading) | it cannot be carried as a `VALIDATION-RULE`: *"These are never collapsed."* | RMS §10.6 |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | the condition collapses into the check (row 088 `Why`) | RMS §10.6; row 088 |
 
 ## 19. CAPABILITY-DEFINITION
@@ -417,17 +424,17 @@ implementation is runtime"*.
 |---|---|---|---|
 | 1 | what semantic object | the semantic contract of one capability | RMS §10.5 |
 | 2 | what semantic question | what is this capability's contract? | RMS §10.5; row 092 |
-| 3 | why independent identity | each capability has a definition distinct from its runtime implementation (LS-6) | RMS §10.5; LS-6 |
+| 3 | why independent identity | each capability's contract is a governed subject distinct from its runtime implementation, which is not a Record | RMS §10.5 |
 | 4 | what persistent state | the contract; never runtime state | RMS §10.5; row 092 |
-| 5 | what lifecycle | the Registry definition lifecycle; the implementation's lifecycle is runtime and not a Record's | F-4; RMS §10.5 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here; the implementation's lifecycle is runtime, not a Record's | F-4; RMS §10.5 |
 | 6 | what authority | Registry governs the contract; no runtime control and no modelhood | Artifact 061 §7 row 10; RMS §10.5, §19 |
-| 7 | what references it | its implementation, by lockstep (LS-6) | LS-6 |
+| 7 | what references it | not established — LS-6 pairs capability, definition and implementation (lockstep); the implementation is not a Record | LS-6; RMS §10.5 |
 | 8 | why not a field | a governed contract, not a field | F-1; F-2 |
 | 9 | why not a state | a contract, not a state | F-6 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
-| 11 | why not a subtype | its own Kind in RMS §10.1 | RMS §10.1 |
+| 11 | why not a subtype | a subtype specializes a Kind; a capability contract specializes no Kind and is its own definition subject | §9.4; RMS §10.5 |
 | 12 | why not a projection | authoritative definition content | F-5 |
-| 13 | why not a Registry definition (§7 reading) | no other Kind holds a capability's semantic contract; RMS adds it as a Kind distinct from the implementation it is paired with | RMS §10.1, §10.5 |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | the capability is defined only by its code, or recording it confers modelhood (row 092 `Why`: *"recording a capability must not confer modelhood"*) | RMS §10.5; row 092 |
 
 ## 20. DERIVATION-RULE
@@ -443,15 +450,15 @@ authoritative"*; its `Why`: *"the derived layer resolves against it"*. `DERIVATI
 | 2 | what semantic question | how is this derived state computed? | row 096 |
 | 3 | why independent identity | the derived layer resolves against it, so it must be a stable governed object | row 096 `Why`; F-1 |
 | 4 | what persistent state | the rule; never the derived output | row 096; F-5 |
-| 5 | what lifecycle | the Registry definition lifecycle; detail is 108–110's | F-4 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | Registry governs the rule; derived output is never authoritative | row 096; F-5 |
-| 7 | what references it | the derived layer (row 096 `Why`) | row 096 |
+| 7 | what references it | not established — row 096's *"the derived layer resolves against it"* states consumption, not a Record reference | row 096 |
 | 8 | why not a field | a governed rule, not a field | F-1; F-2 |
 | 9 | why not a state | a rule, not a state | F-6 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | its own Kind; §13.6e pairs it with `VALIDATION-RULE` in one category without merging them | RMS §10.1; §13.6e |
 | 12 | why not a projection | the rule is authoritative; what it computes is the projection | F-5; row 096 |
-| 13 | why not a Registry definition (§7 reading) | what may be recomputed is a distinct subject from what must hold or how it is checked | §13.6e; RMS §10.6 |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | the derived layer has nothing governed to resolve against (row 096 `Why`) | row 096 |
 
 ## 21. SIMULATION-MODEL-DEFINITION
@@ -467,15 +474,15 @@ Model**"*; its `Why`: *"simulation is definition + consumption"*.
 | 2 | what semantic question | how does an indicator behave — dependencies, equations, thresholds? | §13.6e |
 | 3 | why independent identity | behaviour is held apart from meaning and value; each model definition is governed (F-1) | §13.10; F-1 |
 | 4 | what persistent state | the defined behaviour; never values | §13.10; row 098 |
-| 5 | what lifecycle | the Registry definition lifecycle; detail is 108–110's | F-4 |
+| 5 | what lifecycle | participates in Registry's model-owned definition evolution (F-4); per-Kind lifecycle states, versioning and supersession are 108–110's and are not invented here | F-4 |
 | 6 | what authority | Registry governs the definition; World owns the values; no Simulation Record Model | RMS §10.7; Artifact 061 §7 row 11; row 098 |
-| 7 | what references it | WSV and WSVR by lockstep (LS-5); the simulation that consumes it | LS-5; row 098 `Why` |
+| 7 | what references it | not established — LS-5 is lockstep; the sources set an authority split — meaning, behaviour, value — not a reference graph | LS-5; §13.10 |
 | 8 | why not a field | a governed definition, not a field of WSV | §13.10 (*"Do not put model definitions into WSV"*) |
 | 9 | why not a state | behaviour, not state | §13.10 |
 | 10 | why not a relationship | a semantic object, not an edge | F-7 |
 | 11 | why not a subtype | its own Kind; kept apart from `WSVR-INDICATOR-DEFINITION` | RMS §10.1, §10.7 |
 | 12 | why not a projection | authoritative definition content; a simulation run is not a Registry Record | F-5; row 098 |
-| 13 | why not a Registry definition (§7 reading) | behaviour is its own §13.6e category (*Model definition*), distinct from indicator meaning | §13.6e; §13.10 |
+| 13 | why not a Registry definition | SOURCE GAP — the application of this question to a Kind whose Records are themselves Registry definitions is not resolved by current sources | RMS §13; Artifact 057 §5.1; SC-064-I |
 | 14 | what breaks if it is not first-class | model definitions go into WSV, or a Simulation Record Model is invented | §13.10; row 098 |
 
 ## 22. LS-1 and the Kind vs KIND-DEFINITION Boundary
@@ -486,34 +493,40 @@ describing `CHARACTER` are two objects. Classification, a roster entry, a `KIND-
 admission are four statements that this contract does not equate (Artifact 057 §4, C-057-08).
 Definition authority is not admission authority (Artifact 057 §9).
 
-**LS-1.** Row 064 carries `LS: LS-1` — *"every Kind spec ↔ its Registry KIND-DEFINITION.
-ATOMIC-PAIR."* The fourteen Registry Kinds are subject to it. This contract records that obligation
-and creates no `KIND-DEFINITION` Record, canonical file, schema or directory: row 064 is `T: doc`,
-`CD: no`, `Canon: n/a`, and the Roadmap assigns this artifact no Kind-definition set. The generic
-`KIND-DEFINITION` architecture is rows 068 and 069. How Registry's own definitions begin is RMS
-§10.4's: *"There is no circular self-definition requirement."* and *"Once Registry exists, its
-definitions follow normal Record semantics."* (SC-064-D).
+**LS-1 — an incomplete obligation.** Row 064 carries `LS: LS-1`. Roadmap PART III: *"every Kind
+spec ↔ its Registry KIND-DEFINITION. ATOMIC-PAIR."* Artifact 003: *"An ATOMIC-PAIR with one half
+landed is incomplete regardless of whether anything is blocked"*. The fourteen Registry Kinds are
+subject to LS-1, but no current source assigns the Registry half — fourteen concrete
+`KIND-DEFINITION` Records for the Registry's own Kinds — to any artifact. The other models each have
+one: rows 178, 257, 300, 345 and 364 are the World, E, P, V and I *Kind-Definition set*s. Rows 068
+and 069 are the generic `KIND-DEFINITION` specification and schema; their `Val` and `Done` do not
+assign the fourteen Records. This contract is `T: doc`, `CD: no`, `Canon: n/a`, and creates no
+`KIND-DEFINITION` Record, canonical file, schema or directory. **LS-1 is therefore recorded and not
+satisfied** (SC-064-D). How Registry's own definitions begin is RMS §10.4's: *"There is no circular
+self-definition requirement."* and *"Once Registry exists, its definitions follow normal Record
+semantics."*
 
 ## 23. Downstream Family Boundary
 
 RMS §10.1 closes the Registry taxonomy at fourteen. Rows 066–107 name further definition artifacts.
-**An artifact name is not evidence of a Kind**, and this contract infers no Kind from a filename,
-row name or the word *DEFINITION*:
+**An artifact name is not evidence of a Kind**, and neither is a row's `LS` field. This contract
+infers no Kind from a filename, row name, the word *DEFINITION* or `LS: LS-1`:
 
-| Row(s) | Artifact name | Kind status under this contract |
-|---|---|---|
-| 074–075 | `SEMANTIC-DEFINITION` | not a Registry Kind; representation under the fourteen not established |
-| 083–084 | `IDENTITY-DEFINITION` | not a Registry Kind; representation not established; row 085 records `IDENTITY-GRAMMAR` |
-| 094–095 | `DERIVATION-DEFINITION` | not a Registry Kind; representation not established; `DERIVATION-RULE` is rows 096–097 |
-| 101–102 | `ROLE-BOUNDARY-DEFINITION` | not a Registry Kind; representation not established |
-| 103–104 | `DEGRADED-MODE-DEFINITION` | not a Registry Kind; representation not established |
-| 105 | `DIAGNOSTIC-VOCABULARY` | not a Registry Kind; row 105 states its content as *"recorded as a controlled vocabulary"* |
-| 106 | `SIGNAL-CLASS` | not a Registry Kind; representation not stated beyond `H: 081` |
-| 107 | `READER-ARCHETYPE` | not a Registry Kind; row 107 states its content *"as a controlled vocabulary"* |
-| 078; 100 | schema–field boundary note; simulation 22-component contract | contracts on existing Kinds, not Kinds |
+| Row(s) | Artifact name | Row `LS` | Kind status under this contract |
+|---|---|---|---|
+| 074–075 | `SEMANTIC-DEFINITION` | LS-1 | not a Registry Kind; representation under the fourteen not established |
+| 083–084 | `IDENTITY-DEFINITION` | LS-1 | not a Registry Kind; representation not established; row 085 records `IDENTITY-GRAMMAR` |
+| 094–095 | `DERIVATION-DEFINITION` | LS-1 | not a Registry Kind; representation not established; `DERIVATION-RULE` is rows 096–097 |
+| 101–102 | `ROLE-BOUNDARY-DEFINITION` | LS-7 | not a Registry Kind; representation not established |
+| 103–104 | `DEGRADED-MODE-DEFINITION` | LS-8 | not a Registry Kind; representation not established |
+| 105 | `DIAGNOSTIC-VOCABULARY` | LS-1 | not a Registry Kind; row 105 states its content as *"recorded as a controlled vocabulary"* |
+| 106 | `SIGNAL-CLASS` | LS-1 | not a Registry Kind; representation not stated beyond `H: 081` |
+| 107 | `READER-ARCHETYPE` | LS-1 | not a Registry Kind; row 107 states its content *"as a controlled vocabulary"* |
+| 078; 100 | schema–field boundary note; simulation 22-component contract | LS-1 | contracts on existing Kinds, not Kinds |
 
 Where a row's representation under the fourteen is not established, that row resolves its own
-representation; this contract invents no mapping (SC-064-E).
+representation; this contract invents no mapping (SC-064-E). Non-roster rows carrying `LS: LS-1`
+are a Roadmap decomposition condition, recorded at SC-064-J and not repaired here.
 
 ## 24. Prohibited Inferences
 
@@ -547,6 +560,15 @@ representation; this contract invents no mapping (SC-064-E).
 | 26 | This contract must place every Registry Kind in an Artifact 062 layer. | SC-064-F |
 | 27 | LS-1 authorizes this contract to create unlisted canonical files. | §22; SC-064-D |
 | 28 | The fourteen Registry Kinds are a universal Kind taxonomy that W, E, P, V or I inherit. | RMS §4 nine prohibitions |
+| 29 | Lockstep is a reference edge. | §7; Artifact 003 (`LS`) |
+| 30 | A Roadmap `→` is a semantic or Record reference. | §7 |
+| 31 | A downstream consumer thereby references a Registry definition Record. | §7 |
+| 32 | An admissible Registry target category creates a concrete reference relation. | Artifact 063 RB-5 |
+| 33 | Naming a declared Record Model is referencing its `MODEL-DEFINITION`. | §8 Q7; Artifact 063 §8.2 |
+| 34 | This contract may rewrite RMS §13's question 13 for Registry Kinds. | §7; SC-064-I |
+| 35 | A half-landed LS-1 pair is complete. | Artifact 003; SC-064-D |
+| 36 | `LS: LS-1` on a non-roster row makes that row's subject a Kind. | SC-064-J |
+| 37 | Every row of 066–107 must define fields, references, constraints and cardinality. | §27 |
 
 ## 25. Source Conditions and Gaps
 
@@ -560,10 +582,10 @@ historical state, not a parallel taxonomy (§5).
 ### SC-064-B — sufficiency of an answer
 
 RMS §13 and Artifact 057 require an answer to all fourteen questions and define no rule for judging
-one (057 §5.3). **Treatment:** all fourteen are answered from source for every Kind; no score or
-threshold is invented. Where the sources answer a question for Registry definitions as a whole —
-chiefly lifecycle (F-4) — the answer says so, and Kind-specific detail is left to 108–110 and the
-family rows.
+one (057 §5.3). **Treatment:** no score or threshold is invented. Questions 1–12 and 14 are answered
+from source for every Kind; question 13 is an exposed gap (SC-064-I). Where the sources answer a
+question for Registry definitions as a whole — chiefly lifecycle (F-4) — the answer says so, and
+Kind-specific detail is left to 108–110 and the family rows.
 
 ### SC-064-C — non-World admission ceremony
 
@@ -572,13 +594,16 @@ Artifact 057 §8: no source defines the ceremony by which a Kind joins a closed 
 states how a new Kind is added — *"each through its own ceremony, never through a generic
 abstraction"*.
 
-### SC-064-D — LS-1 concrete Registry pairs
+### SC-064-D — Registry taxonomy LS-1 partner gap — BLOCKING
 
-Row 064 carries LS-1; Artifact 057: every Kind has a definition in lockstep. The Roadmap gives this
-artifact no Registry Kind-definition set of fourteen Records. **Treatment:** the obligation is
-recorded; no file or Record is created. Which artifact authors the fourteen concrete
-`KIND-DEFINITION` Records for the Registry's own Kinds is not established by current sources and is
-assigned to none here.
+| | |
+|---|---|
+| **Source A** | Row 064 carries `LS: LS-1`. |
+| **Source B** | Roadmap PART III: LS-1 is *"every Kind spec ↔ its Registry KIND-DEFINITION. ATOMIC-PAIR."* |
+| **Source C** | Artifact 003: *"An ATOMIC-PAIR with one half landed is incomplete regardless of whether anything is blocked"*. |
+| **Observed decomposition** | This contract is documentation and creates no Records. Rows 068–069 define the `KIND-DEFINITION` family; their `Val` and `Done` do not assign the fourteen concrete Registry partner Records. Rows 178, 257, 300, 345 and 364 assign the partner sets for W, E, P, V and I; no row does so for R. |
+| **Treatment** | The obligation is recorded; the missing partners are not fabricated. Until the source or build decomposition identifies and lands them, LS-1 for the Registry taxonomy is not complete. |
+| **Route** | ROADMAP ISSUE — outside this artifact. |
 
 ### SC-064-E — downstream *DEFINITION* artifacts and unmapped semantics
 
@@ -595,9 +620,10 @@ artifact. **Treatment:** this contract does not place them.
 
 ### SC-064-G — LS-1's count
 
-LS-1 is stated as *"49 pairs"*; the Roadmap does not break the count down by model. This contract
-derives nothing from the number and does not decide whether the fourteen Registry Kinds are counted
-in it. The fourteen are subject to LS-1 by row 064's own `LS` field.
+LS-1 is stated as *"49 pairs"*; the Roadmap does not break the count down by model. The partner sets
+it does assign — rows 178, 257, 300, 345 and 364 — name seven, seven, thirteen, three and five
+`KIND-DEFINITION`s: thirty-five. That forty-nine less thirty-five is fourteen is an observation, not
+a source statement; it is consistent with SC-064-D and decides nothing here.
 
 ### SC-064-H — I-106 and the RMS closure
 
@@ -607,12 +633,28 @@ whether the RMS closures are the declarations I-106 anticipates. **Treatment:** 
 the current roster as RMS §10.1 fixes it and does not decide that question; any future change is row
 459's to govern.
 
-### SC-064-I — question 13 for Registry Kinds
+### SC-064-I — RMS §13 question 13 on Registry's own Kinds — BLOCKING
 
-RMS §13 asks every Kind *why not a Registry definition*. For Registry Kinds the question is read as:
-why this subject needs its own Kind rather than being carried as Records of another Registry Kind.
-**This is a reading, recorded as one**; Artifact 057 does not interpret the question. Each answer
-cites the source separation it rests on.
+RMS §13 binds every Kind to answer *why not a Registry definition*, and Artifact 057 §5.1 carries
+the question unchanged to the Registry (C-057-01). For a Kind whose Records are themselves Registry
+definitions, the literal question is self-referential, and no governing source states a
+Registry-specific application. **Treatment:** this contract does not rewrite the question. The
+reading an earlier draft used — why a subject needs its own Kind rather than being carried as
+Records of another Registry Kind — is an architectural interpretation, not a source fact, and is not
+used to declare question 13 answered. Each Kind's question-13 row records the gap; the per-Kind
+source separations remain stated where they belong, chiefly under question 11. **Route:** HUMAN
+DECISION — a governing source or authorial architecture decision is required.
+
+### SC-064-J — non-roster rows carrying LS-1
+
+| | |
+|---|---|
+| **Source A** | RMS §10.1 freezes the Registry at exactly fourteen Kinds. |
+| **Source B** | Roadmap PART III defines LS-1 as Kind ↔ `KIND-DEFINITION`. |
+| **Source C** | Rows whose subjects are not RMS §10.1 Kinds carry `LS: LS-1`: 074–075 `SEMANTIC-DEFINITION`, 078 schema–field boundary note, 083–084 `IDENTITY-DEFINITION`, 094–095 `DERIVATION-DEFINITION`, 100 simulation 22-component contract, 105 `DIAGNOSTIC-VOCABULARY`, 106 `SIGNAL-CLASS`, 107 `READER-ARCHETYPE`. Rows 101–102 and 103–104 carry LS-7 and LS-8 respectively, not LS-1. |
+| **Conflict** | Their LS-1 metadata cannot be read as evidence that their subjects are Registry Kinds without contradicting RMS §10.1. |
+| **Treatment** | The fourteen-Kind taxonomy stands; RMS §10.1 governs the taxonomy over Roadmap decomposition. These rows are not promoted to Kinds, and their metadata is neither repaired nor reinterpreted here. What LS-1 means on them requires Roadmap clarification outside this artifact. |
+| **Route** | ROADMAP ISSUE — outside this artifact; not blocking the roster. |
 
 ## 26. Conformance Conditions
 
@@ -622,8 +664,8 @@ cites the source separation it rests on.
 | **C-064-02** | All fourteen names exactly match RMS §10.1, in its order. | RMS §10.1 |
 | **C-064-03** | No fifteenth Kind is introduced. | RMS §10.1 |
 | **C-064-04** | `MODEL-DEFINITION` is present and not treated as OPEN. | RMS §10.1, §27 |
-| **C-064-05** | Each of the fourteen has an admission rationale. | row 064 `Val` |
-| **C-064-06** | Each rationale answers all fourteen questions of RMS §13 / Artifact 057. | RMS §13; C-057-01 |
+| **C-064-05** | Each of the fourteen has an admission-rationale table covering all fourteen questions. | row 064 `Val` |
+| **C-064-06** | Questions 1–12 and 14 are answered from source for every Kind; question 13 is not claimed source-resolved for any Registry Kind unless a governing source supplies its Registry-specific application. | RMS §13; C-057-01; SC-064-I |
 | **C-064-07** | No admission score or sufficiency threshold is invented. | Artifact 057 §5.3 |
 | **C-064-08** | No non-World admission ceremony is created. | Artifact 057 §8 |
 | **C-064-09** | A Kind is not its `KIND-DEFINITION` Record. | Artifact 057 §4 |
@@ -650,17 +692,25 @@ cites the source separation it rests on.
 | **C-064-30** | None of 108–117's evolution or implementation work is implemented. | rows 108–117 |
 | **C-064-31** | No future Kind-extension ceremony owned by 459 is implemented. | row 459 |
 | **C-064-32** | Only `docs/models/registry/kinds.md` is changed by this artifact. | row 064 |
-| **C-064-33** | Roadmap `Val` is satisfied. | §28 |
-| **C-064-34** | Roadmap `Done` is satisfied. | §28 |
+| **C-064-33** | The roster half of `Val` — *"exactly fourteen Kinds"* — is satisfied; the rationale half is claimed no further than §28 states. | §28 |
+| **C-064-34** | Roadmap `Done` — *"fourteen"* — is satisfied. | §28 |
 | **C-064-35** | The fourteen Registry Kinds are not a universal Kind taxonomy, and no envelope field is added. | RMS §4 |
+| **C-064-36** | A question-7 answer asserts a concrete reference only where a source establishes that reference relation. | §7 |
+| **C-064-37** | Lockstep is not counted as reference evidence. | §7; Artifact 003 (`LS`) |
+| **C-064-38** | A Roadmap `→` unlock is not counted as reference evidence. | §7 |
+| **C-064-39** | Naming a declared Record Model is not treated as referencing its `MODEL-DEFINITION`. | §8; Artifact 063 §8.2 |
+| **C-064-40** | RMS §13's question 13 is not rewritten; its gap is exposed and not declared resolved. | SC-064-I |
+| **C-064-41** | LS-1 completion is not claimed unless the concrete partner is source-assigned and landed. | SC-064-D |
+| **C-064-42** | This contract does not enlarge any 066–107 row's own `Val` or `Done`. | §27 |
+| **C-064-43** | Non-roster rows carrying LS-1 metadata are not promoted into Registry Kinds. | SC-064-J |
 
 ## 27. Downstream Handoff
 
 | Artifact | May assume from 064 | Must still define |
 |---|---|---|
 | **065** governance (`H: 064`; row 064's `→` does not name it) | the frozen fourteen-Kind taxonomy | who may propose, approve, deprecate a definition |
-| **066–107** families | the roster, each Kind's responsibility boundary and rationale, the no-fifteenth-Kind rule, Kind ≠ `KIND-DEFINITION`, LS-1 | each family's specification and schema: fields, references, versioning, constraints, cardinality; the representation of rows §23 lists |
-| **108–110** evolution | that every Kind's lifecycle is the Registry definition lifecycle (F-4) | evolution, versioning, supersession and deprecation |
+| **066–107** definition-family rows | the exact fourteen-Kind taxonomy; the source-established responsibility boundary of the relevant Kind; Kind ≠ `KIND-DEFINITION`; the no-fifteenth-Kind rule; the lockstep constraints the Roadmap actually assigns each row | exactly the specification or schema responsibilities, `Val` and `Done` the Roadmap and governing sources assign each row. This contract adds no common checklist of fields, references, versions, cardinality or constraints. |
+| **108–110** evolution | that Registry definitions share a governed change path and temporal account (F-4) | the evolution, versioning, supersession and deprecation model |
 | **459** extensibility | that the current Registry taxonomy is exactly fourteen | how a new Kind is added |
 
 ## 28. Roadmap Completion Trace
@@ -668,14 +718,15 @@ cites the source separation it rests on.
 | Row 064 | Status | Where it is met |
 |---|---|---|
 | `Val`: *"exactly fourteen Kinds"* | **SATISFIED** | §6; C-064-01 to C-064-04 |
-| `Val`: *"each with admission rationale"* | **SATISFIED** — fourteen Kinds × fourteen questions | §8–§21; C-064-05, C-064-06 |
+| `Val`: *"each with admission rationale"* | **NOT FULLY SATISFIED — BLOCKED AT SOURCE.** All fourteen questions are represented for all fourteen Kinds (196 rows); questions 1–12 and 14 are source-grounded (182 rows); question 13 lacks a governing Registry-specific application (14 rows) | §8–§21; SC-064-I; C-064-05, C-064-06 |
 | `Done`: *"fourteen"* | **SATISFIED** | §6 |
 | `H: 060,057` | **SATISFIED** — sovereignty and the admission test consumed unchanged | §2, §7, §22 |
-| `LS: LS-1` | **RECORDED** — obligation stated; no Record created | §22; SC-064-D |
-| `→ 066–107` | **SATISFIED** — handoff stated | §27 |
+| `LS: LS-1` | **NOT SATISFIED — SOURCE-DECOMPOSITION BLOCKER.** The obligation is recorded; the concrete Registry-Kind partner Records are not assigned by current sources | §22; SC-064-D |
+| `→ 066–107` | **SATISFIED** — handoff stated without enlarging any row | §27 |
 
 No schema created. No Registry data created. No governance implemented. No future extension
-ceremony defined. No fifteenth Kind admitted.
+ceremony defined. No fifteenth Kind admitted. **This artifact is not freeze-ready** until SC-064-D
+and SC-064-I are resolved by the governing sources.
 
 ---
 
