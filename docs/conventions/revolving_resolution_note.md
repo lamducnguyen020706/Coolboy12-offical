@@ -78,7 +78,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 14** — CONFLICT-A · CONFLICT-B · CONFLICT-C · CONFLICT-D · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K · GAP-L.
+**Primary resolution entries: 15** — CONFLICT-A · CONFLICT-B · CONFLICT-C · CONFLICT-D · CONFLICT-E · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K · GAP-L.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -91,6 +91,7 @@ separate packaging decisions.
 | **CONFLICT-B** | 25 vs 27 metadata fields | use the 25 explicitly enumerated fields | **RESOLVED FOR BUILD** | None |
 | **CONFLICT-C** | Blueprint/RMS state **five** SoT classes (§29.6a); Roadmap PART VII states **six**, adding DEV-ENV | recorded, not resolved — the two tables classify different objects (data classes vs repository artifact classes); DEV-ENV is Roadmap-only | **RECORDED — UNRESOLVED AT SOURCE** | None |
 | **CONFLICT-D** | Artifact 022's unconditional `OPAQUE` deny cannot coexist with Artifact 024 registering it at `PreToolUse` across Bash | Route 3 approved by the author: 022 unfrozen under control, decision axis moved from command provability to canonical reachability, re-frozen | **RESOLVED FOR BUILD · AUTHORIAL RULING — SOURCE UNCHANGED** | None |
+| **CONFLICT-E** | Registry self-hosting: LS-1 requires a concrete `KIND-DEFINITION` partner for each of the Registry's fourteen Kinds, but no row owned them; RMS §13 question 13 has no stated application to Registry candidates | AD-LS1-R-BOOTSTRAP (Artifact 003 ordering exception; Roadmap rows 074–075 repurposed, §0.7) and AD-057-R13 (Artifact 057 §5.4) | **RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED** | None |
 | **GAP-C** | missing requirement register | build not blocked; requirement text not verified | **NON-BLOCKING — UNVERIFIED** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
 | **GAP-E.3** | unsourced pyproject values | implementation-level resolution for Python requirement, backend, version | **RESOLVED FOR BUILD** | None |
@@ -99,7 +100,7 @@ separate packaging decisions.
 | **GAP-H** | no linter or formatter named by any source | `ruff` selected by author ruling, one tool for both roles | **RESOLVED FOR BUILD** | None |
 | **GAP-I** | no editor named by any source | EditorConfig chosen as the editor-agnostic mechanism; no editor made a project requirement | **RESOLVED FOR BUILD** | None |
 | **GAP-J** | Artifact 010's exit condition already satisfied by Artifact 001 | roadmap overlap recorded; 010 verified rather than rebuilt, zero repository delta | **RESOLVED FOR BUILD** | None |
-| **GAP-K** | no source names a repository location for the three source documents themselves | author-decided: `docs/sources/`, exact unmodified copies, MD5-verified | **RESOLVED FOR BUILD** | None |
+| **GAP-K** | no source names a repository location for the three source documents themselves | author-decided: `docs/sources/`, exact copies, MD5-verified; the Roadmap copy now carries the author revision of its §0.7 (CONFLICT-E) | **RESOLVED FOR BUILD** | None |
 | **GAP-D.1** *(sub-resolution of GAP-D)* | purpose-file **name case** — an instruction said `purpose.md`, the tree holds `PURPOSE.md` | author ruled: keep `PURPOSE.md`; no file renamed, none existed to rename | **RESOLVED** | None |
 
 ---
@@ -337,6 +338,43 @@ amended; the implementation was brought into line with it.
 
 **Status:** RESOLVED FOR BUILD · AUTHORIAL RULING — SOURCE UNCHANGED · **Constitutional change:**
 NONE
+
+---
+
+### CONFLICT-E — Registry Self-Hosting: LS-1 Order and Question 13
+
+**The finding.** Two blockers surfaced while building Artifact 064 (SC-064-D, SC-064-I).
+
+1. Roadmap PART III LS-1 pairs *"every Kind spec ↔ its Registry KIND-DEFINITION"* as an
+   ATOMIC-PAIR, and Artifact 003 holds a half-landed pair incomplete. Every other model has a
+   concrete Kind-Definition set (rows 178, 257, 300, 345, 364); the Registry had none, and rows
+   074–075 held a SEMANTIC-DEFINITION family that matches no RMS §10.1 Kind. RMS §10.4 says
+   *"There is no circular self-definition requirement."* but no row ordered the Registry's own
+   pairs.
+2. RMS §13 asks every Kind *why not a Registry definition*. For a Kind whose Records are
+   Registry definitions, no source states how the question applies.
+
+**AUTHOR-DECIDED.** The author authorised the minimum bounded decisions to resolve both, recorded
+in the layers that own them, never attributed to the RMS or the Blueprint:
+
+- **AD-LS1-R-BOOTSTRAP** — Artifact 003 gains a single ordering exception for the Registry's own
+  fourteen LS-1 pairs: 064 may finalise first; the partners are not waived. Roadmap row 074 now
+  specifies the Registry self-definition set and row 075 (`canon/registry/registry_kinds/`) holds
+  the fourteen `KIND-DEFINITION`s; rows 068 and 069 are reworded; the Roadmap records the revision
+  in its §0.7. Row 075 must land, and row 123 pass, before exit-P3 and G-REG.
+- **AD-057-R13** — Artifact 057 §5.4 applies question 13 to a Registry candidate as reducibility
+  to an already-admitted Registry Kind. Question 13's text in §5.1 is unchanged; the application
+  adds no question and no Kind and is not a sufficiency rule.
+
+**Also recorded.** LS-1's *"49 pairs"* counts actual Kinds (W 7 · E 7 · P 13 · R 14 · V 3 · I 5);
+RMS §13's *"W 7+1"* adds the WSV singleton, which is not a Kind. CONFLICT-A (P 13 / VERDICT) is not
+reopened.
+
+**What is not claimed.** Row 075's fourteen Records do not yet exist. This entry is audit trail
+only; the decisions live in Artifacts 003 and 057 and the Roadmap.
+
+**Status:** RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED · **Constitutional
+change:** NONE
 
 ---
 
@@ -861,6 +899,10 @@ Record.
 stable in-repository path. If any of the three source documents is revised, the superseding copy
 replaces the file here (`Delete: supersede only`) and this entry should be updated to name the
 new revision.
+
+**Revision recorded.** The Roadmap copy is no longer byte-identical to the original upload. It
+carries one author revision, AD-LS1-R-BOOTSTRAP (CONFLICT-E): a new §0.7, rows 068, 069, 074 and
+075, and a note on the LS-1 line. The Blueprint and RMS copies are unchanged.
 
 **Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
 

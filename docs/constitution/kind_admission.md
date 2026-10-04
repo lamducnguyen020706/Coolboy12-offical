@@ -18,8 +18,10 @@ For World it binds §13.11's requirements and leaves their relation to RMS §13 
 below). It states the ladder in both directions. Row 057's reason: *"every Kind must justify
 itself"*.
 
-**This contract adds no architecture.** Every rule restates RMS §6.1 and §13, Blueprint P-7, P-25,
-§13.6, §13.6e, §13.7, §13.11 and §29.4, I-71, I-84 and I-106, and Artifact 044.
+**This contract adds no architecture**, with one recorded exception: the `AUTHOR-DECIDED`
+application of question 13 to Registry candidates (§5.4), which applies an existing question and
+adds none. Every other rule restates RMS §6.1 and §13, Blueprint P-7, P-25, §13.6, §13.6e, §13.7,
+§13.11 and §29.4, I-71, I-84 and I-106, and Artifact 044.
 
 ## 2. Constitutional Status
 
@@ -118,6 +120,35 @@ runtime object.
 RMS §13 requires an answer to each question and states no rule for judging one. This contract adds
 none. For World, §13.11 supplies eight yes/no questions and a refusal rule (§7 below); for the
 other models, judging an answer is the model's own design work (§8 below).
+
+### 5.4 AUTHOR-DECIDED — Registry application of question 13 (AD-057-R13)
+
+**Source fact.** RMS §13 asks every Kind *why not a Registry definition*, and §5.1 carries the
+question unchanged. RMS states no Registry-specific application of it.
+
+**The difficulty.** For a candidate Kind in W, E, P, V or I, the question has an ordinary
+alternative: the semantic object could remain a Registry definition or classification rather than
+become a Kind of that model. For a candidate Kind in the Registry, every candidate Record is
+already a Registry definition, so the literal wording is self-referential.
+
+**Authorial resolution.** The literal question is unchanged. Its application is model-relative:
+
+- **Outside the Registry,** question 13 asks whether the semantic object can remain a Registry
+  definition or classification rather than become a Kind of that Record Model.
+- **Inside the Registry only,** question 13 is applied as a reducibility test against the
+  already-admitted Registry Kinds: *can this semantic object be represented faithfully as a
+  Record of an existing Registry Kind, rather than requiring its own Registry Kind?* If yes, the
+  candidate fails question 13 and remains content under that existing Kind. If no existing
+  Registry Kind can carry it without collapsing a source-established distinction — in identity,
+  semantic question, authority, lifecycle, reference role or persistent semantic state —
+  question 13 is satisfied.
+
+**Bounds.** This is an `AUTHOR-DECIDED` application, recorded here because this contract binds RMS
+§13 to every Kind artifact; it is not stated by RMS or the Blueprint, and is not attributed to
+them. It adds no question, changes no wording, creates no Kind, and is not a rule for judging an
+answer sufficient (§5.3 still holds). Being listed in a roster does not satisfy it: a Registry
+answer must name the existing Kind it could reduce to and the distinction that reduction would
+lose. It is an anti-bloat test, not a licence to admit every distinct concept.
 
 ## 6. The Ladder — Both Directions
 
@@ -223,7 +254,8 @@ What the sources establish:
 - **Every Kind has a definition, in lockstep.** Roadmap LS-1: *"every Kind spec ↔ its Registry
   KIND-DEFINITION"*, an atomic pair.
 - **Registry's own Kind taxonomy depends on this test.** Row 064: *"exactly fourteen Kinds, each
-  with admission rationale"*, with `H: 060,057`.
+  with admission rationale"*, with `H: 060,057`. Question 13 applies to Registry candidates as
+  §5.4 states.
 - **No external component defines a kind.** I-84: *"No external component holds canonical
   semantics, defines a kind, owns a relationship, adjudicates a mutation, or is the only place a
   canonical fact exists."* I-84 governs external components; it assigns neither definition
@@ -302,6 +334,12 @@ also bind World is unresolved by the current sources (§7), and no condition dec
 | **C-057-10** | Admission decides no package composition, and this contract establishes no general cross-model dependency or reference legality, which Artifact 058 governs. | Blueprint §13.6d; Roadmap rows 056, 058 |
 | **C-057-11** | *Withdrawn.* It stated that the source conditions and gaps recorded above are left unresolved. That describes the sources, not a construction, so it is not a condition of this contract; §5.3, §6, §7 and §8 still record them. The ID is not reused. | §5.3, §6, §7, §8 above |
 | **C-057-12** | No invariant is minted or amended. | Blueprint §36, §10.4; P-28; I-15 |
+| **C-057-13** | RMS §13's question 13 remains textually unchanged in §5.1. | RMS §13; §5.4 |
+| **C-057-14** | For a W, E, P, V or I candidate, question 13 keeps its ordinary Registry-definition alternative. | §5.4 |
+| **C-057-15** | For a Registry candidate, question 13 is evaluated as reducibility to an already-admitted Registry Kind. | §5.4 |
+| **C-057-16** | The Registry application is recorded as `AUTHOR-DECIDED` and is not attributed to RMS or the Blueprint. | §5.4 |
+| **C-057-17** | A Registry candidate fails question 13 if an existing Registry Kind can carry the semantic object without collapsing a source-established distinction; roster membership alone does not satisfy it. | §5.4 |
+| **C-057-18** | The Registry application creates no Kind and no admission question, and is not a sufficiency rule. | §5.3, §5.4 |
 
 Conformance to this contract is not conformance to the Record System: the other P2 contracts
 carry their own conditions.
@@ -350,6 +388,7 @@ not an instance-bearing Kind"* (RMS §7). Passing some questions is not passing 
 | Issue's model-specific criterion | RMS §12.1 |
 | Registry defines a kind; the model owns its Records | Blueprint §13.6e; I-105 |
 | Kind ↔ KIND-DEFINITION lockstep | Roadmap LS-1 |
+| Question 13's Registry application | `AUTHOR-DECIDED` (§5.4); not a source statement |
 | No external component defines a kind | I-84 |
 | No universal Kind taxonomy | RMS §4; Blueprint §13.7a |
 | Classification is not admission | Artifact 044 |
@@ -378,6 +417,9 @@ not an instance-bearing Kind"* (RMS §7). Passing some questions is not passing 
 | `Val`: *"ladder both directions"* | §6; C-057-05 |
 | `Done`: *"test binding"* | §5.2; C-057-01 |
 | `→`: *"every Kind artifact"* | §5.2; §16 |
+
+The Registry application of question 13 (§5.4) clarifies how one question is applied; the test
+still has fourteen questions, and `Val` is unchanged.
 
 Roadmap row 057 establishes the acceptance target above; this contract preserves it unchanged and
 does not restate it as achieved. Current conformance is declared only as far as the sources permit:

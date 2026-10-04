@@ -381,7 +381,8 @@ The lockstep systems are exactly these eight:
 > ```
 >
 > A lockstep partner is not a predecessor. Landing one half of an ATOMIC-PAIR is a defect even
-> when nothing is blocked by it.
+> when nothing is blocked by it. The single ordering exception — the Registry's own fourteen LS-1
+> pairs — is stated under *Lockstep Dependencies* below (AD-LS1-R-BOOTSTRAP).
 
 **Do not create new lockstep groups.** Membership comes from the Roadmap's actual declaration
 on the entry, not from an author's judgement that two artifacts look related. The following
@@ -556,6 +557,27 @@ ATOMIC-TRIPLE with two thirds landed is likewise incomplete.
 The reason locksteps exist is custody: a Kind and its KIND-DEFINITION have different owners,
 and shipping one without the other leaves a semantic without its definition or a definition
 without its semantic.
+
+#### Registry LS-1 self-hosting exception — AUTHOR-DECIDED (AD-LS1-R-BOOTSTRAP)
+
+The default same-cycle rule above remains binding. The sole ordering exception is the
+Registry's own fourteen Kind ↔ KIND-DEFINITION pairs. Their generic KIND-DEFINITION mechanism
+(068–069) cannot exist before the taxonomy that makes KIND-DEFINITION meaningful (064), and RMS
+§10.4 rejects a circular self-definition requirement: *"There is no circular self-definition
+requirement."* For those fourteen pairs only:
+
+1. Artifact 064 may finalise the taxonomy half before the concrete partners land.
+2. The partner obligation is **not waived**. The concrete Registry Kind-Definition set (075,
+   specified by 074) lands after 068–069 exist and before exit-P3 and G-REG.
+3. Registry lockstep validation (123) rejects a missing or mismatched partner, and P3
+   conformance (124) cannot pass without it.
+
+No other LS-1 pair, and no other lockstep, receives this exception. It changes order only; it
+does not allow lockstep partners to land whenever convenient.
+
+**LS-1 count.** The Roadmap's *"49 pairs"* counts actual Kinds — W 7 · E 7 · P 13 · R 14 · V 3 ·
+I 5. The "+1" in RMS §13's W 7+1 is the WSV singleton, which is not a Kind and has no
+KIND-DEFINITION pair. This is a build reconciliation, not a taxonomy rule.
 
 ### Gate Dependencies — `G`
 A named barrier that must be passed before the artifact may legally proceed. Gates are not
