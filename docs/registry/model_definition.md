@@ -37,8 +37,10 @@ Artifact 067 — encodes this semantic contract as a schema
 `Own: R` · `RM: R` · `T: doc` · `R: ARCH` · `SoT: AUTHORITATIVE` about the `MODEL-DEFINITION`
 family · `Auth: defining` · `Canon: canonical-about-meaning` · `CD: yes`. This document is a family
 specification. It is **not** a `MODEL-DEFINITION` Record, mints no Registry data, and writes nothing
-under `canon/` (SC-066-H). Where it differs from the Master Blueprint, the Record Model System, or
-the OS File Build Roadmap, **those sources are right and this document is wrong.**
+under `canon/` (SC-066-H). The `Canon` and `CD` values apply to Artifact 066 as declared metadata;
+they do not change its `T: doc` artifact type into a Registry Record. Where it differs from the
+Master Blueprint, the Record Model System, or the OS File Build Roadmap, **those sources are right
+and this document is wrong.**
 
 `Req: RR-16` is reproduced from row 066. The requirement register is not in the supplied source
 set, so the ID is carried forward unverified and no requirement text is stated for it (GAP-C;
@@ -69,7 +71,7 @@ Artifact 063; the authority and ownership the family never acquires; the handoff
 | concrete definition-dependency rules | 111 |
 | reference validator, kernel, resolution service | 112, 114, 115 |
 | each model's Kind taxonomy, lifecycle, packaging and other owned semantics | each model's own artifacts |
-| how a new Kind, or anything else, is added | 459 |
+| how a new Kind, field, definition, simulation model, visual subtype, or publication structure is added | 459 |
 
 No Record Model, partition, Kind, field, schema, Record, fixture, test or runtime behaviour is
 created.
@@ -163,7 +165,7 @@ for World does not mean Registry created World."*).
 | **MD-1** | **One definition, one declared model subject.** A `MODEL-DEFINITION` defines governed meaning about exactly one declared sovereign Record Model. Today that subject is one of W, E, P, R, V, I. How the subject is encoded is 067's. | 064 §8 row 1; RMS §2; synthesis |
 | **MD-2** | **The subject is declared first.** The definition causes no declaration. The order is *declared sovereign Record Model → a `MODEL-DEFINITION` may define its governed meaning*, never *`MODEL-DEFINITION` exists → a Record Model is created*. | RMS §2; Artifact 063 §8.2 |
 | **MD-3** | **Governs; never instantiates.** The definition is semantic. It is not a model object, a runtime model, a partition, a model factory, a registration service or an instance container, and carries no executable behaviour. | RMS §6.1; RMS §10; Blueprint §9.4 |
-| **MD-4** | **No transfer of sovereignty.** The defined model keeps its semantics and its Records. Registry owns the definition Record and nothing of the model. | 064 §8 row 6; I-105; 061 §7 row 7 |
+| **MD-4** | **No creation or transfer of sovereignty or Record ownership.** A `MODEL-DEFINITION` neither grants sovereignty nor creates or transfers Record ownership. The defined Record Model keeps the semantics and Records it owns by virtue of its own sovereign status. For W, E, P, V and I, Registry owns the `MODEL-DEFINITION` Record and none of those models' domain Records. For R, Registry already owns R-partition Records because it is itself the sovereign R Record Model — the ordinary sovereignty rule, not an exception — and that ownership exists independently of, and is not conferred by, the `MODEL-DEFINITION`. | 064 §8 row 6; I-16; I-105; 061 §7 row 7 |
 | **MD-5** | **No common parent.** The six models are sovereign peers. The family establishes no base model, template model or inheritance between models, and no definition is a superclass of another. | RMS §2; I-101 |
 | **MD-6** | **Model level is not Kind or schema level.** A model owns a whole partition-level semantic architecture; a Kind is *"A class of Record within one model"*; a schema defines structure. `MODEL-DEFINITION`, `KIND-DEFINITION` and `SCHEMA-DEFINITION` are not collapsed. | RMS §6, §6.1, §10.2; 064 §8 row 13 |
 | **MD-7** | **A simulation model is not a Record Model.** `SIMULATION-MODEL-DEFINITION` is a different Registry Kind. A simulation model definition is neither a seventh Record Model nor a `MODEL-DEFINITION`; row 098: *"no Simulation Record Model"*. | RMS §10.1, §10.7; row 098 |
@@ -181,7 +183,7 @@ R, V and I, and each is definable.
 | **W** | World | *What is true of the world?* | yes — governed meaning about declared model W | creates no World, owns no World Record, decides no World Truth |
 | **E** | Epistemic | *Who knows, believes, suspects, or has been shown what?* | yes — governed meaning about declared model E | grants no sovereignty; owns no E Record |
 | **P** | Production | *What is intended, planned, coordinated, and in production?* | yes — governed meaning about declared model P | grants no sovereignty; owns no P Record |
-| **R** | Registry | *What does the system mean, and how are Record semantics defined?* | yes — governed meaning about declared model R | is not a bootstrap mechanism (RMS §10.4); does not constitute Registry |
+| **R** | Registry | *What does the system mean, and how are Record semantics defined?* | yes — governed meaning about declared model R | is not a bootstrap mechanism (RMS §10.4); does not constitute Registry or grant it sovereignty. Registry already owns R-partition Records as the sovereign R model, independently of this definition |
 | **V** | Visual | *How is World Truth visually specified and represented?* | yes — governed meaning about declared model V | grants no sovereignty; owns no V Record |
 | **I** | Issue | *What was published, and how is that publication composed?* | yes — governed meaning about declared model I | grants no sovereignty; owns no I Record |
 
@@ -243,9 +245,11 @@ current law; RMS §10.3 corrects it (SC-066-C).
 governed meaning about a declared Record Model"*; the model keeps *"its sovereignty, which is
 constitutional and is neither granted nor held by a Registry Record"*.
 
-A `MODEL-DEFINITION` never gives Registry ownership of the model or of the model's Records, or
-authority over its lifecycle, Kind admission, canonicality, temporal design, package architecture
-or semantic validation. Defining World does not make World subordinate to Registry. Registry
+A `MODEL-DEFINITION` creates and transfers no ownership. Defining another model gives Registry no
+ownership of that model or of its Records, and no authority over its lifecycle, Kind admission,
+canonicality, temporal design, package architecture or semantic validation. When the defined model
+is Registry itself, Registry's ownership of R Records comes from Registry sovereignty, not from the
+`MODEL-DEFINITION`. Defining World does not make World subordinate to Registry. Registry
 semantic authority is authority over definition meaning (RMS §17: *"All authority is
 domain-scoped."*).
 
@@ -296,8 +300,10 @@ may state the source-established question *"What is true of the world?"* It does
 or own any World Record.
 
 **Legal — Registry.** A `MODEL-DEFINITION` may define R — Registry, which is itself one of the six
-sovereign Record Models. This is not a bootstrap mechanism: RMS §10.4 closes bootstrap separately —
-*"There is no circular self-definition requirement."* — and no *axiom* definition is implied.
+sovereign Record Models. Registry already owns its R Records as that sovereign model; the
+definition neither constitutes Registry nor confers that ownership. This is not a bootstrap
+mechanism: RMS §10.4 closes bootstrap separately — *"There is no circular self-definition
+requirement."* — and no *axiom* definition is implied.
 
 **Illegal — a seventh Record Model.** A proposed `MODEL-DEFINITION` whose subject is *S —
 Simulation*, claiming to create a seventh sovereign Record Model, is invalid: the six are closed
@@ -323,8 +329,8 @@ structurally is 067's (§19).
 |---|---|---|---|
 | 1 | A `MODEL-DEFINITION` creates a Record Model | definitions govern; never instantiate | RMS §6.1; MD-2, MD-3 |
 | 2 | Another `MODEL-DEFINITION` creates a seventh sovereign model | the six are closed | RMS §2, §25 |
-| 3 | Registry owns a model because it owns the model's definition | sovereignty is constitutional | 061 §7 row 7; MD-4 |
-| 4 | Registry owns the domain Records of a model it defines | each model owns its Records | §13.6e; I-105 |
+| 3 | Registry owns a Record Model because it owns that model's Registry definition | model sovereignty exists independently of its Registry definition | 061 §7 row 7; MD-4 |
+| 4 | Registry gains ownership of another model's Records because it defines that model | W, E, P, V and I retain their Records; Registry owns R Records because it is independently the sovereign R model, not because it defines itself | §13.6e; I-16; I-105; MD-4 |
 | 5 | A Record Model is its `MODEL-DEFINITION` | model ≠ definition | §7 |
 | 6 | `MODEL-DEFINITION` is a specialization of `KIND-DEFINITION` | distinct Kinds at distinct levels | RMS §10.1; MD-6 |
 | 7 | `MODEL-DEFINITION` is a schema | a schema defines structure | RMS §10.2; MD-6 |
@@ -346,6 +352,10 @@ structurally is 067's (§19).
 | 23 | Blueprint §9.4's *"Classification: capability"* is current architecture | stale; RMS §10 COLLISION-1 | SC-066-A |
 | 24 | Blueprint §9.4's blanket reference prohibition overrides RMS §10.3 | RMS §10.3 corrects it | SC-066-C |
 | 25 | Because Registry content including *"model definitions"* is extensible, the model roster is extensible | content ≠ constitutional roster | SC-066-D |
+| 26 | Registry owns no R Records because R is the subject of a `MODEL-DEFINITION` | R owns R Records by its own sovereignty | MD-4; I-16 |
+| 27 | Registry owns its R Records because a `MODEL-DEFINITION` grants that ownership | a definition grants no ownership | MD-4 |
+| 28 | Artifact 066's `Canon` and `CD` fields are metadata of the `MODEL-DEFINITION` family rather than of Artifact 066 | artifact metadata applies to the artifact; no alternative reading is invented | Artifact 003; SC-066-H |
+| 29 | Artifact 459 owns every possible extension | it owns the categories its row names | row 459 |
 
 ## 18. Source Conditions and Gaps
 
@@ -392,16 +402,15 @@ its cited sources and the frozen contracts.
 Artifact 062 §6 records that Blueprint §9.4's layer rows do not place `MODEL-DEFINITION`, and that
 its placement is *"not established by current sources"*. **Treatment:** no layer is assigned here.
 
-### SC-066-H — specification path vs `Canon` and `CD` metadata
+### SC-066-H — documentation specification with Roadmap `Canon` and `CD` metadata
 
-The target is under `docs/registry/`, whose `PURPOSE.md` holds family specifications and excludes
-Registry Records (*"those are minted into `canon/registry/`"*). Row 066 nonetheless declares
-`T: doc` · `Canon: canonical-about-meaning` · `CD: yes`. Artifact 003: `CD` marks whether an
-artifact *"creates, carries or directly impacts canonical data"*, and *"licenses nothing"*; the
-`Canon` field *"records a per-artifact status, nothing more"*. **Treatment:** the metadata is
-preserved exactly. This document is a specification, not a Registry Record; it mints no canonical
-data and does not read `CD: yes` as permission to write `canon/**`. It reads the `Canon` and `CD`
-values as marking the family it governs; that reading is an inference, not a source statement.
+| | |
+|---|---|
+| **Source fact — Roadmap** | Row 066 assigns this artifact `T: doc` · `Canon: canonical-about-meaning` · `CD: yes`. |
+| **Source fact — Artifact 003** | `Canon` *"records a per-artifact status, nothing more"*; `CD` marks whether an artifact *"creates, carries or directly impacts canonical data"* and *"licenses nothing"*. Both are per-artifact metadata. |
+| **Source fact — directory** | `docs/registry/PURPOSE.md` holds family specifications and excludes Registry Records: *"those are minted into `canon/registry/`"*. |
+| **Source gap** | No current source states why this documentation artifact was assigned `Canon: canonical-about-meaning` rather than `n/a`. No explanation is invented. |
+| **Treatment** | The metadata is preserved exactly and applies to Artifact 066. Artifact 066 remains a documentation specification, not a `MODEL-DEFINITION` Registry Record. It creates no concrete Registry Record and performs no canonical write. `CD: yes` licenses nothing and grants no authority. |
 
 ### SC-066-I — LS-1 on rows 066–067 and the 064 ↔ 075 self-hosting resolution
 
@@ -422,7 +431,7 @@ competing pair is invented; 066 and 067 are not claimed to replace row 075; 067'
 | **C-066-05** | The specification creates, admits, abolishes, reassigns or grants sovereignty to no Record Model. | MD-2 to MD-4 |
 | **C-066-06** | No seventh sovereign Record Model is introduced. | RMS §2; §9 |
 | **C-066-07** | A Record Model is stated to be distinct from its `MODEL-DEFINITION`. | §7 |
-| **C-066-08** | Registry definition authority is stated to be distinct from ownership of the defined model and its Records. | §13; MD-4 |
+| **C-066-08** | `MODEL-DEFINITION` authority grants or transfers no Record ownership. Every model retains ownership derived from its own sovereignty; in the R case, Registry's ownership of R Records is stated to be independent of its `MODEL-DEFINITION`. | §9; §13; MD-4 |
 | **C-066-09** | The six RMS §6 questions are reproduced verbatim, and no model-owned semantic is given a universal implementation. | §9; MD-8 |
 | **C-066-10** | `MODEL-DEFINITION`, `KIND-DEFINITION`, `SCHEMA-DEFINITION` and `SIMULATION-MODEL-DEFINITION` are not collapsed. | MD-6, MD-7; §20 |
 | **C-066-11** | The resolution obligation is stated without resolver mechanics. | §10 |
@@ -440,7 +449,7 @@ competing pair is invented; 066 and 067 are not claimed to replace row 075; 067'
 | **C-066-23** | No reference validator, resolver or kernel belonging to 112, 114 or 115 is designed. | §10 |
 | **C-066-24** | `LS: LS-1` is preserved and not treated as a reference or a hard dependency. | §15 |
 | **C-066-25** | The Registry self-hosting resolution through 064, 074 and 075 is not replaced or bypassed. | §15; SC-066-I |
-| **C-066-26** | `Canon: canonical-about-meaning` and `CD: yes` are preserved; the document is not made a Registry Record and no direct canonical write is authorized. | SC-066-H |
+| **C-066-26** | `Canon: canonical-about-meaning` and `CD: yes` remain exact per-artifact Roadmap metadata; neither is reinterpreted as metadata of the `MODEL-DEFINITION` family, neither makes this document a Registry Record, and neither authorizes a canonical write. | SC-066-H; Artifact 003 |
 | **C-066-27** | RR-16's text is not invented. | SC-066-F |
 | **C-066-28** | This artifact's changes are confined to `docs/registry/model_definition.md`. | row 066 |
 
@@ -472,7 +481,7 @@ or validator. Row 067's `→ 040` is 067's own metadata and is not interpreted h
 | 108, 109, 110 | evolution; versioning; supersession and deprecation |
 | 111 | concrete definition-dependency rules |
 | 112, 114, 115 | reference validator; kernel; Registry definition resolution |
-| 459 | how anything new is added |
+| 459 | how a new Kind, field, definition, simulation model, visual subtype, or publication structure is added — *"each through its own ceremony, never through a generic abstraction"* |
 
 ## 21. Roadmap Completion Trace
 
