@@ -398,10 +398,12 @@ Each is recorded, not resolved, and none blocks this document.
    roster is **064**'s.
 4. **Downward-only wording** (§10 above; Artifact 058 §11). Held by 062, 063 and 111.
 5. **Roadmap definition families vs RMS §10.1.** Rows 066–107 specify families that do not map
-   one-to-one onto the fourteen Kinds: `SEMANTIC-DEFINITION` (074), `IDENTITY-DEFINITION` (083),
-   `DERIVATION-DEFINITION` (094), `ROLE-BOUNDARY-DEFINITION` (101) and `DEGRADED-MODE-DEFINITION`
-   (103) are not RMS §10.1 names. Row 064's `Val` — *"exactly fourteen Kinds, each with admission
-   rationale"* — is where the correspondence is settled. Not settled here.
+   one-to-one onto the fourteen Kinds: `IDENTITY-DEFINITION` (083), `DERIVATION-DEFINITION` (094),
+   `ROLE-BOUNDARY-DEFINITION` (101) and `DEGRADED-MODE-DEFINITION` (103) are not RMS §10.1 names.
+   Rows 074–075 formerly named a `SEMANTIC-DEFINITION` family; the Roadmap's `AUTHOR-DECIDED`
+   AD-LS1-R-BOOTSTRAP revision (its §0.7) repurposed them into the Registry self-Kind definition
+   set contract and the concrete Kind-Definition set. Row 064's `Val` — *"exactly fourteen Kinds,
+   each with admission rationale"* — is where the correspondence is settled. Not settled here.
 6. **Registry identity semantics has no dedicated row.** Artifact 046 §11 records that the Roadmap
    declares identity-semantics artifacts for W, E and P only. Registry's remain Registry-owned; no
    artifact is assigned them here.

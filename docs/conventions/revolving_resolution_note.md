@@ -373,6 +373,10 @@ reopened.
 **What is not claimed.** Row 075's fourteen Records do not yet exist. This entry is audit trail
 only; the decisions live in Artifacts 003 and 057 and the Roadmap.
 
+**Follow-up correction.** Row 074's `LS` field was left as `LS-1` by the self-hosting revision. The
+decision always paired 064 ↔ 075; row 074 only specifies the set. Row 074 now reads `LS: —`, and
+§0.7 says so. This is a consistency correction to AD-LS1-R-BOOTSTRAP; no decision changed.
+
 **Status:** RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED · **Constitutional
 change:** NONE
 

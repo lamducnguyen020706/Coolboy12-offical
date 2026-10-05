@@ -46,9 +46,10 @@ between the fourteen Kinds and the definition-family artifact names in rows 066�
 
 **Out of scope, by owner.** Kind admission as a test (057); Registry sovereignty and authority
 (060, 061); the semantic layers and their direction (062), including any Kind's layer placement;
-reference legality (063); governance — who proposes, approves, deprecates (065); each definition
-family's specification and schema, fields, references and cardinality (066–107); evolution,
-versioning, supersession and deprecation (108–110); dependency rules (111); validators, binder,
+reference legality (063); governance — who proposes, approves, deprecates (065); the
+Roadmap-assigned specification and schema responsibilities of definition-family rows 066–107,
+each under its own `Val` and `Done` (§27); evolution, versioning, supersession and deprecation
+(108–110); dependency rules (111); validators, binder,
 kernel, resolution, identity binding (112–117); fixtures, examples and tests (118–124); how a new
 Kind is added (459). No schema, field, Registry data, validator, algorithm or test is created.
 
@@ -59,7 +60,7 @@ Kind is added (459). No schema, field, Registry data, validator, algorithm or te
 | RMS §10.1 | the fourteen Kinds, *"CLOSED at fourteen"*, `FROZEN`; `MODEL-DEFINITION` *"closes FG-V7-07 — the Kind exists"* |
 | RMS §13; RMS §6.1 | the Kind Admission Test's fourteen questions; a Kind is *"A class of Record within one model"*; final counts R 14 |
 | RMS §10, §10.2, §10.4–§10.7, §19; RMS §27 | definition Records are not configuration; schema, bootstrap, capability, constraint/validation, WSV/WSVR boundaries; *"MODEL-DEFINITION is a Registry Kind"* |
-| Blueprint §9.4; §13.6; §13.6e; §13.9a | the Registry layer; the earlier ten-item roster; Registry definition categories and the WSV attribute table; FG-V7-07 OPEN; identity grammar. §13.10 is flagged PROPOSED and is not relied on (SC-064-K) |
+| Blueprint §9.4; §13.6; §13.6e; §13.9a; §15.17 | the Registry layer; the earlier ten-item roster; Registry definition categories and the WSV attribute table; FG-V7-07 OPEN; identity grammar; the twenty-two components of a Simulation Model definition (§23). §13.10 is flagged PROPOSED and is not relied on (SC-064-K) |
 | Roadmap row 064; PART III (LS-1 to LS-6); rows 065–117, 459 | this artifact's metadata; the lockstep pairs; each family's assigned responsibility |
 | Artifact 057 | the fourteen questions bound to R (C-057-01); classification ≠ admission; `KIND-DEFINITION` ≠ admission (C-057-08); no sufficiency rule (§5.3); no non-World ceremony (§8); question 13's Registry application, `AUTHOR-DECIDED` (§5.4, AD-057-R13) |
 | Artifact 003 — Registry LS-1 self-hosting exception; Roadmap §0.7, rows 074–075 | `AUTHOR-DECIDED` (AD-LS1-R-BOOTSTRAP): the ordering of the Registry's own fourteen LS-1 pairs, and the rows that own the Registry `KIND-DEFINITION` set (SC-064-D) |
@@ -113,9 +114,10 @@ Exactly fourteen rows, in RMS §10.1 order. No other row is a Registry Kind.
 
 **Count: fourteen.** R 14 is also RMS §13's final count. The last column lists related Roadmap rows
 whose own `Val`, `Done` or name concerns that Kind; it grants them nothing beyond their own rows,
-and a row's name is not the Kind's name (§23). **Rationale status:** every question is answered for
-every Kind — 196 of 196 cells. Question 13's answers apply Artifact 057 §5.4, an `AUTHOR-DECIDED`
-rule, not an RMS statement (SC-064-I).
+and a row's name is not the Kind's name (§23). **Rationale status:** 196 question cells represented,
+196 resolved, 0 unresolved. Questions 1–12 and 14 rest on governing-source facts; question 13
+applies source-grounded distinctions under Artifact 057 §5.4, an `AUTHOR-DECIDED` rule, not an RMS
+statement (SC-064-I).
 
 ## 7. Admission Method
 
@@ -506,9 +508,10 @@ mechanism (068–069) cannot exist before the taxonomy that makes it meaningful,
 holds that *"There is no circular self-definition requirement."* Under that exception:
 
 - this contract finalises the taxonomy half;
-- row 074 specifies, and row 075 materialises, the fourteen concrete `KIND-DEFINITION` Records,
-  one per Kind of §6, conforming to 069 — the Registry's counterpart of rows 178, 257, 300, 345
-  and 364;
+- row 074, a contract with `LS: —`, specifies the set; row 075, with `LS: LS-1`, materialises
+  the fourteen concrete `KIND-DEFINITION` Records, one per Kind of §6, conforming to 069 — the
+  Registry's counterpart of rows 178, 257, 300, 345 and 364. The Registry's own pairs are
+  064 ↔ 075; row 074 is not a pair member;
 - the partner obligation is not waived: row 123's lockstep tests reject a missing or mismatched
   partner, and exit-P3 and G-REG (row 124) cannot pass until row 075 has landed.
 
@@ -522,23 +525,27 @@ RMS §10.1 closes the Registry taxonomy at fourteen. Rows 066–107 name further
 **An artifact name is not evidence of a Kind**, and neither is a row's `LS` field. This contract
 infers no Kind from a filename, row name, the word *DEFINITION* or `LS: LS-1`:
 
-| Row(s) | Artifact name | Row `LS` | Status under this contract |
-|---|---|---|---|
-| 074–075 | Registry self-Kind definition set contract; Registry Kind-Definition set | LS-1 | not Kinds: the contract and the set of fourteen `KIND-DEFINITION` Records partnering §6's Kinds (§22) |
-| 083–084 | `IDENTITY-DEFINITION` | LS-1 | not a Registry Kind; representation not established; row 085 records `IDENTITY-GRAMMAR` |
-| 094–095 | `DERIVATION-DEFINITION` | LS-1 | not a Registry Kind; representation not established; `DERIVATION-RULE` is rows 096–097 |
-| 101–102 | `ROLE-BOUNDARY-DEFINITION` | LS-7 | not a Registry Kind; representation not established |
-| 103–104 | `DEGRADED-MODE-DEFINITION` | LS-8 | not a Registry Kind; representation not established |
-| 105 | `DIAGNOSTIC-VOCABULARY` | LS-1 | not a Registry Kind; row 105 states its content as *"recorded as a controlled vocabulary"* |
-| 106 | `SIGNAL-CLASS` | LS-1 | not a Registry Kind; representation not stated beyond `H: 081` |
-| 107 | `READER-ARCHETYPE` | LS-1 | not a Registry Kind; row 107 states its content *"as a controlled vocabulary"* |
-| 078; 100 | schema–field boundary note; simulation 22-component contract | LS-1 | contracts on existing Kinds, not Kinds |
+| Row(s) | Artifact subject | Kind status | Representation under the fourteen | Row `LS` |
+|---|---|---|---|---|
+| 074 | Registry self-Kind definition set contract | not a Kind | established — a contract that specifies row 075's set; not itself a Record set | — (specifies 075; not an LS-1 member) |
+| 075 | Registry Kind-Definition set | not a Kind | established — fourteen `KIND-DEFINITION` Records, one per Kind of §6 (§22) | LS-1 — the Registry definition-side partner set |
+| 078 | schema–field boundary note | not a Kind | established — the boundary between two existing Kinds: a schema *composes* field definitions; a field definition *"owns meaning and domain"* (row 078 `Done`) | LS-1 (SC-064-J) |
+| 083–084 | `IDENTITY-DEFINITION` | not a Kind | not established; row 083's `Why` names it *"separately from IDENTITY-GRAMMAR"* (rows 085, 117) | LS-1 (SC-064-J) |
+| 094–095 | `DERIVATION-DEFINITION` | not a Kind | not established; row 094 separates it from *"the rule that computes it"* — `DERIVATION-RULE`, rows 096–097 | LS-1 (SC-064-J) |
+| 100 | simulation 22-component contract | not a Kind | established — the structure of a `SIMULATION-MODEL-DEFINITION`: Blueprint §15.17, *"Its definition carries twenty-two components"* | LS-1 (SC-064-J) |
+| 101–102 | `ROLE-BOUNDARY-DEFINITION` | not a Kind | not established | LS-7 |
+| 103–104 | `DEGRADED-MODE-DEFINITION` | not a Kind | not established | LS-8 |
+| 105 | `DIAGNOSTIC-VOCABULARY` | not a Kind | established — controlled-vocabulary content: *"recorded as a controlled vocabulary"* (row 105 `Done`) | LS-1 (SC-064-J) |
+| 106 | `SIGNAL-CLASS` | not a Kind | not established — row 106's `Done` names *"five signal classes with their differing authority"*; `H: 081` is a dependency, not a representation | LS-1 (SC-064-J) |
+| 107 | `READER-ARCHETYPE` | not a Kind | established — controlled-vocabulary content: *"as a controlled vocabulary"* (row 107 `Done`) | LS-1 (SC-064-J) |
 
-Rows 074–075 formerly named a `SEMANTIC-DEFINITION` family, which corresponds to no RMS §10.1 Kind;
-the Roadmap revision of §0.7 withdrew it (SC-064-E). Where a row's representation under the
-fourteen is not established, that row resolves its own representation; this contract invents no
-mapping. The remaining non-roster rows carrying `LS: LS-1` are recorded at SC-064-J and not
-repaired here.
+Kind status, representation and lockstep are three separate questions. A non-roster row is not a
+Kind; it is not thereby unmapped; and where a mapping is stated, the `CONTROLLED-VOCABULARY` Kind
+and the other thirteen stay as they are. Where a row's representation is not established, that row
+resolves its own representation; this contract infers none from a name, a dependency or an `LS`
+field. Rows 074–075 formerly named a `SEMANTIC-DEFINITION` family, which corresponds to no RMS
+§10.1 Kind; the Roadmap revision of §0.7 withdrew it (SC-064-E). The non-roster rows carrying
+`LS: LS-1` are recorded at SC-064-J and not repaired here.
 
 ## 24. Prohibited Inferences
 
@@ -591,6 +598,13 @@ repaired here.
 | 45 | This contract materialises the fourteen Registry definitions. | §2; §22 |
 | 46 | The "+1" in RMS §13's W 7+1 is an eighth World Kind. | SC-064-G; RMS §7 |
 | 47 | The Registry Kind-Definition set is a Kind. | §23 |
+| 48 | Row 074 specifies the LS-1 partner set, so row 074 is an LS-1 member. | §22; Roadmap row 074 |
+| 49 | `DIAGNOSTIC-VOCABULARY` or `READER-ARCHETYPE` is a Registry Kind because a row names it. | §23 |
+| 50 | Controlled-vocabulary content in rows 105 or 107 absorbs or replaces the `CONTROLLED-VOCABULARY` Kind. | §23; RMS §10.1 |
+| 51 | Row 106's `H: 081` establishes how `SIGNAL-CLASS` is represented. | §23 |
+| 52 | Every non-roster downstream subject is unmapped. | §23; SC-064-E |
+| 53 | Every non-roster downstream subject is already mapped. | §23; SC-064-E |
+| 54 | All 196 rationale answers are direct RMS or Blueprint statements. | §6; Artifact 057 §5.4 |
 
 ## 25. Source Conditions and Gaps
 
@@ -622,19 +636,31 @@ abstraction"*.
 | | |
 |---|---|
 | **Source facts** | Row 064 carries `LS: LS-1`; PART III makes LS-1 an ATOMIC-PAIR of Kind spec and `KIND-DEFINITION`; RMS §10.4 rejects a circular self-definition requirement. |
-| **Authorial build resolution** | AD-LS1-R-BOOTSTRAP, `AUTHOR-DECIDED`, recorded in Artifact 003 (*Registry LS-1 self-hosting exception*) and Roadmap §0.7. The Registry's own fourteen pairs receive a narrow ordering exception; row 074 specifies, and row 075 materialises, the fourteen concrete `KIND-DEFINITION` Records; rows 068–069 provide the generic family and schema. |
+| **Authorial build resolution** | AD-LS1-R-BOOTSTRAP, `AUTHOR-DECIDED`, recorded in Artifact 003 (*Registry LS-1 self-hosting exception*) and Roadmap §0.7. The Registry's own fourteen pairs receive a narrow ordering exception. The pairs are 064 ↔ 075: row 075 materialises the fourteen concrete `KIND-DEFINITION` Records and carries `LS: LS-1`; row 074 specifies that set and is not a pair member (`LS: —`); rows 068–069 provide the generic family and schema. |
 | **What it does not do** | Waive the partners; apply to W, E, P, V or I; weaken LS-1 or any other lockstep. |
 | **Treatment here** | The taxonomy is finalised before the partners land, under that exception. The partners are not claimed to exist; exit-P3 and G-REG cannot pass until row 075 lands and row 123's lockstep tests pass. |
 
-### SC-064-E — downstream *DEFINITION* artifacts and unmapped semantics
+### SC-064-E — non-roster artifact names are not Registry Kinds — PARTIALLY MAPPED BY SOURCE
 
-Rows 066–107 name definition artifacts that RMS §10.1 does not list. Artifact 060 §16 pointed the
-correspondence to row 064's `Val`. **Treatment:** this contract settles their Kind status — none is
-a Kind — and records that their representation under the fourteen is not established by current
-sources; it invents no mapping (§23). The `SEMANTIC-DEFINITION` family formerly at rows 074–075 is
-withdrawn by Roadmap §0.7; semantic material no RMS §10.1 Kind maps remains unmapped until its
-owning contract resolves it. Artifact 062 §14.2 likewise records that change-and-operation
-semantics corresponds to no RMS §10.1 Kind; this contract admits none for it.
+RMS §10.1 remains exactly fourteen. A Roadmap artifact name outside that roster does not become a
+Kind; Artifact 060 §16 pointed the correspondence to row 064's `Val`. The non-roster rows fall into
+two classes (§23):
+
+- **Representation established by a current source.** Rows 074–075 — the Registry
+  `KIND-DEFINITION` set: 074 the contract that specifies it, 075 the fourteen Records; row 078 —
+  the boundary between `SCHEMA-DEFINITION` and `FIELD-DEFINITION`; row 100 — the twenty-two
+  components of a `SIMULATION-MODEL-DEFINITION` (Blueprint §15.17); rows 105 and 107 —
+  controlled-vocabulary content.
+- **Representation not yet established.** Rows 083–084 `IDENTITY-DEFINITION`, 094–095
+  `DERIVATION-DEFINITION`, 101–102 `ROLE-BOUNDARY-DEFINITION`, 103–104 `DEGRADED-MODE-DEFINITION`
+  and 106 `SIGNAL-CLASS`.
+
+**Treatment:** no non-roster name is promoted into a fifteenth Kind; mappings current sources
+establish are stated, not erased; none is invented where the sources are silent, and a dependency
+such as row 106's `H: 081` is not a mapping. The `SEMANTIC-DEFINITION` family formerly at rows
+074–075 is withdrawn by Roadmap §0.7; semantic material no RMS §10.1 Kind maps remains unmapped
+until its owning contract resolves it. Artifact 062 §14.2 likewise records that
+change-and-operation semantics corresponds to no RMS §10.1 Kind; this contract admits none for it.
 
 ### SC-064-F — semantic-layer placement — NOT INVENTED
 
@@ -670,7 +696,8 @@ the current roster as RMS §10.1 fixes it and does not decide that question; any
 |---|---|
 | **Source A** | RMS §10.1 freezes the Registry at exactly fourteen Kinds. |
 | **Source B** | Roadmap PART III defines LS-1 as Kind ↔ `KIND-DEFINITION`. |
-| **Source C** | Rows whose subjects are not RMS §10.1 Kinds carry `LS: LS-1`: 078 schema–field boundary note, 083–084 `IDENTITY-DEFINITION`, 094–095 `DERIVATION-DEFINITION`, 100 simulation 22-component contract, 105 `DIAGNOSTIC-VOCABULARY`, 106 `SIGNAL-CLASS`, 107 `READER-ARCHETYPE`. Rows 101–102 and 103–104 carry LS-7 and LS-8, not LS-1. Rows 074–075 now carry LS-1 as the Registry's own partner set (§22). |
+| **Source C** | Rows whose subjects are not RMS §10.1 Kinds carry `LS: LS-1`: 078 schema–field boundary note, 083–084 `IDENTITY-DEFINITION`, 094–095 `DERIVATION-DEFINITION`, 100 simulation 22-component contract, 105 `DIAGNOSTIC-VOCABULARY`, 106 `SIGNAL-CLASS`, 107 `READER-ARCHETYPE`. Rows 101–102 and 103–104 carry LS-7 and LS-8, not LS-1. |
+| **Rows 074–075, separately** | Row 075 carries `LS: LS-1` as the Registry definition-side partner set: its subject is fourteen `KIND-DEFINITION` Records, not a Kind. Row 074 is the contract that specifies 075, is not a Kind, and carries `LS: —` — corrected from `LS-1` in the Roadmap (§0.7; Revolving Resolution Note, CONFLICT-E). Neither is part of the conflict below. |
 | **Conflict** | Their LS-1 metadata cannot be read as evidence that their subjects are Registry Kinds without contradicting RMS §10.1. |
 | **Treatment** | The fourteen-Kind taxonomy stands; RMS §10.1 governs the taxonomy over Roadmap decomposition. These rows are not promoted to Kinds, and their metadata is neither repaired nor reinterpreted here. |
 | **Route** | ROADMAP ISSUE — outside this artifact; non-blocking. |
@@ -693,7 +720,7 @@ WSV-family answers rest on §13.6e's WSV attribute table, RMS §10.7 and rows 08
 | **C-064-03** | No fifteenth Kind is introduced. | RMS §10.1 |
 | **C-064-04** | `MODEL-DEFINITION` is present and not treated as OPEN. | RMS §10.1, §27 |
 | **C-064-05** | Each of the fourteen has an admission-rationale table covering all fourteen questions. | row 064 `Val` |
-| **C-064-06** | Every rationale cell is answered from source, with question 13 applied under Artifact 057 §5.4. | RMS §13; C-057-01; Artifact 057 §5.4 |
+| **C-064-06** | All 196 RMS §13 question cells are resolved: questions 1–12 and 14 on governing-source facts and required synthesis; question 13 on source-grounded distinctions under the `AUTHOR-DECIDED` application of Artifact 057 §5.4. No unresolved admission cell remains. | RMS §13; C-057-01; Artifact 057 §5.4 |
 | **C-064-07** | No admission score or sufficiency threshold is invented. | Artifact 057 §5.3 |
 | **C-064-08** | No non-World admission ceremony is created. | Artifact 057 §8 |
 | **C-064-09** | A Kind is not its `KIND-DEFINITION` Record. | Artifact 057 §4 |
@@ -732,12 +759,17 @@ WSV-family answers rest on §13.6e's WSV attribute table, RMS §10.7 and rows 08
 | **C-064-42** | This contract does not enlarge any 066–107 row's own `Val` or `Done`. | §27 |
 | **C-064-43** | Non-roster rows carrying LS-1 metadata are not promoted into Registry Kinds. | SC-064-J |
 | **C-064-44** | No answer rests on Blueprint §13.10 while it is flagged PROPOSED. | SC-064-K |
-| **C-064-45** | Structural question coverage (196 rows) and source-resolved answers are reported separately and never merged into one count. | §6; §28 |
+| **C-064-45** | Cells represented (196), cells resolved (196) and the authority of question 13's application (Artifact 057 §5.4, `AUTHOR-DECIDED`) are reported separately; the 196 answers are not reported as 196 RMS or Blueprint statements. | §6; §28 |
 | **C-064-46** | Every question-13 cell names an existing Registry Kind it could reduce to and the source-established distinction that reduction would lose; none rests on roster membership alone. | Artifact 057 §5.4; C-057-17 |
 | **C-064-47** | No question-13 source gap remains. | SC-064-I |
 | **C-064-48** | The Registry's LS-1 self-hosting ordering is resolved by AD-LS1-R-BOOTSTRAP, and only for the Registry's own fourteen pairs. | Artifact 003; SC-064-D |
 | **C-064-49** | A named downstream artifact — row 075, specified by row 074 — owns the fourteen Registry `KIND-DEFINITION` partner Records. | Roadmap rows 074, 075 |
 | **C-064-50** | Exit-P3 and G-REG remain blocked until row 075 lands and row 123's lockstep tests pass. | Artifact 003; rows 123, 124 |
+| **C-064-51** | Row 074 is not treated as an LS-1 member; it specifies row 075. | Roadmap row 074; Artifact 003 |
+| **C-064-52** | Row 075 is the Registry definition-side LS-1 partner set; the Registry's own pairs are 064 ↔ 075. | Roadmap row 075; §22 |
+| **C-064-53** | A non-roster row's representation that a current source establishes is stated as established. | §23; SC-064-E |
+| **C-064-54** | A non-roster row's representation that no current source establishes is recorded as not established; none is inferred from a name, a dependency or an `LS` field. | §23; SC-064-E |
+| **C-064-55** | Rows 066–107 keep their individual Roadmap `Val` and `Done`; §3 assigns them no common responsibility. | §3; §27 |
 
 ## 27. Downstream Handoff
 
@@ -745,7 +777,7 @@ WSV-family answers rest on §13.6e's WSV attribute table, RMS §10.7 and rows 08
 |---|---|---|
 | **065** governance (`H: 064`; row 064's `→` does not name it) | the frozen fourteen-Kind taxonomy | who may propose, approve, deprecate a definition |
 | **066–107** definition-family rows | the exact fourteen-Kind taxonomy; the source-established responsibility boundary of the relevant Kind; Kind ≠ `KIND-DEFINITION`; the no-fifteenth-Kind rule; the lockstep constraints the Roadmap actually assigns each row | exactly the specification or schema responsibilities, `Val` and `Done` the Roadmap and governing sources assign each row. This contract adds no common checklist of fields, references, versions, cardinality or constraints. |
-| **074–075** Registry self-Kind definition set | the fourteen Kinds of §6, in RMS order, as the subjects of the fourteen `KIND-DEFINITION` Records | the set contract (074) and the fourteen Records (075), per their own rows |
+| **074–075** Registry self-Kind definition set | the fourteen Kinds of §6, in RMS order, as the subjects of the fourteen `KIND-DEFINITION` Records | the set contract (074, `LS: —`) and the fourteen Records (075, the LS-1 partner set), per their own rows |
 | **108–110** evolution | that Registry definitions share a governed change path and temporal account (F-4) | the evolution, versioning, supersession and deprecation model |
 | **123–124** lockstep and P3 conformance | that the Registry's LS-1 partners are owed by row 075 | the lockstep proof and exit-P3, per their own rows |
 | **459** extensibility | that the current Registry taxonomy is exactly fourteen | how a new Kind is added |
@@ -755,10 +787,10 @@ WSV-family answers rest on §13.6e's WSV attribute table, RMS §10.7 and rows 08
 | Row 064 | Status | Where it is met |
 |---|---|---|
 | `Val`: *"exactly fourteen Kinds"* | **SATISFIED** | §6; C-064-01 to C-064-04 |
-| `Val`: *"each with admission rationale"* | **SATISFIED** — 196 rationale cells represented and 196 answered from source; question 13 applied under Artifact 057 §5.4 | §8–§21; C-064-05, C-064-06, C-064-46, C-064-47 |
+| `Val`: *"each with admission rationale"* | **SATISFIED** — 196 question cells represented, 196 resolved, 0 unresolved; questions 1–12 and 14 on governing-source facts; question 13 on source-grounded distinctions under Artifact 057 §5.4 (`AUTHOR-DECIDED`, AD-057-R13), not an RMS rule | §8–§21; C-064-05, C-064-06, C-064-46, C-064-47 |
 | `Done`: *"fourteen"* | **SATISFIED** | §6 |
 | `H: 060,057` | **SATISFIED** — sovereignty and the admission test consumed unchanged | §2, §7, §22 |
-| `LS: LS-1` | **SOURCE/DECOMPOSITION RESOLVED** — ordering by AD-LS1-R-BOOTSTRAP (Artifact 003, RMS §10.4); the concrete partners are owned by row 075 and are **not yet landed**; they are mandatory before exit-P3 and G-REG | §22; SC-064-D |
+| `LS: LS-1` | **SOURCE/DECOMPOSITION RESOLVED** — ordering by AD-LS1-R-BOOTSTRAP (Artifact 003, RMS §10.4); the pairs are 064 ↔ 075; the concrete partners are owned by row 075, specified by row 074, and are **not yet landed**; they are mandatory before exit-P3 and G-REG | §22; SC-064-D |
 | `→ 066–107` | **SATISFIED** — handoff stated without enlarging any row | §27 |
 
 No schema created. No Registry data created. No governance implemented. No future extension
