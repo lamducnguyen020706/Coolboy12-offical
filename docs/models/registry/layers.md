@@ -226,13 +226,13 @@ current sources**, and this contract assigns it to no artifact (§14.2).
 | **D-6** | L4 depends on the definitions above it and never the reverse: *"The five other models depend on Registry **for definitions**; Registry depends on them **for nothing**."* | §13.6e; §9.4 |
 | **D-7** | Registry must not require *"the complete semantic implementation of every other Record Model in order to define them"*. | §13.6e |
 | **D-8** | L1 does not semantically depend on L2, L3, L4 or L5; L2 does not depend on L3, L4 or L5; L3 does not depend on L4 or L5. | §9.4; row 062 `Val` |
-| **D-9** | A declaration reference that RMS §10.3 permits and Artifact 063 bounds — for example a Registry definition naming a declared Kind — is not a semantic dependency on L2 or L3. The named Kind does not become semantic authority for the definition that names it. | RMS §10.3; §9.4; row 062 `Val` |
+| **D-9** | A declaration reference that RMS §10.3 permits and Artifact 063 bounds — for example a Registry definition naming a declared Kind — does not, by itself, establish a semantic dependency. Naming or referencing a declared Model, Kind, schema, semantic contract or Registry definition does not make that target semantic authority for the referencing definition merely because the reference is legal. Where the applicable definition-family contract establishes that the same concrete relation is also a semantic dependency, D-1 to D-8 and Artifact 111's rules apply to that dependency. | RMS §10.3; §9.4; row 062 `Val`; Artifact 063 RB-5 |
 
-**Semantic dependency is settled here; reference legality is not.** D-1 to D-9 close the layer
-question that row 062's `Val` — *"downward-only"* — assigns to this contract. What remains open is a
-different question — which declaration references a Registry definition may carry. RMS §10.3
-permits references to declared Record Models, Kinds, schemas and semantic contracts; Artifact 063
-fixes the precise boundary (§9, §14.1).
+**Semantic dependency is settled here; reference legality is not decided here.** D-1 to D-9 close
+the layer question that row 062's `Val` — *"downward-only"* — assigns to this contract. Which
+declaration references a Registry definition may carry is a different question. RMS §10.3 states
+the current precise boundary — references to other Registry definitions and to declared Record
+Models, Kinds, schemas and semantic contracts — and Artifact 063 applies it (§9, §14.1).
 
 **An instance is never upstream.** A domain instance may motivate a later proposal to change a
 definition. That makes the instance neither an upstream semantic dependency nor semantic authority
@@ -241,8 +241,9 @@ for the definition (RMS §10.3). How such a change is governed is Artifact 065's
 **What the rule is not.**
 
 - **Not a runtime order.** The layers order meaning. They set no evaluation, loading, resolution or
-  execution order: *"Reference resolution is not Registry work"* (§9.4), and resolution is a shared
-  mechanism (RMS §4).
+  execution order. Generic Record and `_ref` resolution is not Registry work: *"Reference resolution
+  is not Registry work"* (§9.4), and reference resolution is a universal mechanism (RMS §4).
+  Resolving a Registry definition by id and version is a separate service, row 115's (§12).
 - **Not a cross-model rule.** D-6 states the only cross-model fact the contract carries — instances
   depend on definitions. It creates no edge between Record Models (§9).
 - **Not package composition or storage layout.** The layers say nothing about how any model
@@ -255,8 +256,11 @@ for the definition (RMS §10.3). How such a change is governed is Artifact 065's
 A depends semantically on B     ≠     A owns B
 ```
 
-- A Subtype that depends on its Kind does not own the `KIND-DEFINITION`. Both remain Registry
-  Records, owned by the Registry Record Model as its own Records (Artifact 061 §4).
+- A `SUBTYPE-DEFINITION` that semantically depends on the relevant `KIND-DEFINITION` does not own
+  that definition. Both definition Records are Registry Records, owned by the Registry Record Model
+  (Artifact 061 §4). The owning Record Model keeps the Kind's and the subtype's domain semantics,
+  its taxonomy and admission where they apply, and its domain Records; a domain Kind or subtype is
+  not an R Record (§4.3).
 - A Record at L4 depends on definitions in L1–L3. The dependency gives Registry no ownership of it:
   *"Registry governs the definitions. Each Record Model owns its Records."* (§13.6e; I-105; 061 §4)
 - The dependency transfers no W, E, P, V or I Record to Registry, and no R Record to any other model
@@ -276,11 +280,21 @@ semantic dependency    ≠    Record reference    ≠    cross-model reference l
 - **A dependency is not a reference field.** That a Kind depends on RFS establishes no field on any
   Record pointing at an RFS definition. Every Record carries `registry_ref` (RMS §4); what the field
   carries is Artifact 033's and the Registry's, and this contract adds no field to any Record.
-- **A dependency is not reference legality.** What Registry may reference is Artifact 063's (row 063
-  `Val`), enforced by 112.
-- **A legal reference is not a dependency.** A Registry definition may name a declared Kind where
-  RMS §10.3 and Artifact 063 permit it, without that Kind becoming semantic authority for the
-  definition (D-9).
+- **A dependency does not, by itself, establish reference legality.** What Registry may reference
+  is Artifact 063's (row 063 `Val`), enforced by 112.
+- **A legal reference is not, by legality alone, a semantic dependency.** A Registry definition may
+  name a declared Kind where RMS §10.3 and Artifact 063 permit it, without that Kind becoming
+  semantic authority for the definition (D-9).
+- **Separate predicates, not exclusive ones.** Reference legality and semantic dependency are
+  separate predicates. Neither implies the other by category, and a concrete relation may satisfy
+  both. Whether a concrete relation exists is the applicable definition-family contract's to
+  establish (Artifact 063 RB-5):
+
+  | The concrete relation is | Governed by |
+  |---|---|
+  | a legal reference only | 063 |
+  | a semantic dependency only | 062 (layer direction) and 111 (concrete rules) |
+  | both | 063 for the reference; 062 and 111 for the dependency |
 - **A dependency is not a cross-model edge.** Instance data depending on definitions (D-6) does not
   establish W → R, E → R, P → R, V → R or I → R as a Record-level edge, and establishes no other
   edge. Cross-model edges are Artifact 058's, and this contract reinterprets none of 058's rows,
@@ -348,7 +362,8 @@ the last layer.
 | L2 | kind definitions | 068–069; the roster 064 |
 | L3 | subtype definitions | 070–071 |
 | — | controlled value sets (*"structure/vocabulary split"*) | 081–082 |
-| — | the resolver boundary | the shared resolution mechanism; the Registry resolution service 115 |
+| — | generic Record and `_ref` resolution — what a reference resolves to, and the mechanics of resolving it | not Registry-owned: *"belong to a Record resolver"* (§9.4); reference resolution is a universal mechanism (RMS §4). The implementation artifact is not assigned here |
+| — | Registry definition resolution — a consumer resolves a Registry definition by id and version | 115, Registry resolution service (row 115 `Val`: *"consumer resolves by id+version"*) |
 
 This contract writes none of their schemas, fields, lifecycles or semantics.
 
@@ -372,20 +387,29 @@ This contract writes none of their schemas, fields, lifecycles or semantics.
 | 14 | Registry owns a universal semantic schema | no universal semantic schema exists | RMS §4 |
 | 15 | The layer order is an execution or resolution order | resolution is not Registry work | §9.4; RMS §4 |
 | 16 | A definition's dependency is a Relationship Record | dependencies, not owned edges | §13.2; I-102 |
-| 17 | A legal declaration reference is an upward semantic dependency | reference legality and semantic dependency are different questions | D-9; RMS §10.3 |
+| 17 | A legal declaration reference is, by legality alone, an upward semantic dependency | reference legality and semantic dependency are separate predicates | D-9; RMS §10.3 |
+| 18 | A semantic dependency is automatically a Record reference | dependency establishes no reference field and no legality | §9; row 063 |
+| 19 | Reference and semantic dependency are mutually exclusive; one relation cannot be both | a family contract may establish a concrete relation that is both; 063, 062 and 111 then all apply | §9; Artifact 063 RB-5 |
+| 20 | A declared Kind named by a Registry definition becomes semantic authority for that definition | naming is not authority | D-9; RMS §10.3 |
+| 21 | Blueprint's older *"may never reference a kind"* wording overrides RMS §10.3 | RMS §10.3 corrects it and is the current precise rule | RMS §10.3; §14.1 |
+| 22 | The Blueprint/RMS reference wording is still an unresolved conflict | RMS §10.3 explicitly corrects the older wording; 063 applies it | §14.1 |
+| 23 | Artifact 115 is the generic Record resolver | 115 resolves Registry definitions by id and version | row 115; §12 |
+| 24 | Registry owns `_ref` resolution because it defines reference semantics | *"Reference resolution is not Registry work"* | §9.4; RMS §4 |
+| 25 | Registry-definition resolution and generic Record-reference resolution are one mechanism | no source unifies them | §9.4; RMS §4; row 115 |
+| 26 | A domain subtype is a Registry Record | the `SUBTYPE-DEFINITION` is; the subtype's domain semantics stay with the owning model | §4.3, §8 |
+| 27 | A domain Kind is its `KIND-DEFINITION` | the definition is a Registry Record; the Kind stays in its model's taxonomy | §4.3; Artifact 057 §4 |
 
-## 14. Unresolved and Deferred Matters
+## 14. Source Conditions and Deferred Matters
 
-### 14.1 UNRESOLVED SOURCE CONFLICT — reference wording (semantic dependency settled)
+### 14.1 Historical reference wording — resolved by RMS §10.3
 
 | | |
 |---|---|
-| **Source A** | Blueprint §9.4: *"A Registry definition may never reference a kind, a subtype, or an instance; a kind may never reference an instance."* Restated at §13.6e and as I-75. |
-| **Source B** | RMS §10.3 (`FROZEN`): *"Registry MAY reference: other Registry definitions · declared Record Models · declared Kinds · declared schemas · declared semantic contracts"*, and *"Registry MAY NOT: own domain instances · depend on runtime instances · mutate domain instances · use domain instances as semantic authority."* It states that v0.1 put the boundary *"too bluntly"*. |
-| **The conflicting propositions** | Under A, a Registry definition may not *reference* a Kind or a Subtype. Under B, it may reference a declared Kind. The conflict concerns reference. |
-| **Semantic dependency — settled here** | Row 062's `Val` assigns the layer direction to this contract, and it is settled: downward-only (D-1 to D-8). L1 does not semantically depend on L2, L3, L4 or L5. A declaration reference is not a semantic dependency (D-9). No definition depends on, or takes authority from, an instance — where A and B agree. |
-| **Reference legality — not settled here** | Which declaration references a Registry definition may carry, and how Source A's wording relates to Source B's, is exact reference legality. It is not decided here. |
-| **Downstream owner** | Row 063, the Registry reference boundary, whose `Val` restates RMS §10.3. Artifacts 058 §11 and 060 §10 record the same wording condition. Row 111 applies the settled direction to concrete definition dependencies and does not reopen it. |
+| **Source A — older Blueprint wording** | Blueprint §9.4: *"A Registry definition may never reference a kind, a subtype, or an instance; a kind may never reference an instance."* Restated at §13.6e and as I-75. |
+| **Source B — current precise rule** | RMS §10.3, `FROZEN`, headed *"Reference boundary"* and marked as correcting v0.1: *"v0.1 stated the boundary too bluntly"*. *"Registry MAY reference: other Registry definitions · declared Record Models · declared Kinds · declared schemas · declared semantic contracts."* *"Registry MAY NOT: own domain instances · depend on runtime instances · mutate domain instances · use domain instances as semantic authority."* |
+| **Status** | **RESOLVED for reference legality** by RMS §10.3, which is the current precise reference boundary. It is no longer treated as an unresolved conflict. |
+| **Owner** | Artifact 063 applies the RMS §10.3 boundary (row 063 `Val`). This contract owns only semantic dependency direction. |
+| **Effect on this contract** | Source A remains historical context for why upward semantic authority and instance dependence are prohibited — where A and B agree. It is not used to re-impose the obsolete absolute prohibition on referencing a Kind or a subtype. D-1 to D-9 are unchanged. |
 
 ### 14.2 Source gaps
 
@@ -409,7 +433,7 @@ This contract writes none of their schemas, fields, lifecycles or semantics.
 | **C-062-05** | No Registry definition depends on, or takes its meaning from, a domain instance. | §9.4; RMS §10.3 |
 | **C-062-06** | Derived / projection is terminal and non-authoritative: nothing depends on L5. | §9.4; §12.4 |
 | **C-062-07** | Semantic dependency transfers no Record ownership. | §13.6e; I-105; I-16 |
-| **C-062-08** | Semantic dependency establishes no Record reference and no reference legality. | row 063 |
+| **C-062-08** | Semantic dependency alone establishes neither a Record reference nor reference legality, and reference legality alone establishes no semantic dependency; a family contract may establish a concrete relation that satisfies both predicates. | row 063; Artifact 063 RB-5 |
 | **C-062-09** | Semantic dependency establishes no cross-model edge. | Artifact 058 |
 | **C-062-10** | Layer position is not an authority ranking. | RMS §17; 051 |
 | **C-062-11** | Layer position is not a canonicality ranking. | §13.7c; 052 |
@@ -420,24 +444,24 @@ This contract writes none of their schemas, fields, lifecycles or semantics.
 | **C-062-16** | Registry holds the governed `KIND-DEFINITION` and `SUBTYPE-DEFINITION`; that transfers no model's Kind taxonomy, Kind or subtype domain semantics, or instances. | §9.4; §13.6e; RMS §10; I-105; Artifact 061 |
 | **C-062-17** | L4 ownership remains with the Record Model that owns the Record: no semantic dependency transfers it to Registry, W, E, P, V and I retain their Records, and Registry's own R Records remain R-owned. | §13.6e; I-16; I-105; Artifacts 060, 061 |
 | **C-062-18** | No Relationship Record arises from a layer dependency. | §13.2; I-102 |
-| **C-062-19** | Runtime validation and resolution stay outside the layers. | §9.4; RMS §4, §10.6 |
+| **C-062-19** | Runtime validation, generic Record and `_ref` resolution, and Registry definition resolution (115) stay outside the layers; generic Record resolution is not Registry-owned and is not 115's. | §9.4; RMS §4, §10.6; row 115 |
 | **C-062-20** | Artifact 064 owns the exact fourteen-Kind roster and admission rationale. Layer placement for Registry Kinds not placed by Blueprint §9.4 is not established by this contract and is not assigned to 064, or to any artifact, here. | row 064; §9.4 |
 | **C-062-21** | Governance is not decided here (065). | row 065 |
 | **C-062-22** | Exact reference legality is not decided here (063). | row 063 |
 | **C-062-23** | The five-layer downward-only semantic direction is settled by this contract. Artifact 111 owns detailed Registry-definition dependency rules — same-layer dependency, asymmetry, cycle prohibition and concrete dependency-graph constraints — and does not reopen the layer order. | row 062 `Val`; row 111 |
-| **C-062-24** | The reference-wording conflict of §14.1 remains recorded and unresolved as a reference question; it leaves the semantic direction settled. | §9.4; RMS §10.3 |
+| **C-062-24** | The older Blueprint reference wording is retained only as historical context; RMS §10.3 explicitly corrects it and is the current precise reference boundary, which Artifact 063 applies. This contract does not reopen reference legality. | §9.4; RMS §10.3; row 063 |
 | **C-062-25** | Frozen P0, P1 and P2 architecture is unchanged, and their suites stay green. | Artifact 004; rows 030, 038, 059 |
-| **C-062-26** | A declaration reference permitted by RMS §10.3 and Artifact 063 creates no upward semantic dependency. | RMS §10.3; D-9 |
+| **C-062-26** | A declaration reference permitted by RMS §10.3 and Artifact 063 does not, by legality alone, create a semantic dependency or semantic authority from its target; where the applicable family contract establishes that the same concrete relation is a semantic dependency, it obeys D-1 to D-8 and Artifact 111. | RMS §10.3; D-9; Artifact 063 RB-5 |
 
 ## 16. Downstream Handoff
 
 | Artifact | May assume from 062 | Must still define |
 |---|---|---|
-| **063** reference boundary | the settled layer order and downward-only semantic direction; no definition depends on or takes meaning from an instance; dependency ≠ reference; a legal declaration reference is no upward dependency (D-9) | what R may and may not reference; the §14.1 wording conflict, as a reference question |
+| **063** reference boundary | the five-layer order and downward-only semantic direction; no definition depends on or takes meaning from an instance; reference legality and semantic dependency are separate predicates — legality alone establishes no dependency, and a concrete relation may be both where the family contract says so (D-9) | the exact current reference boundary under RMS §10.3: admissible target categories, forbidden targets, declaration qualification, domain-instance and runtime rejection |
 | **064** Kind taxonomy | that 062's five-layer contract exists; which contents the §9.4 rows name | the exact fourteen Kinds and each admission rationale. It inherits from 062 no obligation to place every Kind in a layer. |
 | **065** governance | that layers carry no authority ranking | who may propose, approve, deprecate |
 | **111** dependency direction | the five layers and their downward-only direction, settled (D-1 to D-9) | asymmetry and no-cycle rules; same-layer dependency; concrete dependency-graph constraints |
-| **112–117** | the contract they enforce and implement | validation, binding, resolution, kernel |
+| **112–117** | the contract they enforce and implement | validation, binding, kernel, identity binding, and Registry definition resolution by id and version (115); generic Record and `_ref` resolution is not assigned to 115 |
 
 ## 17. Roadmap Completion Trace
 
@@ -448,7 +472,7 @@ This contract writes none of their schemas, fields, lifecycles or semantics.
 | `Done`: *"contract"* | **SATISFIED** — layer responsibilities, the dependency law, the ownership boundary, the reference distinction and the handoffs are normative | §6–§13, §16; C-062-01 to C-062-26 |
 | `Why`: *"Blueprint's own Registry layering"* | **SATISFIED** — the layers are §9.4's | §3, §4.1 |
 | `H: 061` | **SATISFIED** — every rule respects the authority boundary | §4.3, §8, §11, §13 |
-| `→ 063` | **SATISFIED** — the reference question is handed off with the direction settled | §9, §14.1, §16 |
+| `→ 063` | **SATISFIED** — the direction is settled; reference legality stays 063's, under RMS §10.3 | §9, §14.1, §16 |
 
 ---
 

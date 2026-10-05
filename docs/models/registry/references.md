@@ -315,7 +315,8 @@ its rejection. The mention makes no Registry definition able to reference it.
 
 Artifact 062 settled the layer direction (D-1 to D-9) and the separation: *dependency ≠
 reference*. D-9: *"A declaration reference that RMS §10.3 permits and Artifact 063 bounds — for
-example a Registry definition naming a declared Kind — is not a semantic dependency on L2 or L3."*
+example a Registry definition naming a declared Kind — does not, by itself, establish a semantic
+dependency."*
 
 This contract decides the reference-target boundary only. A reference legal under §7 is not thereby
 a semantic dependency, and the named target does not thereby become the definition's semantic
