@@ -22,7 +22,7 @@ who checks it, and what a check can do     §7, §9
 who approves or rejects it                 §9
 who may propose and authorize deprecation  §10
 who merely writes the approved change      §7, §9
-who defines the temporal mechanics         §17 (108–110)
+who defines the temporal mechanics         §18 (108–110)
 ```
 
 It keeps apart: proposing, checking, approving at the gate, Registry semantic authority, the
@@ -136,20 +136,24 @@ Record shape.
 
 **Registry is canonical about meaning** (source fact, Blueprint §13.7c; Artifact 052 §5.4): *"This
 definition is the authoritative meaning records resolve against"*; *"Registry owns meaning, not
-World Truth"* (Blueprint §13.6). Approval of a definition establishes meaning, never a fact of the
-world.
+World Truth"* (Blueprint §13.6). Approval authorizes a proposed definition change to proceed
+through the governed write path; the committed Registry definition is the authoritative meaning
+Records resolve against. That meaning is never a fact of the world.
 
 **Authority boundary** (source fact, §13.6e; I-105; Artifact 061): *"Registry governs the
 definitions. Each Record Model owns its Records."*
 
 ## 7. The Core Governance Rule
 
-> **A Registry definition is created, changed or deprecated only through the one path. Anyone the
-> sources allow to propose — a human, or AI-assisted proposal-producing work — may originate a
-> proposal; a proposal carries no authority. Checks constrain what may be approved and never
-> approve. The current human Authority approves or rejects at the Human Gate. The Mutation
-> Coordinator writes the approved change and approves nothing. Registry semantic authority governs
-> what a definition means; it is not the Authority and decides no gate.**
+> **A Registry definition is created, changed or deprecated only through the one path. A proposal
+> may be originated or drafted by source-supported proposal-producing actors: the sources
+> explicitly support human-originated proposals and AI-assisted or delegated proposal generation,
+> and this model creates no exhaustive proposer-role taxonomy. A proposal carries no authority.
+> Checks constrain what may be approved and never approve. The current human Authority approves or
+> rejects at the Human Gate; approval authorizes the governed write and is not itself committed
+> state. The Mutation Coordinator writes the approved change and approves nothing. The committed
+> Registry definition carries the authoritative meaning; Registry semantic authority governs that
+> meaning, is not the Authority, and decides no gate.**
 
 ```
 Registry definition
@@ -163,13 +167,16 @@ checks .......................... constrain legality; never approve
      ▼
 the current human Authority, at the Human Gate
      ├── reject, or return as changed
-     └── approve
+     └── approve ................ authorizes the mutation; not yet committed state
              │
              ▼
      Mutation Coordinator ....... the governed write; approves nothing
              │
              ▼
-     authoritative Registry meaning
+     committed Registry definition
+             │
+             ▼
+     authoritative meaning Records resolve against
 ```
 
 **Source facts.** Spine law 2: canon changes only through *"propose → check → human gate → commit →
@@ -206,7 +213,7 @@ second path, and not a second Authority.
 | **PR-2** | AI-assisted, proposal-producing work may draft such a proposal. Its draft is provisional and advisory (Spine law 6). |
 | **PR-3** | Proposing requires no semantic, approval or commit authority, and grants none. A proposal is not a write, not canon, and not Registry meaning. |
 | **PR-4** | A proposal's author gains nothing from authorship: an AI author may not gate it, and a human author may not edit the definition directly. |
-| **PR-5** | No closed list of proposer roles exists in the sources, and none is created. No persistent *proposer* role, Record or field is introduced. |
+| **PR-5** | PR-1 and PR-2 identify source-established proposer cases; they are not an exhaustive proposer-role taxonomy. No closed list of proposer roles exists in the sources, and none is created. No persistent *proposer* role, Record or field is introduced. |
 | **PR-6** | A proposal's form, its basis and evidence are 146's and 147's; this model states only who may propose. |
 
 ## 9. Approval and Rejection Rights
@@ -233,7 +240,7 @@ second path, and not a second Authority.
 | **AP-2** | No AI, Registry Record, validator, schema, reference, semantic layer, runtime component or service approves in the Authority's place. |
 | **AP-3** | A check that passes leaves the proposal a proposal; a check that fails constrains what may be approved. Check results inform the decision and are never the decision. |
 | **AP-4** | The Mutation Coordinator performs the approved write and enforces the gate. It holds no approval right; being the writer confers none. |
-| **AP-5** | Registry semantic authority decides what a definition means once approved; it decides no gate and is not change authority (Artifact 061 §14). |
+| **AP-5** | Registry holds semantic authority over the meaning carried by the committed Registry definition. Approval authorizes the proposed change to proceed through the governed write path; approval alone does not create authoritative Registry state. Registry semantic authority decides no gate and is not change authority (Artifact 061 §14). |
 | **AP-6** | The decision may not be delegated: the Authority may take advice from anyone and may not lend the commit (§10.1; Artifact 051 §12). |
 | **AP-7** | With no Authority, no Registry definition changes: nothing commits (§10.1; Artifact 051 §13). |
 | **AP-8** | No second approver exists: no Registry Authority, definition authority, committee, hierarchy or quorum. The sources create none. Nor does any source require that proposer and approver be different people; none is created. |
@@ -319,7 +326,7 @@ deprecation, lifecycle, authority or canonical field is added to it or to any Re
 |---|---|---|
 | Who owns a definition Record? | the Registry Record Model | RMS §10; I-105; 060 |
 | Who holds semantic authority over a definition? | Registry, within its domain | RMS §17; I-105; 061 |
-| Who may originate or draft a proposal? | a human; AI-assisted proposal-producing work — neither gains authority | §8 (PR-1 to PR-5) |
+| Who may originate or draft a proposal? | source-supported proposal-producing actors: explicitly, a human may originate, and AI-assisted or delegated work may draft or generate, a proposal. These are established cases, not a closed proposer-role taxonomy; proposing grants no authority | §8 (PR-1 to PR-5); Artifact 051 §12 |
 | Who checks legality and conformance? | the check stage, through the mechanisms assigned elsewhere (112, 116, 145, 147); checks constrain, never approve | §9 (AP-3) |
 | Who approves or rejects? | the current human Authority, at the Human Gate | §9 (AP-1, AP-2) |
 | Who writes an approved change? | the Mutation Coordinator; it approves nothing | §9 (AP-4); row 152 |
@@ -392,6 +399,7 @@ abstraction"* — not to this model.
 | 17 | *"Registry change"* in §13.7c is a second Authority | it names the Registry change path, on the one path | SC-065-H |
 | 18 | The Authority may approve an architectural change as an ordinary Registry proposal | architecture changes only by amendment | §9.4; §11 |
 | 19 | A proposer, approver or reviewer role, Record or field exists because governance exists | no source creates one | PR-5; AP-8 |
+| 20 | The Authority approved the proposal, so the proposed definition is already authoritative before the governed commit | approval authorizes the mutation; authoritative Registry meaning is carried by the committed Registry definition | §6; §7; AP-5 |
 
 ## 16. Source Conditions and Gaps
 
@@ -430,11 +438,14 @@ hard dependencies and unlocks to agree. **Treatment:** `H: 064` is kept as decla
 consumed (§6). The Roadmap is not edited here. Artifact 064 §27 records the same omission. Route:
 ROADMAP ISSUE, non-blocking.
 
-### SC-065-F — row 065 `→ 108` against row 108 `S: 065`
+### SC-065-F — row 065 `→ 108` against row 108 `S: 065` — DECOMPOSITION INCONSISTENCY
 
-Row 065 unlocks 108; row 108 lists 065 as a soft dependency (`H: 064,078 · S: 065`). **Treatment:**
-`→ 108` is kept; 065's output is governance context that 108 consumes. 108 is not described as
-hard-blocked by 065, and 108's classification is not rewritten.
+Row 065 unlocks 108; row 108 lists 065 as a soft dependency (`H: 064,078 · S: 065`), not a hard
+one. **Treatment:** both Roadmap declarations are preserved exactly. This artifact keeps `→ 108`;
+row 108 remains `S: 065`, not `H: 065`. Under Artifact 003's dependency/unlock convention this is a
+Roadmap/decomposition inconsistency, recorded as a non-blocking ROADMAP ISSUE. This artifact does
+not repair the Roadmap and does not promote the soft dependency; 065's output is governance context
+that 108 consumes, and 108 is not described as hard-blocked by 065.
 
 ### SC-065-G — requirement text unavailable
 
@@ -457,11 +468,11 @@ Authority, which §10.1 and I-03 forbid.
 | ID | Condition | Source |
 |---|---|---|
 | **C-065-01** | The header reproduces row 065's metadata exactly. | row 065 |
-| **C-065-02** | The document states who may originate or draft a Registry-definition proposal, and that proposing carries no approval or commit authority. | §8 (PR-1 to PR-3) |
+| **C-065-02** | The document states who may originate or draft a Registry-definition proposal, and that proposing carries no approval or commit authority; the source-supported human and AI-assisted or delegated proposer cases are documented without being presented as an exhaustive proposer-role taxonomy. | §7; §8 (PR-1 to PR-5); §13 |
 | **C-065-03** | AI-assisted proposal work is stated to be provisional and advisory, and unable to approve or commit. | §8 (PR-2, PR-4); Spine law 6 |
 | **C-065-04** | The current human constitutional Authority at the Human Gate is stated to be the approval and rejection authority for Registry-definition changes. | §9 (AP-1) |
 | **C-065-05** | No Registry-specific Authority, committee, software principal, Record, semantic layer, validator or service is created as an approver. | §9 (AP-2, AP-8) |
-| **C-065-06** | The Mutation Coordinator is kept distinct from the approval decision. | §9 (AP-4) |
+| **C-065-06** | The Mutation Coordinator is kept distinct from the approval decision; approval authorizes a Registry-definition mutation but does not itself establish authoritative Registry state, and authoritative meaning is carried by the committed definition after the governed write. | §6; §7; §9 (AP-4, AP-5) |
 | **C-065-07** | The document states who may propose deprecation and who may authorize it. | §10 (DP-1, DP-3) |
 | **C-065-08** | No versioning, supersession, deletion, retention, lifecycle state or deprecation representation is designed; 108–110 receive it. | §10; §18 |
 | **C-065-09** | Registry governs definition meaning without ownership of, or authority over, another model's Records. | §12 |
