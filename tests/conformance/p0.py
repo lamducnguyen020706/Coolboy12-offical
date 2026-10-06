@@ -759,9 +759,12 @@ _OWNERSHIP_USE = re.compile(
 #   tests/         DEV-ENV proof, and this file itself necessarily names every
 #                  retired term it forbids.
 #
-# And within those directories the scan reads three extensions — .md, .py and
-# .json — and skips two kinds of directory that tooling generates and no
-# artifact authors:
+# And within those directories the scan reads four authored text extensions —
+# .md, .py, .json and .schema — and skips two kinds of directory that tooling
+# generates and no artifact authors. .schema is read because the repaired
+# Roadmap (§0.8, AD-REG-AUTHORING-SPLIT) places the P3 Registry structural
+# contracts at docs/registry/*.schema: authored architecture under docs/, so
+# inside this firewall, not beside it. The generated directories are:
 #
 #   __pycache__     bytecode this suite's own imports create.
 #   src/*.egg-info  the packaging metadata setuptools writes when Artifact
@@ -773,12 +776,12 @@ _OWNERSHIP_USE = re.compile(
 #                   that had installed the project, on files nobody wrote.
 #
 # Stating that here because the scope must be exactly what runs: every current
-# architecture file in the repository today is one of those three, and
+# architecture file in the repository today is one of those four, and
 # ``test_p0_com_scan_covers_the_current_architecture_surface`` asserts that,
 # so a .toml or .yaml arriving later is reported rather than silently unread.
 CURRENT_ARCHITECTURE = ("CLAUDE.md", "docs", "src", ".claude")
 EXCLUDED_FROM_SCAN = ("docs/sources",)
-SCANNED_SUFFIXES = (".md", ".py", ".json")
+SCANNED_SUFFIXES = (".md", ".py", ".json", ".schema")
 
 
 def is_generated(path: Path) -> bool:
@@ -1008,8 +1011,8 @@ def test_p0_com_scan_covers_the_current_architecture_surface():
         "docs/sources/ is verbatim constitutional source and must not be scanned"
 
     # The extension filter must be a description of this repository, not a
-    # silent exclusion. Every current architecture file is .md, .py or .json
-    # today; a file of any other kind appearing in those directories would be
+    # silent exclusion. Every current architecture file is .md, .py, .json or
+    # .schema today; a file of any other kind appearing in those directories would be
     # skipped without a word, so it is reported here instead.
     unread = sorted(
         child.relative_to(REPO_ROOT).as_posix()
