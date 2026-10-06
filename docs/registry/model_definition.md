@@ -356,6 +356,7 @@ structurally is 067's (§19).
 | 27 | Registry owns its R Records because a `MODEL-DEFINITION` grants that ownership | a definition grants no ownership | MD-4 |
 | 28 | Artifact 066's `Canon` and `CD` fields are metadata of the `MODEL-DEFINITION` family rather than of Artifact 066 | artifact metadata applies to the artifact; no alternative reading is invented | Artifact 003; SC-066-H |
 | 29 | Artifact 459 owns every possible extension | it owns the categories its row names | row 459 |
+| 30 | Artifact 003's general *docs specification → `Canon: n/a`* convention lets Artifact 066 overwrite its Roadmap value | the explicit row 066 value is preserved; the inconsistency is recorded | SC-066-H |
 
 ## 18. Source Conditions and Gaps
 
@@ -402,15 +403,16 @@ its cited sources and the frozen contracts.
 Artifact 062 §6 records that Blueprint §9.4's layer rows do not place `MODEL-DEFINITION`, and that
 its placement is *"not established by current sources"*. **Treatment:** no layer is assigned here.
 
-### SC-066-H — documentation specification with Roadmap `Canon` and `CD` metadata
+### SC-066-H — Roadmap `Canon` metadata vs Artifact 003's docs-specification convention
 
 | | |
 |---|---|
-| **Source fact — Roadmap** | Row 066 assigns this artifact `T: doc` · `Canon: canonical-about-meaning` · `CD: yes`. |
-| **Source fact — Artifact 003** | `Canon` *"records a per-artifact status, nothing more"*; `CD` marks whether an artifact *"creates, carries or directly impacts canonical data"* and *"licenses nothing"*. Both are per-artifact metadata. |
+| **Source fact — Roadmap row 066** | Row 066 explicitly assigns this artifact `T: doc` · `Canon: canonical-about-meaning` · `CD: yes`. These values are preserved exactly. |
+| **Source fact — Artifact 003** | `Canon` *"records a per-artifact status, nothing more"*, and, as a general convention, *"A specification in `docs/**` is `AUTHORITATIVE` about architecture and `Canon: n/a`."* `CD` marks whether an artifact *"creates, carries or directly impacts canonical data"* and *"licenses nothing"*. |
 | **Source fact — directory** | `docs/registry/PURPOSE.md` holds family specifications and excludes Registry Records: *"those are minted into `canon/registry/`"*. |
-| **Source gap** | No current source states why this documentation artifact was assigned `Canon: canonical-about-meaning` rather than `n/a`. No explanation is invented. |
-| **Treatment** | The metadata is preserved exactly and applies to Artifact 066. Artifact 066 remains a documentation specification, not a `MODEL-DEFINITION` Registry Record. It creates no concrete Registry Record and performs no canonical write. `CD: yes` licenses nothing and grants no authority. |
+| **Convention / decomposition inconsistency** | Artifact 066 is a documentation specification under `docs/registry/`, yet row 066 assigns it `Canon: canonical-about-meaning` rather than Artifact 003's general docs-specification value, `Canon: n/a`. The artifact's explicit Roadmap metadata and Artifact 003's general convention do not align. |
+| **Source gap** | No current source explains why row 066 carries the non-default `Canon` value. No rationale is invented. |
+| **Treatment** | Row 066's explicit manifest metadata governs Artifact 066's identity, and is preserved exactly; Artifact 003 remains the general convention and is not changed. This artifact has no authority to reconcile the two: the inconsistency is **recorded, not resolved**. Artifact 066 remains `T: doc` and a specification, not a `MODEL-DEFINITION` Registry Record; it creates no concrete Registry Record and performs no canonical write; `CD: yes` grants no write authority. Route: ROADMAP / CONVENTION ISSUE, non-blocking for this artifact, whose own metadata is explicit and whose `Val` and `Done` remain evaluable. |
 
 ### SC-066-I — LS-1 on rows 066–067 and the 064 ↔ 075 self-hosting resolution
 
@@ -449,7 +451,7 @@ competing pair is invented; 066 and 067 are not claimed to replace row 075; 067'
 | **C-066-23** | No reference validator, resolver or kernel belonging to 112, 114 or 115 is designed. | §10 |
 | **C-066-24** | `LS: LS-1` is preserved and not treated as a reference or a hard dependency. | §15 |
 | **C-066-25** | The Registry self-hosting resolution through 064, 074 and 075 is not replaced or bypassed. | §15; SC-066-I |
-| **C-066-26** | `Canon: canonical-about-meaning` and `CD: yes` remain exact per-artifact Roadmap metadata; neither is reinterpreted as metadata of the `MODEL-DEFINITION` family, neither makes this document a Registry Record, and neither authorizes a canonical write. | SC-066-H; Artifact 003 |
+| **C-066-26** | `Canon: canonical-about-meaning` and `CD: yes` remain exact per-artifact Roadmap metadata; neither is reinterpreted as metadata of the `MODEL-DEFINITION` family, neither makes this document a Registry Record, and neither authorizes a canonical write. The inconsistency between row 066's `Canon` value and Artifact 003's general docs-specification convention is recorded and not silently resolved. | SC-066-H; Artifact 003 |
 | **C-066-27** | RR-16's text is not invented. | SC-066-F |
 | **C-066-28** | This artifact's changes are confined to `docs/registry/model_definition.md`. | row 066 |
 
