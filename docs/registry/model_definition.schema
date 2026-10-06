@@ -41,8 +41,14 @@ MODEL-DEFINITION RECORD
 ├── ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref · sot_class
 └── FAMILY    model_subject · definition
 
-Exactly these nine elements. The envelope is the universal seven (RMS §4); the family has two.
-No other element is part of this contract.
+Artifact 067 defines exactly these nine elements: the universal seven-field envelope (RMS §4)
+and the two family elements model_subject and definition. It defines no other element.
+
+That is the scope boundary of this contract, not a closure over everything a MODEL-DEFINITION
+Record may later carry. Rows 108–110 keep their authority to establish Registry-owned
+evolution, versioning, supersession and deprecation representation (§5 VERSIONABILITY). The
+envelope, by contrast, stays exactly seven fields: no downstream Registry representation becomes
+an eighth universal field (RMS §4; P-05).
 
 ==================================================================================================
 2. ENVELOPE — the universal seven (RMS §4; Artifact 033)
@@ -152,11 +158,16 @@ REJECT      executable behaviour, a model factory, a registration or creation ac
 4. STRUCTURAL PROHIBITIONS
 ==================================================================================================
 
-P-01  No element beyond the nine of §1. In particular none of: version, revision, latest,
-      supersedes, deprecated, replacement, effective_at, compatibility, status, tier,
-      lifecycle_state, canonical, history, relationship_record, owner, owns_records,
-      grants_sovereignty, authority_over_model, implementation, service, worker, session,
-      process, handler, factory.
+P-01A Artifact 067 introduces no element beyond the nine of §1. Prohibited here as universal
+      semantics (P-06), as ownership or sovereignty (P-03) or as runtime structure
+      (066 RF-5): status, tier, lifecycle_state, canonical, history, relationship_record,
+      owner, owns_records, grants_sovereignty, authority_over_model, implementation, service,
+      worker, session, process, handler, factory.
+P-01B Artifact 067 introduces no version, revision, latest-version, supersession, replacement,
+      deprecation, effective-date, compatibility or retention element or mechanism. That
+      representation is deferred to rows 108–110: neither defined nor permanently prohibited
+      here. Whatever those rows establish stays Registry-owned, is not an envelope field (P-05)
+      and is not a universal semantic shared by W, E, P, V or I (P-06).
 P-02  No generic reference list (definition_refs, kind_refs, schema_refs, contract_refs,
       dependencies, related_records). Admissible target categories are not concrete relations;
       the only concrete relation is the declared model subject (066 RF-3; Artifact 063 RB-5).
@@ -185,8 +196,17 @@ RESOLUTION      A conforming Record is identity-bearing (§2), so the shared res
                 (066 RS-1 to RS-5)
 
 VERSIONABILITY  Nothing here prevents the Registry evolution and versioning model of rows
-                108–110 from applying to a MODEL-DEFINITION. No version element, numbering,
-                pinning, supersession, deprecation or retention is defined. (066 §11)
+                108–110 from applying to a MODEL-DEFINITION. Artifact 067 defines no version
+                identifier, numbering scheme, pinning representation, supersession,
+                replacement or deprecation representation, retention or compatibility rule,
+                or temporal lifecycle mechanism; those decisions stay with rows 108 (evolution),
+                109 (versioning, pinning) and 110 (supersession, deprecation). This contract is
+                open to whatever Registry-owned representation those rows establish, provided
+                it leaves the seven-field envelope unchanged and keeps within the Record Model
+                boundaries (P-05, P-06). Versionable therefore means: Artifact 067 does not
+                structurally obstruct the evolution and versioning architecture rows 108–110
+                own. Absence here is not a decision that a MODEL-DEFINITION carries no version.
+                (066 §11)
 
 REFERENCES      The model subject is a declaration reference to a declared Record Model, not an
                 R→R reference to a MODEL-DEFINITION Record (Artifact 063 §8.2; 066 RF-2). No
@@ -252,15 +272,19 @@ C-067-09  model_subject and definition are family elements, not envelope additio
 C-067-10  partition is constrained to R.                                                    §2
 C-067-11  kind is constrained to MODEL-DEFINITION without an invented code.                 §2
 C-067-12  A single required definition element carries the governed model-level meaning.   §3
-C-067-13  No lifecycle, status, taxonomy, canonicality, relationship, temporal or package
-          element is introduced.                                                            P-01
+C-067-13  Artifact 067 introduces no lifecycle, status, taxonomy, canonicality, relationship,
+          temporal or package element.                                              P-01A, P-01B
 C-067-14  No generic reference list is introduced.                                         P-02
 C-067-15  Concrete references obey Artifact 063's boundary.                                 §5
 C-067-16  No W/E/P/V/I domain instance is accepted as a target or semantic authority.      §3, §5
 C-067-17  No runtime instance is accepted as a dependency or semantic authority.           §3, §5
 C-067-18  The structure supports resolution without implementing a resolver.               §5
-C-067-19  The structure is versionable without defining rows 108–110's mechanics.          §5
-C-067-20  No version, supersession, deprecation, latest or lifecycle mechanism is defined. P-01
+C-067-19  The structure stays compatible with the Registry evolution and versioning work of
+          rows 108–110: Artifact 067 neither defines those mechanics nor structurally
+          prohibits their later Registry-owned representation.                     §1, §5, P-01B
+C-067-20  Artifact 067 itself defines no version, revision, supersession, replacement,
+          deprecation, latest-version, compatibility, retention or lifecycle mechanism; their
+          representation stays deferred to rows 108–110.                                §5, P-01B
 C-067-21  registry_ref stays the universal field with no added meaning.                    §2
 C-067-22  The artifact's SoT and Canon are not copied into sot_class.                      §2
 C-067-23  This file is not a MODEL-DEFINITION Record.                                      §0
@@ -275,7 +299,10 @@ C-067-28  Only docs/registry/model_definition.schema is created by this artifact
 ==================================================================================================
 
 Val  definition resolves          §2 identity-bearing envelope; §5 RESOLUTION
-Val  versionable                  §5 VERSIONABILITY; P-01
+Val  versionable                  §5 VERSIONABILITY: 067 defines no version mechanics and does
+                                  not obstruct the Registry evolution and versioning
+                                  representation rows 108–110 own; §1; P-01B (deferred, not
+                                  prohibited)
 Val  references only declared     §3 model_subject (declared model only); §5 REFERENCES; P-02
      entities (063)
 Done schema matches spec          §1–§4 encode 066 MD-1 to MD-8, §9, RS-1 to RS-5, §11,
