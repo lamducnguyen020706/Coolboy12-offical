@@ -328,9 +328,9 @@ prohibited"*. Artifact 061 §7 row 9.
 
 **Source-established responsibility.** §13.6e: *"The grammar's roster and its per-partition kind
 codes"*. Artifact 061 §7 row 12: the authoritative kind-code mapping and the recorded grammar; never
-re-deciding AD-1. Row 085: *"the six-partition grammar recorded as a Registry Record"*; its `Why`:
-*"the grammar is governed, not hard-coded"*. The grammar itself is constitutional and unchanged
-here (§13.9a; Artifact 034).
+re-deciding AD-1. Row 085: *"the six-partition grammar authored as the source of its Registry
+Record"*; its `Why`: *"the grammar is governed, not hard-coded"*. The grammar itself is
+constitutional and unchanged here (§13.9a; Artifact 034).
 
 | # | 057 question | Source-grounded answer | Source basis |
 |---|---|---|---|
@@ -508,8 +508,9 @@ mechanism (068–069) cannot exist before the taxonomy that makes it meaningful,
 holds that *"There is no circular self-definition requirement."* Under that exception:
 
 - this contract finalises the taxonomy half;
-- row 074, a contract with `LS: —`, specifies the set; row 075, with `LS: LS-1`, materialises
-  the fourteen concrete `KIND-DEFINITION` Records, one per Kind of §6, conforming to 069 — the
+- row 074, a contract with `LS: —`, specifies the set; row 075, with `LS: LS-1`, authors the
+  fourteen concrete `KIND-DEFINITION` Records, one per Kind of §6, conforming to 069, as their
+  canonicalization source — committed only through 152 after G-CANON-R (Roadmap §0.8) — the
   Registry's counterpart of rows 178, 257, 300, 345 and 364. The Registry's own pairs are
   064 ↔ 075; row 074 is not a pair member;
 - the partner obligation is not waived: row 123's lockstep tests reject a missing or mismatched
@@ -636,7 +637,7 @@ abstraction"*.
 | | |
 |---|---|
 | **Source facts** | Row 064 carries `LS: LS-1`; PART III makes LS-1 an ATOMIC-PAIR of Kind spec and `KIND-DEFINITION`; RMS §10.4 rejects a circular self-definition requirement. |
-| **Authorial build resolution** | AD-LS1-R-BOOTSTRAP, `AUTHOR-DECIDED`, recorded in Artifact 003 (*Registry LS-1 self-hosting exception*) and Roadmap §0.7. The Registry's own fourteen pairs receive a narrow ordering exception. The pairs are 064 ↔ 075: row 075 materialises the fourteen concrete `KIND-DEFINITION` Records and carries `LS: LS-1`; row 074 specifies that set and is not a pair member (`LS: —`); rows 068–069 provide the generic family and schema. |
+| **Authorial build resolution** | AD-LS1-R-BOOTSTRAP, `AUTHOR-DECIDED`, recorded in Artifact 003 (*Registry LS-1 self-hosting exception*) and Roadmap §0.7. The Registry's own fourteen pairs receive a narrow ordering exception. The pairs are 064 ↔ 075: row 075 authors the fourteen concrete `KIND-DEFINITION` Records as their canonicalization source — committed only through 152 after G-CANON-R (Roadmap §0.8) — and carries `LS: LS-1`; row 074 specifies that set and is not a pair member (`LS: —`); rows 068–069 provide the generic family and schema. |
 | **What it does not do** | Waive the partners; apply to W, E, P, V or I; weaken LS-1 or any other lockstep. |
 | **Treatment here** | The taxonomy is finalised before the partners land, under that exception. The partners are not claimed to exist; exit-P3 and G-REG cannot pass until row 075 lands and row 123's lockstep tests pass. |
 
@@ -790,7 +791,7 @@ WSV-family answers rest on §13.6e's WSV attribute table, RMS §10.7 and rows 08
 | `Val`: *"each with admission rationale"* | **SATISFIED** — 196 question cells represented, 196 resolved, 0 unresolved; questions 1–12 and 14 on governing-source facts; question 13 on source-grounded distinctions under Artifact 057 §5.4 (`AUTHOR-DECIDED`, AD-057-R13), not an RMS rule | §8–§21; C-064-05, C-064-06, C-064-46, C-064-47 |
 | `Done`: *"fourteen"* | **SATISFIED** | §6 |
 | `H: 060,057` | **SATISFIED** — sovereignty and the admission test consumed unchanged | §2, §7, §22 |
-| `LS: LS-1` | **SOURCE/DECOMPOSITION RESOLVED** — ordering by AD-LS1-R-BOOTSTRAP (Artifact 003, RMS §10.4); the pairs are 064 ↔ 075; the concrete partners are owned by row 075, specified by row 074, and are **not yet landed**; they are mandatory before exit-P3 and G-REG | §22; SC-064-D |
+| `LS: LS-1` | **SOURCE/DECOMPOSITION RESOLVED** — ordering by AD-LS1-R-BOOTSTRAP (Artifact 003, RMS §10.4); the pairs are 064 ↔ 075; the concrete partners are owned by row 075, specified by row 074, and are **not yet landed**; they are mandatory, as authored sources, before exit-P3 and G-REG, and are committed only after G-CANON-R | §22; SC-064-D |
 | `→ 066–107` | **SATISFIED** — handoff stated without enlarging any row | §27 |
 
 No schema created. No Registry data created. No governance implemented. No future extension

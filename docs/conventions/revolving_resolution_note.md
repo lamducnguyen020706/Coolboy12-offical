@@ -78,7 +78,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 15** — CONFLICT-A · CONFLICT-B · CONFLICT-C · CONFLICT-D · CONFLICT-E · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K · GAP-L.
+**Primary resolution entries: 16** — CONFLICT-A · CONFLICT-B · CONFLICT-C · CONFLICT-D · CONFLICT-E · CONFLICT-F · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K · GAP-L.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -92,6 +92,7 @@ separate packaging decisions.
 | **CONFLICT-C** | Blueprint/RMS state **five** SoT classes (§29.6a); Roadmap PART VII states **six**, adding DEV-ENV | recorded, not resolved — the two tables classify different objects (data classes vs repository artifact classes); DEV-ENV is Roadmap-only | **RECORDED — UNRESOLVED AT SOURCE** | None |
 | **CONFLICT-D** | Artifact 022's unconditional `OPAQUE` deny cannot coexist with Artifact 024 registering it at `PreToolUse` across Bash | Route 3 approved by the author: 022 unfrozen under control, decision axis moved from command provability to canonical reachability, re-frozen | **RESOLVED FOR BUILD · AUTHORIAL RULING — SOURCE UNCHANGED** | None |
 | **CONFLICT-E** | Registry self-hosting: LS-1 requires a concrete `KIND-DEFINITION` partner for each of the Registry's fourteen Kinds, but no row owned them; RMS §13 question 13 has no stated application to Registry candidates | AD-LS1-R-BOOTSTRAP (Artifact 003 ordering exception; Roadmap rows 074–075 repurposed, §0.7) and AD-057-R13 (Artifact 057 §5.4) | **RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED** | None |
+| **CONFLICT-F** | P3 Registry rows targeted `canon/registry/**`, which only the Mutation Coordinator (row 152, P5) may write | AD-REG-AUTHORING-SPLIT: P3 authors contracts and canonicalization sources under `docs/registry/`; Registry Records committed only through 152 after G-CANON-R; G-REG licenses consumption only (Roadmap §0.8) | **RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED** | None |
 | **GAP-C** | missing requirement register | build not blocked; requirement text not verified | **NON-BLOCKING — UNVERIFIED** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
 | **GAP-E.3** | unsourced pyproject values | implementation-level resolution for Python requirement, backend, version | **RESOLVED FOR BUILD** | None |
@@ -376,6 +377,57 @@ only; the decisions live in Artifacts 003 and 057 and the Roadmap.
 **Follow-up correction.** Row 074's `LS` field was left as `LS-1` by the self-hosting revision. The
 decision always paired 064 ↔ 075; row 074 only specifies the set. Row 074 now reads `LS: —`, and
 §0.7 says so. This is a consistency correction to AD-LS1-R-BOOTSTRAP; no decision changed.
+
+**Status:** RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED · **Constitutional
+change:** NONE
+
+---
+
+### CONFLICT-F — P3 Registry Authoring vs the Sole Canonical Writer
+
+**Source statement A.** Twenty-two P3 rows targeted `canon/registry/**`: the structural contracts
+067, 069, 071, 073, 077, 080, 082, 084, 087, 089, 091, 093, 095, 097, 099, 102, 104, and the
+definition material 075, 085, 105, 106, 107.
+
+**Source statement B.** `canon/**` is written by the Mutation Coordinator only — Roadmap PART I and
+PART X, Artifact 017 §9, Spine law 2 — enforced by Artifact 022's hook and the P0 canon test.
+
+**Source statement C.** The Mutation Coordinator is row 152, in P5; P4 depends on P3 and P5 on P4.
+
+**Conflict.** The decomposition required a canonical write before the only writer exists. Building
+Artifact 067 stopped on it (`NO-GO`, SC-067-C) without bypassing any guard.
+
+**Author ruling (AD-REG-AUTHORING-SPLIT).** P3 receives no direct-write exception; the
+single-writer rule is unchanged. P3 authors Registry family contracts, structural contracts and
+canonicalization sources outside `canon/**`; canonical Registry Records are committed only through
+the Mutation Coordinator once the governed write path exists. No second write path.
+
+**Consequence.**
+
+- The twenty-two rows move to `docs/registry/`; their `Canon`, `CD`, `SoT`, `H`, `S` and `LS` are
+  unchanged. Rows 075, 085, 105, 106, 107 state that their Records are committed through 152
+  after G-CANON-R.
+- G-REG (row 124) licenses consumption of validated Registry contracts and no canonical write.
+  G-CANON-R — named by row 145 — gains its PART VIII row: Registry definition Records only, after
+  G-REG and exit-P5. Later Registry definition sets (178 onward) carry `G: G-CANON-R`.
+- PART X orders the first Registry commits: the P3 sources first, then later sets (X-05).
+- Row 124's `Val` now says Registry contracts may be consumed and no canonical Registry write is
+  licensed; row 166's *"no canon exists yet"* stays true, because G-CANON-R opens only after
+  exit-P5.
+- Row 067's backward unlock `→ 040` becomes `→ 114`.
+- Artifact 003's gate table and self-hosting rule 2, Artifact 017 §8 (the gate list), Artifacts
+  064 and 066 (075 wording; 067's unlock) and `docs/registry/PURPOSE.md` are synchronized.
+
+**Non-consequence.** Registry stays a sovereign Record Model; its definitions are Records once
+committed; each model owns its Records; no source-of-truth class is demoted; no Record Model,
+Kind, gate type or envelope field is added; no hook, zone or test is weakened.
+
+**Recorded, not resolved.** No Roadmap row verifies that the P3 sources have been committed after
+G-CANON-R; the obligation is stated in PART X. The Roadmap names no artifact that commits the six
+`MODEL-DEFINITION` Records. Both are carried as gaps. The moved rows keep their Roadmap
+`Canon: canonical-about-meaning` under `docs/**`, against Artifact 003's general
+docs-specification value `Canon: n/a`; that inconsistency, already recorded for row 066
+(SC-066-H), now covers them too.
 
 **Status:** RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED · **Constitutional
 change:** NONE
@@ -906,7 +958,9 @@ new revision.
 
 **Revision recorded.** The Roadmap copy is no longer byte-identical to the original upload. It
 carries one author revision, AD-LS1-R-BOOTSTRAP (CONFLICT-E): a new §0.7, rows 068, 069, 074 and
-075, and a note on the LS-1 line. The Blueprint and RMS copies are unchanged.
+075, and a note on the LS-1 line. A second, AD-REG-AUTHORING-SPLIT (CONFLICT-F), adds §0.8 and
+revises the P3 Registry paths, rows 067 and 124, the later Registry rows' gate, and PARTs I, II,
+VI, VIII and X. The Blueprint and RMS copies are unchanged.
 
 **Status:** RESOLVED FOR BUILD · **Constitutional change:** NONE
 
@@ -981,7 +1035,7 @@ purpose file        = directory responsibility documentation
 
 canonical record    = canonical data
                       minted only through the Mutation Coordinator, only after
-                      that model's own canonical gate (G-CANON-W/E/P/V/I, G-REG)
+                      that model's own canonical gate (G-CANON-W/E/P/R/V/I)
 ```
 
 So `canon/**` **contains no canonical Records and no canonical data at this stage**, which is

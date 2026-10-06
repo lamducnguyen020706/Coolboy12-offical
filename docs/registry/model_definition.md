@@ -283,8 +283,9 @@ its Registry KIND-DEFINITION. ATOMIC-PAIR."*
   066 and creates no Record reference (Artifact 003 `LS`).
 - **The self-hosting resolution stands.** Under AD-LS1-R-BOOTSTRAP (Artifact 003; Roadmap §0.7) the
   Registry's own fourteen Kind ↔ `KIND-DEFINITION` pairs are 064 ↔ 075: row 074 specifies the set,
-  row 075 materializes the fourteen `KIND-DEFINITION` Records — one of which concerns the Kind
-  `MODEL-DEFINITION`.
+  row 075 authors the fourteen `KIND-DEFINITION` Records — one of which concerns the Kind
+  `MODEL-DEFINITION` — as their canonicalization source, committed only through 152 after
+  G-CANON-R (Roadmap §0.8).
 - **Nothing replaces it.** This specification creates no `KIND-DEFINITION` Record, does not stand
   in for row 075, and does not treat 067's schema as a `KIND-DEFINITION` Record.
 
@@ -474,7 +475,8 @@ the legal subjects are the six sovereign models (§9); that defining a model cre
 sovereignty stays constitutional (MD-2 to MD-4, §13); the resolution obligation (§10); the
 versionability obligation (§11); the reference rules RF-1 to RF-7; and the separations above. This
 document prescribes none of 067's field names, serialization, cardinality syntax, schema language
-or validator. Row 067's `→ 040` is 067's own metadata and is not interpreted here.
+or validator. Row 067's `→ 114` is 067's own metadata; Roadmap §0.8 replaced a backward
+`→ 040`.
 
 | Other downstream owner | Keeps |
 |---|---|

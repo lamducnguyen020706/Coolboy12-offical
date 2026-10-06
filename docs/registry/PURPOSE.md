@@ -14,7 +14,8 @@
 
 ## Responsibility
 
-Hold the specifications for the fourteen Registry definition families.
+Hold the specifications for the fourteen Registry definition families, their structural
+contracts, and the canonicalization sources of the P3 Registry definitions (Roadmap §0.8).
 
 ## Architectural role
 
@@ -23,10 +24,12 @@ This directory specifies each definition family. `docs/models/registry/` holds t
 ## What belongs here
 
 - one specification per Registry definition family
+- that family's structural contract (`.schema`), where the Roadmap assigns one
+- canonicalization sources the Roadmap assigns here (rows 075, 085, 105–107) — authored, not committed
 
 ## What does not belong here
 
-- Registry Records themselves - those are minted into `canon/registry/`
+- Registry Records themselves - those are minted into `canon/registry/`, only through the Mutation Coordinator after G-CANON-R
 - domain instances of any other model
 
 ---

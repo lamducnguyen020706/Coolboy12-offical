@@ -396,10 +396,11 @@ Declared gates:
 | Gate | Licenses |
 |---|---|
 | `exit-P0` … `exit-P17` | the next phase |
-| `G-REG` | Registry definitions may be consumed |
+| `G-REG` | Registry contracts may be consumed; licenses no canonical write |
 | `G-CANON-W` | World canon only |
 | `G-CANON-E` | Epistemic canon only |
 | `G-CANON-P` | Production State only, never world truth |
+| `G-CANON-R` | Registry definition Records only, canonical about meaning |
 | `G-CANON-V` | Visual specifications and assets |
 | `G-CANON-I` | Publication artifacts, never canon |
 | `G-STATIC` | the authored set is statically complete and internally consistent |
@@ -568,7 +569,9 @@ requirement."* For those fourteen pairs only:
 
 1. Artifact 064 may finalise the taxonomy half before the concrete partners land.
 2. The partner obligation is **not waived**. The concrete Registry Kind-Definition set (075,
-   specified by 074) lands after 068–069 exist and before exit-P3 and G-REG.
+   specified by 074) lands, as the authored canonicalization source of the fourteen
+   KIND-DEFINITIONs, after 068–069 exist and before exit-P3 and G-REG. Its Records are committed
+   only through the Mutation Coordinator after G-CANON-R (Roadmap §0.8).
 3. Registry lockstep validation (123) rejects a missing or mismatched partner, and P3
    conformance (124) cannot pass without it.
 

@@ -201,10 +201,12 @@ commit → changelog → log* — and make the commit atomic. This document repr
 and defines no sub-step of it; the stages belong to §12.6 and to Artifact 152.
 
 **Each canonical model operation is governed by the gate applicable to that model.** The Roadmap
-defines `G-CANON-W`, `G-CANON-E`, `G-CANON-P`, `G-CANON-V`, and `G-CANON-I` for their respective
-model writes, while **`G-REG`** governs the Registry-definition boundary. PART X states the rule
-for the model writes: after `G-CANON-W`, World canon, Coordinator only, on the path above; after
-`G-CANON-E/P/V/I`, *"that model's records, on the same path, **and not before its own gate**."*
+defines `G-CANON-W`, `G-CANON-E`, `G-CANON-P`, `G-CANON-R`, `G-CANON-V`, and `G-CANON-I` for
+their respective model writes; **`G-REG`** licenses consumption of the Registry contracts and no
+write (Roadmap §0.8). PART X states the rule for the model writes: after `G-CANON-W`, World canon,
+Coordinator only, on the path above; after `G-CANON-R`, Registry definition Records on the same
+path; after `G-CANON-E/P/V/I`, *"that model's records, on the same path, **and not before its own
+gate**."*
 This document defines none of those gates. It is their precondition — the zones must be declared
 before any gate can rely on them.
 
