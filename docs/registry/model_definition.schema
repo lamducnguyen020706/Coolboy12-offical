@@ -1,0 +1,285 @@
+COOLBOY12 — MODEL-DEFINITION SCHEMA (structural contract)
+
+ARTIFACT 067 · MODEL-DEFINITION schema · docs/registry/model_definition.schema · Own: R · RM: R ·
+T: schema · R: CONTRACT · SoT: AUTHORITATIVE · Auth: defining · Canon: canonical-about-meaning ·
+CD: yes · Ph/St: P3/3b · Req: RR-16 · BP: §9.4 · RMS: §10.1 · H: 066 · S: — · LS: LS-1 · G: — ·
+→ 114 · Val: definition resolves; versionable; references only declared entities (063) ·
+Done: schema matches spec · Why: LS-1 partner · Risk: medium · ∥: yes
+
+==================================================================================================
+0. HOW TO READ THIS FILE
+==================================================================================================
+
+NOTATION   This file uses a local, self-describing declarative notation chosen by Artifact 067.
+           It is an implementation choice, not COOLBOY12 architecture, and establishes no
+           repository-wide schema language (SC-067-D). No parser exists for it.
+
+           ELEMENT <name>        a structural element of a materialized Record
+           LAYER                 ENVELOPE (universal, RMS §4) or FAMILY (Registry-model-owned)
+           REQUIRED              yes | no
+           CARDINALITY           exactly-one | …
+           CONSTRAINT            what a conforming value must satisfy
+           BASIS                 SOURCE FACT · REQUIRED SYNTHESIS · 067 CHOICE, with its source
+           REJECT                a value that does not conform
+
+STATUS     This contract describes the structure a materialized MODEL-DEFINITION Record must
+           satisfy. It is not a MODEL-DEFINITION Record, not a SCHEMA-DEFINITION Record, and not
+           canonical data. It is an authored source outside canon/** (Roadmap §0.8; CONFLICT-F).
+           Concrete MODEL-DEFINITION Records are committed only through the Mutation
+           Coordinator (row 152) after G-CANON-R. Where this contract differs from the Master
+           Blueprint, the Record Model System, the Roadmap, or Artifact 066, those sources are
+           right and this contract is wrong.
+
+SPEC       Artifact 066 — docs/registry/model_definition.md — is the semantic contract this file
+           encodes. It is consumed unchanged.
+
+==================================================================================================
+1. RECORD SHAPE
+==================================================================================================
+
+MODEL-DEFINITION RECORD
+├── ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref · sot_class
+└── FAMILY    model_subject · definition
+
+Exactly these nine elements. The envelope is the universal seven (RMS §4); the family has two.
+No other element is part of this contract.
+
+==================================================================================================
+2. ENVELOPE — the universal seven (RMS §4; Artifact 033)
+==================================================================================================
+
+Types, defaults, nullability and serialization of the envelope fields are not established by
+the governing sources (Artifact 033) and are not stated here.
+
+ELEMENT     partition
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  R — the Registry partition
+BASIS       SOURCE FACT — a MODEL-DEFINITION is a Registry Record (RMS §10, §10.1; 066 §5)
+
+ELEMENT     kind
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  identifies the declared Registry Kind MODEL-DEFINITION (Kind 1 of RMS §10.1)
+            The constraint is symbolic. No two-character Registry Kind code is established;
+            none is minted here (SC-067-E).
+BASIS       SOURCE FACT — RMS §10.1; Artifact 064 §8. The code is Registry content bound later
+            (row 117; Artifact 060 writes it schematically as <kind>).
+REJECT      any other Registry Kind; any invented code (for example MD) presented as established
+
+ELEMENT     object_id
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the object identity component under the universal identity grammar
+BASIS       SOURCE FACT — RMS §4, §5; 066 RS-1
+
+ELEMENT     slug
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  decoration only; never identity, never the basis of resolution
+BASIS       SOURCE FACT — RMS §5; Artifact 033
+
+ELEMENT     provenance
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it; provenance meaning is not defined here
+BASIS       SOURCE FACT — RMS §4; Artifact 033
+
+ELEMENT     registry_ref
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the universal envelope field, unchanged. This contract attaches no referent,
+            self-reference convention, bootstrap target or resolution meaning to it.
+BASIS       SOURCE FACT — RMS §4; Artifact 033 leaves its referent unresolved; Blueprint §9.4:
+            reference resolution is not Registry work
+
+ELEMENT     sot_class
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it. No value is fixed here; Artifact 067's own
+            manifest SoT and Canon are not Record-level values and are not copied into it.
+BASIS       SOURCE FACT — RMS §4; Artifact 033
+
+==================================================================================================
+3. FAMILY — MODEL-DEFINITION content (Registry-model-owned; not envelope fields)
+==================================================================================================
+
+ELEMENT     model_subject
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  one value from the closed set   W | E | P | R | V | I
+              W  World       E  Epistemic   P  Production
+              R  Registry    V  Visual      I  Issue
+            The value names a declared sovereign Record Model itself — a declaration-level
+            subject — never a Record of that model.
+BASIS       REQUIRED SYNTHESIS — 066 MD-1 (one declared model subject), MD-2 (declared first),
+            §9 (the six, and only the six); RMS §2; Artifact 063 §8.2 (declared Record Model as
+            an admissible target). The element NAME is a 067 CHOICE.
+REJECT      no value                                      (MD-1)
+            two or more values, e.g. W and E together     (MD-1)
+            any value outside the set, e.g. S "Simulation" claimed as a seventh model
+                                                          (RMS §2; 066 MD-7)
+            a Record identifier, e.g. W-CH-…-Maximus      (domain instance; RMS §10.3; RF-4)
+            a runtime object or service                   (RMS §10.3; RF-5)
+
+ELEMENT     definition
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the governed model-level meaning of the declared model named by model_subject.
+            Non-empty. Its internal form is not prescribed by this contract.
+            It may state the model's source-established question (RMS §6); it is not required
+            to. It does not supply, override or standardize the model's Kind taxonomy, identity
+            semantics, lifecycle, relationship packaging, temporal architecture, provenance
+            meaning, canonicality meaning, semantic validation or package composition.
+BASIS       REQUIRED SYNTHESIS — 066 §5 (a definition carries governed meaning), MD-3
+            (governs; never instantiates), MD-8 (model-owned semantics stay with the model);
+            RMS §6.1. The element NAME, the single carrier and the non-empty rule are 067
+            CHOICES.
+REJECT      executable behaviour, a model factory, a registration or creation action
+            (MD-3)
+            a domain instance or runtime object used as the source of meaning (RF-4, RF-5)
+
+==================================================================================================
+4. STRUCTURAL PROHIBITIONS
+==================================================================================================
+
+P-01  No element beyond the nine of §1. In particular none of: version, revision, latest,
+      supersedes, deprecated, replacement, effective_at, compatibility, status, tier,
+      lifecycle_state, canonical, history, relationship_record, owner, owns_records,
+      grants_sovereignty, authority_over_model, implementation, service, worker, session,
+      process, handler, factory.
+P-02  No generic reference list (definition_refs, kind_refs, schema_refs, contract_refs,
+      dependencies, related_records). Admissible target categories are not concrete relations;
+      the only concrete relation is the declared model subject (066 RF-3; Artifact 063 RB-5).
+P-03  No element names, carries or implies ownership of the defined model or of its Records, or
+      grants sovereignty. W, E, P, V and I keep their Records; Registry owns R Records by its
+      own sovereignty, not by a MODEL-DEFINITION (066 MD-4).
+P-04  No inheritance, parent model, template model or shared interior among W, E, P, R, V, I
+      (RMS §2; 066 MD-5).
+P-05  No envelope field added, removed or renamed; the family elements are not envelope
+      fields (RMS §4).
+P-06  None of RMS §4's prohibited universal semantics: Record base, Relationship Record,
+      History Record, lifecycle, canonicality, Kind taxonomy, identity composition, state
+      model, semantic schema.
+P-07  Not a KIND-DEFINITION, SCHEMA-DEFINITION or SIMULATION-MODEL-DEFINITION contract
+      (066 MD-6, MD-7).
+
+==================================================================================================
+5. BOUNDARIES
+==================================================================================================
+
+RESOLUTION      A conforming Record is identity-bearing (§2), so the shared resolution mechanism
+                can resolve it once committed. This contract implements no resolver, lookup,
+                index or storage. Resolution never relies on slug or on model_subject.
+                Resolvable is not legal (Artifact 063 §11). Registry definition resolution by
+                id+version is row 115's; create/resolve/version operations are row 114's.
+                (066 RS-1 to RS-5)
+
+VERSIONABILITY  Nothing here prevents the Registry evolution and versioning model of rows
+                108–110 from applying to a MODEL-DEFINITION. No version element, numbering,
+                pinning, supersession, deprecation or retention is defined. (066 §11)
+
+REFERENCES      The model subject is a declaration reference to a declared Record Model, not an
+                R→R reference to a MODEL-DEFINITION Record (Artifact 063 §8.2; 066 RF-2). No
+                W/E/P/V/I domain instance and no runtime instance is a target or an authority.
+                A reference transfers no ownership or authority. (066 RF-1 to RF-7)
+
+MATERIALIZATION This file is an authored source. A MODEL-DEFINITION Record conforming to it is
+                committed to canon/registry/** only through the Mutation Coordinator after
+                G-CANON-R (Roadmap §0.8, PART X). No Roadmap row currently names the artifact
+                that commits the six MODEL-DEFINITION Records; that gap is recorded in CONFLICT-F
+                and is not filled here.
+
+==================================================================================================
+6. DECISION CASES (schematic — no identifier is minted; nothing here is Registry data)
+==================================================================================================
+
+ACCEPT  model_subject W, definition carrying governed meaning about the World model — World is
+        not created and no World Record is owned
+ACCEPT  model_subject R — not a bootstrap mechanism (RMS §10.4); Registry already owns its R
+        Records as the sovereign R model
+ACCEPT  one Record each with model_subject W, E, P, R, V, I — the same contract, no shared model
+        interior
+REJECT  model_subject S, claimed as a seventh sovereign Record Model
+REJECT  model_subject W-CH-…-Maximus — a World domain instance
+REJECT  model_subject W and E together
+REJECT  model_subject absent
+REJECT  definition that depends on a running service to establish what the model means
+REJECT  kind given as an invented code such as MD
+
+==================================================================================================
+7. SOURCE CONDITIONS
+==================================================================================================
+
+SC-067-A  LS-1. Row 067 carries LS: LS-1 and Why: LS-1 partner. The Registry's own Kind ↔
+          KIND-DEFINITION pairs are 064 ↔ 075 (AD-LS1-R-BOOTSTRAP). This contract is not a
+          KIND-DEFINITION and replaces nothing of row 075. Recorded, not resolved.
+SC-067-B  CLOSED — row 067's backward unlock → 040 became → 114 (Roadmap §0.8).
+SC-067-C  CLOSED — the P3 canonical-write conflict is resolved by AD-REG-AUTHORING-SPLIT
+          (CONFLICT-F); this file sits outside canon/**.
+SC-067-D  No schema language is established; the notation of §0 is a local 067 choice.
+SC-067-E  No two-character Registry Kind code is established; kind is constrained
+          symbolically.
+SC-067-F  Req: RR-16 is carried exactly; its text is unavailable (GAP-C) and is not invented.
+SC-067-G  The semantic-layer placement of MODEL-DEFINITION is not established (Artifact 062;
+          SC-066-G); no layer is assigned.
+SC-067-H  Row 067 carries Canon: canonical-about-meaning and CD: yes on a docs/** path, against
+          Artifact 003's general docs-specification value Canon: n/a (CONFLICT-F; SC-066-H).
+          The metadata is preserved; CD: yes licenses nothing.
+
+==================================================================================================
+8. CONFORMANCE CONDITIONS
+==================================================================================================
+
+C-067-01  The header reproduces repaired Roadmap row 067 exactly.
+C-067-02  The contract represents MODEL-DEFINITION and no other Registry Kind.            §2 kind
+C-067-03  Artifact 066's rules are consumed unchanged.                                       §0
+C-067-04  Every conforming Record has exactly one model_subject.                            §3
+C-067-05  The model_subject value set is exactly W, E, P, R, V, I.                          §3
+C-067-06  No seventh sovereign Record Model can conform.                                   §3, §6
+C-067-07  No domain instance can stand in for the model subject.                            §3, §6
+C-067-08  The envelope is exactly the seven RMS §4 fields.                                  §1, §2
+C-067-09  model_subject and definition are family elements, not envelope additions.        §1, P-05
+C-067-10  partition is constrained to R.                                                    §2
+C-067-11  kind is constrained to MODEL-DEFINITION without an invented code.                 §2
+C-067-12  A single required definition element carries the governed model-level meaning.   §3
+C-067-13  No lifecycle, status, taxonomy, canonicality, relationship, temporal or package
+          element is introduced.                                                            P-01
+C-067-14  No generic reference list is introduced.                                         P-02
+C-067-15  Concrete references obey Artifact 063's boundary.                                 §5
+C-067-16  No W/E/P/V/I domain instance is accepted as a target or semantic authority.      §3, §5
+C-067-17  No runtime instance is accepted as a dependency or semantic authority.           §3, §5
+C-067-18  The structure supports resolution without implementing a resolver.               §5
+C-067-19  The structure is versionable without defining rows 108–110's mechanics.          §5
+C-067-20  No version, supersession, deprecation, latest or lifecycle mechanism is defined. P-01
+C-067-21  registry_ref stays the universal field with no added meaning.                    §2
+C-067-22  The artifact's SoT and Canon are not copied into sot_class.                      §2
+C-067-23  This file is not a MODEL-DEFINITION Record.                                      §0
+C-067-24  This file is not a SCHEMA-DEFINITION Record.                                     §0, P-07
+C-067-25  No JSON Schema, YAML, OpenAPI or other standard is invented.                     §0
+C-067-26  LS: LS-1 is preserved and no new partner is invented.                            SC-067-A
+C-067-27  The file is outside canon/**, and no Registry canon is materialized.             §0, §5
+C-067-28  Only docs/registry/model_definition.schema is created by this artifact.          row 067
+
+==================================================================================================
+9. ROADMAP TRACE
+==================================================================================================
+
+Val  definition resolves          §2 identity-bearing envelope; §5 RESOLUTION
+Val  versionable                  §5 VERSIONABILITY; P-01
+Val  references only declared     §3 model_subject (declared model only); §5 REFERENCES; P-02
+     entities (063)
+Done schema matches spec          §1–§4 encode 066 MD-1 to MD-8, §9, RS-1 to RS-5, §11,
+                                  RF-1 to RF-7, §14
+H    066                          consumed unchanged
+LS   LS-1                         preserved; SC-067-A
+→    114                          the kernel consumes this contract; nothing here builds it
