@@ -63,7 +63,7 @@ Artifact 063; the authority and ownership the family never acquires; the handoff
 | Not defined here | Owner |
 |---|---|
 | the fourteen-Kind taxonomy and admission rationale | 064 (consumed, §6) |
-| the schema: field names, serialization, cardinality syntax, schema language | 067 |
+| the schema encoding of the semantic obligations established here: field names, serialization, cardinality syntax, schema language | 067 |
 | concrete `MODEL-DEFINITION` Records, or any file under `canon/registry/` | not assigned to this artifact |
 | `KIND-DEFINITION` and the Registry's own Kind-Definition set | 068–069; 074–075 |
 | who proposes, approves or deprecates a definition | 065 |
@@ -264,8 +264,11 @@ true of the world. Canonicality is not universalized across the six models (I-10
 Once materialized, a `MODEL-DEFINITION` carries the universal envelope unchanged: `partition` ·
 `kind` · `object_id` · `slug` · `provenance` · `registry_ref` · `sot_class` (RMS §4). No family
 concept — a model code, a semantic question, a version, a status, a lifecycle, an approver, a
-deprecation flag, a schema reference or an authority — becomes a universal field. How family
-information is represented is 067's.
+deprecation flag, a schema reference or an authority — becomes a universal field. How the
+semantic obligations established by this specification are structurally encoded is 067's.
+Representation of what this specification defers stays with its named owner — Registry
+evolution, versioning, supersession and deprecation with 108–110 (§11). No downstream family
+representation alters the seven-field envelope.
 
 None of RMS §4's prohibited universal semantics is introduced: no universal Record base,
 Relationship Record, History Record, lifecycle, canonicality, Kind taxonomy, identity composition,
@@ -474,9 +477,10 @@ the semantic object represented (§5); that its subject is one declared Record M
 the legal subjects are the six sovereign models (§9); that defining a model creates none and
 sovereignty stays constitutional (MD-2 to MD-4, §13); the resolution obligation (§10); the
 versionability obligation (§11); the reference rules RF-1 to RF-7; and the separations above. This
-document prescribes none of 067's field names, serialization, cardinality syntax, schema language
-or validator. Row 067's `→ 114` is 067's own metadata; Roadmap §0.8 replaced a backward
-`→ 040`.
+document prescribes none of 067's field names, serialization, cardinality syntax or schema
+language, and defines no validator behaviour. 067 encodes only the structural consequences of the
+obligations established here; what this document defers stays with the owners named below. Row
+067's `→ 114` is 067's own metadata; Roadmap §0.8 replaced a backward `→ 040`.
 
 | Other downstream owner | Keeps |
 |---|---|
