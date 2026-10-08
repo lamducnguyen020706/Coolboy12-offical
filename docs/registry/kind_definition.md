@@ -195,7 +195,7 @@ encoded is 069's; representation this document defers stays with its named owner
 - **Authority.** 064 §9 question 6: *"definition authority only: the owning model keeps its
   taxonomy, admission and Records; a `KIND-DEFINITION` is not admission"*.
 - **References.** 064 §9 question 7: LS-1 pairs each Kind spec with its `KIND-DEFINITION` *"as an
-  authoring obligation, not a reference edge"*; the concrete reference is left to this family
+  authoring obligation, not a reference edge"*; concrete references are left to this family
   (§14).
 - **Admission not reopened.** 064 §9 answers the fourteen questions for this Kind; this
   specification does not revisit them.
@@ -447,10 +447,10 @@ reference relations each family carries"*; for this family the answer is below.
 
 | ID | Rule | Basis |
 |---|---|---|
-| **RF-068-1** | **The one required relation is the subject.** Each `KIND-DEFINITION` carries exactly one source-required concrete relation: to the one declared Kind it defines (KD-1). That Kind's declared status must be established by the owning model's Kind architecture; this family defines no proof formula, and undetermined status is not legal. | Artifact 063 §7 row 3, §8, RB-1, RB-6, SC-063-H |
+| **RF-068-1** | **One required semantic subject.** Every `KIND-DEFINITION` must identify exactly one declared Kind, of exactly one owning Record Model, as the semantic subject whose meaning it governs (KD-1, KD-5). That Kind's declared status must be established by the owning model's Kind architecture; the definition does not establish it (KD-2). This is one required subject obligation. It does not, by itself, fix a closed count of concrete reference relations or of structural reference carriers — no governing source states such a count — and the structural encoding of the obligation is 069's. This family defines no proof formula for declared status, and an undetermined subject is not legal. | Artifact 063 §7 row 3, §8, RB-1, RB-6, SC-063-H; KD-1, KD-2, KD-5 |
 | **RF-068-2** | **The Kind itself, not one of its Records.** The subject is *"a declared Kind — the Kind itself, not a Record of that Kind"*. | Artifact 063 §6 |
 | **RF-068-3** | **Declared Kind ≠ its `KIND-DEFINITION`.** Naming the subject Kind is a declaration reference, not an R → R reference to a `KIND-DEFINITION` Record, and it is neither an owned edge nor a Relationship Record. The form of that declaration reference is 069's; no URI, handle, string syntax or discriminator is invented here. | Artifact 063 §8.3, SC-063-G; I-102; Artifact 064 F-7 |
-| **RF-068-4** | **No invented concrete references.** Other Registry definitions, declared Record Models, declared schemas and declared semantic contracts are admissible categories; that obliges no `KIND-DEFINITION` to reference any of them, and the family defines no reference list, dependency list or schema reference. Model scope (KD-5) belongs to identifying the subject: whether 069 expresses it within the subject's form or through a separate declared-Model reference is 069's, and this family requires no second relation. Admissible category ≠ concrete family relation. | Artifact 063 RB-5, SC-063-G |
+| **RF-068-4** | **No invented concrete references.** Other Registry definitions, declared Record Models, declared schemas and declared semantic contracts are admissible categories; that obliges no `KIND-DEFINITION` to reference any of them, and the family defines no reference list, dependency list or schema reference. Model scope (KD-5) is semantically required and belongs to identifying the subject; its structural representation is 069's, and this family neither mandates a separate declared-Model reference nor forbids one. A structural reference may encode only an obligation established here — the subject or its model scope — or representation a named downstream owner establishes (§13); it adds no semantic relation or authority of its own, and every concrete reference must satisfy Artifact 063. Admissible category ≠ concrete family relation. | Artifact 063 RB-5, SC-063-G, §22 |
 | **RF-068-5** | **No domain instance.** No Record of W, E, P, V or I — and no domain state, such as a current WSV indicator value — is the subject, a reference target, a dependency or the semantic authority of a `KIND-DEFINITION`. Blueprint §9.4's *"a kind may never reference an instance"* stands in full. | RMS §10.3; Artifact 063 §9, SC-063-A |
 | **RF-068-6** | **No runtime instance.** No running service, worker, session, process, plugin instance, schema engine, validator process or live object is a dependency, target or authority. | RMS §10.3; Artifact 063 §13 |
 | **RF-068-7** | **Resolvable ≠ legal.** A target that resolves mechanically may still be illegal, and a target that cannot be established is not legal either. | Artifact 063 §11 |
@@ -633,6 +633,8 @@ represented, pinned, superseded or deprecated is 108–110's (§13).
 | 34 | VERDICT is a declared P Kind because a VERDICT Kind-Definition row exists | a definition is not proof of declared status; VERDICT is provisional | CONFLICT-A; SC-068-J |
 | 35 | The subject's model scope requires a separate Model reference field | the form is 069's | RF-068-4; SC-063-G |
 | 36 | Governing a Kind's definition gives the Registry the model's own Kind meaning or taxonomy | two custodians; LS-1 keeps them apart | §11; SC-068-K |
+| 37 | Because a `KIND-DEFINITION` has exactly one semantic subject, its structural form carries exactly one concrete reference | one subject obligation fixes no reference count; the encoding is 069's | RF-068-1 |
+| 38 | Because the reference count is not closed, 069 may add any reference whose target category is admissible | an admissible category authorizes nothing; a structural reference encodes an established obligation and satisfies Artifact 063 | RF-068-4; Artifact 063 RB-5 |
 
 ## 19. Source Conditions and Gaps
 
@@ -760,7 +762,7 @@ of that kind are refused by the linter"* (§13.11, via Artifact 057 §6), and ro
 | **C-068-15** | No runtime instance is accepted as dependency, target or authority. | RF-068-6 |
 | **C-068-16** | The resolution obligation is stated without resolver, lookup or storage mechanics. | §12 |
 | **C-068-17** | Versionability is stated without 108–110's mechanics, and the representation they own is not prohibited. | §13 |
-| **C-068-18** | Artifact 063's boundary is applied: one source-required subject relation; admissible categories are not mandatory relations; resolvable ≠ legal; a reference transfers nothing. | §14 |
+| **C-068-18** | Artifact 063's boundary is applied: exactly one declared-Kind semantic subject is required; that does not close the count of concrete structural reference relations; admissible categories are not mandatory relations, and no structural reference adds semantic authority; resolvable ≠ legal; a reference transfers no ownership or authority. | §14; RF-068-1, RF-068-4 |
 | **C-068-19** | The subject relation is not treated, by itself, as a semantic dependency. | RF-068-9; Artifact 062 D-9 |
 | **C-068-20** | `KIND-DEFINITION` stays at L2, with no dependency on L3, L4 or L5. | §15 |
 | **C-068-21** | LS-1 is treated as authoring atomicity — not a reference, not by itself a hard dependency, not admission. | §16 |
@@ -795,7 +797,8 @@ of that kind are refused by the linter"* (§13.11, via Artifact 057 §6), and ro
 conforms to"*). 069 may derive from this document, without redesign:
 
 - the semantic object represented — the governed, Kind-level definition of one declared Kind (§5);
-- exactly one declared Kind subject (KD-1; RF-068-1), declared before it is defined (KD-2);
+- exactly one declared Kind as the required semantic subject (KD-1; RF-068-1), declared before it
+  is defined (KD-2);
 - that the subject is the Kind as one owning Record Model declares it — model scope at the semantic
   level (KD-5);
 - definition ≠ admission, ≠ specification, ≠ schema (§7, §8; KD-6, KD-7);
@@ -809,11 +812,15 @@ conforms to"*). 069 may derive from this document, without redesign:
 
 069 chooses the structural encoding these require. This document prescribes none of 069's field
 names, serialization, schema notation, cardinality syntax, Kind-subject or Kind-code
-representation, nullability or default values, and defines no parser or validator behaviour. 069
-encodes only the structural consequences of the obligations established here; what this document
-defers stays with the owners named below, and nothing here asks 069 to close representation that
-rows 108–110 own (§13). Row 069's own `Val` and `Done` are not enlarged, and its `→` — *"all Kind
-schemas, 074, 075"* — is its own metadata.
+representation, subject-reference syntax, nullability or default values; it does not decide
+whether model scope is embedded in the subject's form or carried separately, or how many concrete
+reference carriers the encoding uses (RF-068-1, RF-068-4); and it defines no parser or validator
+behaviour. 069 encodes only the structural consequences of the obligations established here; what
+this document defers stays with the owners named below, and nothing here asks 069 to close
+representation that rows 108–110 own (§13). Not delegated to 069: new semantic relations, Kind
+admission, Registry governance, evolution and versioning design, reference-validator and resolver
+implementation, and the concrete Kind-Definition sets. Row 069's own `Val` and `Done` are not
+enlarged, and its `→` — *"all Kind schemas, 074, 075"* — is its own metadata.
 
 | Other downstream owner | Keeps |
 |---|---|
@@ -829,13 +836,19 @@ schemas, 074, 075"* — is its own metadata.
 
 ## 22. Roadmap Completion Trace
 
+The statuses below assess Artifact 068 as a documentation specification (`T: doc`, `R: ARCH`).
+**SPECIFICATION OBLIGATION SATISFIED** means the required semantic rule is stated, mandatory, and
+bounded by its governing sources. It does not claim that downstream schemas, validators, version
+mechanisms, kernels or resolution services have been implemented, executed or tested; those are
+their own rows' work, and this artifact's exit does not wait on them.
+
 | Row 068 | Status | Where it is met |
 |---|---|---|
-| `Val`: *"definition resolves"* | **SATISFIED** — resolution obligation stated; resolvable ≠ legal; mechanics left to the shared mechanism, 114 and 115 | §12 (RS-068-1 to RS-068-5) |
-| `Val`: *"versionable"* | **SATISFIED** — obligation stated; mechanics and representation left to 108–110, and not prohibited | §13; SC-068-E |
-| `Val`: *"references only declared entities (063)"* | **SATISFIED** — one declared-Kind subject; Artifact 063's boundary applied, with domain-instance and runtime rejection | §14 (RF-068-1 to RF-068-9); KD-2 |
-| `Done`: *"every Kind definable"* | **SATISFIED** — all 49 Kinds of the six models covered; non-Kinds excluded | §10 |
-| `Why`: *"defines the KIND-DEFINITION family every LS-1 Kind-Definition set uses"* | **SATISFIED** — the generic family is specified; the concrete sets stay with their rows | §5, §9, §16 |
+| `Val`: *"definition resolves"* | **SPECIFICATION OBLIGATION SATISFIED** — a materialized `KIND-DEFINITION` carries Registry Record identity, and consumers must be able to resolve it through the shared mechanism; resolution is universal, not Registry work; resolvable ≠ legal; the resolver is 114's and 115's, and no resolver is claimed to exist or to have run | §12 (RS-068-1 to RS-068-5) |
+| `Val`: *"versionable"* | **SPECIFICATION OBLIGATION SATISFIED** — a `KIND-DEFINITION` participates in governed Registry definition evolution and must carry versioned meaning under 108–110's mechanism; the temporal account is Registry-owned and needs no World History Record; representation stays with 108–110 and is not prohibited; no version code or storage is claimed | §13; SC-068-E |
+| `Val`: *"references only declared entities (063)"* | **SPECIFICATION OBLIGATION SATISFIED** — exactly one declared-Kind semantic subject, its declared status established by the owning model; domain instances, domain state and runtime objects never semantic authority; resolvable ≠ legal; any further structural reference must satisfy Artifact 063; no validator run is claimed (112) | §14 (RF-068-1 to RF-068-9); KD-2 |
+| `Done`: *"every Kind definable"* | **SPECIFICATION OBLIGATION SATISFIED** — the family applies to the declared Kinds of all six models, 49 in all, with no per-model variant and no universal taxonomy; the WSV singleton, rejected candidates and subtypes excluded; the P roster and VERDICT bounded by CONFLICT-A; no concrete `KIND-DEFINITION` Record is claimed to exist | §10; SC-068-I |
+| `Why`: *"defines the KIND-DEFINITION family every LS-1 Kind-Definition set uses"* | **SPECIFICATION OBLIGATION SATISFIED** — the generic family is specified and handed to 069; the concrete sets stay with 075, 178, 257, 300, 345 and 364; LS-1 is authoring atomicity, not a reference edge; no LS-1 pair is claimed to be authored | §5, §9, §16, §21 |
 | `H: 064` | **SATISFIED** — the taxonomy and `KIND-DEFINITION`'s responsibility consumed unchanged | §6 |
 | `LS: LS-1` | **PRESERVED** — read through row 068's `Why`; the 064 ↔ 075 resolution untouched; no partner invented | §16; SC-068-D |
 | `→ 069` | **SATISFIED** — semantic contract handed off; no schema built | §21 |
