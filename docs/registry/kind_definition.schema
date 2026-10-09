@@ -114,7 +114,8 @@ LAYER       ENVELOPE
 REQUIRED    yes
 CARDINALITY exactly-one
 CONSTRAINT  decoration only; never identity, never the basis of resolution
-CHECK       NATIVE
+CHECK       NATIVE — presence, a single value
+            STATIC — this contract gives slug no identity or resolution role
 BASIS       SOURCE FACT — RMS §5; Artifact 033
 
 ELEMENT     provenance
@@ -185,9 +186,10 @@ CONSTRAINT  names one Kind exactly as the Kind taxonomy of the model in subject_
 CHECK       NATIVE — presence; a single value; the value is not shaped as a Record identifier
             under the universal grammar (RMS §5); the pair is not (W, WSV).
             EXTERNAL — declared status. The proof comes from the owning model's Kind
-            architecture (Artifact 063 SC-063-H) and is enforced on the downstream validation
-            path within those rows' own Val (rows 112, 116). This contract does not prove it,
-            and an undetermined subject is not legal (Artifact 063 RB-6; 068 RF-068-1).
+            architecture (Artifact 063 SC-063-H). This contract does not define or prove that
+            evidence. Downstream legality validation may enforce this requirement under its own
+            contract; row 112 independently enforces its narrower domain-instance reference
+            prohibition. An undetermined subject is not legal (Artifact 063 RB-6; 068 RF-068-1).
 BASIS       REQUIRED SYNTHESIS — 068 KD-1, KD-2, KD-5, RF-068-1 to RF-068-3; Artifact 063 §6,
             §8.3, SC-063-G (the form of a declaration reference is the family's to fix). Naming
             the Kind by its declared name is a 069 CHOICE, consistent with row 075's Val — "names
@@ -278,13 +280,17 @@ P-09  No dependency element. The subject relation is a declaration reference, no
 5. BOUNDARIES
 ==================================================================================================
 
-RESOLUTION      A conforming Record is identity-bearing (§2), so the shared resolution mechanism
-                can resolve it once committed. Resolution never relies on slug, subject_model or
-                subject_kind. This contract implements no resolver, lookup, index or storage,
-                and does not say how a consumer finds the definition of a given Kind. Resolvable
-                is not legal (Artifact 063 §11). Registry definition resolution by id+version is
-                row 115's; create/resolve/version operations are row 114's. (068 RS-068-1 to
-                RS-068-5)
+RESOLUTION      A conforming Record carries the baseline Record identity that later
+                Registry-definition resolution requires (§2). Artifact 069 does not by itself
+                establish the complete id+version resolution representation: rows 108–110 retain
+                authority over Registry evolution and version representation, and row 115 owns
+                consumer resolution by id+version. Resolution never relies on slug, which is
+                decoration only; subject_model and subject_kind name the semantic subject and do
+                not thereby become this Record's identity. This contract implements no resolver,
+                lookup, index, storage or version-selection logic, and does not say how a
+                consumer finds the definition of a given Kind; row 114 owns Registry
+                create/resolve/version operations. Resolvable is not legal (Artifact 063 §11).
+                (068 RS-068-1 to RS-068-5)
 
 VERSIONABILITY  Nothing here prevents the Registry evolution and versioning model of rows
                 108–110 from applying to a KIND-DEFINITION. Artifact 069 defines no version
@@ -409,9 +415,9 @@ SC-069-K  Row 069's → names all Kind schemas, but domain Kind schemas list the
 
 C-069-01  STATIC    The contract governs Registry KIND-DEFINITION Records only: partition R,
                     kind KIND-DEFINITION, and no other Registry Kind.               §0, §2
-C-069-02  NATIVE    The envelope is exactly the seven RMS §4 fields, each required,
-                    exactly-one, unchanged; the family elements are not envelope fields.
-                                                                                    §1, §2, P-05
+C-069-02  NATIVE    The envelope is exactly the seven RMS §4 fields, each present and
+                    exactly-one, none added, removed or renamed. STATIC: the family elements
+                    are not envelope fields.                                    §1, §2, P-05
 C-069-03  NATIVE    Exactly one semantic subject: one subject_model and one subject_kind,
                     jointly one subject; two Kinds are rejected.                      §1, §3
 C-069-04  NATIVE    Owning-model scope is unambiguous: subject_model is exactly one of W, E,
@@ -426,8 +432,11 @@ C-069-07  STATIC    References obey Artifact 063: one declared-Kind subject; no 
 C-069-08  NATIVE    No Record identifier — domain instance or Registry Record — can stand as
                     the subject. EXTERNAL: no domain instance, domain state or runtime
                     object is the source of meaning in definition.                  §3, §6
-C-069-09  NATIVE    The identity needed for resolution is present (partition, kind,
-                    object_id); no resolver is implemented or claimed.              §2, §5
+C-069-09  NATIVE    The baseline Record identity that later resolution requires is present
+                    (partition, kind, object_id). STATIC: this contract does not supply the
+                    complete id+version resolution representation — version representation is
+                    rows 108–110's, consumer resolution row 115's — and implements no resolver.
+                                                                                     §2, §5
 C-069-10  STATIC    Versionability: no version mechanism is defined and the representation
                     rows 108–110 own is not prohibited.                     §1, §5, P-01B
 C-069-11  STATIC    Every check that needs evidence outside the Record is labelled EXTERNAL
@@ -459,8 +468,10 @@ The statuses below assess this file as a structural contract. They claim no reso
 mechanism, validator, declared-status proof or concrete KIND-DEFINITION Record; those belong to
 their own rows.
 
-Val  definition resolves          §2 identity-bearing envelope; §5 RESOLUTION — the structure
-                                  a resolver needs is required; resolution itself is 115's
+Val  definition resolves          §2 baseline Record identity; §5 RESOLUTION — the prerequisite
+                                  for later Registry resolution, without claiming the complete
+                                  id+version representation; version representation stays with
+                                  rows 108–110, and resolution itself is 115's
 Val  versionable                  §5 VERSIONABILITY: 069 defines no version mechanics and does
                                   not obstruct the Registry evolution and versioning
                                   representation rows 108–110 own; §1; P-01B (deferred, not
