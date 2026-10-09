@@ -1,0 +1,476 @@
+COOLBOY12 — KIND-DEFINITION SCHEMA (structural contract)
+
+ARTIFACT 069 · KIND-DEFINITION schema · docs/registry/kind_definition.schema · Own: R · RM: R ·
+T: schema · R: CONTRACT · SoT: AUTHORITATIVE · Auth: defining · Canon: canonical-about-meaning ·
+CD: yes · Ph/St: P3/3b · Req: RR-16 · BP: §9.4 · RMS: §10.1 · H: 068 · S: — · LS: LS-1 · G: — ·
+→ all Kind schemas, 074, 075 · Val: definition resolves; versionable; references only declared
+entities (063) · Done: schema · Why: LS-1 — the schema every concrete KIND-DEFINITION Record
+conforms to · Risk: high · ∥: yes
+
+==================================================================================================
+0. HOW TO READ THIS FILE
+==================================================================================================
+
+NOTATION   This file reuses the local declarative notation Artifact 067 chose for its own
+           contract. It is an implementation choice, not COOLBOY12 architecture, and establishes
+           no repository-wide schema language (SC-069-B). No parser exists for it.
+
+           ELEMENT <name>        a structural element of a materialized Record
+           LAYER                 ENVELOPE (universal, RMS §4) or FAMILY (Registry-model-owned)
+           REQUIRED              yes | no
+           CARDINALITY           exactly-one | …
+           CONSTRAINT            what a conforming value must satisfy
+           CHECK                 how the constraint is checked — the one addition to 067's
+                                 notation, a 069 choice:
+                                   NATIVE    decidable from the Record alone
+                                   EXTERNAL  needs evidence outside the Record; the line names
+                                             who supplies it, and this contract does not claim
+                                             it proven
+                                   STATIC    a property of this contract, checked by reading it
+           BASIS                 SOURCE FACT · REQUIRED SYNTHESIS · 069 CHOICE, with its source
+           REJECT                a value that does not conform
+
+STATUS     This contract describes the structure a materialized KIND-DEFINITION Record must
+           satisfy. It is not a KIND-DEFINITION Record, not a SCHEMA-DEFINITION Record, not the
+           schema of any defined Kind's Records, and not canonical data. It is an authored source
+           outside canon/** (Roadmap §0.8; CONFLICT-F). Concrete KIND-DEFINITION Records are
+           committed only through the Mutation Coordinator (row 152) after G-CANON-R. Where this
+           contract differs from the Master Blueprint, the Record Model System, the Roadmap, or
+           Artifact 068, those sources are right and this contract is wrong.
+
+SPEC       Artifact 068 — docs/registry/kind_definition.md — is the semantic contract this file
+           encodes, consumed unchanged (H: 068). This file encodes only the structural
+           consequences of the obligations 068 establishes (068 §21). Artifact 067 is a precedent
+           for notation only; nothing here is derived from the MODEL-DEFINITION family.
+
+==================================================================================================
+1. RECORD SHAPE
+==================================================================================================
+
+KIND-DEFINITION RECORD
+├── ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref · sot_class
+└── FAMILY    subject_model · subject_kind · definition
+              └── subject_model and subject_kind together carry the ONE semantic subject
+
+Artifact 069 defines exactly these ten elements: the universal seven-field envelope (RMS §4) and
+three family elements. It defines no other element.
+
+That is the scope boundary of this contract, not a closure over everything a KIND-DEFINITION
+Record may later carry. Rows 108–110 keep their authority to establish Registry-owned evolution,
+versioning, supersession and deprecation representation (§5 VERSIONABILITY). The envelope, by
+contrast, stays exactly seven fields: no downstream Registry representation becomes an eighth
+universal field (RMS §4; P-05).
+
+One subject, two carriers. 068 requires exactly one declared Kind of exactly one owning Record
+Model as the semantic subject, and fixes no count of structural carriers (068 RF-068-1, RF-068-4).
+This contract carries that one subject in two elements: subject_model gives the owning model's
+scope and subject_kind names the Kind within it. Neither element alone is a subject; together they
+are exactly one.
+
+Two meanings of "kind", never merged. The envelope element kind names this Record's own Kind —
+always KIND-DEFINITION. The family element subject_kind names the declared Kind this Record
+defines — for example CHARACTER. They are different elements in different roles. Their values
+coincide only in the one KIND-DEFINITION whose subject is the Kind KIND-DEFINITION itself (§6).
+
+==================================================================================================
+2. ENVELOPE — the universal seven (RMS §4; Artifact 033)
+==================================================================================================
+
+Types, defaults, nullability and serialization of the envelope fields are not established by the
+governing sources (Artifact 033) and are not stated here.
+
+ELEMENT     partition
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  R — the Registry partition
+CHECK       NATIVE
+BASIS       SOURCE FACT — a KIND-DEFINITION is a Registry Record (RMS §10, §10.1; 068 §5)
+
+ELEMENT     kind
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  identifies the declared Registry Kind KIND-DEFINITION (Kind 2 of RMS §10.1) — this
+            Record's own Kind, never its subject. The constraint is symbolic. No two-character
+            Registry Kind code is established; none is minted here (SC-069-C).
+CHECK       NATIVE against the symbolic Kind; against a code only once the Registry's codes are
+            bound by their own rows (row 117; Artifact 060 writes the code schematically as <kind>)
+BASIS       SOURCE FACT — RMS §10.1; Artifact 064 §9
+REJECT      any other Registry Kind; the subject Kind (for example CHARACTER) placed here; any
+            invented code (for example KD) presented as established
+
+ELEMENT     object_id
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the object identity component under the universal identity grammar. It is this
+            Record's identity — neither the defined Kind nor the Kind's code (068 RS-068-1).
+CHECK       NATIVE
+BASIS       SOURCE FACT — RMS §4, §5; 068 RS-068-1
+
+ELEMENT     slug
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  decoration only; never identity, never the basis of resolution
+CHECK       NATIVE
+BASIS       SOURCE FACT — RMS §5; Artifact 033
+
+ELEMENT     provenance
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it; provenance meaning is not defined here
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033
+
+ELEMENT     registry_ref
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the universal envelope field, unchanged. This contract attaches no referent,
+            self-reference convention, bootstrap target or resolution meaning to it, and it does
+            not carry the subject.
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033 leaves its referent unresolved; Blueprint §9.4:
+            reference resolution is not Registry work
+
+ELEMENT     sot_class
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it. No value is fixed here; Artifact 069's own
+            manifest SoT and Canon are not Record-level values and are not copied into it.
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033
+
+==================================================================================================
+3. FAMILY — KIND-DEFINITION content (Registry-model-owned; not envelope fields)
+==================================================================================================
+
+ELEMENT     subject_model
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  one value from the closed set   W | E | P | R | V | I
+              W  World       E  Epistemic   P  Production
+              R  Registry    V  Visual      I  Issue
+            The sovereign Record Model whose own Kind taxonomy declares the subject Kind. It
+            scopes subject_kind and asserts nothing else about the model: it is not a subject of
+            its own, not a MODEL-DEFINITION reference, and confers no ownership.
+CHECK       NATIVE — presence, a single value, membership of the closed set
+BASIS       REQUIRED SYNTHESIS — 068 KD-5 (exactly one owning model), RF-068-1, RF-068-4 (model
+            scope semantically required; a separate representation neither mandated nor
+            forbidden); RMS §2; RMS §6.1. Carrying model scope as its own element, and the element
+            NAME, are 069 CHOICES.
+REJECT      no value                                      (KD-5)
+            two or more values — ambiguous scope         (KD-5; RF-068-1)
+            a value outside the set, e.g. S "Simulation" claimed as a seventh model
+                                                          (RMS §2)
+            a Record identifier or a runtime object       (RF-068-5, RF-068-6)
+
+ELEMENT     subject_kind
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  names one Kind exactly as the Kind taxonomy of the model in subject_model declares it
+            — for example CHARACTER under W, ARC under P, KIND-DEFINITION under R. The name is
+            read only within subject_model: the pair (subject_model, subject_kind) is the
+            semantic subject. The value names the Kind itself — never a Record of that Kind,
+            never a KIND-DEFINITION Record, never a two-character kind code (SC-069-C).
+            Declared status. The named Kind must be a declared Kind of subject_model, with that
+            status established by the owning model's own Kind architecture (068 KD-2, RF-068-1;
+            Artifact 063 §8). A KIND-DEFINITION neither declares nor admits it (068 KD-2, KD-7).
+CHECK       NATIVE — presence; a single value; the value is not shaped as a Record identifier
+            under the universal grammar (RMS §5); the pair is not (W, WSV).
+            EXTERNAL — declared status. The proof comes from the owning model's Kind
+            architecture (Artifact 063 SC-063-H) and is enforced on the downstream validation
+            path within those rows' own Val (rows 112, 116). This contract does not prove it,
+            and an undetermined subject is not legal (Artifact 063 RB-6; 068 RF-068-1).
+BASIS       REQUIRED SYNTHESIS — 068 KD-1, KD-2, KD-5, RF-068-1 to RF-068-3; Artifact 063 §6,
+            §8.3, SC-063-G (the form of a declaration reference is the family's to fix). Naming
+            the Kind by its declared name is a 069 CHOICE, consistent with row 075's Val — "names
+            match the RMS §10.1 roster exactly" — and with kind codes outside World being
+            unfrozen (Artifact 063 §9). The element NAME is a 069 CHOICE.
+REJECT      no value                                      (KD-1)               NATIVE
+            two or more Kinds, e.g. CHARACTER and ORGANIZATION together
+                                                          (KD-1; RF-068-1)     NATIVE
+            a Record identifier, e.g. W-CH-…-Maximus      (domain instance; RF-068-2, RF-068-5)
+                                                                               NATIVE
+            a KIND-DEFINITION Record's identifier, R-<kind>-…
+                                                          (Kind ≠ its definition; RF-068-3)
+                                                                               NATIVE
+            WSV under W — the WSV singleton is not a Kind (Roadmap PART III)    NATIVE
+            a name the owning model has not declared — a candidate; a rejected candidate such
+            as BELIEF under E; a subtype such as GENERATED-IMAGE under V
+                                                          (068 §10; KD-2)      EXTERNAL
+            a declared name under the wrong model, e.g. CHARACTER under P
+                                                          (KD-5)               EXTERNAL
+
+ELEMENT     definition
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the governed Kind-level meaning of the subject: what a Record of that Kind is — what
+            holds of every Record of the Kind (068 §5; Artifact 062 L2). Non-empty. Its internal
+            form is not prescribed by this contract. It carries none of: the Kind's admission
+            rationale or answers to RMS §13's questions (KD-7); the owning model's taxonomy or
+            the Kind's place in it (KD-4, KD-8); any Record of the Kind or its values (KD-3); the
+            structural schema of the Kind's Records (KD-6); another Registry family's content
+            (KD-9); the owning model's identity semantics, lifecycle, relationship packaging,
+            temporal architecture, provenance or canonicality meaning, semantic validation or
+            package composition (KD-10).
+CHECK       NATIVE — presence, a single value, non-empty.
+            EXTERNAL — the content limits are semantic and not decidable from structure; they
+            are judged against 068, and this contract does not claim them proven.
+BASIS       REQUIRED SYNTHESIS — 068 §5, KD-3, KD-6, KD-7, KD-9, KD-10; RMS §6.1 (governs; never
+            instantiates); Blueprint §9.4 Kind semantics row. The element NAME, the single carrier
+            and the non-empty rule are 069 CHOICES.
+REJECT      executable behaviour, a factory, a registration, approval or admission action
+                                                          (KD-3, KD-7)
+            a domain instance, domain state, derived output or runtime object used as the source
+            of meaning                                    (RF-068-5, RF-068-6; 062 D-3, D-5)
+            the field list, requiredness or cardinality of the subject Kind's Records
+                                                          (KD-6)
+
+==================================================================================================
+4. STRUCTURAL PROHIBITIONS
+==================================================================================================
+
+P-01A Artifact 069 introduces no element beyond the ten of §1. Prohibited here as universal
+      semantics (P-06), as ownership, admission or sovereignty (P-03) or as runtime structure
+      (068 RF-068-6): status, tier, lifecycle_state, canonical, history, relationship_record,
+      owner, owns_records, admitted, admission_rationale, taxonomy_member, implementation,
+      service, worker, session, process, handler, factory. Who may propose, approve or
+      deprecate a definition is Artifact 065's and is not represented here.
+P-01B Artifact 069 introduces no version, revision, latest-version, supersession, replacement,
+      deprecation, retirement, effective-date, compatibility or retention element or mechanism.
+      That representation is deferred to rows 108–110: neither defined nor permanently
+      prohibited here. Whatever those rows establish stays Registry-owned, is not an envelope
+      field (P-05) and is not a universal semantic shared by W, E, P, V or I (P-06).
+P-02  No generic reference list (definition_refs, kind_refs, schema_refs, field_refs,
+      subtype_refs, dependencies, related_records). A structural reference encodes only an
+      obligation 068 establishes — here, the subject and its model scope — or representation a
+      named downstream owner establishes; an admissible target category alone authorizes
+      nothing (068 RF-068-4; Artifact 063 RB-5).
+P-03  No element names, carries or implies ownership of the subject Kind or of its Records,
+      admission or approval of the Kind, membership in a taxonomy, or sovereignty. The owning
+      model keeps its taxonomy, admission, Records and domain meaning; for a Registry Kind,
+      Registry holds them by its own sovereignty, not by a KIND-DEFINITION (068 KD-4).
+P-04  Not the schema of any defined Kind. No element carries the fields, requiredness,
+      cardinality or order of the subject Kind's Records; those are the owning model's schema
+      rows, for example row 184 (068 KD-6; RULE G).
+P-05  No envelope field added, removed or renamed; the family elements are not envelope fields
+      (RMS §4).
+P-06  None of RMS §4's prohibited universal semantics: Record base, Relationship Record,
+      History Record, lifecycle, canonicality, Kind taxonomy, identity composition, state model,
+      semantic schema.
+P-07  Not another family's contract: not MODEL-, SUBTYPE-, FIELD-, SCHEMA- or
+      RELATIONSHIP-TYPE-DEFINITION, and not CONTROLLED-VOCABULARY. No element embeds subtype,
+      field, vocabulary or schema definitions (068 KD-9).
+P-08  No element records the LS-1 pairing, the Kind specification artifact or a lockstep
+      partner. LS-1 is authoring atomicity, not a reference (068 §16; RF-068-9).
+P-09  No dependency element. The subject relation is a declaration reference, not by itself a
+      semantic dependency (068 RF-068-9; Artifact 062 D-9).
+
+==================================================================================================
+5. BOUNDARIES
+==================================================================================================
+
+RESOLUTION      A conforming Record is identity-bearing (§2), so the shared resolution mechanism
+                can resolve it once committed. Resolution never relies on slug, subject_model or
+                subject_kind. This contract implements no resolver, lookup, index or storage,
+                and does not say how a consumer finds the definition of a given Kind. Resolvable
+                is not legal (Artifact 063 §11). Registry definition resolution by id+version is
+                row 115's; create/resolve/version operations are row 114's. (068 RS-068-1 to
+                RS-068-5)
+
+VERSIONABILITY  Nothing here prevents the Registry evolution and versioning model of rows
+                108–110 from applying to a KIND-DEFINITION. Artifact 069 defines no version
+                identifier, numbering scheme, pinning representation, supersession,
+                replacement or deprecation representation, retention or compatibility rule, or
+                temporal lifecycle mechanism; those decisions stay with rows 108 (evolution),
+                109 (versioning, pinning) and 110 (supersession, deprecation). This contract is
+                open to whatever Registry-owned representation those rows establish, provided it
+                leaves the seven-field envelope unchanged and keeps within the Record Model
+                boundaries (P-05, P-06). Versionable therefore means: Artifact 069 does not
+                structurally obstruct the evolution and versioning architecture rows 108–110 own.
+                Absence here is not a decision that a KIND-DEFINITION carries no version.
+                (068 §13)
+
+REFERENCES      The subject is a declaration reference to a declared Kind of a declared Record
+                Model — not an R→R reference to a KIND-DEFINITION Record, not an owned edge and
+                not a Relationship Record (068 RF-068-3; Artifact 063 §8.3). No W/E/P/V/I
+                domain instance, no domain state and no runtime instance is a target or an
+                authority. A reference transfers no ownership, admission or authority.
+                (068 RF-068-1 to RF-068-9)
+
+LAYER           A KIND-DEFINITION sits at L2, Kind semantics (Artifact 062 §4.3). No element
+                takes meaning from L3, L4 or L5, and this contract carries no dependency
+                element (P-09). Whether Records of an L1 family's Kind depend on their Kind's
+                KIND-DEFINITION is not established and not decided here (SC-069-J).
+
+LS-1            This is the generic structural contract every concrete KIND-DEFINITION Record
+                conforms to (row 069 Why). It is not itself an LS-1 partner of any Kind: the
+                Registry's own pairs are 064 ↔ 075, and the other sets are rows 178, 257, 300,
+                345 and 364. 068 ↔ 069 is not a Kind ↔ KIND-DEFINITION pair (Roadmap §0.7).
+
+MATERIALIZATION This file is an authored source. A KIND-DEFINITION Record conforming to it is
+                committed to canon/registry/** only through the Mutation Coordinator after
+                G-CANON-R (Roadmap §0.8, PART X). Row 075 authors the fourteen Registry
+                KIND-DEFINITIONs as canonicalization sources conforming to 069; rows 178, 257,
+                300, 345 and 364 carry G: G-CANON-R. Nothing here authors or commits any of them.
+
+DOWNSTREAM      Row 069's → names all Kind schemas, 074 and 075. A domain Kind schema conforms
+                to its Kind's KIND-DEFINITION — row 186: "conforms to its KIND-DEFINITION and to
+                the World field definitions" — not to this file; this contract imposes no
+                structure on any domain Kind schema (SC-069-K). Row 074 specifies the Registry
+                self-definition set; row 075 authors it. Neither is pre-built here.
+
+==================================================================================================
+6. DECISION CASES (schematic — no identifier is minted; nothing here is Registry data)
+==================================================================================================
+
+ACCEPT    subject_model W, subject_kind CHARACTER, definition carrying the governed meaning of
+          CHARACTER — World keeps CHARACTER and every Character Record              NATIVE
+                                                     + EXTERNAL (declared status: World's)
+ACCEPT    subject_model P, subject_kind ARC — same family, a separate taxonomy        NATIVE
+                                                     + EXTERNAL (declared status: Production's)
+ACCEPT    subject_model R, subject_kind KIND-DEFINITION, envelope kind KIND-DEFINITION — the
+          Record defining the Kind KIND-DEFINITION, one of row 075's fourteen; the two values
+          coincide in two different roles; no axiom Record, no regress (RMS §10.4)  NATIVE
+                                                     + EXTERNAL (declared status: RMS §10.1; 064)
+BOUNDARY  one subject in two carriers, subject_model and subject_kind — conforming; this is the
+          contract's own shape (§1)                                                  STATIC
+BOUNDARY  every NATIVE check passes but the Kind's declared status cannot be established — not
+          legal (Artifact 063 RB-6)                                                  EXTERNAL
+BOUNDARY  structurally conforming, not yet resolved by any consumer — the structure conforms;
+          whether it resolves is row 115's, and resolvable is not legal              EXTERNAL
+BOUNDARY  a version element present today — not defined by this contract; its representation
+          is 108–110's to establish (P-01B)                                          STATIC
+REJECT    subject_kind absent, or subject_model absent                              NATIVE
+REJECT    subject_kind CHARACTER and ORGANIZATION together                          NATIVE
+REJECT    subject_model W and E together — ambiguous scope                          NATIVE
+REJECT    subject_model S, claimed as a seventh sovereign Record Model               NATIVE
+REJECT    subject_kind W-CH-…-Maximus — a World domain instance                      NATIVE
+REJECT    subject_kind R-<kind>-… — a KIND-DEFINITION Record, not a Kind             NATIVE
+REJECT    subject_model W, subject_kind WSV — the WSV singleton is not a Kind         NATIVE
+REJECT    subject_model E, subject_kind BELIEF — rejected candidate, not declared     EXTERNAL
+REJECT    subject_model V, subject_kind GENERATED-IMAGE — a subtype, not a Kind      EXTERNAL
+REJECT    subject_model P, subject_kind CHARACTER — not declared by Production       EXTERNAL
+REJECT    definition citing W-CH-…-Maximus as what a Character is                    EXTERNAL
+REJECT    kind given as an invented code such as KD                                  NATIVE
+
+==================================================================================================
+7. SOURCE CONDITIONS
+==================================================================================================
+
+SC-069-A  LS-1. Row 069 carries LS: LS-1 and Why: LS-1 — the schema every concrete
+          KIND-DEFINITION Record conforms to. Read through that Why and Roadmap §0.7 (rows 068
+          and 069 distinguish the generic family and schema from the concrete sets), 069 is not
+          the partner of any one Kind. The Registry's own pairs stay 064 ↔ 075
+          (AD-LS1-R-BOOTSTRAP). Recorded; nothing to resolve here.
+SC-069-B  No schema language is established. The notation of §0 is Artifact 067's local choice,
+          reused, with CHECK added as a 069 choice; it is no repository-wide language.
+SC-069-C  No two-character Registry Kind code is established, and kind codes outside World are
+          not frozen (Artifact 063 §9). The envelope kind is constrained symbolically, and the
+          subject Kind is named, not coded. Identity binding is row 117's.
+SC-069-D  Req: RR-16 is carried exactly; its text is unavailable (GAP-C) and is not invented.
+SC-069-E  Row 069 carries T: schema · Canon: canonical-about-meaning · CD: yes on a docs/** path.
+          Artifact 003's general convention gives a docs/** specification Canon: n/a; whether it
+          reaches a schema contract is not stated. The metadata is preserved exactly; this file
+          is not a Registry Record, and CD: yes licenses nothing (068 SC-068-G; SC-067-H).
+          Recorded, not resolved.
+SC-069-F  Declared status has no single proof mechanism across the six models (Artifact 063
+          SC-063-H). subject_kind's declared status is therefore an EXTERNAL check whose proof
+          is the owning model's; this contract does not prove it and does not define how it is
+          proved. Recorded, not resolved; non-blocking.
+SC-069-G  VERDICT. Row 399, the VERDICT Kind-Definition, carries H: 069,398 and is ordered
+          before row 405, which admits VERDICT (068 SC-068-J; CONFLICT-A). A Record with
+          subject_model P and subject_kind VERDICT passes the NATIVE checks and fails the
+          EXTERNAL declared-status check while VERDICT is provisional. Recorded; non-blocking.
+SC-069-H  If a model's Kind specification and its KIND-DEFINITION diverge, which side yields is
+          not established (068 SC-068-K). This contract carries no precedence element.
+          Recorded; non-blocking.
+SC-069-I  What happens to a retired Kind's KIND-DEFINITION is not established (068 SC-068-M).
+          This contract carries no retirement or deprecation element (P-01B). Recorded.
+SC-069-J  Whether Records of an L1 family's Kind depend on their Kind's KIND-DEFINITION is not
+          established (068 SC-068-L). This contract carries no dependency element and invents no
+          exemption from Artifact 062 D-8. Recorded; routed to rows 074 and 111.
+SC-069-K  Row 069's → names all Kind schemas, but domain Kind schemas list their own H (for
+          example row 186: H: 185,182) and conform to their Kind's KIND-DEFINITION, not to this
+          file. The unlock is read as row 069's own metadata; this contract imposes nothing on
+          those schemas beyond their rows. Recorded; non-blocking.
+
+==================================================================================================
+8. CONFORMANCE CONDITIONS — each labelled NATIVE, EXTERNAL or STATIC
+==================================================================================================
+
+C-069-01  STATIC    The contract governs Registry KIND-DEFINITION Records only: partition R,
+                    kind KIND-DEFINITION, and no other Registry Kind.               §0, §2
+C-069-02  NATIVE    The envelope is exactly the seven RMS §4 fields, each required,
+                    exactly-one, unchanged; the family elements are not envelope fields.
+                                                                                    §1, §2, P-05
+C-069-03  NATIVE    Exactly one semantic subject: one subject_model and one subject_kind,
+                    jointly one subject; two Kinds are rejected.                      §1, §3
+C-069-04  NATIVE    Owning-model scope is unambiguous: subject_model is exactly one of W, E,
+                    P, R, V, I; no seventh model; no second model.                      §3
+C-069-05  EXTERNAL  subject_kind names a Kind declared by subject_model's own Kind
+                    architecture; this contract does not prove it.                §3; SC-069-F
+C-069-06  STATIC    No element admits, approves or declares the subject Kind or records its
+                    admission rationale.                                          §3, P-01A, P-03
+C-069-07  STATIC    References obey Artifact 063: one declared-Kind subject; no generic
+                    reference list; a structural reference encodes an established
+                    obligation only; resolvable ≠ legal.                          §3, §5, P-02
+C-069-08  NATIVE    No Record identifier — domain instance or Registry Record — can stand as
+                    the subject. EXTERNAL: no domain instance, domain state or runtime
+                    object is the source of meaning in definition.                  §3, §6
+C-069-09  NATIVE    The identity needed for resolution is present (partition, kind,
+                    object_id); no resolver is implemented or claimed.              §2, §5
+C-069-10  STATIC    Versionability: no version mechanism is defined and the representation
+                    rows 108–110 own is not prohibited.                     §1, §5, P-01B
+C-069-11  STATIC    Every check that needs evidence outside the Record is labelled EXTERNAL
+                    and is not claimed as a native schema check.                 §0, §3, §8
+C-069-12  STATIC    The KIND-DEFINITION Record is Registry-owned; the subject Kind, its
+                    taxonomy and its Records stay with the owning model.            §3, P-03
+C-069-13  STATIC    No concrete LS-1 set is created: no Registry, World, Epistemic,
+                    Production, Visual or Issue KIND-DEFINITION Record or source.     §5, §6
+C-069-14  STATIC    This contract is not the schema of any defined Kind's Records.  §0, P-04
+C-069-15  STATIC    The file is outside canon/**, and no Registry canon is materialized.
+                                                                                     §0, §5
+C-069-16  STATIC    Every element and constraint names its basis in §2–§3, and every 069
+                    choice is labelled as one.                                      §2, §3
+C-069-17  STATIC    The header reproduces repaired Roadmap row 069 exactly.         header
+C-069-18  STATIC    Artifact 068 is consumed unchanged.                                 §0
+C-069-19  NATIVE    The envelope kind and subject_kind are separate elements, and the
+                    subject Kind cannot be placed in the envelope kind.             §1, §2
+C-069-20  STATIC    None of RMS §4's nine prohibited universal semantics is introduced. P-06
+C-069-21  STATIC    No JSON Schema, YAML, OpenAPI or other standard is invented, and no kind
+                    code is minted.                                       §0; SC-069-B, C
+C-069-22  STATIC    Only docs/registry/kind_definition.schema is created by this artifact.
+                                                                                    row 069
+
+==================================================================================================
+9. ROADMAP TRACE — contract-level
+==================================================================================================
+
+The statuses below assess this file as a structural contract. They claim no resolver, version
+mechanism, validator, declared-status proof or concrete KIND-DEFINITION Record; those belong to
+their own rows.
+
+Val  definition resolves          §2 identity-bearing envelope; §5 RESOLUTION — the structure
+                                  a resolver needs is required; resolution itself is 115's
+Val  versionable                  §5 VERSIONABILITY: 069 defines no version mechanics and does
+                                  not obstruct the Registry evolution and versioning
+                                  representation rows 108–110 own; §1; P-01B (deferred, not
+                                  prohibited)
+Val  references only declared     §3 subject_model and subject_kind (one declared Kind of one
+     entities (063)               model; declared status an EXTERNAL check); §5 REFERENCES;
+                                  P-02
+Done schema                       §1–§4: ten elements, each with requiredness, cardinality,
+                                  constraint, check and basis; the structural prohibitions of §4
+H    068                          consumed unchanged; §1–§5 encode 068 KD-1 to KD-10, RS-068-1
+                                  to RS-068-5, §13, RF-068-1 to RF-068-9, §15, §16
+LS   LS-1                         preserved; SC-069-A
+→    all Kind schemas, 074, 075   handed on; nothing here builds them; SC-069-K
