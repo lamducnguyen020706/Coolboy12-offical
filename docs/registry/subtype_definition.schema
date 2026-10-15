@@ -1,0 +1,749 @@
+COOLBOY12 — SUBTYPE-DEFINITION SCHEMA (structural contract)
+
+ARTIFACT 071 · SUBTYPE-DEFINITION schema · docs/registry/subtype_definition.schema · Own: R ·
+RM: R · T: schema · R: CONTRACT · SoT: AUTHORITATIVE · Auth: defining ·
+Canon: canonical-about-meaning · CD: yes · Ph/St: P3/3b · Req: RR-16 · BP: §9.4 · RMS: §10.1 ·
+H: 070 · S: — · LS: LS-1 · G: — · → 347 · Val: definition resolves; versionable; references only
+declared entities (063) · Done: schema · Why: LS-1 · Risk: medium · ∥: yes
+
+==================================================================================================
+0. HOW TO READ THIS FILE
+==================================================================================================
+
+NOTATION   This file reuses the local declarative notation of Artifact 067, with the CHECK line
+           Artifact 069 added. It is an implementation choice, not COOLBOY12 architecture, and
+           establishes no repository-wide schema language (SC-071-B). No parser exists for it.
+
+           ELEMENT <name>        a structural element of a materialized Record
+           LAYER                 ENVELOPE (universal, RMS §4) or FAMILY (Registry-model-owned)
+           REQUIRED              yes | no
+           CARDINALITY           exactly-one | …
+           CONSTRAINT            what a conforming value must satisfy
+           CHECK                 how the constraint is checked, as Artifact 069 defines it:
+                                   NATIVE    decidable from the Record alone
+                                   EXTERNAL  needs evidence outside the Record; the line names
+                                             who supplies it, and this contract does not claim
+                                             it proven
+                                   STATIC    a property of this contract, checked by reading it
+           BASIS                 where the element or rule comes from:
+                                   SOURCE FACT            stated by a governing source
+                                   REQUIRED SYNTHESIS     forced by several source facts together
+                                   REPOSITORY CONVENTION  a choice of Artifact 067 or 069, reused
+                                   071 CHOICE             a representation decision of this file
+                                 REPOSITORY CONVENTION is the one addition to the notation, a
+                                 071 choice.
+           REJECT                a value that does not conform, with the rule it breaks and its
+                                 CHECK
+
+STATUS     This contract describes the structure a materialized SUBTYPE-DEFINITION Record must
+           satisfy. It is not a SUBTYPE-DEFINITION Record, not a SCHEMA-DEFINITION Record, not a
+           CONTROLLED-VOCABULARY, not the schema of any classified domain Record, and not
+           canonical data. It is an authored source outside canon/** (Roadmap §0.8; CONFLICT-F).
+           Concrete SUBTYPE-DEFINITION Records are committed only through the Mutation
+           Coordinator (row 152) after G-CANON-R (070 SD-13). Where this contract differs from
+           the Master Blueprint, the Record Model System, the Roadmap, or Artifact 070, those
+           sources are right and this contract is wrong.
+
+SPEC       Artifact 070 — docs/registry/subtype_definition.md — is the semantic contract this file
+           encodes, consumed unchanged (H: 070). This file encodes only the structural
+           consequences of the obligations 070 establishes (070 §25). Artifacts 067 and 069 are
+           precedents for notation and representation conventions only: no semantics is taken
+           from the MODEL-DEFINITION or KIND-DEFINITION families, and neither row is a
+           dependency of row 071.
+
+==================================================================================================
+1. RECORD SHAPE
+==================================================================================================
+
+SUBTYPE-DEFINITION RECORD
+├── ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref · sot_class
+└── FAMILY    owning_model · parent_kind · specialization · definition
+              ├── owning_model, parent_kind and specialization together carry the ONE
+              │   specialization context
+              └── definition carries its governed meaning
+
+Artifact 071 defines exactly these eleven elements: the universal seven-field envelope (RMS §4)
+and four family elements. It defines no other element.
+
+That is the scope boundary of this contract, not a closure over everything a SUBTYPE-DEFINITION
+Record may later carry. Rows 108–110 keep their authority to establish Registry-owned evolution,
+versioning, supersession and deprecation representation (§5 VERSIONABILITY; 070 VS-070-2). The
+envelope, by contrast, stays exactly seven fields: no downstream Registry representation becomes
+an eighth universal field (RMS §4; P-05).
+
+One context, three carriers. 070 requires exactly one specialization within exactly one declared
+parent Kind of exactly one owning Record Model (070 SD-1, RF-070-1), and fixes no count of
+structural carriers. This contract carries that one context in three elements: owning_model gives
+the owning model's scope, parent_kind names the parent Kind within it, and specialization names
+the specialization within that Kind. No element alone is the context; together they are exactly
+one. A specialization name is read only within its parent Kind (070 §8).
+
+Three roles, never merged. The envelope element kind names this Record's own Kind — always
+SUBTYPE-DEFINITION. parent_kind names the declared Kind the specialization belongs to — for
+example LINEAGE. specialization names the specialization — for example HOUSE. They are different
+elements in different roles. The specialization is never a Kind (070 SD-3), and neither the
+parent Kind nor the specialization is ever this Record's kind (070 §19).
+
+Not the classified Record. A domain Record carries a specialization as kind + <kind>_type
+(Blueprint §13.6). This contract is the structure of the Registry Record that governs what the
+specialization means, not of the classified domain Record: it defines no <kind>_type field and no
+classification value for any model (P-04; 070 SD-11).
+
+==================================================================================================
+2. ENVELOPE — the universal seven (RMS §4; Artifact 033)
+==================================================================================================
+
+Types, defaults, nullability and serialization of the envelope fields are not established by the
+governing sources (Artifact 033) and are not stated here.
+
+ELEMENT     partition
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  R — the Registry partition
+CHECK       NATIVE
+BASIS       SOURCE FACT — a SUBTYPE-DEFINITION is a Registry Record (RMS §10, §10.1; 070 §5,
+            RS-070-1)
+REJECT      W, E, P, V or I — a Record of an owning model, such as one Lineage, is never a
+            SUBTYPE-DEFINITION                                    (SD-4; RF-070-5)  NATIVE
+
+ELEMENT     kind
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  identifies the declared Registry Kind SUBTYPE-DEFINITION (Kind 3 of RMS §10.1) — this
+            Record's own Kind, never its parent Kind and never its specialization. The constraint
+            is symbolic. No two-character Registry Kind code is established; none is minted here
+            (SC-071-C).
+CHECK       NATIVE against the symbolic Kind; against a code only once the Registry's codes are
+            bound by their own rows (row 117; Artifact 060 writes the code schematically as <kind>)
+BASIS       SOURCE FACT — RMS §10.1; Artifact 064 §10
+REJECT      KIND-DEFINITION — the parent Kind's own definition is another Registry Kind
+                                                                  (SD-8)            NATIVE
+            CONTROLLED-VOCABULARY — a governed value set is another Registry Kind
+                                                                  (SD-9)            NATIVE
+            any other Registry Kind                                                 NATIVE
+            the parent Kind (for example LINEAGE) or the specialization (for example HOUSE)
+            placed here                                           (070 §19)         NATIVE
+            any invented code (for example SD) presented as established             NATIVE
+
+ELEMENT     object_id
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the object identity component under the universal identity grammar. It is this
+            Record's identity — not the parent Kind, not the specialization or its classification
+            value, not a Kind code (070 RS-070-1).
+CHECK       NATIVE
+BASIS       SOURCE FACT — RMS §4, §5; 070 RS-070-1
+
+ELEMENT     slug
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  decoration only; never identity, never the basis of resolution
+CHECK       NATIVE — presence, a single value
+            STATIC — this contract gives slug no identity or resolution role
+BASIS       SOURCE FACT — RMS §5; Artifact 033
+
+ELEMENT     provenance
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it: this Record's own provenance capture.
+            Provenance meaning is not defined here, and the provenance of a Record classified by
+            the specialization — how one Visual asset was produced, for example — is never
+            carried here (070 SD-7, §12).
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033
+
+ELEMENT     registry_ref
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the universal envelope field, unchanged. This contract attaches no referent,
+            self-reference convention, bootstrap target or resolution meaning to it, and it
+            carries neither the parent Kind nor the specialization.
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033 leaves its referent unresolved; Blueprint §9.4:
+            reference resolution is not Registry work
+
+ELEMENT     sot_class
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it. No value is fixed here; Artifact 071's own
+            manifest SoT and Canon are not Record-level values and are not copied into it.
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033
+
+==================================================================================================
+3. FAMILY — SUBTYPE-DEFINITION content (Registry-model-owned; not envelope fields)
+==================================================================================================
+
+Each family element is required and exactly-one. None has a default value, and none may be left
+empty: a Record without one does not conform, and this contract supplies no value for it (071
+CHOICE). Types and serialization of the family elements are not established by the governing
+sources and are not stated here; this contract fixes structure, not an encoding.
+
+ELEMENT     owning_model
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  one value from the closed set   W | E | P | R | V | I
+              W  World       E  Epistemic   P  Production
+              R  Registry    V  Visual      I  Issue
+            The sovereign Record Model whose own Kind taxonomy declares parent_kind — the owning
+            Record Model of 070 SD-1. It is the model part of the parent-Kind scope: it scopes
+            parent_kind and asserts nothing else about the model. It is not a subject of its own,
+            not a separate declared-Model reference relation (070 RF-070-4), not a
+            MODEL-DEFINITION reference, and not the owner of this Record, which is the
+            Registry's (partition R; 070 SD-7). It confers no ownership.
+CHECK       NATIVE — presence, a single value, membership of the closed set
+BASIS       REQUIRED SYNTHESIS — 070 SD-1 (exactly one owning Record Model), RF-070-1 (the parent
+            a declared Kind of its owning model); RMS §2; RMS §6.1. Carrying model scope as its
+            own element follows 069's subject_model (REPOSITORY CONVENTION). The element NAME,
+            taken from 070's "owning Record Model", is a 071 CHOICE.
+REJECT      no value — a parent Kind of no model                  (SD-1)            NATIVE
+            two or more values — ambiguous scope                  (SD-1)            NATIVE
+            a value outside the set, e.g. S "Simulation" claimed as a seventh model
+                                                                  (RMS §2)          NATIVE
+            a Record identifier or a runtime object — neither is in the set
+                                                                  (RF-070-5, RF-070-6)
+                                                                                    NATIVE
+
+ELEMENT     parent_kind
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  names one Kind exactly as the Kind taxonomy of the model in owning_model declares it —
+            for example LINEAGE under W, VISUAL-ASSET under V. The name is read only within
+            owning_model. The value names the Kind itself — never a Record of that Kind, never the
+            Kind's KIND-DEFINITION Record, never a two-character kind code (SC-071-C), and never a
+            specialization.
+            Declared status. The named Kind must be a declared Kind of owning_model, with that
+            status established by the owning model's own Kind architecture (070 SD-2, RF-070-1;
+            Artifact 063 §7 row 3, §8). A SUBTYPE-DEFINITION neither declares nor admits it
+            (070 SD-2).
+            Form. parent_kind is a declaration reference to the declared Kind, not an R → R
+            reference to the parent's KIND-DEFINITION Record (070 RF-070-3; Artifact 063 §8.3).
+            Why this form, and not both, is set out in §5 REPRESENTATION.
+CHECK       NATIVE — presence; a single value; the value is not shaped as a Record identifier
+            under the universal grammar (RMS §5); the pair is not (W, WSV).
+            EXTERNAL — declared status, and that the Kind is owning_model's. The proof comes from
+            the owning model's Kind architecture (Artifact 063 SC-063-H). This contract does not
+            define or prove that evidence. Downstream legality validation may enforce this
+            requirement under its own contract; row 112 independently enforces its narrower
+            domain-instance reference prohibition. An undetermined parent is not legal (Artifact
+            063 RB-6; 070 RF-070-1).
+BASIS       REQUIRED SYNTHESIS — 070 SD-1, SD-2, RF-070-1, RF-070-3; Artifact 063 §6, §8.3,
+            SC-063-G (the form of a declaration reference is fixed by the applicable family
+            contract or schema). The declaration form and naming the Kind by its declared name
+            follow 069's subject_kind (REPOSITORY CONVENTION); choosing that form under RF-070-3
+            is a 071 CHOICE (§5 REPRESENTATION). The element NAME, taken from 070's "parent
+            Kind", is a 071 CHOICE.
+REJECT      no value — a specialization with no parent Kind       (SD-1; RF-070-1)  NATIVE
+            two or more Kinds, e.g. LINEAGE and ORGANIZATION together, defining HOUSE within both
+                                                                  (SD-1)            NATIVE
+            a Record identifier, e.g. W-LI-…-<slug> (a domain instance)
+                                                                  (RF-070-5)        NATIVE
+            a KIND-DEFINITION Record's identifier, R-<kind>-…     (RF-070-3)        NATIVE
+            WSV under W — the WSV singleton is not a Kind (Roadmap PART III)        NATIVE
+            a name owning_model has not declared — a candidate; a rejected candidate such as
+            VISUAL-DERIVATIVE under V; a specialization such as GENERATED-IMAGE under V, which is
+            a subtype and so never a parent                       (SD-2, SD-3)      EXTERNAL
+            a declared name under the wrong model, e.g. LINEAGE under V
+                                                                  (SD-1)            EXTERNAL
+
+ELEMENT     specialization
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  names the one specialization whose meaning this Record governs — a classification
+            within parent_kind (070 §6, §8): for example HOUSE within (W, LINEAGE), or
+            GENERATED-IMAGE within (V, VISUAL-ASSET). The name is read only within the pair
+            (owning_model, parent_kind); the three values together are the specialization
+            context. The value names the specialization itself — never a Kind or kind code
+            (070 SD-3), never a Record or Record identifier (RF-070-5), never a runtime object
+            (RF-070-6).
+            Scoped, not global. The same name under two parent Kinds names two contexts, carried
+            by two Records (070 §8). This contract requires no uniqueness of a name across parent
+            Kinds and creates no global subtype namespace, enum or taxonomy (070 SD-10).
+            Name form. The name is written as the governing sources or the owning model's design
+            work name the specialization (070 §14). This contract fixes no identifier grammar,
+            case rule or spelling for it, and maps it to no classification value a domain Record
+            carries (SC-071-M).
+            Not a reference. specialization names this Record's own subject. It refers to no
+            declaration and no Record: there is no declared-subtype target, and a specialization
+            is reached through its SUBTYPE-DEFINITION (070 RF-070-2; Artifact 063 §7).
+            Not a vocabulary link. This contract neither requires nor forbids that the name also
+            appear as a value of a CONTROLLED-VOCABULARY; that relation is not established
+            (SC-071-G).
+CHECK       NATIVE — presence; a single value; the value is not shaped as a Record identifier
+            under the universal grammar (RMS §5); it differs, as written, from parent_kind.
+            EXTERNAL — that the value names a specialization of parent_kind which the governing
+            sources or the owning model's design work establish (070 §14; SC-071-H), and that it
+            is no Kind name, kind code or runtime object of any model: Kind rosters and codes are
+            the owning models' (Artifact 063 §8.3, §9). This contract does not prove it.
+BASIS       REQUIRED SYNTHESIS — 070 SD-1, SD-3, SD-10, RF-070-2, RF-070-5, RF-070-6, §8, §14.
+            The examples are SOURCE FACTS: HOUSE within LINEAGE (Blueprint §9.4, §13.6) and the
+            Visual production forms (RMS §11.1). The identifier-shape check follows 069
+            (REPOSITORY CONVENTION). Carrying the specialization as its own named element, the
+            element NAME and the name form are 071 CHOICES.
+REJECT      no value                                              (SD-1)            NATIVE
+            two or more specializations, e.g. GENERATED-IMAGE and PHOTOGRAPH together
+                                                                  (SD-1)            NATIVE
+            a Record identifier, e.g. W-LI-…-<slug> or V-<kind>-…-<slug> (a domain instance)
+                                                                  (RF-070-5)        NATIVE
+            a Registry Record identifier, R-<kind>-…, such as a CONTROLLED-VOCABULARY Record's —
+            the specialization is this Record's own subject, not a reference to another Record
+                                                                  (RF-070-2)        NATIVE
+            the parent Kind itself, e.g. LINEAGE within (W, LINEAGE)
+                                                                  (SD-3)            NATIVE
+            a Kind name or kind code, e.g. LI, World's code for LINEAGE
+                                                                  (SD-3)            EXTERNAL
+            VISUAL-REFERENCE within (V, VISUAL-ASSET) — a field, provenance or reference
+            structure, not a production form                      (RMS §11.1)       EXTERNAL
+            a running generator, service or validator named as the specialization
+                                                                  (RF-070-6)        EXTERNAL
+
+ELEMENT     definition
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the governed meaning of the specialization: what is true of it, as a specialization of
+            what is true of every Record of parent_kind (070 §6; Artifact 062 L3). Non-empty. Its
+            internal form is not prescribed by this contract. It carries none of: parent_kind's
+            own meaning, which is its KIND-DEFINITION's (SD-8); a value set or vocabulary (SD-9);
+            any Record of parent_kind, any value one carries, or what is true of one (SD-4); the
+            classification field, its schema or its validation (SD-11); parent_kind's place in a
+            taxonomy or its admission (SD-2); the owning model's domain semantics of the Records
+            that use the subtype — for a Visual asset, its actual provenance and Visual's
+            provenance meaning included (SD-7; 070 §12); anything that redefines or overrides
+            what is true of every Record of parent_kind (SD-6).
+CHECK       NATIVE — presence, a single value, non-empty.
+            EXTERNAL — the content limits are semantic and not decidable from structure; they are
+            judged against 070, and this contract does not claim them proven.
+BASIS       REQUIRED SYNTHESIS — 070 §6, SD-4, SD-6 to SD-9, SD-11; RMS §6.1 (governs; never
+            instantiates); Blueprint §9.4 Subtype semantics row. The single carrier, the element
+            NAME and the non-empty rule follow Artifacts 067 and 069 (REPOSITORY CONVENTION).
+REJECT      executable behaviour, a factory, or a registration, approval or admission action
+                                                                  (SD-4, SD-12)     EXTERNAL
+            a domain instance, domain state, derived output or runtime object as the source of
+            meaning — e.g. one VISUAL-ASSET Record cited as what GENERATED-IMAGE means
+                                                  (RF-070-5, RF-070-6; 062 D-3, D-5) EXTERNAL
+            the classification field's name, type or value set    (SD-9, SD-11)     EXTERNAL
+            a statement that overrides what holds of every Record of parent_kind
+                                                                  (SD-6)            EXTERNAL
+
+==================================================================================================
+4. STRUCTURAL PROHIBITIONS
+==================================================================================================
+
+P-01A Artifact 071 introduces no element beyond the eleven of §1. Prohibited here as universal
+      semantics (P-06), as ownership, admission or sovereignty (P-03), as runtime structure
+      (070 RF-070-6) or as another family's content (P-07): status, tier, lifecycle_state,
+      canonical, history, relationship_record, owner, owns_records, admitted,
+      admission_rationale, taxonomy_member, kind_code, subtype_code, implementation, service,
+      worker, session, process, handler, factory, generator.
+P-01B Artifact 071 introduces no version, revision, latest-version, supersession, replacement,
+      deprecation, retirement, effective-date, migration, compatibility or retention element or
+      mechanism, and no lifecycle or state machine. That representation is deferred to rows
+      108–110: neither defined nor permanently prohibited here (070 VS-070-2). Whatever those
+      rows establish stays Registry-owned, is not an envelope field (P-05) and is not a
+      universal semantic shared by W, E, P, V or I (P-06).
+P-02  No generic reference list, and no reference the obligations of 070 do not require:
+      references, refs, dependencies, related_records, definition_refs, kind_refs,
+      kind_definition_ref, model_ref, schema_ref, subtype_refs, vocabulary_ref,
+      controlled_vocabulary_ref, vocabulary_id, vocabulary_value_ref. A structural reference
+      encodes only an obligation 070 establishes — here, the parent-Kind scope — or
+      representation a named downstream owner establishes; an admissible target category alone
+      authorizes nothing (070 RF-070-4; Artifact 063 RB-5).
+P-03  No element names, carries or implies: ownership of parent_kind or of its Records; a
+      decision on which Records carry which classification; admission or approval of the parent
+      Kind or of the specialization; membership in a taxonomy; or sovereignty. The owning model
+      keeps its taxonomy, its Records and their domain semantics; the Registry owns this Record
+      and governs the specialization's meaning (070 SD-7). A legal reference transfers no ownership,
+      mutation authority, semantic authority, admission, canonicality or source-of-truth class
+      (070 RF-070-8).
+P-04  Not the schema of any domain Record. No element carries the classification field of any
+      model — its name (for example lineage_type), type, cardinality, serialization or value set
+      — or the fields, requiredness or order of parent_kind's Records; those belong to the owning
+      model's field architecture and schema rows (070 SD-11; SC-071-K).
+P-05  No envelope field added, removed or renamed. The family elements are not envelope fields,
+      and no <kind>_type, subtype, kind_type, classification, parent_kind or specialization field
+      enters the envelope (RMS §4; 070 §19).
+P-06  None of RMS §4's prohibited universal semantics: Record base, Relationship Record, History
+      Record, lifecycle, canonicality, Kind taxonomy, identity composition, state model, semantic
+      schema. For this family that means no universal subtype superclass; no global subtype
+      taxonomy, namespace or identifier grammar; no forced enum across Kinds; no universal
+      <kind>_type; no Relationship Record joining a specialization to its parent; and no History
+      Record for its versions (070 §19, SD-10).
+P-07  Not another family's contract: not KIND-DEFINITION (070 SD-8) and not
+      CONTROLLED-VOCABULARY (070 SD-9) — no value-set element, no vocabulary-membership element,
+      no mandatory vocabulary link — and not MODEL-, FIELD-, SCHEMA- or
+      RELATIONSHIP-TYPE-DEFINITION. No element embeds another family's definitions, and nothing
+      here pre-builds row 350's VISUAL-ASSET subtype vocabulary.
+P-08  No element records an LS-1 pairing, a Kind specification artifact or a lockstep partner.
+      LS-1 is not a reference and creates no commit atomicity here (070 §20; SC-071-A).
+P-09  No dependency element. The L3 semantic dependency on the parent Kind holds because the
+      sources establish it (Blueprint §9.4; Artifact 062 §5). parent_kind is a declaration
+      reference, which is not by itself a semantic dependency (Artifact 062 D-9; 070 RF-070-9),
+      and a dependency is not a reference field (Artifact 062 §9). Concrete dependency rules are
+      row 111's.
+P-10  No element represents how a specialization comes to exist or is added, proposed,
+      approved, admitted or declared. Row 459 owns the extensibility contract — "each through
+      its own ceremony, never through a generic abstraction" — and Artifact 065 owns governance
+      (070 SD-12; SC-071-H).
+
+REJECTED DEDUCTIONS — each with the check that rejects it and where
+
+ 1  a subtype is a Kind                          NATIVE, EXTERNAL, STATIC  §2 kind; §3; P-01A
+ 2  a SUBTYPE-DEFINITION is a domain instance    NATIVE                    §2 partition, kind
+ 3  a SUBTYPE-DEFINITION is a KIND-DEFINITION    NATIVE, STATIC            §2 kind; P-07
+ 4  a SUBTYPE-DEFINITION is a CONTROLLED-VOCABULARY
+                                                 NATIVE, STATIC            §2 kind; P-07
+ 5  a specialization with no parent Kind         NATIVE                    §3 parent_kind
+ 6  a parent Kind belonging to no model          NATIVE                    §3 owning_model
+ 7  a parent model outside W, E, P, R, V, I      NATIVE                    §3 owning_model
+ 8  a domain Record identifier as the subject    NATIVE                    §3 specialization
+ 9  a runtime object as subject or authority     NATIVE, EXTERNAL, STATIC  §3; P-01A
+10  a global subtype namespace                   STATIC                    §3; P-06
+11  a global subtype enum                        STATIC                    P-06
+12  <kind>_type added to the universal envelope  NATIVE, STATIC            §2; P-05
+13  a vocabulary reference made mandatory        STATIC                    P-02, P-07
+14  a reference read as a semantic dependency    STATIC                    P-09; §5
+15  resolution read as legality                  STATIC                    §5 RESOLUTION
+16  a legal reference read as ownership transfer STATIC                    P-03; §5
+17  versionable read as licence for a version field
+                                                 STATIC                    P-01B; §5
+18  LS-1 read as a subtype lockstep pair         STATIC                    P-08; SC-071-A
+19  Canon or CD read as licence to write canon   STATIC                    §5; SC-071-E
+20  row 071 used to pre-build row 350's vocabulary
+                                                 STATIC                    P-07; §5
+21  row 071 used to invent row 459's ceremony    STATIC                    P-10
+
+==================================================================================================
+5. BOUNDARIES
+==================================================================================================
+
+REPRESENTATION  070 RF-070-3 leaves to 071 which form carries the parent-Kind scope: naming the
+                declared Kind, or an R → R reference to the parent's KIND-DEFINITION Record.
+                This contract uses the declaration form — owning_model and parent_kind — and not
+                both, since a second relation would be an invented one (070 RF-070-4). The
+                choice is a 071 CHOICE, not a Blueprint or RMS fact. Its grounds:
+                (1) it is the form Artifact 069 uses for a declared-Kind subject (REPOSITORY
+                    CONVENTION);
+                (2) it needs no KIND-DEFINITION Record to exist first. The R → R form would make
+                    every SUBTYPE-DEFINITION wait for its parent's KIND-DEFINITION, an order the
+                    Roadmap does not state: row 350, built on 071, does not list row 345, the V
+                    Kind-Definition set, in its H (PART IX X-05, consumer before provider).
+                    Whether row 350 carries SUBTYPE-DEFINITION Records is itself not established
+                    (SC-071-G);
+                (3) the R → R form needs a Registry Record identifier — where a target is a
+                    Record, its handle is a resolvable ID (Artifact 063 §11) — and no Registry
+                    Kind code is bound yet (row 117; SC-071-C).
+                The form creates no semantic authority, dependency or ownership: a declared Kind
+                named as a target is not semantic authority for the definition that names it,
+                and naming it is not by itself a semantic dependency (Artifact 063 §7 row 3;
+                Artifact 062 D-9). The specialization is the Record's own subject and is carried
+                by name, not by reference (070 RF-070-2).
+
+RESOLUTION      A conforming Record carries the baseline Record identity that later
+                Registry-definition resolution requires (§2): partition, kind and object_id.
+                Artifact 071 does not by itself establish the complete id+version resolution
+                representation: rows 108–110 retain authority over Registry evolution and version
+                representation, and row 115 owns consumer resolution — "consumer resolves by
+                id+version". Resolution never relies on slug, which is decoration only.
+                owning_model, parent_kind and specialization name the semantic context and do not
+                thereby become this Record's identity. This contract implements no resolver,
+                lookup, index, cache, storage, fallback, version-selection or classification-value
+                lookup, and does not say how a consumer finds the definition of a given
+                specialization; row 114 owns Registry create/resolve/version operations.
+                Resolution transfers nothing, and resolvable is not legal (Artifact 063 §11).
+                (070 RS-070-1 to RS-070-5)
+
+VERSIONABILITY  Nothing here prevents the Registry evolution and versioning model of rows 108–110
+                from applying to a SUBTYPE-DEFINITION. Artifact 071 defines no version
+                identifier, numbering scheme, pinning representation, supersession, replacement
+                or deprecation representation, effective date, migration, retention or
+                compatibility rule, or temporal lifecycle mechanism; those decisions stay with
+                rows 108 (evolution), 109 (versioning, pinning) and 110 (supersession,
+                deprecation). Nor does it say whether two Records may carry the same context —
+                as versions of one definition, for example — or how such Records relate; that is
+                theirs too. This contract is open to whatever Registry-owned representation those
+                rows establish, provided it leaves the seven-field envelope unchanged and keeps
+                within the Record Model boundaries (P-05, P-06); no World History Record is used
+                or required (I-102). Versionable therefore means: Artifact 071 does not
+                structurally obstruct the evolution and versioning architecture rows 108–110 own.
+                Absence here is not a decision that a SUBTYPE-DEFINITION carries no version.
+                (070 VS-070-1, VS-070-2)
+
+REFERENCES      The one concrete reference this family carries is the parent-Kind scope: a
+                declaration reference to a declared Kind of a declared Record Model — not an
+                R → R reference to a KIND-DEFINITION Record, not an owned edge and not a
+                Relationship Record (070 RF-070-1, RF-070-3; Artifact 063 §8.3; I-102). The
+                specialization is no reference target: there is no declared-subtype category
+                (070 RF-070-2; Artifact 063 §7; SC-071-J). No W/E/P/V/I domain instance, no domain
+                state and no runtime instance is a target, a dependency or an authority. A
+                reference transfers no ownership, admission or authority, is not by itself a
+                semantic dependency, and is not legal because it resolves. (070 RF-070-1 to
+                RF-070-9)
+
+LAYER           A SUBTYPE-DEFINITION sits at L3, subtype semantics (Artifact 062 §4.3). No
+                element takes meaning from L4 or L5, and this contract carries no dependency
+                element (P-09). It carries exactly one parent Kind and no other Kind: whether
+                subtype semantics may depend on a Kind other than their own is not established
+                (SC-071-L).
+
+VOCABULARY      No element carries a value set, a vocabulary reference or vocabulary membership.
+                Whether every value of a vocabulary has a SUBTYPE-DEFINITION, whether one
+                vocabulary serves one parent Kind, and how the two families connect are not
+                established (SC-071-G). Row 350 builds the VISUAL-ASSET subtype vocabulary on
+                rows 071 and 082 under its own row. Nothing here requires a vocabulary link, and
+                nothing forbids one that a later source establishes.
+
+CLASSIFICATION  Classified domain Records carry the specialization as kind + <kind>_type —
+                "There is one classification field, not two" (Blueprint §13.6). That field is the
+                owning model's: its name, type and value form are not stated here (SC-071-K), and
+                this contract maps no specialization name to a classification value (SC-071-M).
+
+LS-1            Row 071 carries LS: LS-1 and Why: LS-1. This contract is not a Kind
+                specification and not a KIND-DEFINITION; 070 ↔ 071 is not a Kind ↔
+                KIND-DEFINITION pair, and no subtype pair is created. The Registry's own pairs
+                stay 064 ↔ 075; the KIND-DEFINITION of the Kind SUBTYPE-DEFINITION is one of row
+                075's fourteen and conforms to 069, not to this file (SC-071-A).
+
+MATERIALIZATION This file is an authored source. A SUBTYPE-DEFINITION Record conforming to it is
+                committed to canon/registry/** only through the Mutation Coordinator after
+                G-CANON-R (Roadmap §0.8, PART X; 070 SD-13). No Roadmap row names
+                SUBTYPE-DEFINITION Records as its output: Registry content extends by ordinary
+                Registry change (Blueprint §9.4), and whether row 350 carries such Records is not
+                established (SC-071-G). Nothing here authors or commits any Record, and
+                Canon: canonical-about-meaning and CD: yes license no write (SC-071-E).
+
+DOWNSTREAM      Row 071's → names 347, the CANONICAL-VISUAL-SPECIFICATION schema, whose H is 346
+                only. This contract imposes nothing on row 347 and assigns it no subtype or
+                vocabulary responsibility. Row 350 lists 071 in its H, with 348 and 082, and
+                consumes this contract under its own row; nothing here builds it or widens its
+                Val (SC-071-I). A downstream artifact uses this contract only as its own H and
+                Val allow.
+
+==================================================================================================
+6. DECISION CASES (schematic — no identifier is minted; nothing here is Registry data)
+==================================================================================================
+
+ACCEPT    owning_model W, parent_kind LINEAGE, specialization HOUSE, definition carrying the
+          governed meaning of HOUSE within LINEAGE — World keeps LINEAGE and every Lineage
+          Record, and no HOUSE Kind exists                                           NATIVE
+                                                     + EXTERNAL (declared status: World's)
+ACCEPT    owning_model V, parent_kind VISUAL-ASSET, specialization GENERATED-IMAGE — a
+          production form, not a fourth Visual Kind; Visual keeps every asset Record and its
+          provenance                                                                 NATIVE
+                                                     + EXTERNAL (declared status: Visual's)
+ACCEPT    owning_model V, parent_kind VISUAL-ASSET, specialization DERIVATIVE — the durable
+          derivative that requires identity; a rebuildable derivative is a derived projection,
+          not a Record (RMS §6.1, §11.1)                                             NATIVE
+                                                     + EXTERNAL (declared status: Visual's)
+BOUNDARY  one name X under (W, LINEAGE) and under (W, ORGANIZATION) — two contexts, two
+          Records; neither excludes the other, and no uniqueness across parent Kinds is
+          required                                                                   STATIC
+BOUNDARY  a conforming Record with no vocabulary element — conforming: no vocabulary link is
+          required, and none that a later source establishes is forbidden (SC-071-G) STATIC
+BOUNDARY  every NATIVE check passes but parent_kind's declared status cannot be established —
+          not legal (Artifact 063 RB-6)                                              EXTERNAL
+BOUNDARY  structurally conforming, not yet resolved by any consumer — the structure conforms;
+          whether it resolves is row 115's, and resolvable is not legal              EXTERNAL
+BOUNDARY  a version element present today — not defined by this contract; its representation
+          is 108–110's to establish (P-01B)                                          STATIC
+BOUNDARY  a new visual subtype — once one exists, a Record of this shape can carry its
+          meaning; how it is added is row 459's and is not represented here (P-10)   STATIC
+REJECT    specialization present, parent_kind absent — a free-floating, global subtype
+                                                                                     NATIVE
+REJECT    owning_model absent                                                        NATIVE
+REJECT    parent_kind LINEAGE and ORGANIZATION together, defining HOUSE within both  NATIVE
+REJECT    owning_model W and E together — ambiguous scope                            NATIVE
+REJECT    owning_model S, claimed as a seventh sovereign Record Model                NATIVE
+REJECT    specialization W-LI-…-<slug> — a World Lineage Record                      NATIVE
+REJECT    specialization V-<kind>-…-<slug> — a Visual asset Record                   NATIVE
+REJECT    specialization LINEAGE within (W, LINEAGE) — the parent Kind itself        NATIVE
+REJECT    parent_kind R-<kind>-… — a KIND-DEFINITION Record, not the parent Kind     NATIVE
+REJECT    owning_model W, parent_kind WSV — the WSV singleton is not a Kind          NATIVE
+REJECT    partition V — a Visual Record is not a SUBTYPE-DEFINITION                  NATIVE
+REJECT    kind LINEAGE, or kind given as an invented code such as SD                 NATIVE
+REJECT    specialization LI under (W, LINEAGE) — World's kind code, not a specialization
+                                                                                     EXTERNAL
+REJECT    owning_model V, parent_kind GENERATED-IMAGE — a subtype, not a Kind        EXTERNAL
+REJECT    owning_model V, parent_kind LINEAGE — not declared by Visual               EXTERNAL
+REJECT    specialization VISUAL-REFERENCE within (V, VISUAL-ASSET) — not a production form
+                                                                                     EXTERNAL
+REJECT    definition citing one VISUAL-ASSET Record as what GENERATED-IMAGE means    EXTERNAL
+
+==================================================================================================
+7. SOURCE CONDITIONS
+==================================================================================================
+
+SC-071-A  LS-1. Row 071 carries LS: LS-1 and Why: LS-1. Roadmap PART III defines LS-1 as every
+          Kind spec ↔ its Registry KIND-DEFINITION, an atomic pair. This contract is neither a
+          Kind specification nor a KIND-DEFINITION, 070 ↔ 071 is not such a pair, and no source
+          states which pair, if any, row 071's label names (070 SC-070-D). The Registry's own
+          pairs stay 064 ↔ 075 (AD-LS1-R-BOOTSTRAP). No subtype ↔ SUBTYPE-DEFINITION pair,
+          070 ↔ 071 pair, lockstep class, commit atomicity, dependency or reference is invented.
+          Recorded, not resolved; ROADMAP ISSUE, non-blocking.
+SC-071-B  No schema language is established. The notation of §0 is Artifact 067's local choice
+          with Artifact 069's CHECK line, reused; REPOSITORY CONVENTION as a BASIS label is a 071
+          choice. It is no repository-wide language.
+SC-071-C  No two-character Registry Kind code is established, and kind codes outside World are
+          not frozen (Artifact 063 §9). The envelope kind is constrained symbolically,
+          parent_kind is named rather than coded, and no code is minted for a specialization.
+          Identity binding is row 117's.
+SC-071-D  Req: RR-16 is carried exactly; its text is unavailable (GAP-C) and is not invented.
+SC-071-E  Row 071 carries T: schema · Canon: canonical-about-meaning · CD: yes on a docs/** path.
+          Artifact 003's general convention gives a docs/** specification Canon: n/a; whether it
+          reaches a schema contract is not stated. The metadata is preserved exactly; this file
+          is not a Registry Record, and CD: yes licenses nothing (070 SC-070-I; SC-069-E).
+          Recorded, not resolved.
+SC-071-F  Declared status has no single proof mechanism across the six models (Artifact 063
+          SC-063-H). parent_kind's declared status is therefore an EXTERNAL check whose proof is
+          the owning model's; this contract does not prove it and does not define how it is
+          proved. Recorded, not resolved; non-blocking.
+SC-071-G  SUBTYPE-DEFINITION and CONTROLLED-VOCABULARY (070 SC-070-E). No source fixes the
+          cardinality, identity or reference relation between subtype definitions and
+          vocabulary values. Row 350 builds the VISUAL-ASSET subtype vocabulary on rows 071 and
+          082; whether it also carries SUBTYPE-DEFINITION Records is not established. This
+          contract carries no vocabulary element, requires no vocabulary link and forbids none a
+          later source establishes. Recorded; non-blocking.
+SC-071-H  How a specialization comes to exist and is added (070 SC-070-F). Registry content
+          extends by ordinary Registry change (Blueprint §9.4); row 459 owns how a visual
+          subtype is added; Artifact 065 owns governance. No admission, declaration or extension
+          element is defined (P-10). Recorded; non-blocking.
+SC-071-I  Row 071's → names 347, but row 347 carries H: 346 only, while row 350 carries
+          H: 348,071,082 and is not named by row 071's → (070 SC-070-G). → 347 is preserved;
+          this contract assigns row 347 nothing and pre-builds nothing for row 350. ROADMAP
+          ISSUE, non-blocking.
+SC-071-J  No declared-subtype reference category (070 SC-070-H; Artifact 063 §7). Settled by the
+          frozen contract: specialization names this Record's own subject and is not a
+          reference.
+SC-071-K  The classification field outside World (070 SC-070-L). No current source names the
+          field that carries the VISUAL-ASSET classification. This contract needs none: it names
+          no domain field for any model (P-04). Non-blocking.
+SC-071-L  Dependence on a Kind other than its own (070 SC-070-M; Artifact 062 §6). Not
+          established. This contract carries exactly one parent Kind, no other Kind and no
+          dependency element. Non-blocking.
+SC-071-M  Specialization name vs classification value. The Blueprint names the specialization
+          HOUSE within LINEAGE (§9.4), while a classified Record carries lineage_type: house
+          (§13.6); RMS §11.1 names the production forms GENERATED-IMAGE and the others. No source
+          states whether the name a SUBTYPE-DEFINITION carries and the value a classified Record
+          carries are one token, or how case and spelling map between them; how a consumer
+          finds the definition of a specialization is likewise not defined (070 RS-070-5). This
+          contract carries the specialization by name, fixes no identifier grammar, case rule or
+          spelling, and maps no name to a value. The value form is the owning model's field
+          architecture's (SC-071-K) and any value set the vocabulary's (SC-071-G). Recorded, not
+          resolved; non-blocking for the structure.
+SC-071-N  Roadmap §2.3, Hinge artifacts, lists "071 KIND-DEFINITION", but row 071 is the
+          SUBTYPE-DEFINITION schema and KIND-DEFINITION is rows 068 and 069; other entries of
+          that list also differ from the manifest (it names "133 Mutation Coordinator", which is
+          row 152). Row 071's manifest entry states this artifact's ID, name and path (Artifact
+          003, fields 1–3). The §2.3 entry is not read as making this file a KIND-DEFINITION
+          artifact or a hinge, and nothing here acts on it. Recorded, not resolved; ROADMAP
+          ISSUE, non-blocking.
+
+==================================================================================================
+8. CONFORMANCE CONDITIONS — each labelled NATIVE, EXTERNAL or STATIC
+==================================================================================================
+
+C-071-01  NATIVE    Family identity: partition R and kind SUBTYPE-DEFINITION. STATIC: the
+                    contract governs SUBTYPE-DEFINITION Records only.               §0, §2
+C-071-02  NATIVE    Universal envelope: exactly the seven RMS §4 fields, each present and
+                    exactly-one, none added, removed or renamed. STATIC: the family elements
+                    are not envelope fields.                                    §1, §2, P-05
+C-071-03  NATIVE    One specialization context: one owning_model, one parent_kind and one
+                    specialization, jointly one context; a second value of any is rejected.
+                                                                                     §1, §3
+C-071-04  NATIVE    One parent model: owning_model is exactly one of W, E, P, R, V, I; no
+                    seventh model and no second model.                                  §3
+C-071-05  NATIVE    One parent Kind: exactly one parent_kind.                           §3
+C-071-06  EXTERNAL  Parent declared: parent_kind names a Kind declared by owning_model's own
+                    Kind architecture; this contract does not prove it.          §3; SC-071-F
+C-071-07  NATIVE    Specialization scoped: specialization never stands without owning_model
+                    and parent_kind, all three being required. STATIC: no global subtype
+                    namespace, enum or uniqueness across parent Kinds.              §1, §3, P-06
+C-071-08  NATIVE    Subtype not Kind: specialization differs from parent_kind, and neither can
+                    be placed in the envelope kind. EXTERNAL: specialization is no Kind name or
+                    kind code. STATIC: no Kind-code or Kind-identity element.    §2, §3, P-01A
+C-071-09  NATIVE    No domain-instance subject: no Record identifier can stand as parent_kind
+                    or specialization. EXTERNAL: no domain instance is the source of meaning
+                    in definition.                                                   §3, §6
+C-071-10  NATIVE    Meaning content: definition is present, single and non-empty. EXTERNAL:
+                    its content limits.                                                 §3
+C-071-11  STATIC    Not a controlled vocabulary: no value-set element and no mandatory
+                    vocabulary link.                                         P-02, P-07; SC-071-G
+C-071-12  STATIC    Reference legality: the one concrete reference is the parent-Kind
+                    declaration reference, which obeys Artifact 063; no generic reference list.
+                    EXTERNAL: the parent's declared status.                      §3, §5, P-02
+C-071-13  STATIC    Resolvable ≠ legal: resolution never substitutes for legality.      §5
+C-071-14  NATIVE    Resolution prerequisite: partition, kind and object_id are present.
+                    STATIC: no resolver is implemented, and the complete id+version
+                    representation is not claimed — version representation is rows 108–110's,
+                    consumer resolution row 115's.                                   §2, §5
+C-071-15  STATIC    Versionability: no version mechanism is defined, and the representation
+                    rows 108–110 own is not prohibited.                     §1, §5, P-01B
+C-071-16  STATIC    Ownership: the Registry owns the definition Record; the owning model keeps
+                    the parent Kind, its Records and its domain semantics.          §3, P-03
+C-071-17  STATIC    L3 boundary: no element takes meaning from L4 or L5, and there is no
+                    dependency element. EXTERNAL: no instance, domain state or derived output is
+                    the source of meaning in definition.                      §3, §5, P-09
+C-071-18  STATIC    No universal subtype semantics: no global subtype taxonomy or enum, no
+                    universal subtype or <kind>_type field, no universal identity grammar and no
+                    universal semantic schema.                                    P-05, P-06
+C-071-19  STATIC    LS bounded: LS: LS-1 is preserved and no subtype lockstep pair is
+                    invented.                                                   P-08; SC-071-A
+C-071-20  STATIC    No direct canon write: no Registry data is created, and the file is outside
+                    canon/**.                                                        §0, §5
+C-071-21  STATIC    Downstream scope: no 081/082 vocabulary family, 108–110 version mechanics,
+                    111 dependency rules, 112 validator, 114/115 kernel or resolver, 350
+                    vocabulary or 459 ceremony is implemented.                       §4, §5
+C-071-22  STATIC    Source-grounded representation: every element and constraint names its
+                    basis, and every 071 choice is labelled as one.   §2, §3, §5 REPRESENTATION
+C-071-23  STATIC    The header reproduces repaired Roadmap row 071 exactly.  header; SC-071-N
+C-071-24  STATIC    Artifact 070 is consumed unchanged.                                 §0
+C-071-25  STATIC    Every check that needs evidence outside the Record is labelled EXTERNAL,
+                    and no parser or validator is claimed.                       §0, §3, §8
+C-071-26  STATIC    Not the schema of any domain Record: no classification field name, type,
+                    cardinality or value set is defined.                       P-04; SC-071-K
+C-071-27  STATIC    No JSON Schema, YAML, OpenAPI or other standard is invented; no kind code is
+                    minted; no specialization identifier grammar is invented.
+                                                                       §0; SC-071-B, C, M
+C-071-28  STATIC    The parent-Kind scope has one form only, the declaration form; no R → R
+                    reference to a KIND-DEFINITION is required or carried.  §3; §5 REPRESENTATION
+C-071-29  STATIC    Only docs/registry/subtype_definition.schema is created by this artifact.
+                                                                                    row 071
+
+==================================================================================================
+9. ROADMAP TRACE — contract-level
+==================================================================================================
+
+The statuses below assess this file as a structural contract. They claim no resolver, version
+mechanism, validator, declared-status proof or concrete SUBTYPE-DEFINITION Record; those belong to
+their own rows.
+
+Val  definition resolves          §2 baseline Record identity; §5 RESOLUTION — the prerequisite
+                                  for later Registry resolution, without claiming the complete
+                                  id+version representation; version representation stays with
+                                  rows 108–110, and resolution itself is 115's
+Val  versionable                  §5 VERSIONABILITY: 071 defines no version mechanics and does
+                                  not obstruct the Registry evolution and versioning
+                                  representation rows 108–110 own; §1; P-01B (deferred, not
+                                  prohibited)
+Val  references only declared     §3 owning_model and parent_kind (one declared Kind of one
+     entities (063)               model; declared status an EXTERNAL check); specialization is
+                                  no reference; §5 REFERENCES, REPRESENTATION; P-02
+Done schema                       §1–§4: eleven elements, each with requiredness, cardinality,
+                                  constraint, check and basis; the structural prohibitions and
+                                  rejected deductions of §4
+Why  LS-1                         preserved as row metadata; no pair invented; SC-071-A
+H    070                          consumed unchanged; §1–§5 encode 070 SD-1 to SD-13, RS-070-1
+                                  to RS-070-5, VS-070-1, VS-070-2 and RF-070-1 to RF-070-9
+LS   LS-1                         preserved; SC-071-A
+→    347                          preserved as row 071's metadata; nothing here builds row 347
+                                  or row 350; SC-071-I
