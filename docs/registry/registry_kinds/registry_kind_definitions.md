@@ -16,9 +16,9 @@ fourteen · Why: **LS-1 partner — the Registry half of the Registry's own taxo
 `KIND-DEFINITION`s — the definition side of the Registry's own LS-1 pairs, 064 ↔ 075 (Roadmap
 §0.7). Artifact 074 fixes the set; Artifact 069 fixes each member's structure; Artifact 064 bounds
 each member's meaning. *"An authored source is not a Record and is not canon."* (Roadmap §0.8). No
-member below is a committed Registry Record. Each is the source from which the Mutation Coordinator
-(row 152) later commits one `KIND-DEFINITION` Record to `canon/registry/registry_kinds/`, only after
-G-CANON-R.
+member below is a committed Registry Record. Committed Registry Records are written to
+`canon/registry/registry_kinds/` only through the Mutation Coordinator (row 152), the sole writer
+of `canon/**`, after G-CANON-R.
 
 **Packaging — an Artifact 075 local representation choice.** No source and no existing repository
 convention fixes how this directory is packaged (074 SC-074-M). This artifact uses one file holding
@@ -31,37 +31,43 @@ order is not identity, version, or a creation, load, commit or resolution order 
 member count is the number of such blocks — exactly fourteen. Nothing outside a block is a member:
 headings, tables, the source conditions and this section are non-member text.
 
-Each block states the ten elements of Artifact 069 in its order:
+Artifact 069 requires ten elements, each `REQUIRED yes` and `exactly-one`:
 
 ```
 ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref · sot_class
 FAMILY    subject_model · subject_kind · definition
 ```
 
-**Element values.**
+Each block carries the five elements for which a source-supported value exists — `partition`,
+`kind`, `subject_model`, `subject_kind`, `definition`. The other five envelope elements carry no
+value in any block, because no current source supplies one (SC-075-G). Their absence is a recorded
+gap, not a representation of a value.
 
-| Element | Authored value | Why |
-|---|---|---|
-| `partition` | `R` | a `KIND-DEFINITION` is a Registry Record (069 §2) |
-| `kind` | `KIND-DEFINITION`, symbolic | no two-character Registry Kind code is established; none is minted (069 SC-069-C; row 117) |
-| `object_id` · `slug` | `AT MATERIALIZATION` | see below |
-| `provenance` · `registry_ref` · `sot_class` | `AT MATERIALIZATION` | see below |
-| `subject_model` | `R` | every member's subject is a Registry Kind (074 RKS-074-04) |
-| `subject_kind` | one RMS §10.1 name | exact spelling; one per member (074 §8, §9) |
-| `definition` | authored here | the governed Kind-level meaning of the subject (069 §3) |
+**Element status.**
 
-**`AT MATERIALIZATION`.** This marker states that the element's value is not authorable in a
-pre-canon source and is supplied when row 152 commits the member as a Record. It is not a value,
-a placeholder for later authoring, or a null. The grounds are SC-075-G: a Record and its identity
-are minted only through the Mutation Coordinator; the universal identity grammar needs the Kind
-code row 117 has not yet bound; provenance is captured on the governed commit path; Artifact 069
-fixes no `sot_class` value; and the referent of `registry_ref` is not established by any source.
-No identifier, code, slug, provenance, reference or class is invented here.
+| Element | Current authored representation | Source basis | 069 status |
+|---|---|---|---|
+| `partition` | `R` | a `KIND-DEFINITION` is a Registry Record (069 §2) | CONFORMING |
+| `kind` | `KIND-DEFINITION`, symbolic | 069 checks the Kind symbolically until row 117 binds codes (069 §2, SC-069-C) | CONFORMING |
+| `object_id` | none | 069 requires this Record's identity component; ordinal allocation is Artifact 036's mechanism, but no source establishes who allocates for these sources or when | UNRESOLVED — BLOCKING |
+| `slug` | none | 069 requires one value; no source fixes a slug for these sources | UNRESOLVED — BLOCKING |
+| `provenance` | none | 069 requires one value; provenance capture is a shared mechanism, but no source fixes this value or its timing for an authored source | UNRESOLVED — BLOCKING |
+| `registry_ref` | none | 069 requires one value and attaches no referent; Artifact 033 leaves the referent unresolved | UNRESOLVED — BLOCKING |
+| `sot_class` | none | 069 requires one value and fixes none; no Record-level rule gives one | UNRESOLVED — BLOCKING |
+| `subject_model` | `R` | every member's subject is a Registry Kind (074 RKS-074-04) | CONFORMING |
+| `subject_kind` | one RMS §10.1 name | exact spelling; one per member (074 §8, §9) | CONFORMING |
+| `definition` | authored here | the governed Kind-level meaning of the subject (069 §3) | CONFORMING |
 
-**069 conformance claimed here.** At source level: every member carries every 069 element in 069's
-order with exactly one entry, every authorable value satisfies 069's NATIVE constraints, and every
-`definition` stays within 069's content limits and its subject's 064 section. Conformance of the
-materialized Record — the minted envelope values — is established at commit, not claimed here.
+**No value is invented.** No identifier, Registry Kind code, slug, provenance value,
+`registry_ref` referent or `sot_class` value appears here, and no marker stands in for one. Row 152
+is the sole writer of `canon/**`; no source establishes that it chooses or supplies any of the five
+missing values, and none is assigned to it here.
+
+**069 conformance is NOT YET fully established.** The fourteen members satisfy the set, subject and
+definition-content requirements, but the required envelope elements `object_id`, `slug`,
+`provenance`, `registry_ref` and `sot_class` remain without a source-supported authored value or
+representation. Artifact 075 therefore does not yet satisfy the Roadmap clause *"all conform to
+069"* (SC-075-G).
 
 ## 1. The Set
 
@@ -97,11 +103,6 @@ Each `definition` answers one question for its subject Kind: **what is a Record 
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   MODEL-DEFINITION
 definition     A Record of the Kind MODEL-DEFINITION is the Registry's governed definition of
@@ -122,11 +123,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   KIND-DEFINITION
 definition     A Record of the Kind KIND-DEFINITION is the Registry's governed definition of
@@ -149,11 +145,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   SUBTYPE-DEFINITION
 definition     A Record of the Kind SUBTYPE-DEFINITION is the Registry's governed definition of
@@ -172,11 +163,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   FIELD-DEFINITION
 definition     A Record of the Kind FIELD-DEFINITION is the Registry's governed definition of
@@ -196,11 +182,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   SCHEMA-DEFINITION
 definition     A Record of the Kind SCHEMA-DEFINITION is the Registry's governed definition of a
@@ -218,11 +199,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   RELATIONSHIP-TYPE-DEFINITION
 definition     A Record of the Kind RELATIONSHIP-TYPE-DEFINITION is the Registry's governed
@@ -240,11 +216,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   CONTROLLED-VOCABULARY
 definition     A Record of the Kind CONTROLLED-VOCABULARY is a governed set of values or terms
@@ -252,7 +223,8 @@ definition     A Record of the Kind CONTROLLED-VOCABULARY is a governed set of v
                legitimately diverge; no vocabulary forms a forced union of values across Kinds,
                and none makes a universal status enumeration. The Registry governs what each
                value or term means; the owning model decides which value its Records carry. A
-               vocabulary is shared meaning that fields use, not a field of any Record.
+               vocabulary is governed value or term meaning, used where the owning contracts
+               establish it; it is not itself a field or a domain Record.
 END MEMBER
 ```
 
@@ -262,11 +234,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   IDENTITY-GRAMMAR
 definition     A Record of the Kind IDENTITY-GRAMMAR is the recorded identity grammar: it states
@@ -284,11 +251,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   WSVR-INDICATOR-DEFINITION
 definition     A Record of the Kind WSVR-INDICATOR-DEFINITION is the Registry's governed meaning
@@ -306,11 +268,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   VALIDATION-RULE
 definition     A Record of the Kind VALIDATION-RULE is the Registry's governed definition of a
@@ -328,11 +285,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   CONSTRAINT-DEFINITION
 definition     A Record of the Kind CONSTRAINT-DEFINITION is the Registry's governed definition of
@@ -349,11 +301,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   CAPABILITY-DEFINITION
 definition     A Record of the Kind CAPABILITY-DEFINITION is the semantic contract of one
@@ -370,11 +317,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   DERIVATION-RULE
 definition     A Record of the Kind DERIVATION-RULE is the Registry's governed rule by which one
@@ -391,11 +333,6 @@ END MEMBER
 MEMBER
 partition      R
 kind           KIND-DEFINITION
-object_id      AT MATERIALIZATION
-slug           AT MATERIALIZATION
-provenance     AT MATERIALIZATION
-registry_ref   AT MATERIALIZATION
-sot_class      AT MATERIALIZATION
 subject_model  R
 subject_kind   SIMULATION-MODEL-DEFINITION
 definition     A Record of the Kind SIMULATION-MODEL-DEFINITION is the Registry's governed
@@ -440,7 +377,7 @@ END MEMBER
 | **SC-075-D** | The withdrawn `SEMANTIC-DEFINITION` family. | No member; no catch-all; unmapped semantic material stays with its owning contract (Roadmap §0.7). |
 | **SC-075-E** | Packaging of the directory. | Not established by any source (074 SC-074-M). One member file plus `PURPOSE.md` is an Artifact 075 local representation choice. |
 | **SC-075-F** | Authored source against committed Record. | *"An authored source is not a Record and is not canon."* (Roadmap §0.8). Row 152 commits after G-CANON-R; nothing here is written to `canon/**`. |
-| **SC-075-G** | Envelope realization in a pre-canon source. Artifact 069 requires the seven envelope elements on a materialized Record. Records are minted only through the Mutation Coordinator (`docs/registry/PURPOSE.md`); the identity grammar needs a Kind code that row 117 has not bound (069 SC-069-C); provenance is captured on the governed commit path; 069 fixes no `sot_class` value; and 069 attaches no referent to `registry_ref`, whose referent no source establishes. | `object_id`, `slug`, `provenance`, `registry_ref` and `sot_class` are marked `AT MATERIALIZATION`; no value is invented. `partition` and the symbolic `kind` are authored. Source-level conformance to 069 is claimed; materialized-Record conformance is established at commit. The `registry_ref` referent remains a SOURCE GAP for its owners (Artifact 033; rows 114, 117, 152). Author decision recorded for this artifact. |
+| **SC-075-G** | Pre-canon envelope realization against required 069 values. **Source A:** row 075 requires all fourteen members to conform to 069; 069 makes all seven envelope elements required and exactly-one, and its baseline identity includes `object_id` (C-069-09). **Source B:** Roadmap §0.8 — the members are pre-canon canonicalization source, not Records and not canon; row 152 is the sole writer of `canon/**`; row 117 owns Registry identity binding; 069 fixes no `registry_ref` referent and no `sot_class` value. **Gap — unresolved after the live source audit:** `object_id` (allocation is Artifact 036's mechanism; who allocates for these sources, and when, is not established), `slug`, `provenance`, `registry_ref` (referent left unresolved by Artifact 033), `sot_class`. **Owner:** OWNER NOT ESTABLISHED for each of the five. | Source-supported values are used where established (`partition`, symbolic `kind`); the five are not fabricated and no marker stands in for them; no 069 conformance is claimed for the members; Artifact 075 remains blocked until the gap is closed by a governing source. |
 | **SC-075-H** | Set identity across Registry evolution. | Rows 108–110 own it; no version element and no future-count rule is set (074 SC-074-L). |
 | **SC-075-I** | Whether Records of an L1 family's Kind depend on their Kind's `KIND-DEFINITION`. | Not decided; row 111 owns dependency rules; no dependency is encoded (074 SC-074-K). |
 | **SC-075-J** | Support files against the member count. | `PURPOSE.md`, this file's headings, tables and sections are non-member text; the count is the number of `MEMBER` blocks. |
@@ -454,7 +391,7 @@ END MEMBER
 | **C-075-03** | The subject set equals the RMS §10.1 / 064 roster exactly. | §1 |
 | **C-075-04** | Every `subject_model` is R. | §2 |
 | **C-075-05** | Every member's `kind` is `KIND-DEFINITION` and `partition` is R. | §2 |
-| **C-075-06** | Every member carries the ten 069 elements in 069's order, once each; source-level 069 conformance only. | §0, §2; SC-075-G |
+| **C-075-06** | **069 conformance gate.** Every member satisfies all ten required 069 elements. **Current status: FAIL / BLOCKED** — `object_id`, `slug`, `provenance`, `registry_ref` and `sot_class` lack source-supported values or representations. | §0, §2; SC-075-G |
 | **C-075-07** | No Registry Kind is missing. | §1 |
 | **C-075-08** | No Registry Kind is duplicated. | §1 |
 | **C-075-09** | No subject lies outside the roster. | §1, §3 |
@@ -478,20 +415,21 @@ END MEMBER
 **To 114** (Registry kernel; `Val`: *"create/resolve/version a definition"*) and **123**
 (Registry lockstep tests; `Val`: *"no unpaired lockstep member"*): a complete fourteen-member
 authored set, one `KIND-DEFINITION` per Registry Kind, the 064 ↔ 075 pairing, the ordinary
-self-hosted member, and the 069 member structure with the envelope values marked for
-materialization. Nothing here implements the kernel, resolution, the lockstep tests, row 124's
-G-REG, G-CANON-R or row 152, and neither row's `Val` or `Done` is enlarged.
+self-hosted member, and the concrete definition bodies. They may not treat Artifact 075 as
+fully 069-conforming until SC-075-G is closed. Nothing here implements the kernel, resolution,
+the lockstep tests, row 124's G-REG, G-CANON-R or row 152, and neither row's `Val` or `Done` is
+enlarged.
 
 ## 7. Roadmap Completion Trace
 
 | Row 075 | Status | Where |
 |---|---|---|
-| `Val`: *"exactly fourteen KIND-DEFINITIONs, one per Registry Kind of 064"* | **SATISFIED** at source level — fourteen members, one-to-one | §1, §2 |
-| `Val`: *"all conform to 069"* | **SATISFIED at source level** — every element present in order; authorable values conform; minted envelope values supplied at commit | §0; SC-075-G |
+| `Val`: *"exactly fourteen KIND-DEFINITIONs, one per Registry Kind of 064"* | **SATISFIED** — fourteen members, one-to-one, as authored source | §1, §2 |
+| `Val`: *"all conform to 069"* | **BLOCKED** — roster and definitions are authored, but `object_id`, `slug`, `provenance`, `registry_ref` and `sot_class` lack source-supported required values; no marker is treated as conformance | §0; SC-075-G |
 | `Val`: *"names match the RMS §10.1 roster exactly"* | **SATISFIED** | §1 |
 | `Val`: *"no extra definition implies a fifteenth Kind"* | **SATISFIED** | §3 |
 | `Val`: canonicalization source, *"committed only through 152 after G-CANON-R"* | **SATISFIED** — authored source only; no canon write | §0; SC-075-F |
-| `Done`: *"fourteen"* | **SATISFIED** | §2 |
+| `Done`: *"fourteen"* | **SATISFIED** numerically; it does not override the blocked `Val` clause | §2 |
 | `H: 074,069` | **SATISFIED** — set from 074, structure from 069, meaning bounded by 064 | §0–§2 |
 | `LS: LS-1` | **SATISFIED** — the fourteen definition-side partners of 064 ↔ 075 are authored | §3 |
 | `→ 114,123` | **HANDED OFF** | §6 |
