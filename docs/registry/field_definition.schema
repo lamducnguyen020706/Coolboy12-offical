@@ -1,0 +1,916 @@
+COOLBOY12 — FIELD-DEFINITION SCHEMA (structural contract)
+
+ARTIFACT 073 · FIELD-DEFINITION schema · docs/registry/field_definition.schema · Own: R ·
+RM: R · T: schema · R: CONTRACT · SoT: AUTHORITATIVE · Auth: defining ·
+Canon: canonical-about-meaning · CD: yes · Ph/St: P3/3b · Req: RR-27 · BP: §9.4 · RMS: §10.1 ·
+H: 072 · S: — · LS: LS-1 · G: — · → all field defs · Val: definition resolves; versionable;
+references only declared entities (063) · Done: schema · Why: LS-2 · Risk: high · ∥: yes
+
+==================================================================================================
+0. HOW TO READ THIS FILE
+==================================================================================================
+
+NOTATION   This file reuses the local declarative notation of Artifact 067, with the CHECK line
+           Artifact 069 added and the REPOSITORY CONVENTION basis label Artifact 071 added. It is
+           an implementation choice, not COOLBOY12 architecture, and establishes no
+           repository-wide schema language (SC-073-J). No parser exists for it.
+
+           ELEMENT <name>        a structural element of a materialized Record
+           LAYER                 ENVELOPE (universal, RMS §4) or FAMILY (Registry-model-owned)
+           REQUIRED              yes | no | conditional — conditional is resolved by the domain
+                                 matrix of §4
+           CARDINALITY           exactly-one | absent | …
+           CONSTRAINT            what a conforming value must satisfy
+           CHECK                 how the constraint is checked, as Artifact 069 defines it:
+                                   NATIVE    decidable from the Record alone
+                                   EXTERNAL  needs evidence outside the Record; the line names
+                                             who supplies it, and this contract does not claim
+                                             it proven
+                                   STATIC    a property of this contract, checked by reading it
+           BASIS                 where the element or rule comes from:
+                                   SOURCE FACT            stated by a governing source
+                                   REQUIRED SYNTHESIS     forced by several source facts together
+                                   REPOSITORY CONVENTION  a choice of Artifact 067, 069 or 071,
+                                                          reused
+                                   073 CHOICE             a representation decision of this file
+           REJECT                a value that does not conform, with the rule it breaks and its
+                                 CHECK
+
+           conditional and absent are the one addition to the notation, a 073 choice: the
+           FIELD-DEFINITION family is the first whose family elements depend on another element's
+           value (§4).
+
+STATUS     This contract describes the structure a materialized FIELD-DEFINITION Record must
+           satisfy. It is not a FIELD-DEFINITION Record, not a SCHEMA-DEFINITION Record, not a
+           CONTROLLED-VOCABULARY, not the schema of any domain Record that carries a field, not a
+           field inventory, and not canonical data. It is an authored source outside canon/**
+           (Roadmap §0.8; CONFLICT-F). Concrete FIELD-DEFINITION Records are committed only
+           through the Mutation Coordinator (row 152) after G-CANON-R (072 FD-22). Where this
+           contract differs from the Master Blueprint, the Record Model System, the Roadmap, or
+           Artifact 072, those sources are right and this contract is wrong.
+
+SPEC       Artifact 072 — docs/registry/field_definition.md — is the semantic contract this file
+           encodes, consumed unchanged (H: 072). This file encodes only the structural
+           consequences of the obligations 072 establishes (072 §28). Artifacts 067, 069 and 071
+           are precedents for notation and representation conventions only: no semantics is
+           taken from the MODEL-, KIND- or SUBTYPE-DEFINITION families, and none of those rows is
+           a dependency of row 073.
+
+==================================================================================================
+1. RECORD SHAPE
+==================================================================================================
+
+FIELD-DEFINITION RECORD
+├── ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref · sot_class
+└── FAMILY    subject_field · domain_tier · domain_model · domain_kind · definition
+              ├── subject_field and the domain carriers together carry the ONE field semantic
+              │   over ONE domain:
+              │     universal tier   subject_field + domain_tier
+              │     model tier       subject_field + domain_tier + domain_model
+              │     Kind tier        subject_field + domain_tier + domain_model + domain_kind
+              └── definition carries its governed field meaning
+
+Artifact 073 defines exactly these twelve elements: the universal seven-field envelope (RMS §4)
+and five family elements, two of them conditional (§4). It defines no other element.
+
+That is the scope boundary of this contract, not a closure over everything a FIELD-DEFINITION
+Record may later carry. Rows 108–110 keep their authority to establish Registry-owned evolution,
+versioning, supersession and deprecation representation (§6 VERSIONABILITY; 072 VS-072-2). The
+envelope, by contrast, stays exactly seven fields: no downstream Registry representation becomes
+an eighth universal field (RMS §4; P-05).
+
+One semantic context, up to four carriers. 072 requires that a FIELD-DEFINITION govern the
+meaning of exactly one field over one domain, at one of RMS §14's three tiers (072 FD-1, FD-3,
+FD-4), and fixes no count of structural carriers (072 RF-072-1). This contract carries that one
+context in subject_field, which names the field, and in the domain carriers, which state the tier
+and, where the tier requires it, the declared model and Kind. No element alone is the context.
+subject_field alone is not a field identity: 072 §7 — "A field name alone does not establish one
+shared semantic across models."
+
+Three roles, never merged. The envelope element kind names this Record's own Kind — always
+FIELD-DEFINITION. domain_kind names the declared Kind a Kind-tier field belongs to — for example
+CHARACTER. subject_field names the field — for example status. They are different elements in
+different roles. domain_tier names a field tier of RMS §14; it is not World's field tier.
+
+Not the Record that carries the field. A World Record carries status; this contract is the
+structure of the Registry Record that governs what status means, not of any Record that carries
+it. Defining a field places it in no schema and no Record (072 FD-8), and this contract defines no
+domain field, schema occurrence or field value for any model (P-04).
+
+==================================================================================================
+2. ENVELOPE — the universal seven (RMS §4; Artifact 033)
+==================================================================================================
+
+Types, defaults, nullability and serialization of the envelope fields are not established by the
+governing sources (Artifact 033) and are not stated here.
+
+ELEMENT     partition
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  R — the Registry partition
+CHECK       NATIVE
+BASIS       SOURCE FACT — a FIELD-DEFINITION is a Registry Record (RMS §10, §10.1; 072 §5, §22,
+            RS-072-1)
+REJECT      W, E, P, V or I — a Record of a domain model, such as a World Record that carries
+            status, is never a FIELD-DEFINITION                   (FD-14, FD-16)    NATIVE
+
+ELEMENT     kind
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  identifies the declared Registry Kind FIELD-DEFINITION (Kind 4 of RMS §10.1) — this
+            Record's own Kind, never the Kind a field belongs to and never the field. The
+            constraint is symbolic. No two-character Registry Kind code is established; none is
+            minted here (SC-073-K).
+CHECK       NATIVE against the symbolic Kind; against a code only once the Registry's codes are
+            bound by their own rows (row 117; Artifact 060 writes the code schematically as <kind>)
+BASIS       SOURCE FACT — RMS §10.1; Artifact 064 §11; 072 §5, §22
+REJECT      SCHEMA-DEFINITION — a schema is another Registry Kind  (FD-9)            NATIVE
+            CONTROLLED-VOCABULARY — a governed value set is another Registry Kind
+                                                                  (FD-10)           NATIVE
+            CONSTRAINT-DEFINITION or VALIDATION-RULE — a condition or a check is another
+            Registry Kind                                         (FD-12, FD-13)    NATIVE
+            any other Registry Kind                                                 NATIVE
+            a domain Kind (for example CHARACTER) or the field (for example status) placed here
+                                                                  (072 §22)         NATIVE
+            any invented code (for example FD) presented as established             NATIVE
+
+ELEMENT     object_id
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the object identity component under the universal identity grammar. It is this
+            Record's identity — not the field's name, not the field's domain, not a field
+            occurrence, not a Kind code (072 RS-072-1).
+CHECK       NATIVE — presence, a single value
+            STATIC — this contract makes no family element a substitute for it
+BASIS       SOURCE FACT — RMS §4, §5; 072 RS-072-1
+
+ELEMENT     slug
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  decoration only; never identity, never the basis of resolution
+CHECK       NATIVE — presence, a single value
+            STATIC — this contract gives slug no identity or resolution role
+BASIS       SOURCE FACT — RMS §5; Artifact 033; 072 RS-072-1
+
+ELEMENT     provenance
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it: this Record's own provenance capture.
+            Provenance meaning is not defined here — RMS §4: "Provenance meaning is model-owned"
+            — and the provenance of a Record that carries the defined field is never carried
+            here (072 §7, FD-14).
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033
+
+ELEMENT     registry_ref
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the universal envelope field, unchanged. This contract attaches no referent,
+            self-reference convention, bootstrap target or resolution meaning to it, and it
+            carries neither the field nor its domain.
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033 leaves its referent unresolved; Blueprint §9.4:
+            reference resolution is not Registry work
+
+ELEMENT     sot_class
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it. No value is fixed here; Artifact 073's own
+            manifest SoT and Canon are not Record-level values and are not copied into it.
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033
+
+==================================================================================================
+3. FAMILY — FIELD-DEFINITION content (Registry-model-owned; not envelope fields)
+==================================================================================================
+
+subject_field, domain_tier and definition are required and exactly-one. domain_model and
+domain_kind are conditional: present exactly once or absent, as §4 decides from domain_tier. No
+family element has a default value. A required element may not be left empty, and an absent
+conditional element is absent — not an empty value, a null placeholder or a wildcard (073
+CHOICE). Types and serialization of the family elements are not established by the governing
+sources and are not stated here; this contract fixes structure, not an encoding.
+
+ELEMENT     subject_field
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  names the one field whose meaning this Record governs — for example status within
+            (model, W), or registry_ref at the universal tier. The name is read only within the
+            domain the domain carriers state: subject_field and the domain together are the
+            semantic context (§1). The value names the field itself — never a Record or Record
+            identifier (072 RF-072-5), never a Registry Record identifier, never a Kind or kind
+            code, never a runtime object (RF-072-6), never a value, value set or vocabulary
+            (FD-10), never a schema, a constraint or a validator (FD-9, FD-12, FD-13).
+            Universal tier. When domain_tier is universal, the value is one of the seven envelope
+            fields and no other:
+              partition · kind · object_id · slug · provenance · registry_ref · sot_class
+            RMS §14: "Three tiers: universal (the bootstrap set, seven fields) · model · Kind."
+            The envelope is "the bootstrap set and no more" (RMS §4). This restricts the value
+            at that tier only; it authors, schedules or enumerates no FIELD-DEFINITION Record
+            (SC-073-G), and at the model and Kind tiers no closed set is defined.
+            Scoped, not global. The same name in two domains is two contexts, carried by two
+            Records. That the contexts differ does not establish that the two fields are
+            distinct, and the shared spelling does not establish that they are one: a semantic
+            is shared only where the governing sources establish it in each model that carries it
+            (072 §7, FD-5; I-103). This contract requires no uniqueness of a name across domains
+            and creates no global field namespace, field taxonomy or identifier grammar.
+            Name form. The name is written as the governing sources or the domain's field
+            architecture name the field. This contract fixes no case rule, punctuation, spelling,
+            URI or handle for it (SC-073-M).
+            Not a reference. subject_field names this Record's own subject. It refers to no
+            declaration and no Record: Artifact 063 has no declared-field category, and a field
+            is reached through its FIELD-DEFINITION (072 RF-072-2).
+CHECK       NATIVE — presence; a single value; the value is not shaped as a Record identifier
+            under the universal grammar (RMS §5); when domain_tier is universal, membership of
+            the seven envelope names.
+            EXTERNAL — that the value names a field the governing sources or the domain's field
+            architecture establish (072 §23: the family does not itself establish that any field
+            exists), and that it is no Kind name, kind code or runtime object. Field
+            architectures and Kind rosters are the owning models' (072 FD-14; Artifact 063 §9).
+            This is a content check, not reference legality, and this contract does not prove
+            it.
+            STATIC — subject_field alone is not treated as a semantic identity across models.
+BASIS       REQUIRED SYNTHESIS — 072 FD-1, FD-5, FD-6, FD-7, RF-072-2, RF-072-5, RF-072-6, §7,
+            §23; RMS §4, §14, Appendix B. The universal-tier set is a SOURCE FACT (RMS §4, §14;
+            072 §8 tier table). The identifier-shape check follows 069 and 071 (REPOSITORY
+            CONVENTION). Carrying the field as its own named element and the element NAME are 073
+            CHOICES.
+REJECT      no value                                              (FD-1)            NATIVE
+            two or more fields, e.g. status and tier together     (FD-1)            NATIVE
+            a Record identifier, e.g. W-CH-…-<slug> (a domain instance)
+                                                                  (RF-072-5)        NATIVE
+            a Registry Record identifier, R-<kind>-…, such as a CONTROLLED-VOCABULARY Record's —
+            the field is this Record's own subject, not a reference to another Record
+                                                                  (RF-072-2)        NATIVE
+            status or tier with domain_tier universal — World-owned, not universal
+                                                                  (FD-6, FD-7)      NATIVE
+            any name outside the seven with domain_tier universal  (FD-6)            NATIVE
+            a Kind code, e.g. CH, World's code for CHARACTER       (FD-1)            EXTERNAL
+            a field no governing source or field architecture establishes
+                                                                  (072 §23)         EXTERNAL
+            a running service, validator or linter named as the field
+                                                                  (RF-072-6)        EXTERNAL
+
+ELEMENT     domain_tier
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  one value from the closed set   universal | model | kind
+              universal  the field's meaning holds over every Record, in all six models
+              model      it holds over the Records of one declared Record Model
+              kind       it holds over the Records of one declared Kind of one declared model
+            These are RMS §14's three tiers and no other (072 FD-4). The tokens are local to this
+            contract; they are no universal enum outside it. The token kind names the Kind tier —
+            not the envelope element kind and not any Kind name.
+            The tier is stated, never inferred. A Record without domain_tier does not conform:
+            absence of a domain is not the universal tier, so omitting a scope can never make a
+            field universal (072 FD-5).
+            Not World's tier. domain_tier is not the World field tier (RMS §14; 072 FD-7), not a
+            lifecycle or canonicality tier, not an authority transfer, not a semantic dependency
+            and not a schema's applicable Model or Kind (072 §8).
+CHECK       NATIVE — presence, a single value, membership of the closed set
+BASIS       SOURCE FACT — RMS §14 (the three tiers); 072 FD-3, FD-4. REQUIRED SYNTHESIS — 072
+            FD-5, RF-072-1 (which carriers a domain needs depends on its tier). Stating the tier
+            as its own element, rather than inferring it from which carriers are present, the
+            element NAME and the token spelling, taken from RMS §14's words, are 073 CHOICES
+            (§6 REPRESENTATION).
+REJECT      no value — a field with no tier                       (FD-3, FD-4)      NATIVE
+            two or more values, e.g. model and kind together      (FD-1, FD-4)      NATIVE
+            a value outside the set, e.g. a cross-model tier for a meaning several models are
+            said to share — no source establishes one (072 §8)    (FD-4; I-103)     NATIVE
+            the World field tier's values, e.g. FOUNDATION         (FD-7)            NATIVE
+
+ELEMENT     domain_model
+LAYER       FAMILY
+REQUIRED    conditional — present when domain_tier is model or kind; absent when it is universal
+CARDINALITY exactly-one when present
+CONSTRAINT  one value from the closed set   W | E | P | R | V | I
+              W  World       E  Epistemic   P  Production
+              R  Registry    V  Visual      I  Issue
+            The sovereign Record Model whose Records the field's meaning holds over. It names the
+            declared Record Model itself — the six constitutionally established models are the
+            declared models Artifact 063 admits (§7 row 2). It is a declaration reference, not a
+            MODEL-DEFINITION reference (072 RF-072-3), not a domain Record and not a runtime
+            object. It scopes subject_field and asserts nothing else about the model: it confers
+            no ownership, transfers no authority and is not by itself a semantic dependency (072
+            RF-072-8, RF-072-9).
+            R is in the set because the Registry is one of the six sovereign Record Models. That
+            this contract can represent an R-scoped field definition does not mean any is
+            scheduled: no concrete R field-architecture or field-definition-set row is identified
+            (SC-073-I).
+CHECK       NATIVE — presence or absence as §4 requires; a single value; membership of the closed
+            set. Membership is the declared-status check for a model scope: the closed set is the
+            set of declared Record Models (Artifact 063 §7 row 2; RMS §2), so no external proof
+            is needed.
+BASIS       REQUIRED SYNTHESIS — 072 RF-072-1 (a model-tier domain names a declared Record Model;
+            a Kind-tier domain a declared Kind of one declared model), RF-072-3; RMS §2, §14.
+            The closed set and carrying model scope as its own element follow 069's subject_model
+            and 071's owning_model (REPOSITORY CONVENTION). The element NAME is a 073 CHOICE.
+REJECT      present with domain_tier universal                    (RF-072-1)        NATIVE
+            absent with domain_tier model or kind                 (RF-072-1)        NATIVE
+            two or more values — ambiguous scope                  (FD-1)            NATIVE
+            a value outside the set, e.g. S "Simulation" claimed as a seventh model
+                                                                  (RMS §2)          NATIVE
+            a Record identifier or a MODEL-DEFINITION Record identifier, R-<kind>-…
+                                                                  (RF-072-3, RF-072-5)
+                                                                                    NATIVE
+
+ELEMENT     domain_kind
+LAYER       FAMILY
+REQUIRED    conditional — present when domain_tier is kind; absent otherwise
+CARDINALITY exactly-one when present
+CONSTRAINT  names one Kind exactly as the Kind taxonomy of the model in domain_model declares it —
+            for example CHARACTER under W. The name is read only within domain_model. The value
+            names the Kind itself — never a Record of that Kind, never the Kind's KIND-DEFINITION
+            Record, never a two-character kind code (SC-073-K), never a subtype and never a
+            runtime object.
+            Declared status. The named Kind must be a declared Kind of domain_model, with that
+            status established by the owning model's own Kind architecture (072 RF-072-1;
+            Artifact 063 §7 row 3, §8.3). A FIELD-DEFINITION neither declares nor admits it, and
+            creates no Kind and no subtype (072 §9; Artifact 057 §6).
+            Form. domain_kind is a declaration reference to the declared Kind, not an R → R
+            reference to its KIND-DEFINITION Record (072 RF-072-3; Artifact 063 §8.3). Naming it
+            is not by itself a semantic dependency on the Kind's semantics (072 RF-072-9;
+            Artifact 062 D-9; SC-073-E).
+CHECK       NATIVE — presence or absence as §4 requires; a single value; the value is not shaped
+            as a Record identifier under the universal grammar (RMS §5); the pair (domain_model,
+            domain_kind) is not (W, WSV).
+            EXTERNAL — declared status, and that the Kind is domain_model's. The proof comes from
+            the owning model's Kind architecture (Artifact 063 SC-063-H; SC-073-L). This contract
+            does not define or prove that evidence. Downstream legality validation may enforce
+            this requirement under its own contract; row 112 independently enforces its narrower
+            domain-instance reference prohibition. An undetermined Kind is not legal (Artifact
+            063 RB-6; 072 RF-072-1, RF-072-7).
+BASIS       REQUIRED SYNTHESIS — 072 RF-072-1, RF-072-3, RF-072-9, FD-15; Artifact 063 §6, §8.3,
+            SC-063-G (the form of a declaration reference is fixed by the applicable family
+            contract or schema). The declaration form and naming the Kind by its declared name
+            follow 069's subject_kind and 071's parent_kind (REPOSITORY CONVENTION); choosing that
+            form under RF-072-3 is a 073 CHOICE (§6 REPRESENTATION). The element NAME is a 073
+            CHOICE.
+REJECT      present with domain_tier universal or model           (RF-072-1)        NATIVE
+            absent with domain_tier kind                          (RF-072-1)        NATIVE
+            two or more Kinds, e.g. CHARACTER and ORGANIZATION together
+                                                                  (FD-1)            NATIVE
+            a Record identifier, e.g. W-CH-…-<slug> (a domain instance)
+                                                                  (RF-072-5)        NATIVE
+            a KIND-DEFINITION Record's identifier, R-<kind>-…     (RF-072-3)        NATIVE
+            WSV under W — the WSV singleton is not a Kind (Roadmap PART III)        NATIVE
+            a name domain_model has not declared — a candidate, a rejected candidate, or a
+            subtype such as GENERATED-IMAGE under V              (RF-072-1)        EXTERNAL
+            a declared name under the wrong model, e.g. CHARACTER under P
+                                                                  (RF-072-1)        EXTERNAL
+            a running process, service or session named as the Kind
+                                                                  (RF-072-6)        EXTERNAL
+
+ELEMENT     definition
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the governed meaning of the field: what the field says about the Record that carries
+            it, stated once for every Record carrying it within the domain (072 §6, §7, FD-2;
+            Artifact 062 L1). Non-empty. Its internal form is not prescribed by this contract.
+            It carries none of: the field's occurrence in any schema (FD-8); its type or default,
+            which Blueprint §9.4 places with schema, or its cardinality, requiredness, order or
+            composition, which row 078 places on the schema side (FD-9); a value, value set,
+            enum or vocabulary, for any Kind (FD-10, FD-11); a condition that must hold or a
+            mechanism for checking one (FD-12, FD-13); any Record, any value a Record carries or
+            any current state (FD-16); the owning model's field architecture, field inventory,
+            domain semantics, lifecycle, provenance meaning or canonicality (FD-14); version,
+            supersession or deprecation mechanics (VS-072-2). At the universal tier it governs
+            only the meaning the constitution establishes as universal and redefines no envelope
+            field's presence or role (072 §7, FD-6).
+CHECK       NATIVE — presence, a single value, non-empty.
+            EXTERNAL — the content limits are semantic and not decidable from structure; they are
+            judged against 072, and this contract does not claim them proven.
+BASIS       REQUIRED SYNTHESIS — 072 §6, §7, FD-2, FD-6, FD-8 to FD-14, FD-16; RMS §6.1
+            (governs; never instantiates); Blueprint §9.4 Shared field semantics row. The single
+            carrier, the element NAME and the non-empty rule follow Artifacts 067, 069 and 071
+            (REPOSITORY CONVENTION).
+REJECT      a type, a default, or the field's cardinality, requiredness or order in a schema
+                                                                  (FD-9)            EXTERNAL
+            a list of allowed values, or several Kinds' value sets merged into one
+                                                                  (FD-10, FD-11)    EXTERNAL
+            a condition, a range, pattern or format check, or a validator procedure
+                                                                  (FD-12, FD-13)    EXTERNAL
+            a domain instance, domain state, derived output or runtime object as the source of
+            meaning — e.g. one World Record's current status cited as what status means
+                                          (FD-16, FD-17; RF-072-5, RF-072-6; 062 D-3, D-5)
+                                                                                    EXTERNAL
+            a statement that a field appears in, or is required by, any schema or Record
+                                                                  (FD-8)            EXTERNAL
+            a redefinition of an envelope field's universal role — e.g. slug made identity
+                                                                  (FD-6)            EXTERNAL
+
+==================================================================================================
+4. DOMAIN MATRIX — the conditional rules
+==================================================================================================
+
+domain_tier decides which domain carriers a Record carries. The matrix is the conditional
+requirement of §3 written out; every cell is checked NATIVE except where marked.
+
+  domain_tier  domain_model        domain_kind         subject_field
+  universal    absent              absent              one of the seven envelope fields
+  model        exactly one,        absent              one field, read within the model
+               W | E | P | R | V | I
+  kind         exactly one,        exactly one;        one field, read within the Kind
+               W | E | P | R | V | I                   declared by domain_model — EXTERNAL
+
+D-01  universal: a domain_model or a domain_kind is present          → REJECT   NATIVE
+D-02  model: domain_model is absent                                  → REJECT   NATIVE
+D-03  model: domain_kind is present                                  → REJECT   NATIVE
+D-04  kind: domain_model is absent                                   → REJECT   NATIVE
+D-05  kind: domain_kind is absent                                    → REJECT   NATIVE
+D-06  kind: domain_kind is not a declared Kind of domain_model       → REJECT   EXTERNAL
+D-07  any tier: two values of domain_tier, domain_model or domain_kind → REJECT NATIVE
+D-08  domain_tier absent or outside universal | model | kind         → REJECT   NATIVE
+D-09  domain_model outside W | E | P | R | V | I                     → REJECT   NATIVE
+D-10  universal: subject_field outside the seven envelope fields     → REJECT   NATIVE
+
+BASIS       REQUIRED SYNTHESIS — 072 RF-072-1 (a model-tier domain names a declared Record Model;
+            a Kind-tier domain names a declared Kind of one declared model; a universal-tier
+            domain names neither), FD-3, FD-4, FD-6; RMS §14. The matrix form is a 073 CHOICE.
+
+The matrix fixes scope only. It derives from the domain no type, default, range, unit, format,
+enum, constraint, value-domain ontology, vocabulary relation or schema applicability (072
+SC-072-G, §28; SC-073-C).
+
+==================================================================================================
+5. STRUCTURAL PROHIBITIONS
+==================================================================================================
+
+P-01A Artifact 073 introduces no element beyond the twelve of §1. A Record carrying any of the
+      following does not conform (NATIVE):
+      — schema-side properties (072 FD-9; Blueprint §9.4; row 078): type, datatype, default,
+        required, requiredness, cardinality, order, position, nullable, occurs_in, schema_fields,
+        composition;
+      — value-domain content (072 FD-10, FD-11, SC-072-G): allowed_values, values, value_set,
+        enum, range, unit, format, pattern;
+      — conditions and checks (072 FD-12, FD-13): constraint, constraints, validation_rule,
+        validation_rules, validator, regex, min, max;
+      — universal semantics, ownership or runtime structure (P-03, P-06; 072 RF-072-6): status,
+        tier, lifecycle_state, canonical, history, relationship_record, owner, owns_records,
+        admitted, admission_rationale, field_inventory, kind_code, field_code, implementation,
+        service, worker, session, process, handler.
+      The element domain_tier is not tier: it states a field tier of RMS §14 (§3).
+P-01B Artifact 073 introduces no version, revision, latest-version, supersession, replacement,
+      deprecation, retirement, effective-date, migration, compatibility, retention or history
+      element or mechanism, and no lifecycle or state machine. That representation is deferred
+      to rows 108–110: neither defined nor permanently prohibited here (072 VS-072-2). Whatever
+      those rows establish stays Registry-owned, is not an envelope field (P-05) and is not a
+      universal semantic shared by W, E, P, V or I (P-06).
+P-02  No generic reference or dependency list, and no reference the obligations of 072 do not
+      require: references, refs, dependencies, related_records, definition_refs, field_refs,
+      schema_ref, vocabulary_ref, controlled_vocabulary_ref, vocabulary_id, constraint_ref,
+      constraint_refs, validation_ref, model_definition_ref, kind_definition_ref, kind_ref,
+      model_ref. A structural reference encodes only an obligation 072 establishes — here, the
+      domain scope — or representation a named downstream owner establishes; an admissible target
+      category alone authorizes nothing (072 RF-072-4; Artifact 063 RB-5). This contract
+      requires no vocabulary, constraint or validation reference, and forecloses none a later
+      source establishes for a particular field (072 §12; SC-073-D).
+P-03  No element names, carries or implies: ownership of the field, of its values or of any
+      Record that carries it; a decision on which Records or schemas carry the field; admission
+      of the field, the Kind or the model; or sovereignty. The owning model keeps its Records,
+      their values and its field architecture; the Registry owns this Record and governs the
+      field's meaning (072 FD-14). A legal reference transfers no ownership, mutation authority,
+      semantic authority, admission, canonicality or source-of-truth class (072 RF-072-8).
+P-04  Not the schema of any domain Record and not a SCHEMA-DEFINITION. No element carries the
+      fields of any model's Records, their requiredness, cardinality, order, type or default, or
+      a schema composition; those belong to the owning model's field architecture and schema
+      rows and to rows 076–078 (072 FD-8, FD-9).
+P-05  No envelope field added, removed or renamed. The family elements are not envelope fields,
+      and no field defined by a FIELD-DEFINITION enters the envelope by being defined (RMS §4;
+      072 FD-6, §22).
+P-06  None of RMS §4's prohibited universal semantics: Record base, Relationship Record, History
+      Record, lifecycle, canonicality, Kind taxonomy, identity composition, state model, semantic
+      schema. For this family that means no universal field roster or Record base made of
+      fields; no universal semantic schema assembled from field definitions; no universal
+      status, tier or World mutation class; no global field taxonomy, namespace or identifier
+      grammar; no forced enum across Kinds; and no Relationship Record or History Record arising
+      from a field or its versions (072 §22).
+P-07  Not another family's contract: not SCHEMA-DEFINITION (072 FD-9), not CONTROLLED-VOCABULARY
+      (FD-10), not CONSTRAINT-DEFINITION or VALIDATION-RULE (FD-12, FD-13), and not MODEL-,
+      KIND-, SUBTYPE- or RELATIONSHIP-TYPE-DEFINITION. No element embeds another family's
+      definitions, and nothing here pre-builds rows 076–078, 081–082 or 088–091.
+P-08  No element records an LS-1 or LS-2 pairing, a model field-architecture artifact or a
+      lockstep partner. LS-1 is not a reference and creates no commit atomicity here, and no
+      072 ↔ 073 pair exists (072 §17; SC-073-B).
+P-09  No dependency element. domain_model and domain_kind are declaration references, which are
+      not by themselves semantic dependencies (Artifact 062 D-9; 072 RF-072-9), and a dependency
+      is not a reference field (Artifact 062 §9). Concrete dependency rules are row 111's
+      (SC-073-E).
+P-10  No element represents how a field comes to exist or is added, proposed, approved, admitted
+      or declared. Row 459 owns the extensibility contract — "each through its own ceremony,
+      never through a generic abstraction" — and Artifact 065 owns governance (072 §24 K).
+
+REJECTION REGISTER — each with the check that rejects it and where
+
+ 1  partition other than R                         NATIVE                §2 partition
+ 2  kind other than FIELD-DEFINITION               NATIVE                §2 kind
+ 3  subject_field missing                          NATIVE                §3 subject_field
+ 4  subject_field with two or more values          NATIVE                §3 subject_field
+ 5  subject_field holding a domain Record ID       NATIVE                §3 subject_field
+ 6  subject_field holding a Kind code              EXTERNAL              §3 subject_field
+ 7  subject_field treated as global without domain NATIVE, STATIC        §3; §4; P-06
+ 8  domain_tier missing                            NATIVE                §3 domain_tier; D-08
+ 9  domain_tier unknown                            NATIVE                §3 domain_tier; D-08
+10  two or more domain tiers                       NATIVE                §3 domain_tier; D-07
+11  universal tier with domain_model               NATIVE                D-01
+12  universal tier with domain_kind                NATIVE                D-01
+13  model tier without domain_model                NATIVE                D-02
+14  model tier with domain_kind                    NATIVE                D-03
+15  kind tier without domain_model                 NATIVE                D-04
+16  kind tier without domain_kind                  NATIVE                D-05
+17  domain_model outside W, E, P, R, V, I          NATIVE                D-09
+18  undeclared model scope                         NATIVE                §3 domain_model; D-09
+19  undeclared Kind scope                          EXTERNAL              §3 domain_kind; D-06
+20  Kind declared by another model                 EXTERNAL              §3 domain_kind; D-06
+21  domain_kind holding a domain Record ID         NATIVE                §3 domain_kind
+22  domain_kind naming a runtime object            EXTERNAL              §3 domain_kind
+23  definition missing                             NATIVE                §3 definition
+24  definition empty                               NATIVE                §3 definition
+25  a type element in FAMILY                       NATIVE                P-01A
+26  a default element in FAMILY                    NATIVE                P-01A
+27  cardinality, requiredness or order in FAMILY   NATIVE                P-01A; P-04
+28  vocabulary_ref, allowed_values or an enum as required structure
+                                                   NATIVE, STATIC        P-01A; P-02
+29  constraint or validator elements as required structure
+                                                   NATIVE, STATIC        P-01A; P-02
+30  version, supersession or deprecation elements added now
+                                                   STATIC                P-01B
+31  status or tier claimed universal               NATIVE, STATIC        §3; D-10; P-06
+32  a generic references or dependencies list      STATIC                P-02
+33  a semantic dependency read from domain scope   STATIC                P-09; §6 LAYER
+34  a definition claimed to create schema occurrence
+                                                   EXTERNAL, STATIC      §3 definition; P-04
+35  a definition claimed to own domain Record values
+                                                   EXTERNAL, STATIC      §3 definition; P-03
+36  canonical data written from Artifact 073       STATIC                §0; §6 MATERIALIZATION
+37  LS: LS-1 read as a field-family LS-1 pair      STATIC                P-08; SC-073-B
+38  → all field defs used to invent authoring rows STATIC                §6 DOWNSTREAM; SC-073-H
+
+==================================================================================================
+6. BOUNDARIES
+==================================================================================================
+
+REPRESENTATION  072 leaves the domain's form to 073: no element names, carrier shape, domain
+                representation or discriminator are prescribed (072 §28, RF-072-3). The choices,
+                each a 073 CHOICE and not a Blueprint or RMS fact:
+                (1) flat carriers — subject_field, domain_tier, domain_model, domain_kind — and no
+                    nested domain object, the form Artifacts 069 and 071 use for a declared-Kind
+                    scope (REPOSITORY CONVENTION). A richer domain object would invite content
+                    072 does not establish (SC-073-C);
+                (2) an explicit tier element. Inferring the tier from which carriers are present
+                    would make a Record that omits its scope a universal one; stating the tier
+                    makes universal a positive, checkable claim (072 FD-5, FD-6);
+                (3) the declaration form for the model and Kind scope, not an R → R reference to
+                    a MODEL-DEFINITION or KIND-DEFINITION Record, and not both: a second relation
+                    would be an invented one (072 RF-072-3, RF-072-4). The declaration form needs
+                    no definition Record to exist first, and needs no Registry Record identifier
+                    while no Registry Kind code is bound (row 117; SC-073-K).
+                The form creates no semantic authority, dependency or ownership: a declared model
+                or Kind named as a scope is not semantic authority for the field's meaning, and
+                naming it is not by itself a semantic dependency (072 RF-072-9; Artifact 062
+                D-9). The field is the Record's own subject and is carried by name, not by
+                reference (072 RF-072-2).
+
+RESOLUTION      A conforming Record carries the baseline Record identity that later
+                Registry-definition resolution requires (§2): partition, kind and object_id.
+                Artifact 073 does not by itself establish the complete id+version resolution
+                representation: rows 108–110 retain authority over Registry evolution and version
+                representation, and row 115 owns consumer resolution — "consumer resolves by
+                id+version". Resolution never relies on slug, which is decoration only.
+                subject_field and the domain carriers name the semantic context and do not
+                thereby become this Record's identity. This contract implements no resolver,
+                lookup, index, cache, storage path, fallback or version selection, and defines no
+                lookup of a definition by field name or domain; row 114 owns Registry
+                create/resolve/version operations — "create/resolve/version a definition".
+                Resolution transfers nothing, and resolvable is not legal (Artifact 063 §11).
+                (072 FD-18, RS-072-1 to RS-072-5; SC-073-M)
+
+VERSIONABILITY  Nothing here prevents the Registry evolution and versioning model of rows 108–110
+                from applying to a FIELD-DEFINITION. Artifact 073 defines no version identifier,
+                numbering scheme, pinning representation, supersession, replacement or
+                deprecation representation, effective date, migration, retention or
+                compatibility rule, or temporal lifecycle mechanism; those decisions stay with
+                rows 108 (evolution), 109 (versioning, pinning) and 110 (supersession,
+                deprecation). Nor does it say whether two Records may carry the same semantic
+                context — as versions of one definition, for example — or how such Records
+                relate; that is theirs too. This contract is open to whatever Registry-owned
+                representation those rows establish, provided it leaves the seven-field envelope
+                unchanged and keeps within the Record Model boundaries (P-05, P-06); no World
+                History Record is used or required (I-102). Versionable therefore means: Artifact
+                073 does not structurally obstruct the evolution and versioning architecture rows
+                108–110 own. Absence here is not a decision that a FIELD-DEFINITION carries no
+                version. (072 FD-19, VS-072-1, VS-072-2)
+
+REFERENCES      The one concrete reference obligation this family carries is the domain scope
+                (072 RF-072-1): at the model tier, a declaration reference to a declared Record
+                Model; at the Kind tier, a declaration reference to a declared Kind of that
+                model; at the universal tier, none. None is an R → R reference to a definition
+                Record, an owned edge or a Relationship Record (072 RF-072-3; I-102). The field
+                is no reference target: there is no declared-field category (072 RF-072-2;
+                Artifact 063 §7). No W/E/P/V/I domain instance, no domain state and no runtime
+                instance is a target, a dependency or an authority (072 RF-072-5, RF-072-6). A
+                reference transfers no ownership, admission or authority, is not by itself a
+                semantic dependency, and is not legal because it resolves. An undetermined
+                target is not legal. (072 FD-20, RF-072-1 to RF-072-9)
+
+LAYER           A FIELD-DEFINITION sits at L1, shared field semantics (Artifact 062 §4.3; 072
+                FD-15). No element takes meaning from L2 to L5, and this contract carries no
+                dependency element (P-09). A Kind-tier or model-tier scope names a declaration;
+                whether such a definition's meaning may draw on its Kind's or model's semantics
+                is not established, and no dependency on L2 is asserted (072 SC-072-I; SC-073-E).
+
+SCHEMA          This contract encodes the FIELD-DEFINITION side only: one field's meaning and
+                domain. "The Registry is not schema." (Blueprint §9.4): schema is "fields, types,
+                required-ness, defaults", so type and default are schema-side and are no
+                FIELD-DEFINITION element. Composition, cardinality, requiredness and order are
+                the schema's under row 078's Done. Row 078 owns the final SCHEMA-DEFINITION /
+                FIELD-DEFINITION overlap closure exactly as its row assigns it; this contract
+                does not preempt it and adds nothing to its exit criterion (072 §11, FD-9,
+                SC-072-E).
+
+VOCABULARY      No element carries a value set, a vocabulary reference or vocabulary membership.
+                Per-Kind value vocabularies may diverge — "Shared structure, independent
+                vocabulary" (Blueprint §9.4) — and no forced enum union is formed. Whether and how
+                a field definition relates to a vocabulary is not established (072 SC-072-H;
+                SC-073-D). Nothing here requires a vocabulary link, and nothing forbids one a
+                later source establishes for a particular field.
+
+VALIDATION      Field meaning is not a condition, a check or runtime enforcement (072 FD-12,
+                FD-13; RMS §10.6). No constraint, validation rule, validator or check procedure is
+                an element, and the NATIVE checks of this file are contract statements, not an
+                implemented validator.
+
+LS              Row 073 carries LS: LS-1 and Why: LS-2. The source-supported role is LS-2's —
+                model field architecture ↔ Registry FIELD-DEFINITION (Roadmap PART III) — and this
+                file is the generic structural contract concrete FIELD-DEFINITION Records conform
+                to. It is not itself a lockstep partner: 072 ↔ 073 is no pair, and no LS-1
+                meaning is attached to a field family (072 FD-21; SC-073-B).
+
+MATERIALIZATION This file is an authored source. A FIELD-DEFINITION Record conforming to it is
+                committed to canon/registry/** only through the Mutation Coordinator after
+                G-CANON-R (Roadmap §0.8, PART X; 072 FD-22). The concrete field-definition rows
+                180, 275, 302, 355 and 366 carry G: G-CANON-R. Nothing here authors or commits
+                any Record, and Canon: canonical-about-meaning and CD: yes license no write
+                (SC-073-F).
+
+DOWNSTREAM      Row 073's → names all field defs: every concrete FIELD-DEFINITION Record conforms
+                to this contract. Rows 180 (World field definitions, H: 179,073), 275 (E field
+                definitions, H: 274,073) and 302 (P field definitions, H: 301,073) list 073 in
+                their H. Rows 355 (V, H: 072,344) and 366 (I, H: 072,080,363) also author field
+                definitions but do not list 073 (072 SC-072-M); their Records conform to this
+                contract all the same, and their rows are not changed here. No concrete Registry
+                (R) field-architecture or field-definition-set row is identified (072 SC-072-N);
+                none is invented. A downstream artifact uses this contract only as its own H and
+                Val allow (SC-073-H, SC-073-I).
+
+==================================================================================================
+7. DECISION CASES (schematic — no identifier is minted; nothing here is Registry data)
+==================================================================================================
+
+ACCEPT    A  subject_field registry_ref, domain_tier universal, no domain_model, no domain_kind,
+             definition carrying the field's established universal meaning. The definition does
+             not redefine the envelope: the field's presence and role stay constitutional (RMS
+             §4; Artifact 033), and no such Record is authored here (SC-073-G)       NATIVE
+                                                     + EXTERNAL (content within FD-6)
+ACCEPT    B  subject_field status, domain_tier model, domain_model W, no domain_kind — World-owned,
+             not universal; its value sets may differ between World Kinds, and no vocabulary is
+             encoded here                                                           NATIVE
+                                                     + EXTERNAL (field established by World)
+ACCEPT    C  subject_field tier, domain_tier model, domain_model W, no domain_kind — World-owned,
+             not an eighth envelope field                                           NATIVE
+                                                     + EXTERNAL (field established by World)
+ACCEPT    D  subject_field <field>, domain_tier kind, domain_model W, domain_kind <DECLARED-KIND>
+             — a placeholder: no source names a field as Kind-tier (072 §8), and none is
+             asserted here                                                          NATIVE
+                                         + EXTERNAL (Kind declared by World; field established)
+REJECT    E  subject_field status, domain_tier universal — World status is not universal
+                                                                  (FD-6, FD-7)      NATIVE
+REJECT    E  subject_field tier, domain_tier universal            (FD-6, FD-7)      NATIVE
+REJECT    F  domain_tier model, domain_model W, domain_kind CHARACTER — a Kind carrier is
+             forbidden at the model tier                          (D-03)            NATIVE
+REJECT    G  domain_tier kind, domain_kind CHARACTER, no domain_model
+                                                                  (D-04)            NATIVE
+BOUNDARY  H  subject_field status under (model, W) and status under (model, P) — two contexts,
+             two Records. The spelling neither merges them into one semantic nor proves them two
+             separately identified fields; whether a meaning is shared is the governing sources'
+             to establish (072 §7, §9; I-103)                                       STATIC
+BOUNDARY  I  a conforming Record with no vocabulary element — conforming: no vocabulary link is
+             required, and none a later source establishes is forbidden (SC-073-D)  STATIC
+BOUNDARY  J  a version element present today — not defined by this contract; its representation
+             is 108–110's to establish (P-01B)                                      STATIC
+BOUNDARY  K  a new field — once a model's field architecture establishes it, a Record of this
+             shape can carry its meaning; how it is added is row 459's and is not represented
+             here (P-10)                                                            STATIC
+BOUNDARY     every NATIVE check passes but domain_kind's declared status cannot be established —
+             not legal (Artifact 063 RB-6)                                          EXTERNAL
+BOUNDARY     structurally conforming, not yet resolved by any consumer — the structure conforms;
+             whether it resolves is row 115's, and resolvable is not legal          EXTERNAL
+REJECT       domain_tier universal with domain_model W                (D-01)        NATIVE
+REJECT       domain_tier kind, domain_model W, no domain_kind         (D-05)        NATIVE
+REJECT       domain_tier missing; subject_field status, domain_model W (D-08)       NATIVE
+REJECT       domain_model S, claimed as a seventh sovereign Record Model (D-09)     NATIVE
+REJECT       subject_field W-CH-…-<slug> — a World Character Record   (RF-072-5)    NATIVE
+REJECT       domain_kind R-<kind>-… — a KIND-DEFINITION Record, not the Kind (RF-072-3)
+                                                                                    NATIVE
+REJECT       domain_model W, domain_kind WSV — the WSV singleton is not a Kind      NATIVE
+REJECT       partition W — a World Record is not a FIELD-DEFINITION                 NATIVE
+REJECT       kind CONTROLLED-VOCABULARY, or kind given as an invented code such as FD
+                                                                                    NATIVE
+REJECT       a FAMILY element type, default or allowed_values     (P-01A)           NATIVE
+REJECT       domain_model P, domain_kind CHARACTER — not declared by Production
+                                                                                    EXTERNAL
+REJECT       definition citing one World Record's current status as what status means
+                                                                                    EXTERNAL
+
+==================================================================================================
+8. SOURCE CONDITIONS
+==================================================================================================
+
+SC-073-A  Req: RR-27 is carried exactly; its text is unavailable (GAP-C) and is not invented
+          (072 SC-072-C). Non-blocking.
+SC-073-B  LS metadata. Row 073 carries LS: LS-1 and Why: LS-2; row 072 the same pattern. Roadmap
+          PART III defines LS-2 as model field architecture ↔ Registry FIELD-DEFINITION and LS-1
+          as every Kind spec ↔ its Registry KIND-DEFINITION (072 SC-072-D). The metadata is
+          preserved exactly. No LS-1 meaning, 072 ↔ 073 pair, lockstep class, commit atomicity,
+          dependency or reference is invented, and whether row 073 should carry LS-2 is not
+          decided here. Recorded, not resolved; ROADMAP ISSUE, non-blocking.
+SC-073-C  What a domain covers (072 SC-072-G). Only a semantic and applicability scope at one of
+          RMS §14's tiers is established; the matrix of §4 encodes that and nothing more. No
+          datatype, range, unit, format, enum, constraint or value-domain ontology is derived
+          from it, type and default stay schema-side (Blueprint §9.4), and the relation between a
+          field's domain and a schema's applicable Model and Kind is left to row 078 as input,
+          not as an addition to its Done. Non-blocking.
+SC-073-D  FIELD-DEFINITION and CONTROLLED-VOCABULARY (072 SC-072-H). No source fixes the
+          cardinality, identity or reference relation between them. This contract carries no
+          vocabulary element, requires no vocabulary link and forbids none a later source
+          establishes for a particular field. Non-blocking.
+SC-073-E  L1 against model and Kind scope (072 SC-072-I). Naming a model or Kind as a scope is a
+          declaration reference, not a semantic dependency (Artifact 062 D-9); whether a
+          model- or Kind-tier definition's meaning may draw on that Kind's semantics is not
+          established. No dependency element, no dependency on L2 and no exemption from D-8 is
+          asserted; concrete rules are row 111's. Non-blocking.
+SC-073-F  Row 073 carries T: schema · Canon: canonical-about-meaning · CD: yes on a docs/** path.
+          Artifact 003's general convention gives a docs/** specification Canon: n/a; whether it
+          reaches a schema contract is not stated (072 SC-072-J). The metadata is preserved
+          exactly; this file is not a Registry Record, and CD: yes licenses nothing. Recorded,
+          not resolved.
+SC-073-G  Universal-tier definitions (072 SC-072-L). The contract can represent a universal-tier
+          FIELD-DEFINITION, and at that tier restricts subject_field to the seven envelope fields
+          (RMS §14). No Roadmap row is identified that authors FIELD-DEFINITION Records for the
+          seven, and Deliverable E is not in the source set. None is authored, enumerated or
+          claimed scheduled here. Non-blocking.
+SC-073-H  Downstream coverage (072 SC-072-M). Rows 180, 275 and 302 list 073 in their H; rows
+          355 and 366 author field definitions and list 072 but not 073. → all field defs is
+          preserved; the contract binds every FIELD-DEFINITION Record, whatever a row's H lists;
+          no row is edited and no dependency is added. ROADMAP ISSUE, non-blocking.
+SC-073-I  Registry (R) field definitions (072 SC-072-N). R is one of the six sovereign Record
+          Models and may be named in domain_model; no concrete R field-architecture or R
+          field-definition-set row is identified. The contract stays generic; no R artifact,
+          directory, field inventory or FIELD-DEFINITION set is invented, and nothing here says
+          R has or may have no fields. ROADMAP ISSUE, non-blocking.
+SC-073-J  Realization and notation. The Blueprint names JSON Schema and LinkML as realization
+          choices (§12.15, §26.3b). This file follows the repository's local structural-contract
+          notation (§0) — Artifact 067's, with 069's CHECK line, 071's REPOSITORY CONVENTION label
+          and this file's conditional and absent — and adopts no serialization, schema language
+          or generated validator (072 SC-072-K). No repository-wide schema language is
+          established.
+SC-073-K  No two-character Registry Kind code is established, and kind codes outside World are
+          not frozen (Artifact 063 §9). The envelope kind is constrained symbolically,
+          domain_kind is named rather than coded, and no code is minted for a field. Identity
+          binding is row 117's.
+SC-073-L  Declared status has no single proof mechanism across the six models (Artifact 063
+          SC-063-H). domain_kind's declared status and ownership by domain_model are therefore an
+          EXTERNAL check whose proof is the owning model's. For domain_model the closed set is
+          itself the declared set (Artifact 063 §7 row 2). Recorded; non-blocking.
+SC-073-M  Field-name form and lookup. No source fixes the form of a field's name, and 072
+          defines no lookup of a definition by field name (072 RS-072-5). subject_field carries
+          the name as the sources or the domain's field architecture write it; this contract
+          fixes no case rule, spelling or identifier grammar and defines no lookup. 072 RS-072-5
+          names 073 beside rows 114 and 115 for how a consumer finds a field's definition; this
+          contract's share is structural only — the subject and domain carriers are present on
+          every conforming Record. Rows 114 and 115 own Registry operations and resolution.
+          Recorded, not resolved; non-blocking.
+SC-073-N  Envelope field names below the universal tier. The seven envelope fields are universal
+          (RMS §4, §14), yet RMS §4 keeps "Provenance meaning is model-owned" and RMS §5 keeps
+          Kind meaning model-owned. No source states whether such model-owned meaning is carried
+          by a model- or Kind-tier FIELD-DEFINITION naming an envelope field. This contract
+          neither requires nor forbids that structurally; any such definition must not redefine
+          the envelope field's presence or universal role (072 FD-6, §7) — an EXTERNAL content
+          check. Recorded, not resolved; non-blocking.
+
+==================================================================================================
+9. CONFORMANCE CONDITIONS — each labelled NATIVE, EXTERNAL or STATIC
+==================================================================================================
+
+C-073-01  NATIVE    Family identity: partition R and kind FIELD-DEFINITION. STATIC: the contract
+                    governs FIELD-DEFINITION Records only.                           §0, §2
+C-073-02  NATIVE    Universal envelope: exactly the seven RMS §4 fields, each present and
+                    exactly-one, none added, removed or renamed. STATIC: the family elements are
+                    not envelope fields.                                        §1, §2, P-05
+C-073-03  NATIVE    One field semantic: exactly one subject_field.                      §3
+C-073-04  NATIVE    One domain tier: exactly one domain_tier, one of universal, model, kind.
+                                                                                   §3, D-08
+C-073-05  NATIVE    Universal domain shape: no domain_model and no domain_kind.         §4 D-01
+C-073-06  NATIVE    Model domain shape: exactly one domain_model and no domain_kind.
+                                                                             §4 D-02, D-03
+C-073-07  NATIVE    Kind domain shape: exactly one domain_model and exactly one domain_kind.
+                                                                             §4 D-04, D-05
+C-073-08  NATIVE    Model set: any domain_model is one of W, E, P, R, V, I.          §3, D-09
+C-073-09  NATIVE    Declared model: the closed set is the set of declared Record Models
+                    (Artifact 063 §7 row 2), so membership establishes declared status.
+                                                                              §3; SC-073-L
+C-073-10  EXTERNAL  Declared Kind: domain_kind names a Kind declared by domain_model's own Kind
+                    architecture; this contract does not prove it.        §3, D-06; SC-073-L
+C-073-11  STATIC    Subject not global: subject_field alone is not treated as a semantic identity
+                    across models. NATIVE: it never stands without domain_tier.  §1, §3, P-06
+C-073-12  NATIVE    Meaning carrier: definition is present, single and non-empty. EXTERNAL: its
+                    content limits.                                                     §3
+C-073-13  NATIVE    No schema-owned properties: no type, default, cardinality, requiredness,
+                    order or composition element.                               P-01A, P-04
+C-073-14  STATIC    No vocabulary collapse: no value-set element and no mandatory vocabulary
+                    link.                                             P-01A, P-02; SC-073-D
+C-073-15  STATIC    No constraint or validator collapse: no constraint, validation rule or check
+                    mechanism is an element.                            P-01A, P-07; §6
+C-073-16  STATIC    Reference legality: the domain scope is the one concrete reference
+                    obligation and obeys Artifact 063; no generic reference list. EXTERNAL: the
+                    Kind's declared status.                                      §3, §6, P-02
+C-073-17  NATIVE    No domain-instance authority: no Record identifier can stand as
+                    subject_field, domain_model or domain_kind. EXTERNAL: no domain Record, value
+                    or state is the source of meaning in definition.                 §3, §7
+C-073-18  EXTERNAL  No runtime authority: no runtime object or process is the subject, the scope
+                    or the source of meaning. STATIC: no runtime element.         §3, P-01A
+C-073-19  STATIC    Reference ≠ dependency: a model or Kind scope creates no semantic dependency
+                    by itself, and there is no dependency element.            P-09; §6 LAYER
+C-073-20  STATIC    Resolvable ≠ legal: resolution never substitutes for legality.      §6
+C-073-21  NATIVE    Resolution prerequisite: partition, kind and object_id are present. STATIC:
+                    no resolver is implemented, and the complete id+version representation is
+                    not claimed — version representation is rows 108–110's, consumer resolution
+                    row 115's.                                                       §2, §6
+C-073-22  STATIC    Versionability: no version mechanism is defined, and the representation rows
+                    108–110 own is not prohibited.                           §1, §6, P-01B
+C-073-23  NATIVE    status and tier: neither is accepted at the universal tier, where
+                    subject_field is one of the seven envelope fields.          §3, D-10, §7 E
+C-073-24  STATIC    Ownership: the Registry owns the definition Record; the owning model keeps its
+                    Records, their values and its field architecture.              §3, P-03
+C-073-25  STATIC    L1 boundary: no element takes meaning from L2 to L5. EXTERNAL: no instance,
+                    domain state or derived output is the source of meaning.     §3, §6, P-09
+C-073-26  STATIC    LS bounded: LS: LS-1 is preserved, and no field-specific LS-1 meaning or
+                    072 ↔ 073 pair is invented.                                 P-08; SC-073-B
+C-073-27  STATIC    Downstream coverage bounded: → all field defs is preserved; no V, I or R
+                    dependency row is invented or repaired.        §6 DOWNSTREAM; SC-073-H, I
+C-073-28  STATIC    No direct canon write: no FIELD-DEFINITION Record or other Registry data is
+                    created, and the file is outside canon/**.              §0, §6
+C-073-29  STATIC    Source-grounded structure: every element and constraint names its basis, and
+                    every 073 choice is labelled as one.            §2, §3, §4, §6 REPRESENTATION
+C-073-30  STATIC    Requirement gap: the text of RR-27 is not invented.                SC-073-A
+C-073-31  STATIC    The header reproduces repaired Roadmap row 073 exactly.             header
+C-073-32  STATIC    Artifact 072 is consumed unchanged.                                 §0
+C-073-33  STATIC    Every check that needs evidence outside the Record is labelled EXTERNAL, and
+                    no parser or validator is claimed.                       §0, §3, §6
+C-073-34  STATIC    The domain scope has one form only, the declaration form; no R → R reference
+                    to a MODEL-DEFINITION or KIND-DEFINITION is required or carried.
+                                                                       §3; §6 REPRESENTATION
+C-073-35  STATIC    Only docs/registry/field_definition.schema is created by this artifact.
+                                                                                    row 073
+
+==================================================================================================
+10. ROADMAP TRACE — contract-level
+==================================================================================================
+
+The statuses below assess this file as a structural contract. They claim no resolver, version
+mechanism, validator, declared-status proof or concrete FIELD-DEFINITION Record; those belong to
+their own rows.
+
+Val  definition resolves          §2 baseline Record identity; §6 RESOLUTION — the prerequisite
+                                  for later Registry resolution, without claiming the complete
+                                  id+version representation; version representation stays with
+                                  rows 108–110, and resolution itself is 115's
+Val  versionable                  §6 VERSIONABILITY: 073 defines no version mechanics and does
+                                  not obstruct the Registry evolution and versioning
+                                  representation rows 108–110 own; §1; P-01B (deferred, not
+                                  prohibited)
+Val  references only declared     §3 domain_model (a declared Record Model, the closed set) and
+     entities (063)               domain_kind (a declared Kind of that model, an EXTERNAL check);
+                                  subject_field is no reference; §4; §6 REFERENCES,
+                                  REPRESENTATION; P-02
+Done schema                       §1–§5: twelve elements, each with requiredness, cardinality,
+                                  constraint, check and basis; the domain matrix of §4; the
+                                  structural prohibitions and rejection register of §5
+Why  LS-2                         the generic structural contract concrete FIELD-DEFINITION
+                                  Records conform to; preserved as row metadata; SC-073-B
+H    072                          consumed unchanged; §1–§6 encode 072 FD-1 to FD-22, RS-072-1 to
+                                  RS-072-5, VS-072-1, VS-072-2 and RF-072-1 to RF-072-9
+LS   LS-1                         preserved; no pair invented; SC-073-B
+→    all field defs               preserved; every concrete FIELD-DEFINITION Record conforms;
+                                  explicit consumers 180, 275, 302; 355 and 366 omit 073 in H;
+                                  no R set is identified; SC-073-H, SC-073-I
