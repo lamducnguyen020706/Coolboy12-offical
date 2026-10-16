@@ -78,7 +78,7 @@ Verified against the working tree, not from prior context.
 
 ## Resolution Register
 
-**Primary resolution entries: 16** — CONFLICT-A · CONFLICT-B · CONFLICT-C · CONFLICT-D · CONFLICT-E · CONFLICT-F · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K · GAP-L.
+**Primary resolution entries: 17** — CONFLICT-A · CONFLICT-B · CONFLICT-C · CONFLICT-D · CONFLICT-E · CONFLICT-F · CONFLICT-G · GAP-C · GAP-D · GAP-E.3 · GAP-F · GAP-G · GAP-H · GAP-I · GAP-J · GAP-K · GAP-L.
 **Sub-resolution: GAP-D.1**, which sits under GAP-D and is *not* a sixth primary finding: it
 settles the naming of the purpose file GAP-D introduced and has no standing apart from GAP-D.
 
@@ -93,6 +93,7 @@ separate packaging decisions.
 | **CONFLICT-D** | Artifact 022's unconditional `OPAQUE` deny cannot coexist with Artifact 024 registering it at `PreToolUse` across Bash | Route 3 approved by the author: 022 unfrozen under control, decision axis moved from command provability to canonical reachability, re-frozen | **RESOLVED FOR BUILD · AUTHORIAL RULING — SOURCE UNCHANGED** | None |
 | **CONFLICT-E** | Registry self-hosting: LS-1 requires a concrete `KIND-DEFINITION` partner for each of the Registry's fourteen Kinds, but no row owned them; RMS §13 question 13 has no stated application to Registry candidates | AD-LS1-R-BOOTSTRAP (Artifact 003 ordering exception; Roadmap rows 074–075 repurposed, §0.7) and AD-057-R13 (Artifact 057 §5.4) | **RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED** | None |
 | **CONFLICT-F** | P3 Registry rows targeted `canon/registry/**`, which only the Mutation Coordinator (row 152, P5) may write | AD-REG-AUTHORING-SPLIT: P3 authors contracts and canonicalization sources under `docs/registry/`; Registry Records committed only through 152 after G-CANON-R; G-REG licenses consumption only (Roadmap §0.8) | **RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED** | None |
+| **CONFLICT-G** | Row 075 requires its fourteen members to conform to 069, whose seven envelope elements are required; §0.8 says an authored source is not a Record, and no source supplies `object_id`, `slug`, `provenance`, `registry_ref` or `sot_class` for one | AD-REG-SOURCE-ENVELOPE: a canonicalization source is a pre-Record representation carrying its source-owned elements; `object_id`, `provenance`, `registry_ref`, `sot_class` are assigned on the commit path; full 069 conformance is a property of the committed Record | **RESOLVED FOR BUILD · AUTHOR-DECIDED (DELEGATED) — RMS/BLUEPRINT/ROADMAP UNCHANGED** | None |
 | **GAP-C** | missing requirement register | build not blocked; requirement text not verified | **NON-BLOCKING — UNVERIFIED** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
 | **GAP-E.3** | unsourced pyproject values | implementation-level resolution for Python requirement, backend, version | **RESOLVED FOR BUILD** | None |
@@ -431,6 +432,64 @@ docs-specification value `Canon: n/a`; that inconsistency, already recorded for 
 
 **Status:** RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED · **Constitutional
 change:** NONE
+
+---
+
+### CONFLICT-G — Canonicalization Source Envelope against Required 069 Values
+
+**Source statement A.** Row 075 `Val`: *"all conform to 069"*. Artifact 069 makes all ten of its
+elements `REQUIRED yes`, `exactly-one`, including the seven envelope elements `partition`, `kind`,
+`object_id`, `slug`, `provenance`, `registry_ref`, `sot_class`; its baseline identity includes
+`object_id` (C-069-09).
+
+**Source statement B.** Roadmap §0.8: *"An authored source is not a Record and is not canon."* Row
+152 is the sole writer of `canon/**`, after G-CANON-R. Artifact 036 allocates ordinals that are
+never reused; Artifact 047 captures provenance as a shared mechanism; Artifact 033 leaves the
+referent of `registry_ref` unresolved; no source assigns a record-level `sot_class` to a
+`KIND-DEFINITION`.
+
+**Conflict.** A live audit of the repository (Artifact 075 resolve round) found no governing rule
+that supplies or owns `object_id`, `slug`, `provenance`, `registry_ref` or `sot_class` for an
+authored source. Artifact 075 stopped `NO-GO` (SC-075-G, C-075-06) without inventing a value.
+
+**Author decision (AD-REG-SOURCE-ENVELOPE).** The author delegated both decisions to the session
+(*"Decide for me"*); the session decided as follows, and the author may revoke or amend it.
+
+1. **Source against Record — option B.** A canonicalization source is a distinct pre-Record
+   representation. It carries its **source-owned** elements; its **commit-owned** elements are
+   absent from the source by rule and are assigned on the governed commit path when the Record is
+   committed. A source conforms to 069 when every source-owned element is present exactly once and
+   valid under 069, and no commit-owned element is present. Full ten-element 069 conformance is a
+   property of the committed Record and is checked on the commit path before the human gate, not
+   claimed by the source.
+   *Rejected — option A* (every value in the source before P5): it would allocate never-reused
+   ordinals before any governed write path exists, record authoring rather than the governed act as
+   provenance, and force the open `registry_ref` question early.
+2. **Value ownership.**
+
+   | Element | Owner | When |
+   |---|---|---|
+   | `partition`, `kind` (symbolic until row 117), family elements | the source | authoring |
+   | `slug` | the source — the subject's name with `-` written `_`, valid under Artifact 035 | authoring |
+   | `object_id` | Artifact 036 allocation, invoked on the commit path | commit — never at authoring |
+   | `provenance` | the shared capture mechanism (047); meaning is Registry's | commit |
+   | `registry_ref` | the commit path, once its referent is fixed by Registry / 033 design work | commit |
+   | `sot_class` | Registry, from the five record-level classes of Blueprint §29.6a | commit |
+
+**Scope.** Binds Artifact 075. Rows 085 and 105–107, the other canonicalization sources, may adopt
+it when built; it is not applied to them here.
+
+**Non-consequence.** No envelope field, Record Model, Kind, gate or lockstep group is added; no
+Kind code, ordinal, provenance value, referent or class is minted; 069, 033, 036, 047, rows 117
+and 152 and the Roadmap are unchanged; nothing is written to `canon/**`.
+
+**Recorded, not resolved.** The referent of `registry_ref` and the `sot_class` value of a
+Registry definition Record are still unfixed; both must be fixed before the commit path may commit
+these Records, which is a precondition on that commit, not on authoring. No Roadmap row yet names
+the commit-time 069 check; row 148 (*"all validators run before the gate"*) is its nearest home.
+
+**Status:** RESOLVED FOR BUILD · AUTHOR-DECIDED (DELEGATED) — RMS/BLUEPRINT/ROADMAP UNCHANGED ·
+**Constitutional change:** NONE
 
 ---
 
