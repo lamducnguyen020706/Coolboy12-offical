@@ -28,14 +28,22 @@ status's value set for each Kind     a per-Kind value set, free to diverge (Blue
 
 `FIELD-DEFINITION` already exists. It is Kind 4 of RMS §10.1's *"Final Kind taxonomy — CLOSED at
 fourteen"*, and Artifact 064 §11 records its admission rationale. Row 072's `Why` — *"LS-2 partner
-for all field architecture"* — names the job: every model's field architecture is paired with
-Registry field definitions, and this family is what each of those definitions is.
+for all field architecture"* — names the job: LS-2 pairs model field architecture with Registry
+field definitions, and this family is what each of those definitions is.
 
 ```
-EACH RECORD MODEL — W · E · P · R · V · I
-    ├── its field architecture establishes which fields it has and their domains (rows 179, 274,
-    │   301, 355, 366); its schemas decide where each field occurs, how often, in what order
-    └── it owns the values its Records carry
+CONSTITUTIONAL SCOPE
+    W · E · P · R · V · I are the six sovereign Record Models.
+
+EXPLICIT DOWNSTREAM FIELD-ARCHITECTURE / FIELD-DEFINITION WORK IN THE ROADMAP
+    W → 179 / 180     E → 274 / 275     P → 301 / 302     V → 355     I → 366
+    No equivalent concrete R field-architecture / field-definition-set row is identified
+    (SC-072-N). Artifact 072 stays a generic family and does not invent one.
+
+MODEL-SIDE FIELD ARCHITECTURE
+    ├── establishes which fields the model has and their domains; its schemas decide where each
+    │   field occurs, how often, in what order
+    └── the model owns the values its Records carry
                 ⇅  LS-2 — model field architecture ↔ Registry FIELD-DEFINITION (PART III)
 REGISTRY FIELD-DEFINITION
     ├── governs what ONE field means, and over what domain (064 §11)
@@ -86,7 +94,7 @@ the handoffs to 073 and 078; the source conditions.
 | the Registry's fourteen Kinds and their admission rationale | 064 (consumed, §5) |
 | the schema encoding of the obligations established here | 073 |
 | `SCHEMA-DEFINITION`, and how a schema composes field definitions | 076–077 |
-| the final schema/field overlap — cardinality, requiredness, order, and any edge still open | 078 |
+| the final schema/field overlap closure, as row 078's `Done` assigns it — composition, cardinality, requiredness, order | 078 |
 | `CONTROLLED-VOCABULARY`, and any value set it governs | 081–082 |
 | `CONSTRAINT-DEFINITION`; `VALIDATION-RULE` | 088–089; 090–091 |
 | who may propose, approve or deprecate a definition | 065 |
@@ -94,10 +102,13 @@ the handoffs to 073 and 078; the source conditions.
 | concrete definition-dependency rules | 111 |
 | reference validator; constraint binder; kernel; resolution service; validation suite | 112; 113; 114; 115; 116 |
 | committing any `FIELD-DEFINITION` Record to `canon/registry/` | 152, after G-CANON-R (Roadmap §0.8) |
-| each model's field architecture, its field domains and its concrete field definitions | 179–180 (W); 274–275 (E); 301–302 (P); 355 (V); 366 (I) |
+| the explicitly scheduled downstream field architecture, field domains and concrete field-definition work for W, E, P, V and I | 179–180 (W); 274–275 (E); 301–302 (P); 355 (V); 366 (I) |
 | each model's Record schemas — which fields occur where | that model's schema rows |
 | the universal envelope and the role of each of its seven fields | RMS §4, §5; Artifact 033 |
 | how a new Kind, field, definition, simulation model, visual subtype, or publication structure is added | 459 |
+
+No equivalent concrete Registry (R) field-architecture or field-definition-set row is identified in
+the Roadmap; no owner is assigned for one here (SC-072-N).
 
 No field, field inventory, schema, vocabulary, constraint, validator, Record, fixture, test or
 runtime behaviour is created, and no field is declared, admitted, renamed or retired.
@@ -205,8 +216,8 @@ schemas that compose it, within the model's field architecture (row 078; §10, �
 **Content (synthesis — the part 064 §11 assigns here).** The family's persistent content is one
 field's meaning and its domain (§7, §8) and nothing else. It is not:
 
-- the field's occurrence in any schema, its requiredness, cardinality or order (§10, §11; FD-8,
-  FD-9);
+- the field's occurrence in any schema, its requiredness, cardinality or order, or its type or
+  default, which Blueprint §9.4 places with schema (§10, §11; FD-8, FD-9);
 - the field's name as structure — field structure is held by schema, not by the Registry
   (Blueprint §9.4, §13.7; §10);
 - a value set or vocabulary of allowed values, for any Kind (§12; FD-10, FD-11);
@@ -247,9 +258,12 @@ but *"Provenance meaning is model-owned"*, and RMS §5 makes Kind meaning model-
 synthesis; SC-072-L).
 
 **One field semantic per definition.** A `FIELD-DEFINITION` governs the meaning of one field. It is
-never a bundle of unrelated fields, and a field name alone does not identify the semantic: the same
-name used by two models names two fields unless the sources establish that each model shares the
-meaning (I-103; Artifact 043 §4 — universality is never inferred from *"similar terminology"*).
+never a bundle of unrelated fields. A field name alone does not establish one shared semantic across
+models. If the same name appears in more than one model, its semantics are treated as model-owned
+unless the governing sources explicitly establish that the meaning is shared; similar terminology is
+not evidence of semantic identity (I-103; Artifact 043 §4 — universality is never inferred from
+*"similar terminology"*). Nor does a shared name by itself establish that two separately identified
+fields exist; that is for each model's field architecture to state.
 
 ## 8. Field Domain and the Three Tiers
 
@@ -287,16 +301,18 @@ establishes the field and its domain, and the `FIELD-DEFINITION` carries the dom
 meaning it governs holds (§16). This document states that a definition carries its domain; it
 assigns no field to any domain.
 
-**Source gap — what else "domain" covers.** Whether *domain* also means a value or type domain — a
-data type, range, unit or format — is not established. Blueprint §9.4 lists *"types"* and
-*"defaults"* among schema's structure; RMS §10.2's list for schema does not name them; RMS §10.7
-gives an indicator definition *"type, unit, range, constraints, semantics"*, but an indicator is
-*"not a field of the Record carrying the value"* (Blueprint §13.6e). This document claims no value
-or type domain for the family, and the edge goes to row 078 (SC-072-G).
+**Source gap — what else "domain" covers.** Whether *domain* carries any additional semantic
+value-domain concept beyond applicability scope is not established. Blueprint §9.4 already assigns
+field *"types"* and *"defaults"* to schema structure, so they are not treated here as
+`FIELD-DEFINITION`-owned domain content. RMS §10.7 gives an indicator definition *"type, unit,
+range, constraints, semantics"*, but an indicator is *"not a field of the Record carrying the
+value"* (Blueprint §13.6e). No datatype, range, unit, format, enum or constraint is read into
+*domain* here (SC-072-G).
 
 **Domain is not the schema's applicability.** RMS §10.2 lets a `SCHEMA-DEFINITION` define its
 *"applicable Model · applicable Kind"*: the scope a schema applies to. A field's domain is the scope
-its meaning holds over. How the two relate at the edge is row 078's (SC-072-E, SC-072-G).
+its meaning holds over. No source states how the two relate; that is recorded as input to row 078's
+overlap closure, not as an addition to row 078's `Done` (SC-072-G).
 
 ## 9. Universal Fields vs Model and Kind Fields
 
@@ -309,19 +325,20 @@ closing FG-V7-03; *"other models define their own state vocabularies"*. Blueprin
 is a universal envelope property."* The Roadmap confirms the confinement: row 179 (World), row 274
 (*"no `tier`, no World `status`"*), row 301 (*"`status` never admits CANON"*). A `FIELD-DEFINITION`
 may govern what `status` means within World; no E, P, R, V or I Record is required to carry it, and
-no universal status lifecycle arises. If another model's field architecture establishes a field of
-the same name — row 301's `Val` speaks of `status` in Production's field architecture — that is that
-model's own field, defined in its own domain, not World `status` made common (RMS §4: *"other models
-define their own state vocabularies"*; §7; Artifact 043 §4).
+no universal status lifecycle arises. If another model's field architecture uses the label
+`status` — row 301's `Val` speaks of `status` in Production's field architecture — that shared label
+does not establish that it is World `status` or one cross-model field. Its semantics remain owned by
+that model unless the governing sources explicitly establish sharing (RMS §4: *"other models define
+their own state vocabularies"*; §7; Artifact 043 §4).
 
-**A generic family is not universal applicability.** One `FIELD-DEFINITION` family serves all six
-models' field architectures. That is shared definition infrastructure, not a shared semantic:
-*"The Record System shares mechanisms. It does not share semantics."* (Blueprint §13.7a). Artifact
-043 §4: *"A semantic MUST remain model-owned unless the constitutional sources explicitly establish
-it as universal."*, and universality is never inferred from common tooling, validation
-infrastructure, identifiers or *"similar terminology"*. *Shared field semantics* names a Registry
-semantic layer (§14); it licenses no field's meaning across models without evidence in each model
-that carries it (I-103).
+**A generic family is not universal applicability.** One `FIELD-DEFINITION` family is available to
+the field architecture of any of the six models. That is shared definition infrastructure, not a
+shared semantic: *"The Record System shares mechanisms. It does not share semantics."* (Blueprint
+§13.7a). Artifact 043 §4: *"A semantic MUST remain model-owned unless the constitutional sources
+explicitly establish it as universal."*, and universality is never inferred from common tooling,
+validation infrastructure, identifiers or *"similar terminology"*. *Shared field semantics* names a
+Registry semantic layer (§14); it licenses no field's meaning across models without evidence in each
+model that carries it (I-103).
 
 **The field rung.** P-7: *"A new concept becomes a field, then a kind, then a status, and only then
 — rarely — a new structure."* A field is the lowest rung of the ladder; defining it creates no Kind,
@@ -333,9 +350,10 @@ and a Kind-tier field belongs to an existing declared Kind (Artifact 057 §6).
 blueprint owns the Record's properties; the Record Model Schema file owns its fields."*, and as the
 two expand together *"The Record Model Schema defines how those contracts appear in concrete
 records."* — *"Each new Registry definition has a corresponding Record Model Schema expression,
-authored in the same act."* The Roadmap decomposes that concrete side into each model's field
-architecture and Kind schemas (for example rows 179, 184, 186; row 186's `Val`: *"conforms to its
-KIND-DEFINITION and to the World field definitions"*).
+authored in the same act."* The Roadmap decomposes that concrete side into model field-architecture
+and Kind-schema rows for W, E, P, V and I (for example rows 179, 184, 186; row 186's `Val`:
+*"conforms to its KIND-DEFINITION and to the World field definitions"*); no R field-architecture row
+is identified (SC-072-N).
 
 **Required synthesis.**
 
@@ -374,10 +392,15 @@ This is the highest-risk boundary.
 meaning and its domain as far as §8 establishes it. It does not define how a schema composes field
 definitions, and it holds no cardinality, requiredness or order, no field type and no default.
 
-**What it leaves to row 078.** The final overlap contract, including any edge the sources leave
-open: whether a field's type or default belongs with the field or the schema (Blueprint §9.4 places
-both with schema; RMS §10.2 does not list them), and how a field's domain relates to a schema's
-applicable Model and Kind (SC-072-E, SC-072-G).
+**What it leaves to row 078.** Artifact 078 owns the final `SCHEMA-DEFINITION` /
+`FIELD-DEFINITION` overlap closure exactly as its Roadmap row assigns it: a schema composes field
+definitions and owns cardinality, requiredness and order; a field definition owns meaning and
+domain. Blueprint §9.4 already places field type and default on the schema side, so this document
+assigns neither to `FIELD-DEFINITION` and adds no type or default decision to row 078's exit
+criterion. RMS §10.2's list does not repeat them, and that omission does not reopen the assignment
+(SC-072-E). Any remaining edge is carried to 078 only where its governing sources assign it; the
+unstated relation between a field's domain and a schema's applicable Model and Kind is recorded as
+input, not as an addition to row 078's `Done` (SC-072-G).
 
 > **Artifact 078 owns final overlap closure. Artifact 072 does not preempt it.**
 
@@ -459,7 +482,7 @@ dependency on L2 and no exemption from D-8; concrete dependency rules are row 11
 | Registry governs | The owning Record Model governs | Registry never infers | Source |
 |---|---|---|---|
 | the `FIELD-DEFINITION` Record and the field meaning it carries, within its domain | the values its Records carry | ownership of any value carried under the field | Blueprint §13.6e; Artifact 061 §7 row 2 |
-| — | its field architecture: which fields it has, their domains, and which Records carry them | a field for any model, or a change to a model's field architecture without that model's side of LS-2 | rows 179, 274, 301; PART III (LS-2) |
+| — | its field architecture: which fields it has, their domains, and which Records carry them. For models with explicit downstream field-architecture rows, those rows establish it; no concrete R counterpart is identified in the Roadmap (SC-072-N), and the ownership rule still applies to R as a Record Model | a field for any model, or a change to a model's field architecture without that model's side of LS-2 | rows 179, 274, 301, 355, 366; PART III (LS-2) |
 | — | its Kind taxonomy and its Records | any Kind, Record or roster change through a field definition | I-105; I-106; RMS §6 |
 | — | its state, lifecycle, provenance meaning, canonicality and semantic validation | any of those, for any model | RMS §4, §6; Blueprint §13.6e |
 
@@ -498,6 +521,12 @@ Each concrete field has both halves, landing together. This family defines what 
 half is; the concrete halves are authored by the model rows and the Registry field-definition sets
 listed above, not here.
 
+**Generic architecture vs explicit Roadmap coverage.** PART III defines LS-2 generically. The
+concrete model rows above instantiate that pattern for W, E, P, V and I. No explicit R
+field-architecture or `FIELD-DEFINITION`-set row is identified, and this document creates none
+(SC-072-N). That gap is not read as exempting R from LS-2, nor as proof that an unlisted R pair
+exists.
+
 **What LS-2 is not.** *"A lockstep partner is not a predecessor."* (Artifact 003). LS-2 is no
 reference: 064 §11 question 7 leaves any concrete reference downstream. It is no semantic dependency
 by itself, no runtime link, and no subordination of a model to the Registry, and it creates no
@@ -532,13 +561,13 @@ resolution, versionability and reference contracts of §19 to §21.
 |---|---|---|
 | **FD-1** | **One field semantic.** A `FIELD-DEFINITION` governs the meaning of exactly one field over one domain. It is never a bundle of unrelated fields, and a field name alone does not identify the semantic. How the subject is encoded is 073's. | 064 §11 questions 1–4; I-103; Artifact 043 §4; synthesis |
 | **FD-2** | **Meaning.** The definition governs what the field means — the governed semantic content every Record carrying the field shares within its domain. | Blueprint §9.4, §13.6e; 064 §11 |
-| **FD-3** | **Domain.** The definition carries the domain over which that meaning holds — at least its scope at one field tier. Whether domain also covers a value or type domain is not established; representation is 073's. | row 078 `Done`; 064 §11 question 2; RMS §14; SC-072-G |
+| **FD-3** | **Domain.** The definition carries the domain over which that meaning holds — at least its scope at one field tier. Whether domain carries any further semantic value-domain concept is not established; field type and default are schema's (Blueprint §9.4) and are not domain content; representation is 073's. | row 078 `Done`; 064 §11 question 2; RMS §14; SC-072-G |
 | **FD-4** | **Field tier.** Every domain is compatible with RMS §14's three tiers — universal, model, Kind — and with no other. | RMS §14 |
 | **FD-5** | **No universalization.** A generic family across six models does not make any field universal or any field's meaning shared across models without evidence in each model that carries it. | I-103; Blueprint §13.7a; Artifact 043 §4 |
 | **FD-6** | **Universal envelope closed.** Only the seven bootstrap fields are universal. A definition at that tier governs only the meaning the constitution establishes as universal and redefines no field's presence or role. | RMS §4, §5, §14; Artifact 033 |
 | **FD-7** | **World-only semantics stay World-only.** `tier` and `status` are World-owned and not universal; no other model is required to carry them. | RMS §4, §14, Appendix B; Blueprint §13.7; rows 179, 274 |
 | **FD-8** | **Definition ≠ occurrence.** A definition does not cause its field to appear in any Record schema or Record. | Blueprint §9.4, §13.7 |
-| **FD-9** | **Definition ≠ schema.** The family owns no schema composition, cardinality, requiredness, order, type or default; row 078 owns the final boundary. | Blueprint §9.4; RMS §10.2, PC-3; row 078 |
+| **FD-9** | **Definition ≠ schema.** The family owns no schema composition, cardinality, requiredness, order, type or default. Blueprint §9.4 places type and default with schema structure; row 078 places composition, cardinality, requiredness and order on the schema side and owns the final overlap closure. This document does not expand row 078's exit criterion. | Blueprint §9.4; RMS §10.2, PC-3; row 078 |
 | **FD-10** | **Definition ≠ vocabulary.** Field meaning is distinct from any allowed-value vocabulary. No cardinality, identity or reference rule between them is invented. | RMS §10.1; Blueprint §9.4, §13.6e; 064 §14; SC-072-H |
 | **FD-11** | **Per-Kind vocabulary divergence.** One field's value sets may differ by Kind; no forced enum union across Kinds is created. | Blueprint §9.4; row 081 `Done` |
 | **FD-12** | **Definition ≠ constraint.** A field's meaning is not a condition that must hold. | RMS §10.6, §20; row 088 |
@@ -612,9 +641,9 @@ boundary too bluntly"*), and Artifact 063 applies the correction (SC-072-B).
 Once materialized, a `FIELD-DEFINITION` carries the universal envelope unchanged — `partition` ·
 `kind` · `object_id` · `slug` · `provenance` · `registry_ref` · `sot_class` (RMS §4) — in partition
 R. The envelope's `kind` names the Record's own Kind, `FIELD-DEFINITION`; it is not the field's
-domain. No family concept — the field tier, the domain, a type, requiredness, a default,
-cardinality, a vocabulary, `status`, a lifecycle, a version, a validator or an owner — becomes a
-universal field. How the obligations of this document are structurally encoded is 073's.
+domain. No concept named in this document — the field tier, the domain, a type, requiredness, a
+default, cardinality, a vocabulary, `status`, a lifecycle, a version, a validator or an owner —
+becomes a universal field. How the obligations of this document are structurally encoded is 073's.
 
 None of RMS §4's nine prohibited universal semantics is introduced. For this family that means: no
 universal field roster and no Universal Record Base made of fields; no universal semantic schema
@@ -736,7 +765,7 @@ ceremony is invented here, and no new field name is proposed.
 | 28 | 072 may author World, E, P, V or I field inventories | they are the model rows' | rows 179–180, 274–275, 301–302, 355, 366 |
 | 29 | Shared field semantics may be imposed without evidence in each model | a semantic is shared only with that evidence | I-103; Artifact 043 §4 |
 | 30 | A shared mechanism implies shared meaning | mechanism ≠ semantic | Blueprint §13.7a; I-103 |
-| 31 | Two models' fields with the same name are one field | similar terminology is no evidence of shared meaning | Artifact 043 §4; §7, §9 |
+| 31 | Two models using the same field name proves one shared field semantic | similar terminology is no evidence of shared meaning | Artifact 043 §4; §7, §9 |
 | 32 | Naming a model or Kind as a field's domain makes its meaning depend on that model or Kind | a declaration reference is not by itself a dependency | Artifact 062 D-9; RF-072-9 |
 | 33 | A `FIELD-DEFINITION` may redefine an envelope field's universal role — make the slug identity, say | the role is constitutional | RMS §4, §5; Artifact 033; FD-6 |
 | 34 | The Blueprint's JSON Schema and LinkML realization makes this family a JSON Schema or LinkML artifact | realization is not authority; 072 is `T: doc` | Blueprint §12.15, §26.3b; SC-072-K |
@@ -791,11 +820,11 @@ artifact owns its resolution, and the treatment.
 
 | | |
 |---|---|
-| **Source A** | Blueprint §9.4: schema is *"fields, types, required-ness, defaults"*; Blueprint §13.7 gives field custody to the Record Model Schema, a companion document not in the source set and not revised by the current Blueprint (FG-V7-01). RMS §10.2 lists what a `SCHEMA-DEFINITION` may define, naming neither type nor default. |
-| **Source B** | RMS PC-3: the two *"overlap at the edges"* — *"resolve during Registry schema design"*. Row 078 (`H: 076,072`) is assigned the closure: a schema composes field definitions and *"owns cardinality/required/order"*; a field definition *"owns meaning and domain"*. |
-| **Condition** | Composition, cardinality, requiredness and order are placed; type, default, and the relation between a field's domain and a schema's applicable Model and Kind are not settled by every source alike. |
-| **Owner** | Row 078, after 076. |
-| **Treatment** | This document defines the field side only — meaning, and domain as far as §8 establishes it — and claims no type or default. It is an input to row 078, not its replacement (§11). |
+| **Source A** | Blueprint §9.4 explicitly places field type and default in schema structure: schema is *"fields, types, required-ness, defaults"*. Blueprint §13.7 gives field custody to the Record Model Schema, a companion document not in the source set and not revised by the current Blueprint (FG-V7-01). |
+| **Source B** | RMS PC-3 records an edge overlap: the two *"overlap at the edges"* — *"resolve during Registry schema design"*. Row 078 (`H: 076,072`) owns the final overlap closure: a schema composes field definitions and *"owns cardinality/required/order"*; a field definition *"owns meaning and domain"*. |
+| **Condition** | RMS §10.2's list of what a `SCHEMA-DEFINITION` may define does not repeat type and default. That omission does not contradict or supersede Blueprint §9.4's explicit schema-side assignment. |
+| **Owner** | Row 078, after 076, for the final overlap closure its row assigns. |
+| **Treatment** | This document defines the field side only — meaning, and domain as far as §8 establishes it. Type and default are assigned to neither the meaning nor the domain of a `FIELD-DEFINITION`; they are schema-side under Blueprint §9.4. Row 078 keeps only its source-assigned closure role, and no further exit criterion is invented for it (§11; FD-9). |
 
 ### SC-072-F — broad Blueprint field wording vs RMS field tiers — PARTLY CLOSED; READING RECORDED
 
@@ -813,9 +842,9 @@ artifact owns its resolution, and the treatment.
 |---|---|
 | **Source A** | Row 078: a field definition *"owns meaning and domain"*; Artifact 064 §11: *"over what domain?"*; RMS §14's three tiers; rows 179, 274, 301 deliver *"field domains"*. |
 | **Source B** | No source defines *domain* further. Blueprint §9.4 places types and defaults with schema; RMS §10.2 gives schemas an *"applicable Model · applicable Kind"*; RMS §10.7's *"type, unit, range"* belongs to indicators, which are not fields. |
-| **Gap** | Whether a field's domain is only its applicability scope, or also a value or type domain; and how domain ownership between row 078's field definition and the model rows' *"field domains"* is divided. |
-| **Owner** | Not this artifact: row 078 for the schema edge; each model's field architecture for its fields' domains. |
-| **Treatment** | Only the minimum is stated: a domain is at least a scope at one RMS §14 tier, established in LS-2 lockstep with the model side (§8). No value or type domain and no field-domain ontology is invented. Non-blocking: meaning and scope are definable without it. |
+| **Gap** | Whether a field's domain carries any additional semantic value-domain concept beyond its applicability scope; how a field's domain relates to a schema's applicable Model and Kind; and how domain ownership between row 078's field definition and the model rows' *"field domains"* is divided. |
+| **Owner** | Not this artifact: each model's field architecture for its fields' domains; row 078's overlap closure only as far as its own `Done` reaches. |
+| **Treatment** | Minimum established meaning: a domain is a semantic and applicability scope at one RMS §14 tier, established in LS-2 lockstep with the model side (§8). Not established: any further semantic value-domain concept. Excluded from 072: field type and default, which are schema-owned (Blueprint §9.4; SC-072-E). No datatype, range, unit, format, enum, constraint or field-domain ontology is read into *domain*. The domain/applicability relation is recorded as input to row 078, and row 078's `Done` is not enlarged. Non-blocking: meaning and scope are definable without it. |
 
 ### SC-072-H — FIELD-DEFINITION and CONTROLLED-VOCABULARY — SOURCE GAP
 
@@ -863,7 +892,7 @@ artifact owns its resolution, and the treatment.
 | | |
 |---|---|
 | **Source A** | RMS §14 has a universal tier of seven fields; RMS §14 points to *"Appendix B and Deliverable E"* for the full catalog; Artifact 033 states each envelope field's universal role. |
-| **Source B** | No Roadmap row names `FIELD-DEFINITION` Records for the seven universal fields — the field-definition rows are per model (180, 275, 302, 355, 366) — and Deliverable E is not in the source set. |
+| **Source B** | No Roadmap row names `FIELD-DEFINITION` Records for the seven universal fields — the field-definition rows are per model, for W, E, P, V and I (180, 275, 302, 355, 366; SC-072-N) — and Deliverable E is not in the source set. |
 | **Gap** | Whether the seven universal fields receive `FIELD-DEFINITION` Records, which row would author them, and what the full field catalog says. |
 | **Owner** | Not this artifact; the Roadmap author's. |
 | **Treatment** | The family can define a universal-tier field within the limits of §7 and FD-6; no such Record is scheduled or authored here. Non-blocking. |
@@ -878,13 +907,25 @@ artifact owns its resolution, and the treatment.
 | **Owner** | Not this artifact; the Roadmap author's. |
 | **Treatment** | `→ 073` is preserved; this document assigns rows 355 and 366 nothing beyond their own rows. Route: ROADMAP ISSUE. |
 
+### SC-072-N — Registry field architecture and Registry field-definition set — SOURCE GAP
+
+| | |
+|---|---|
+| **Source A** | RMS §10 and I-105: *"Registry is a sovereign Record Model"* — R is one of the six. |
+| **Source B** | Roadmap PART III defines LS-2 generically: *"model field architecture ↔ Registry FIELD-DEFINITION"*. |
+| **Source C** | The Roadmap schedules explicit concrete field-architecture and field-definition work for W (179, 180), E (274, 275), P (301, 302), V (355) and I (366). |
+| **Missing** | No equivalent concrete R field-architecture or R field-definition-set row is identified; a search of the Roadmap's rows finds none. |
+| **Gap** | The generic architecture includes R as a Record Model, but the concrete Roadmap decomposition does not identify an authoring row for R's field architecture or field definitions. |
+| **Owner** | Not this artifact; the Roadmap author's. |
+| **Treatment** | This family stays generic enough to define legitimate Registry fields if and when their field architecture is established. It does not claim that a concrete R field architecture is scheduled, does not say that R has or may have no fields, and invents no R artifact, directory, field inventory or `FIELD-DEFINITION` set. The Roadmap is not edited. Non-blocking for row 072's `Val` and `Done`: the family contract is definable independently of concrete R scheduling. Route: ROADMAP ISSUE. |
+
 ## 27. Conformance Conditions
 
 | ID | Condition | Source |
 |---|---|---|
 | **C-072-01** | **Family identity.** `FIELD-DEFINITION` is stated to be Kind 4 of the frozen fourteen-Kind Registry taxonomy; no fifteenth Kind is introduced. | RMS §10.1; §5 |
 | **C-072-02** | **Meaning ownership.** Field meaning is assigned to `FIELD-DEFINITION`. | §6, §7; FD-2 |
-| **C-072-03** | **Domain ownership.** A field's domain is assigned to `FIELD-DEFINITION` only as far as the sources establish it — a scope at one tier — and no value or type domain is claimed. | §8; FD-3; SC-072-G |
+| **C-072-03** | **Domain ownership.** A field's domain is assigned to `FIELD-DEFINITION` only as far as the sources establish it — a scope at one tier — and no further value-domain concept is claimed; field type and default stay schema's. | §8; FD-3; SC-072-E, SC-072-G |
 | **C-072-04** | **Three-tier compatibility.** The universal, model and Kind tiers are preserved, and no other tier is created. | §8; FD-4 |
 | **C-072-05** | **Universal envelope.** The universal field set remains exactly seven. | §9, §22; FD-6 |
 | **C-072-06** | **`tier` and `status`.** Neither is universalized, and no other model is required to carry either. | §9; FD-7 |
@@ -913,6 +954,7 @@ artifact owns its resolution, and the treatment.
 | **C-072-29** | **Name ≠ semantic.** A field name alone is not treated as identifying one semantic across models. | §7, §9; FD-1 |
 | **C-072-30** | **No field assigned.** No concrete field is placed at a tier or in a domain beyond what the sources state. | §8, §23 |
 | **C-072-31** | **Realization bounded.** No serialization, schema language or generated validator is adopted. | SC-072-K |
+| **C-072-32** | **Roadmap coverage bounded.** The generic six-model `FIELD-DEFINITION` capability is kept distinct from the concrete field-architecture and field-definition rows the Roadmap schedules for W, E, P, V and I; no Registry (R) field-architecture artifact is invented. | §1, §16; SC-072-N |
 
 ## 28. Concept Separation and Handoff to 073
 
@@ -949,8 +991,10 @@ names, serialization, schema notation, carrier shape, cardinality syntax, nullab
 values, reference-carrier shape, domain representation or field-name representation, and defines no
 parser or validator behaviour. 073 encodes only the structural consequences of the obligations
 established here; nothing here asks 073 to close representation rows 108–110 own (§20) or the edge
-row 078 owns (§11). Not delegated to 073: a value or type domain, a vocabulary relation, field
-composition, cardinality, requiredness or order, a field inventory, field admission, Registry
+row 078 owns (§11). 073 may structurally encode only the domain obligation this document
+establishes; it does not derive from the word *domain* a field type, a default, a value-domain
+ontology, a range, a unit, a format or a vocabulary relation. Not delegated to 073: any of those,
+field composition, cardinality, requiredness or order, a field inventory, field admission, Registry
 governance, evolution and versioning design, and validator or resolver implementation. Row 073's own
 `Val` and `Done` are not enlarged.
 
@@ -958,11 +1002,13 @@ governance, evolution and versioning design, and validator or resolver implement
 
 **To 078** (`H: 076,072`; `Done`: *"overlap resolved — a schema composes field definitions and owns
 cardinality/required/order; a field definition owns meaning and domain"*). 078 may take from this
-document: field meaning belongs to `FIELD-DEFINITION`; field domain belongs to it as far as §8
-establishes; the family holds no composition, cardinality, requiredness, order, type or default.
-078 still owns how schemas compose field definitions, the semantics of schema cardinality,
-requiredness and order, any edge still open — type, default, and the relation of a field's domain to
-a schema's applicable Model and Kind — and anything else not source-closed. Row 078's `Val` and
+document `FIELD-DEFINITION`'s side: field meaning belongs to `FIELD-DEFINITION`, and field domain
+belongs to it as far as §8 establishes; the family holds no composition, cardinality, requiredness,
+order, type or default. 078 owns the final overlap closure according to its own Roadmap `Done`: how
+schemas compose field definitions, and schema cardinality, requiredness and order. Type and default
+are not handed to 078 as open ownership questions, because Blueprint §9.4 already places them on the
+schema side (SC-072-E). The unstated relation between a field's domain and a schema's applicable
+Model and Kind is passed as input, not as a new exit criterion (SC-072-G). Row 078's `Val` and
 `Done` are not enlarged.
 
 | Other downstream owner | Keeps |
@@ -975,7 +1021,7 @@ a schema's applicable Model and Kind — and anything else not source-closed. Ro
 | 111 | concrete definition-dependency rules |
 | 112; 113; 114; 115; 116 | reference validator (*"rejects any definition referencing a domain instance"*); constraint binder; kernel; Registry definition resolution; validation suite |
 | 152 | committing `FIELD-DEFINITION` Records, after G-CANON-R |
-| 179–180; 274–275; 301–302; 355; 366 | each model's field architecture and field domains, and its concrete field definitions |
+| 179–180; 274–275; 301–302; 355; 366 | the W, E, P, V and I field architectures and field domains, and their concrete field definitions; no R counterpart row is identified (SC-072-N) |
 | 459 | how a new Kind, field, definition, simulation model, visual subtype, or publication structure is added — *"each through its own ceremony, never through a generic abstraction"* |
 
 ## 30. Roadmap Completion Trace
@@ -992,7 +1038,7 @@ executed or tested.
 | `Val`: *"versionable"* | **SPECIFICATION OBLIGATION SATISFIED** — participation in governed Registry definition evolution is required; mechanics and representation stay with 108–110 and are not prohibited | §20 (VS-072-1, VS-072-2) |
 | `Val`: *"references only declared entities (063)"* | **SPECIFICATION OBLIGATION SATISFIED** — a domain names only a declared model or Kind; no declared-field category; domain and runtime instances excluded; no mandatory relation; resolvable ≠ legal; no validator run is claimed | §21 (RF-072-1 to RF-072-9) |
 | `Done`: *"fields definable"* | **SPECIFICATION OBLIGATION SATISFIED** — a field established by a model's field architecture, at any of the three tiers, is definable with no per-model variant; no field is enumerated or authored, and the family establishes none | §8, §23 |
-| `Why`: *"LS-2 partner for all field architecture"* | **SPECIFICATION OBLIGATION SATISFIED** — the Registry side of model field architecture is defined; the row's `LS: LS-1` is preserved and the inconsistency recorded | §16, §17; SC-072-D |
+| `Why`: *"LS-2 partner for all field architecture"* | **SPECIFICATION OBLIGATION SATISFIED** — the generic family provides the Registry field-definition side LS-2 requires; the Roadmap concretely instantiates that role for W, E, P, V and I, and the absence of an explicit R field-architecture or definition-set row is recorded at SC-072-N and not repaired here; the row's `LS: LS-1` is preserved and the inconsistency recorded | §16, §17; SC-072-D, SC-072-N |
 | `H: 064` | **SATISFIED** — Kind 4, its responsibility and its admission answers consumed unchanged | §5 |
 | `LS: LS-1` | **PRESERVED** — label kept; no pair, class or meaning invented; relation to LS-2 recorded | §17; SC-072-D |
 | `→ 073` | **SATISFIED** — semantic contract handed off; no schema built | §28 |
