@@ -149,8 +149,9 @@ ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref �
 FAMILY    subject_model · subject_kind · definition
 ```
 
-For this set, 069's constraints take these values. None is a new rule; each is 069's own constraint
-applied to the Registry's subjects.
+Artifact 069 supplies the generic member structure and validation contract. Artifact 064 and this
+set contract narrow `subject_model` and `subject_kind` to the Registry's exact self-definition set.
+No 069 element or generic rule is changed.
 
 | 069 element | Value or rule for every member of this set | 069 check |
 |---|---|---|
@@ -320,8 +321,10 @@ sovereign; that does not make them one.
 
 - It conforms to 069 exactly as the other thirteen do. No special schema, relaxed rule or added
   element applies.
-- It is not an axiom Record, not a meta-Record outside the Registry, and not a first or root Record
-  of any kind. RMS §10.4: there is *"no circular self-definition requirement"*.
+- It is not a special axiom, bootstrap or meta-Record outside the ordinary Registry ontology; it is
+  an ordinary 069-conforming `KIND-DEFINITION` member. RMS §10.4: there is *"no circular
+  self-definition requirement"*. RMS §10.4 does not identify which ordinary Registry Record is its
+  first Registry Record, and this contract neither identifies nor excludes this member (§12).
 - It needs no prior `KIND-DEFINITION` Record. What defines the `KIND-DEFINITION` family is Artifact
   068, and what gives its Records their shape is Artifact 069 — both authored sources, not Records:
   *"This document and 069 are authored sources, not Records, so no Record-level regress runs
@@ -353,7 +356,8 @@ content, and specifies no bootstrap algorithm, sequence or runtime behaviour.
 **Not decided here.** RMS §10.4's chain runs *constitution → Bootstrap Meta-Contract → first
 Registry Record → Registry definitions → normal Record creation*. Which Record is the first Registry
 Record, and in what order the members are created, committed or resolved, is not stated by any
-source and is not decided here; it is not implied by the roster order (§16; SC-074-B).
+source and is not decided here; it is not implied by the roster order (§16; SC-074-B). No ordinary
+member is identified as first, and none is ruled out as first, by this contract.
 
 **History.** Blueprint §13.6e left the question OPEN as FG-V7-05 — *"how Registry's own KIND-DEF is
 defined without a prior KIND-DEF"*. RMS §10.4 closes it. The two are not averaged, and FG-V7-05 is
@@ -501,7 +505,7 @@ material no RMS §10.1 Kind maps remains unmapped until its owning contract reso
 | **RKS-074-08** | **No duplicate, no missing subject.** Count alone does not satisfy the set; membership must be complete and unique. | §9; synthesis |
 | **RKS-074-09** | **Self member.** Exactly one member defines the Registry Kind `KIND-DEFINITION`. | 064 §6 row 2; §11 |
 | **RKS-074-10** | **Ordinary self-hosting semantics.** The member about `KIND-DEFINITION` follows ordinary 069 semantics. | RMS §10.4; 069 §1, §6; 068 §16 |
-| **RKS-074-11** | **No axiom Record.** No bootstrap, axiom, meta or root Record joins the set. | RMS §10.4 |
+| **RKS-074-11** | **No extra bootstrap or axiom member.** No special bootstrap, axiom or meta Record outside the fourteen ordinary 069-conforming members is added to solve self-hosting. RMS §10.4 does not identify which ordinary Registry Record is first, and this rule decides nothing about it. | RMS §10.4 |
 | **RKS-074-12** | **Bootstrap Meta-Contract not a member.** It is constitutional, not a Record, and not one of the fourteen. | RMS §10.4 |
 | **RKS-074-13** | **074 not LS-1.** This contract is not a lockstep member and carries `LS: —`. | Roadmap §0.7; row 074 |
 | **RKS-074-14** | **The Registry pairs.** The taxonomy side is 064; the definition side is 075. | Roadmap §0.7, PART III; Artifact 003 |
@@ -600,7 +604,7 @@ committed or resolved first (§16).
 | 34 | 074 may redesign 069's elements | 069 is consumed unchanged | RKS-074-22 |
 | 35 | Every Registry-definition-like Roadmap artifact joins the fourteen | membership is 064 equality | §17; 064 §23 |
 | 36 | A member's existence makes Records of its subject Kind depend on it | not established; row 111 owns dependency rules | SC-074-K |
-| 37 | The self member is RMS §10.4's *first Registry Record* | which Record is first is not decided | §12; SC-074-B |
+| 37 | The self member is — or cannot be — RMS §10.4's *first Registry Record* | the source does not identify which ordinary Registry Record is first, either way | §12; SC-074-B |
 | 38 | The ordering exception extends to W, E, P, V or I | Registry pairs only | Artifact 003 |
 
 ## 21. Source Conditions and Gaps
@@ -626,7 +630,7 @@ artifact owns its resolution, and the treatment.
 | **Source B** | RMS §10.4, *"Bootstrap — CLOSED"* `AUTHOR-DECIDED`: the Bootstrap Meta-Contract is NOT a Record; no axiom Record; *"There is no circular self-definition requirement."* |
 | **Condition** | The Blueprint left the question open; the RMS closes it. RMS §10.4 names a *first Registry Record* without saying which Record it is. |
 | **Owner** | Not this artifact — closed at source. Which Record is first, and any creation order, is not this contract's. |
-| **Treatment** | The self-hosted member is an ordinary member (§11, §12). The texts are not averaged; FG-V7-05 is not reopened; no first Record, creation order or bootstrap sequence is chosen. |
+| **Treatment** | The self-hosted member is an ordinary member (§11, §12). The texts are not averaged; FG-V7-05 is not reopened; no special bootstrap or axiom member is added; no member is identified as first and none is excluded from being first; no creation order or bootstrap sequence is chosen. |
 
 ### SC-074-C — Blueprint FG-V7-07 and the earlier roster against RMS §10.1 — CLOSED AT SOURCE
 
