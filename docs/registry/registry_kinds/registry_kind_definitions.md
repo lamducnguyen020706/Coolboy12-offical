@@ -40,60 +40,58 @@ ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref �
 FAMILY    subject_model · subject_kind · definition
 ```
 
-069 itself defines no separate source representation. Its MATERIALIZATION boundary says row 075
-authors the fourteen *"as canonicalization sources conforming to 069"* (069 §5).
+Its MATERIALIZATION boundary says row 075 authors the fourteen *"as canonicalization sources
+conforming to 069 at source stage"*, and its SOURCE PROJECTION boundary says what that means
+(069 §5; C-069-S01 to S04).
 
-**How a source conforms — Roadmap §0.8, *Source envelope* (AD-REG-SOURCE-ENVELOPE).** Roadmap
-§0.8 (`docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md`) carries two author decisions.
+**How a source conforms — Roadmap §0.8, AD-REG-SOURCE-ENVELOPE.** Roadmap §0.8
+(`docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md`) carries two author decisions.
 AD-REG-AUTHORING-SPLIT (audit trail CONFLICT-F) separates P3 authoring from canonical
-materialization: an authored source is not a Record and is not canon, and row 152 alone commits
-to `canon/**` after G-CANON-R. AD-REG-SOURCE-ENVELOPE (its *Source envelope* bullet, added by
-author direction in commit `be6a2c1`) makes a canonicalization source a pre-Record
-representation. It carries the **source-owned** elements — `partition`, `kind`,
-`slug` and the family elements. The **commit-owned** elements — `object_id`, `provenance`,
-`registry_ref`, `sot_class` — are absent and are assigned on the commit path when row 152 commits
-the Record. Where a row requires its source to conform to a structural contract, *"the source
-conforms when each source-owned element appears exactly once and is valid under that contract and
-no commit-owned element appears"*. Full conformance of the committed Record is checked on the
-commit path before the Human Gate. The audit trail is the Revolving Resolution Note, CONFLICT-G.
+materialization: an authored source is not a Record and is not canon, and row 152 alone writes
+`canon/**` after G-CANON-R. AD-REG-SOURCE-ENVELOPE (audit trail CONFLICT-G) makes each member here
+a **source projection** of a `KIND-DEFINITION` Record that may later be proposed and committed. The
+projection carries the **source-carried** elements — `partition`, `kind`, `slug` and the family
+elements — and omits the **materialization-resolved** elements `object_id`, `provenance`,
+`registry_ref` and `sot_class`, with no placeholder. Those four are fixed during P5 proposal
+assembly. Preflight (row 148) then validates the complete candidate Record against ordinary 069
+before the Human Gate approves that exact candidate, and row 152 writes it unchanged.
 
-**Artifact 074 is synchronized with that rule.** 074 originally predated the amendment and
-required the seven-field envelope on every member. It now applies 069 in two stages (074 §6
-*Two stages, one contract*, §16 *Envelope*, RKS-074-05, C-074-06). The authored source carries
-the source-owned elements and no commit-owned element. Every committed member carries all ten 069
-elements, with no variant. The source envelope is not a second or relaxed schema (074 §6 *No
-variant*). Both hard dependencies therefore agree with the source as authored here (SC-075-G).
+**Artifact 074 applies the same rule.** 074 §6 (*Two stages, one contract*), §16 *Envelope*,
+RKS-074-05 and C-074-06 require each authored member to be a 069 source projection and each
+materialized member Record to conform fully to ordinary 069, with no variant. Both hard
+dependencies agree with the source as authored here (SC-075-G).
 
-**What each block carries.** The six source-owned elements, in 069's order: `partition`,
-`kind`, `slug`, `subject_model`, `subject_kind`, `definition`. The four commit-owned elements are
-absent under Roadmap §0.8.
+**What each block carries.** The six source-carried elements, in 069's order: `partition`, `kind`,
+`slug`, `subject_model`, `subject_kind`, `definition`. The four materialization-resolved elements
+are absent.
 
 **Element status.**
 
-| Element | Representation here | Basis | Status under Roadmap §0.8 |
+| Element | Representation here | Basis | Source-stage status (Roadmap §0.8; 069 §5) |
 |---|---|---|---|
-| `partition` | `R` | the committed `KIND-DEFINITION` Record this source is for belongs to the Registry partition (069 §2 `partition`; RMS §10.1) | CONFORMING |
-| `kind` | `KIND-DEFINITION`, symbolic | 069 checks the Kind symbolically until row 117 binds codes (069 §2 `kind`, SC-069-C) | CONFORMING |
-| `object_id` | absent | commit-owned (Roadmap §0.8): allocated by Artifact 036 on the commit path, never at authoring. 069 requires it of the committed Record (069 §2; C-069-09) | ABSENT AS REQUIRED |
-| `slug` | the subject's name with `-` written `_` | source-owned (Roadmap §0.8). 069 §2 `slug`: *"decoration only; never identity"*, one value. Each value passes Artifact 035's slug rule; deriving it from `subject_kind` is an Artifact 075 representation choice | CONFORMING |
-| `provenance` | absent | commit-owned (Roadmap §0.8): captured by the shared mechanism (047) at commit; 069 requires it of the committed Record | ABSENT AS REQUIRED |
-| `registry_ref` | absent | commit-owned (Roadmap §0.8). 069 attaches no referent and Artifact 033 leaves it unresolved; §0.8 requires it fixed before 152 may commit | ABSENT AS REQUIRED |
-| `sot_class` | absent | commit-owned (Roadmap §0.8). 069 fixes no value; §0.8 requires the record-level class fixed before 152 may commit | ABSENT AS REQUIRED |
-| `subject_model` | `R` | every subject is a Registry Kind (074 RKS-074-04) | CONFORMING |
-| `subject_kind` | one RMS §10.1 name | exact spelling; one per member (074 §8, §9) | CONFORMING |
-| `definition` | authored here | the governed Kind-level meaning of the subject (069 §3), bounded by its 064 section | CONFORMING |
+| `partition` | `R` | the `KIND-DEFINITION` Record this projection may become belongs to the Registry partition (069 §2 `partition`; RMS §10.1) | SOURCE-CARRIED — CONFORMING |
+| `kind` | `KIND-DEFINITION`, symbolic | 069 checks the Kind symbolically until row 117 binds codes (069 §2 `kind`, SC-069-C) | SOURCE-CARRIED — CONFORMING |
+| `object_id` | absent | allocated through Artifact 036 during proposal assembly, before preflight completes; a rejected allocation is never reused. Required of the candidate and the Record (069 §2; C-069-09) | MATERIALIZATION-RESOLVED — CORRECTLY ABSENT FROM SOURCE |
+| `slug` | the subject's name with `-` written `_` | source-carried (Roadmap §0.8). 069 §2 `slug`: *"decoration only; never identity"*, one value. Each value passes Artifact 035's slug rule; deriving it from `subject_kind` is an Artifact 075 representation choice | SOURCE-CARRIED — CONFORMING |
+| `provenance` | absent | captured through Artifact 047 during proposal assembly, before preflight completes; required of the candidate and the Record | MATERIALIZATION-RESOLVED — CORRECTLY ABSENT FROM SOURCE |
+| `registry_ref` | absent | a legal concrete value is required in the candidate before preflight can pass; 069 attaches no referent and Artifact 033 leaves it unresolved, so if the governing semantics are unavailable the proposal is blocked | MATERIALIZATION-RESOLVED — CORRECTLY ABSENT FROM SOURCE |
+| `sot_class` | absent | a legal concrete Record-level value is required in the candidate before preflight can pass; 069 fixes none, so if the governing semantics are unavailable the proposal is blocked | MATERIALIZATION-RESOLVED — CORRECTLY ABSENT FROM SOURCE |
+| `subject_model` | `R` | every subject is a Registry Kind (074 RKS-074-04) | SOURCE-CARRIED — CONFORMING |
+| `subject_kind` | one RMS §10.1 name | exact spelling; one per member (074 §8, §9) | SOURCE-CARRIED — CONFORMING |
+| `definition` | authored here | the governed Kind-level meaning of the subject (069 §3), bounded by its 064 section | SOURCE-CARRIED — CONFORMING |
 
-**No identity-bearing or commit-owned value is invented here.** No `object_id`, Registry Kind code,
-provenance value, `registry_ref` referent or `sot_class` value appears, and no placeholder or
-marker stands in for one. Each `slug` is derived from `subject_kind` and carries no identity
-(069 §2; Artifact 034).
+**No identity-bearing or materialization-resolved value is invented here.** No `object_id`,
+Registry Kind code, provenance value, `registry_ref` referent or `sot_class` value appears, and no
+placeholder or marker stands in for one. Each `slug` is derived from `subject_kind` and carries no
+identity (069 §2; Artifact 034).
 
-**069 conformance, as Roadmap §0.8 defines it for a source.** Every member carries each
-source-owned element exactly once, valid under 069, and no commit-owned element. That is the
-whole of what 075 claims. It is not evidence that any commit-owned value exists: the authored
-source is not a committed Registry Record, no committed Record is claimed here, ten-element
-conformance of each committed Record is checked on the commit path, and nothing here is written to
-`canon/**`.
+**069 conformance at source stage.** Every member is a 069 source projection: each
+source-carried element appears exactly once and is valid under 069, and no materialization-resolved
+element or placeholder appears (069 C-069-S01 to S03). That is the whole of what 075 claims. It is
+not full Record conformance and not evidence that any materialization-resolved value exists. The
+source projection is not a Registry Record, no Record is claimed here, full ten-element 069
+conformance is a P5 preflight precondition before the Human Gate (C-069-S04), and nothing here is
+written to `canon/**`.
 
 ## 1. The Set
 
@@ -418,7 +416,7 @@ END MEMBER
 | **SC-075-D** | The withdrawn `SEMANTIC-DEFINITION` family. | No member; no catch-all; unmapped semantic material stays with its owning contract (Roadmap §0.7). |
 | **SC-075-E** | Packaging of the directory. | Not established by any source (074 SC-074-M). One member file plus `PURPOSE.md` is an Artifact 075 local representation choice. |
 | **SC-075-F** | Authored source against committed Record. | *"An authored source is not a Record and is not canon."* (Roadmap §0.8). Row 152 commits after G-CANON-R; nothing here is written to `canon/**`. |
-| **SC-075-G** | Pre-canon envelope realization against required 069 values. **Source A:** row 075 `Val` *"all conform to 069"*. **Source B:** 069 defines ten elements of a materialized Record, each `REQUIRED yes`, `exactly-one` (069 §2, §3; C-069-09), and names row 075's sources as conforming (069 §5 MATERIALIZATION); it defines no deferred-value marker. **Source C:** 074 consumes 069 unchanged and, synchronized to Source D, requires the source-owned elements at authoring and all ten on the committed Record, with no variant (074 §6, §16; RKS-074-05; C-074-06). **Source D:** Roadmap §0.8 — AD-REG-AUTHORING-SPLIT (CONFLICT-F: an authored source is not a Record; row 152 sole writer after G-CANON-R) and AD-REG-SOURCE-ENVELOPE (*Source envelope*, audit trail CONFLICT-G: the four commit-owned elements are absent from a source, and a source conforms on its source-owned elements). **Resolution:** Source D governs the source; Source B governs the committed Record; Source C applies both, so the members satisfy 069 and 074 at the authoring stage. | Source-owned elements authored; `object_id`, `provenance`, `registry_ref`, `sot_class` absent as §0.8 requires; no value, marker or placeholder stands in for them. Open as preconditions on the commit, not on this source (§0.8): the `registry_ref` referent and the record-level `sot_class`. |
+| **SC-075-G** | Pre-canon envelope realization against required 069 values — **CLOSED AT AUTHORING STAGE.** **Source A:** row 075 `Val` *"all conform to 069"*. **Source B:** 069 defines the full materialized Record — ten elements, each `REQUIRED yes`, `exactly-one` (069 §2, §3; C-069-09) — and its SOURCE PROJECTION boundary (069 §5; C-069-S01 to S04). **Source C:** Roadmap §0.8 AD-REG-SOURCE-ENVELOPE defines the source projection and the P5 materialization sequence; AD-REG-AUTHORING-SPLIT keeps the source out of `canon/**`. **Source D:** 074 consumes the same two-stage rule (074 §6, §16; RKS-074-05; C-074-06). | The source carries only the source-carried elements; the four materialization-resolved elements are absent by rule, with no placeholder. Source-stage conformance: PASS. Full Record conformance remains a mandatory P5 condition, checked on the complete candidate at preflight before the Human Gate; row 152 writes the approved candidate unchanged. If `registry_ref` or `sot_class` cannot be established at P5, canonicalization blocks there; that does not make this source incomplete. |
 | **SC-075-H** | Set identity across Registry evolution. | Rows 108–110 own it; no version element and no future-count rule is set (074 SC-074-L). |
 | **SC-075-I** | Whether Records of an L1 family's Kind depend on their Kind's `KIND-DEFINITION`. | Not decided; row 111 owns dependency rules; no dependency is encoded (074 SC-074-K). |
 | **SC-075-J** | Support files against the member count. | `PURPOSE.md`, this file's headings, tables and sections are non-member text; the count is the number of `MEMBER` blocks. |
@@ -432,7 +430,7 @@ END MEMBER
 | **C-075-03** | The subject set equals the RMS §10.1 / 064 roster exactly. | §1 |
 | **C-075-04** | Every `subject_model` is R. | §2 |
 | **C-075-05** | Every member's `kind` is `KIND-DEFINITION` and `partition` is R. | §2 |
-| **C-075-06** | **069 conformance gate, under Roadmap §0.8 *Source envelope*.** Every member carries each source-owned 069 element (`partition`, `kind`, `slug`, `subject_model`, `subject_kind`, `definition`) exactly once, valid under 069, in 069's order, and no commit-owned element (`object_id`, `provenance`, `registry_ref`, `sot_class`). **PASS** — the rule is the Roadmap's (§0.8), and the check parses the fourteen blocks. Ten-element conformance of the committed Record is a later commit-path check and is not claimed here. This is also what 074 requires of an authored member (074 §6; C-074-06). | §0, §2; SC-075-G |
+| **C-075-06** | **069 source-projection conformance.** Every member carries each source-carried 069 element (`partition`, `kind`, `slug`) and every family element (`subject_model`, `subject_kind`, `definition`) exactly once, in 069's order and valid under 069; contains no materialization-resolved element (`object_id`, `provenance`, `registry_ref`, `sot_class`) and no placeholder for one (069 C-069-S01 to S03; Roadmap §0.8; 074 C-074-06). **PASS** — checked by parsing the fourteen blocks. **Full Record conformance** is not a P3 condition: it is mandatory at P5 preflight on the complete candidate before the Human Gate (069 C-069-S04). | §0, §2; SC-075-G |
 | **C-075-07** | No Registry Kind is missing. | §1 |
 | **C-075-08** | No Registry Kind is duplicated. | §1 |
 | **C-075-09** | No subject lies outside the roster. | §1, §3 |
@@ -460,31 +458,32 @@ prove them; the evidence for each change is repository inspection (`git diff --n
 **To 114** (Registry kernel; `Val`: *"create/resolve/version a definition"*) and **123**
 (Registry lockstep tests; `Val`: *"no unpaired lockstep member"*): a complete fourteen-member
 authored set, one `KIND-DEFINITION` per Registry Kind, the 064 ↔ 075 pairing, the ordinary
-self-hosted member, and the concrete definition bodies, conforming to 069 as Roadmap §0.8
-defines it for a source and 074 §6 applies it. Both hard dependencies are satisfied (SC-075-G).
-Commit-owned values arrive only with the committed Records. Nothing here implements the kernel,
-resolution, the lockstep tests, row 124's G-REG, G-CANON-R or row 152, and neither row's `Val` or
-`Done` is enlarged.
+self-hosted member, and the concrete definition bodies — each a 069 source projection as Roadmap
+§0.8 and 069 §5 define it and 074 §6 applies it. Both hard dependencies are satisfied (SC-075-G).
+Materialization-resolved values exist only in a P5 candidate, never in this source. Nothing here
+implements the kernel, resolution, the lockstep tests, row 124's G-REG, G-CANON-R or row 152, and
+neither row's `Val` or `Done` is enlarged.
 
 ## 7. Roadmap Completion Trace
 
 | Row 075 | Status | Where |
 |---|---|---|
 | `Val`: *"exactly fourteen KIND-DEFINITIONs, one per Registry Kind of 064"* | **SATISFIED** — fourteen `MEMBER` blocks, one-to-one with the 064 / RMS §10.1 roster; checked by counting blocks and comparing subjects | §1, §2 |
-| `Val`: *"all conform to 069"* | **SATISFIED for the authored source** under Roadmap §0.8 *Source envelope*. Committed-Record conformance remains a mandatory commit-path check and is not claimed by Artifact 075 | §0; SC-075-G; C-075-06 |
+| `Val`: *"all conform to 069"* | **SATISFIED AT SOURCE STAGE UNDER ROADMAP §0.8 / 069 SOURCE-PROJECTION RULE** (C-075-06). This is not full Record conformance: full ten-element 069 conformance is a P5 preflight precondition before the Human Gate | §0; SC-075-G; C-075-06 |
 | `Val`: *"names match the RMS §10.1 roster exactly"* | **SATISFIED** — compared against RMS §10.1 itself | §1 |
 | `Val`: *"no extra definition implies a fifteenth Kind"* | **SATISFIED** | §3 |
 | `Val`: canonicalization source, *"committed only through 152 after G-CANON-R"* | **SATISFIED** for authoring — authored source only; no write to `canon/**`, shown by repository inspection. The commit itself is row 152's, after G-CANON-R | §0; SC-075-F |
 | `Done`: *"fourteen"* | **SATISFIED** | §2 |
-| `H: 074,069` | **074: SATISFIED** — exact set, subjects, self-hosting and the authored-source application of 069, synchronized to Roadmap §0.8 (074 §6, §16; RKS-074-05). **069: SATISFIED at the authored-source stage** under Roadmap §0.8; committed-Record conformance is deferred to the commit path | §0–§2; SC-075-G |
+| `H: 074,069` | **074: SATISFIED** — exact set, subjects, self-hosting and the two-stage application of 069 (074 §6, §16; RKS-074-05; C-074-06). **069: SATISFIED at source stage** (069 §5; C-069-S01 to S03); full Record conformance is a P5 preflight condition | §0–§2; SC-075-G |
 | `LS: LS-1` | **SATISFIED** as authoring-cycle atomicity (Roadmap §0.8 *Lockstep*) — the fourteen definition-side partners of 064 ↔ 075 are authored | §3 |
 | `→ 114,123` | **HANDED OFF** — both hard dependencies are satisfied and every `Val` clause above holds at the authoring stage | §6 |
 
 **Overall authoring state: COMPLETE — handoff to 114 and 123 allowed.** The authored source is
 complete and both hard dependencies are satisfied. This does not mean the fourteen are committed
-or canonical. They become Registry Records only when row 152 commits them after G-CANON-R, once
-the `registry_ref` referent and the record-level `sot_class` are fixed (Roadmap §0.8). Ten-element
-069 conformance is checked then, on the commit path.
+or canonical. Each may become a Registry Record only through P5: a complete candidate is
+assembled with its four materialization-resolved values fixed, preflight validates it against full
+069, the Human Gate approves that exact candidate, and row 152 writes it unchanged after
+G-CANON-R (Roadmap §0.8).
 
 ---
 

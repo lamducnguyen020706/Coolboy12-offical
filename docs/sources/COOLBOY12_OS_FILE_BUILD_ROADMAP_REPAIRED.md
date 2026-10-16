@@ -103,26 +103,157 @@ G-CANON-R. No second write path exists.
   `G: G-CANON-R`, which requires G-REG first.
 - **Lockstep.** LS atomicity is authoring-cycle atomicity (PART II, class L); it is met by the
   authored sources. Commit atomicity is row 153's.
-- **Source envelope** *(AUTHOR-DECIDED, AD-REG-SOURCE-ENVELOPE; audit trail: Revolving Resolution
-  Note, CONFLICT-G).* A canonicalization source (rows 075, 085, 105, 106, 107) is a pre-Record
-  representation of the Records it is committed as. It carries the **source-owned** elements:
-  `partition`, `kind`, `slug` and every family element of its structural contract. The
-  **commit-owned** envelope elements — `object_id`, `provenance`, `registry_ref`, `sot_class` —
-  are absent from the source and are assigned on the commit path when 152 commits the Record:
-  `object_id` by ordinal allocation (036), never at authoring; `provenance` by the shared capture
-  mechanism; `registry_ref` and `sot_class` as their owning contracts fix them. Where a row
-  requires its source to *conform* to a structural contract (row 075: *"all conform to 069"*),
-  the source conforms when each source-owned element appears exactly once and is valid under that
-  contract and no commit-owned element appears. Full conformance of the committed Record is
-  checked on the commit path before the Human Gate. The `registry_ref` referent and the record-level
-  `sot_class` of a Registry definition Record must be fixed before 152 may commit these sources;
-  that is a precondition on the commit, not on authoring.
 - **Row 067's unlock** `→ 040` pointed back to a P2 artifact; it now reads `→ 114`, whose `H`
   already lists 066–107.
 
 Nothing else changes: `Canon`, `CD`, `SoT`, `H`, `S` and `LS` of the moved rows are preserved;
-row 152 remains the sole writer; no hook, zone or test is weakened. The source envelope rule adds
-no envelope field, mints no value and changes no structural contract.
+row 152 remains the sole writer; no hook, zone or test is weakened.
+
+### AD-REG-SOURCE-ENVELOPE — canonicalization-source projection
+
+*(AUTHOR-DECIDED. First adopted 2026-10-16 as a bullet of this section; restated the same day as
+this subsection by coordinated author-decision repair, which fixes the materialization order and
+replaces "commit-owned" with "materialization-resolved". Audit trail: Revolving Resolution Note,
+CONFLICT-G. Synchronized artifacts: 069, 074, 075.)*
+
+AD-REG-AUTHORING-SPLIT above is unchanged. This decision states how a canonicalization source
+relates to the structural contract of the Records it may later become. It is a Roadmap
+decomposition and materialization decision, not a constitutional change: the Blueprint, the RMS
+and the universal envelope are unchanged.
+
+**Source projection.** A P3 Registry canonicalization source is not a Record and is not canon. It
+is a governed pre-Record **source projection** of the Records that may later be proposed and
+committed; it authors semantic content before the P5 write path exists. Being no Record, it does
+not weaken the universal Record envelope. It is not a partial, relaxed or temporary Record and not
+a schema variant.
+
+**Source-carried and materialization-resolved elements.**
+
+- **Source-carried universal elements:** `partition`, `kind`, `slug`.
+- **Materialization-resolved universal elements:** `object_id`, `provenance`, `registry_ref`,
+  `sot_class`.
+- **Family elements** required by the applicable structural contract are source-carried unless
+  that contract says otherwise.
+
+The Record envelope stays exactly seven fields. No eighth field is added and none is removed.
+
+**Source-stage conformance.** Where a canonicalization-source row's `Val` says its source conforms
+to a structural contract X (row 075: *"all conform to 069"*), the source conforms at source stage
+when:
+
+1. every source-carried element X requires appears exactly once;
+2. each such value is valid under X;
+3. every family element X requires appears exactly once and is valid under X;
+4. every materialization-resolved universal element is absent;
+5. no placeholder, null, sentinel, TODO or deferred-value token stands in for one;
+6. the source introduces no element X does not define;
+7. full Record conformance is not claimed.
+
+This interprets a Roadmap source requirement. It does not change the Record-level requiredness of
+any envelope field.
+
+**Full Record conformance.** A Record satisfies X completely. Before a candidate Record is eligible
+for the Human Gate it contains every element X requires, exactly once, and passes all of X's
+checks. The source projection is not that Record.
+
+**P5 materialization sequence.**
+
+```
+source projection              P3, outside canon/**; not a Record, not canon
+   ↓
+proposal assembly              146, 147 — a complete candidate Record is built from the projection;
+                               the four materialization-resolved values are fixed in it, each with
+                               its basis
+   ↓
+preflight                      148 — X validates the complete candidate
+   ↓
+severity · Human Gate          149, 150 — the exact candidate is approved
+   ↓
+approval mode                  151
+   ↓
+Mutation Coordinator           152 — writes the exact approved candidate to canon/**
+   ↓
+commit set                     153 — atomicity
+```
+
+All four materialization-resolved values are concrete before preflight can pass. The Human Gate
+sees and approves the exact candidate intended for canon.
+
+**Per element.**
+
+- **`object_id`** — Artifact 036 stays the allocating authority. During proposal assembly, before
+  preflight completes, the proposal obtains a durable allocation from 036, which becomes the
+  candidate's `object_id`. A rejected proposal's allocation is never reused (036). The value is
+  never derived from roster position, `subject_kind`, slug, a hash, a UUID or a Kind code.
+- **Kind code** — the source may name its Registry Kind symbolically. Before candidate assembly the
+  Registry Kind codes are bound through row 117 and the identity grammar (row 085). Allocating an
+  `object_id` mints no code; neither 036 nor any source artifact owns Kind codes.
+- **`slug`** — source-carried decoration, never identity and never the basis of resolution. It
+  satisfies the identity parser's slug syntax (035). The exact slug is the source artifact's own
+  choice; a file name does not define it, and it does not define `object_id`.
+- **`provenance`** — captured through Artifact 047's mechanism during proposal assembly, before
+  preflight completes, from the proposal's actual who, when and why. 047 captures; the meaning of
+  provenance stays model-owned. An approval-mode record (151) stays separate and does not overload
+  `provenance`.
+- **`registry_ref`** — the governing Registry reference contract supplies a legal concrete value
+  before preflight can pass; the proposal carries it with its basis, and preflight validates it
+  under the then-current governing semantics. If no governing contract has established a legal
+  value, proposal processing for that Record is blocked. No null, sentinel, invented
+  self-reference or bootstrap token.
+- **`sot_class`** — the governing canonicality and model contracts (052; the owning model) supply
+  the Record-level value during proposal assembly; the proposal carries it with its basis, and
+  preflight validates it. If no legal value is established, the proposal is blocked. Artifact or
+  manifest metadata — `SoT`, `Canon`, a Record Model code — is never copied into it.
+
+**Row 152 — sole writer, not semantic author.** When 152 receives an approved candidate, every
+required element is concrete, every structural check has passed and the Human Gate has approved
+that exact candidate. 152 may enforce no-drift and write authorization, assert final invariants and
+write atomically under 153's commit-set rules. It may not fill a missing element, choose a fallback
+value, mint an identifier outside 036, infer `registry_ref` or `sot_class`, or change approved
+content. It decides no identity, slug, provenance, `registry_ref` or `sot_class` meaning and no
+family content.
+
+**Scope.** Rows 075, 085, 105, 106 and 107. A later canonicalization-source row consumes this
+decision unless its own row says otherwise.
+
+**Source conditions.**
+
+| ID | Condition |
+|---|---|
+| SC-REG-SOURCE-01 | An authored canonicalization source is not a Record and is not canon. |
+| SC-REG-SOURCE-02 | The source projection carries `partition`, `kind`, `slug` and the family elements. |
+| SC-REG-SOURCE-03 | `object_id`, `provenance`, `registry_ref` and `sot_class` are materialization-resolved, not source values. |
+| SC-REG-SOURCE-04 | No placeholder represents an absent materialization-resolved element. |
+| SC-REG-SOURCE-05 | A complete candidate Record exists before preflight can pass and before the Human Gate. |
+| SC-REG-SOURCE-06 | 036 allocates `object_id` during proposal assembly; a rejected allocation is never reused. |
+| SC-REG-SOURCE-07 | 047 captures concrete provenance during proposal assembly; row 152 does not author it. |
+| SC-REG-SOURCE-08 | `registry_ref` is legally established before preflight; otherwise the proposal is blocked. |
+| SC-REG-SOURCE-09 | `sot_class` is legally established before preflight; otherwise the proposal is blocked. |
+| SC-REG-SOURCE-10 | Row 152 writes the approved candidate unchanged and has no fallback-value authority. |
+
+**Conformance conditions.**
+
+| ID | Condition |
+|---|---|
+| C-SRC-01 | A canonicalization source is explicitly non-Record and non-canon. |
+| C-SRC-02 | The source-carried universal elements are exactly `partition`, `kind`, `slug`. |
+| C-SRC-03 | The materialization-resolved universal elements are exactly `object_id`, `provenance`, `registry_ref`, `sot_class`. |
+| C-SRC-04 | Family elements remain source-carried. |
+| C-SRC-05 | No placeholder value stands for a materialization-resolved element. |
+| C-SRC-06 | The complete candidate has every target Record element before the Human Gate. |
+| C-SRC-07 | Preflight validates the complete candidate against the structural contract. |
+| C-SRC-08 | The Human Gate approves the exact candidate. |
+| C-SRC-09 | Row 152 writes the exact approved candidate and invents no missing value. |
+
+**Rejected.** (1) a source carrying a locally invented `object_id`; (2) a source carrying a
+provenance placeholder; (3) a source carrying `registry_ref NONE`; (4) a source copying
+`AUTHORITATIVE` into `sot_class` without a Record-level basis; (5) a source carrying a deferred
+marker; (6) a source called a Record; (7) a source called canon; (8–11) a candidate reaching the
+Human Gate without `object_id`, `provenance`, `registry_ref` or `sot_class`; (12) row 152 filling
+fields of an incomplete candidate; (13) row 152 changing a definition after approval; (14) an
+`object_id` reused after a rejected proposal; (15) a slug used as identity; (16) an eighth universal
+Record field; (17) relaxed 069 requiredness; (18) a second schema in 074; (19) a fifteenth Kind in
+075; (20) a `registry_ref` referent invented so that preflight passes.
 
 ---
 

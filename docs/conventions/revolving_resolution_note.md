@@ -494,10 +494,24 @@ canonicalization source and leaves 069's text unchanged. Artifact 075 closes SC-
 Artifact 074 is synchronized to it (§6, §16, RKS-074-05, C-074-06): the authored source carries the
 source-owned elements, and every committed member carries all ten 069 elements with no variant.
 
+**Restated — coordinated author-decision repair (2026-10-16).** The first adoption (a §0.8 bullet)
+said the four values are *"assigned on the commit path when 152 commits"* and also that full
+conformance is *"checked … before the Human Gate"*. Those two cannot both hold. The author directed
+a coordinated repair. Roadmap §0.8 now carries AD-REG-SOURCE-ENVELOPE as its own subsection.
+The new terms are *source projection*, *source-carried* and *materialization-resolved*, replacing
+*source-owned* and *commit-owned*. The P5 order is now explicit: the four values are fixed during
+proposal assembly, preflight (row 148) validates the complete candidate against the full contract,
+the Human Gate approves that exact candidate, and row 152 writes it unchanged with no
+fallback-value authority. The repair also adds source conditions SC-REG-SOURCE-01 to 10 and
+conformance conditions C-SRC-01 to 09. Synchronized: Artifact 069 (§5 SOURCE PROJECTION,
+SC-069-L, C-069-09 scope, C-069-S01 to S04), Artifact 074 (§6, §16, RKS-074-05, C-074-06) and
+Artifact 075. The ownership table above is the first adoption's and is superseded where it
+differs.
+
 **Recorded, not resolved.** The referent of `registry_ref` and the `sot_class` value of a
-Registry definition Record are still unfixed; both must be fixed before the commit path may commit
-these Records, which is a precondition on that commit, not on authoring. No Roadmap row yet names
-the commit-time 069 check; row 148 (*"all validators run before the gate"*) is its nearest home.
+Registry definition Record are still unfixed. Each must be legally established before preflight
+can pass for these Records; otherwise their proposals are blocked at P5. That is a precondition on
+canonicalization, not on authoring.
 
 **Status:** RESOLVED FOR BUILD · AUTHOR-DECIDED — ADOPTED IN ROADMAP §0.8 · RMS/BLUEPRINT
 UNCHANGED · **Constitutional change:** NONE
