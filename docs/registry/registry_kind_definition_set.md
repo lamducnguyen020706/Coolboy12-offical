@@ -546,8 +546,9 @@ is supplied, and nothing here is Registry data.
 
 **A. Legal — the self-hosted member.** A member with envelope `kind` `KIND-DEFINITION`,
 `subject_model` R, `subject_kind` `KIND-DEFINITION`, and a `definition` carrying the governed
-meaning of Registry Kind 2 within 064 §9. It is an ordinary 069 Record: no prior axiom Record, no
-special schema, no recursion at runtime (§11).
+meaning of Registry Kind 2 within 064 §9. As authored in 075 it is an ordinary 069 source
+projection; its eventual Record is an ordinary full 069 Record. There is no prior axiom Record, no
+special schema and no recursion at runtime (§11).
 
 **B. Legal — `MODEL-DEFINITION`.** `subject_model` R, `subject_kind` `MODEL-DEFINITION`. It is a
 member because RMS §10.1 lists it first — *"closes FG-V7-07 — the Kind exists"* — whatever the

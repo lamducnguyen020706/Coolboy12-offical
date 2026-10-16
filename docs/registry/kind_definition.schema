@@ -392,7 +392,7 @@ REJECT    definition citing W-CH-…-Maximus as what a Character is             
 REJECT    kind given as an invented code such as KD                                  NATIVE
 ACCEPT    source projection with partition, kind, slug, subject_model, subject_kind,
           definition, each once, and none of the four materialization-resolved elements
-                                                     — source stage only (C-069-S01, S02)
+                                                — source stage only (C-069-S01 to S03)
 REJECT    source projection carrying a locally invented object_id                   NATIVE
 REJECT    source projection carrying provenance, registry_ref NONE, or sot_class
           AUTHORITATIVE copied from manifest metadata                               NATIVE
@@ -499,13 +499,15 @@ C-069-21  STATIC    No JSON Schema, YAML, OpenAPI or other standard is invented,
                     code is minted.                                       §0; SC-069-B, C
 C-069-22  STATIC    Only docs/registry/kind_definition.schema is created by this artifact.
                                                                                     row 069
-C-069-S01 NATIVE    A source projection carries each of partition, kind, slug,
-                    subject_model, subject_kind and definition exactly once, each valid
-                    under §2–§3.                                  §5 SOURCE PROJECTION
-C-069-S02 NATIVE    A source projection carries none of object_id, provenance,
-                    registry_ref, sot_class.                      §5 SOURCE PROJECTION
-C-069-S03 NATIVE    No placeholder, null, sentinel or deferred-value token stands in for
-                    an absent materialization-resolved element.   §5 SOURCE PROJECTION
+C-069-S01 NATIVE    A source projection carries each source-carried universal element —
+                    partition, kind, slug — exactly once, each valid under §2.
+                                                                  §5 SOURCE PROJECTION
+C-069-S02 NATIVE    A source projection carries each family element — subject_model,
+                    subject_kind, definition — exactly once, each valid under §3.
+                                                                  §5 SOURCE PROJECTION
+C-069-S03 NATIVE    A source projection carries none of object_id, provenance,
+                    registry_ref, sot_class, and no placeholder, null, sentinel or
+                    deferred-value token stands in for one.       §5 SOURCE PROJECTION
 C-069-S04 NATIVE    Before the Human Gate the complete candidate carries all ten elements
                     and satisfies C-069-01 to C-069-22.  §5 SOURCE PROJECTION; row 148
 

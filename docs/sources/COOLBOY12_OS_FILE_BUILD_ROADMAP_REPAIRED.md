@@ -116,10 +116,17 @@ this subsection by coordinated author-decision repair, which fixes the materiali
 replaces "commit-owned" with "materialization-resolved". Audit trail: Revolving Resolution Note,
 CONFLICT-G. Synchronized artifacts: 069, 074, 075.)*
 
-AD-REG-AUTHORING-SPLIT above is unchanged. This decision states how a canonicalization source
-relates to the structural contract of the Records it may later become. It is a Roadmap
-decomposition and materialization decision, not a constitutional change: the Blueprint, the RMS
-and the universal envelope are unchanged.
+**The conflict.** AD-REG-AUTHORING-SPLIT makes a P3 canonicalization source neither a Record nor
+canon. Row 075's `Val` nonetheless requires its sources to *"all conform to 069"*, and 069 states
+ten `REQUIRED yes`, `exactly-one` elements of a materialized Record. Four of those —
+`object_id`, `provenance`, `registry_ref`, `sot_class` — cannot exist before the P5 write path:
+authoring them at P3 would fabricate them.
+
+**The ruling.** AD-REG-AUTHORING-SPLIT above is unchanged. This decision states how a
+canonicalization source relates to the structural contract of the Records it may later become, and
+when the four become concrete. It is a Roadmap decomposition and materialization decision, not a
+constitutional change: the Blueprint, the RMS and the universal envelope are unchanged, no schema
+variant is created, and nothing is written to `canon/**` outside row 152.
 
 **Source projection.** A P3 Registry canonicalization source is not a Record and is not canon. It
 is a governed pre-Record **source projection** of the Records that may later be proposed and
@@ -253,7 +260,10 @@ Human Gate without `object_id`, `provenance`, `registry_ref` or `sot_class`; (12
 fields of an incomplete candidate; (13) row 152 changing a definition after approval; (14) an
 `object_id` reused after a rejected proposal; (15) a slug used as identity; (16) an eighth universal
 Record field; (17) relaxed 069 requiredness; (18) a second schema in 074; (19) a fifteenth Kind in
-075; (20) a `registry_ref` referent invented so that preflight passes.
+075; (20) a `registry_ref` referent invented so that preflight passes; (21) `object_id TODO` or
+`object_id AT MATERIALIZATION` in a source; (22) a source projection written to canon, or treated
+as a full Record; (23) provenance created only after approval; (24) 074 changing the LS-1 pairing,
+or `SEMANTIC-DEFINITION` reintroduced; (25) a fabricated historical citation offered as authority.
 
 ---
 
