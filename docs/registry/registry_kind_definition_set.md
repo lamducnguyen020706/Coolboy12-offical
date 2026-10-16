@@ -104,7 +104,7 @@ Artifact 074
 | RMS §10.4 | the Bootstrap Meta-Contract is not a Record; no axiom Record; no circular self-definition requirement |
 | RMS §4; §10.3 | the universal envelope and the nine prohibited universal semantics; the reference boundary |
 | Blueprint §9.4; §13.6; §13.6e | the Registry layer; the earlier ten-item roster; FG-V7-05 and FG-V7-07 as historically OPEN |
-| Roadmap row 074; §0.7 (AD-LS1-R-BOOTSTRAP); §0.8 (AD-REG-AUTHORING-SPLIT); PART III (LS-1) | this artifact's identity; the self-hosting revision; authoring vs canonical materialization; the lockstep pair |
+| Roadmap row 074; §0.7 (AD-LS1-R-BOOTSTRAP); §0.8 (AD-REG-AUTHORING-SPLIT; AD-REG-SOURCE-ENVELOPE); PART III (LS-1) | this artifact's identity; the self-hosting revision; authoring vs canonical materialization, and which 069 elements a canonicalization source carries; the lockstep pair |
 | Roadmap rows 075, 114, 123, 124, 152; 178, 257, 300, 345, 364, 399 | the consumer and the gates; the other models' sets, for comparison only |
 | Artifact 064 (`H: 064`) | the fourteen Kinds, their responsibilities and fourteen-question answers; Kind ≠ `KIND-DEFINITION`; the non-roster rows |
 | Artifact 069 (`H: 069`) | the structure every member must have |
@@ -142,7 +142,7 @@ roster, symmetry with other models, or a name ending in *-DEFINITION*. A label t
 ## 6. Hard Dependency — Artifact 069, the Member Structure
 
 `H: 069` is consumed unchanged. Every member conforms to Artifact 069, the generic structural
-contract for every `KIND-DEFINITION` Record. Under 069 a member carries ten elements:
+contract for every `KIND-DEFINITION` Record. Under 069 a committed member carries ten elements:
 
 ```
 ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref · sot_class
@@ -153,14 +153,27 @@ Artifact 069 supplies the generic member structure and validation contract. Arti
 set contract narrow `subject_model` and `subject_kind` to the Registry's exact self-definition set.
 No 069 element or generic rule is changed.
 
-| 069 element | Value or rule for every member of this set | 069 check |
-|---|---|---|
-| `partition` | R | NATIVE |
-| `kind` | the Registry Kind `KIND-DEFINITION`, symbolically — the member's own Kind | NATIVE |
-| `object_id`, `slug`, `provenance`, `registry_ref`, `sot_class` | as 069 requires; nothing fixed here | NATIVE (presence) |
-| `subject_model` | R | NATIVE |
-| `subject_kind` | exactly one of the fourteen names of §8, as RMS §10.1 writes it | NATIVE (form) · EXTERNAL (declared status) |
-| `definition` | present, single, non-empty; the governed Kind-level meaning of the subject | NATIVE · EXTERNAL (content limits) |
+**Two stages, one contract.** Each member exists first as authored source in row 075 and later as a
+committed Record. Roadmap §0.8, *Source envelope* (AD-REG-SOURCE-ENVELOPE), governs the first stage:
+a canonicalization source is a pre-Record representation. It carries the **source-owned** elements
+— `partition`, `kind`, `slug` and the family elements — and the **commit-owned** elements
+`object_id`, `provenance`, `registry_ref` and `sot_class` are absent, assigned on the commit path
+when row 152 commits the Record after G-CANON-R. That absence is required by the Roadmap; it is not
+a relaxation of 069. The committed Record must satisfy all ten 069 elements. *(Synchronized to the
+§0.8 amendment; audit trail: Revolving Resolution Note, CONFLICT-G.)*
+
+| 069 element | Value or rule for every member of this set | Authored source (row 075) | Committed Record | 069 check |
+|---|---|---|---|---|
+| `partition` | R | present, exactly once | present | NATIVE |
+| `kind` | the Registry Kind `KIND-DEFINITION`, symbolically — the member's own Kind | present, exactly once | present | NATIVE |
+| `object_id` | as 069 requires; nothing fixed here | absent — commit-owned (§0.8) | required | NATIVE (presence), on the committed Record |
+| `slug` | as 069 requires; nothing fixed here | present, exactly once | present | NATIVE (presence) |
+| `provenance` | as 069 requires; nothing fixed here | absent — commit-owned (§0.8) | required | NATIVE (presence), on the committed Record |
+| `registry_ref` | as 069 requires; nothing fixed here | absent — commit-owned (§0.8) | required | NATIVE (presence), on the committed Record |
+| `sot_class` | as 069 requires; nothing fixed here | absent — commit-owned (§0.8) | required | NATIVE (presence), on the committed Record |
+| `subject_model` | R | present, exactly once | present | NATIVE |
+| `subject_kind` | exactly one of the fourteen names of §8, as RMS §10.1 writes it | present, exactly once | present | NATIVE (form) · EXTERNAL (declared status) |
+| `definition` | present, single, non-empty; the governed Kind-level meaning of the subject | present, exactly once | present | NATIVE · EXTERNAL (content limits) |
 
 **Declared status of the subjects.** 069 checks a subject Kind's declared status EXTERNALLY, with
 the proof supplied by the owning model's Kind architecture (069 §3; SC-069-F). For this set the
@@ -168,9 +181,12 @@ owning model is the Registry, and its Kind architecture is RMS §10.1 and Artifa
 decision case for the self-hosted member names that evidence: *"declared status: RMS §10.1; 064"*.
 
 **No variant.** There is no self-hosting schema, no bootstrap variant of `KIND-DEFINITION`, no
-relaxed rule for any member and no added element. The same 069 contract applies to all fourteen,
-including the member whose subject is `KIND-DEFINITION` (§11). If 069's live representation and
-this table differ, 069 governs.
+relaxed rule for any member and no added element. The same 069 contract applies to every committed
+member, including the member whose subject is `KIND-DEFINITION` (§11). The §0.8 source envelope is
+not a second or relaxed `KIND-DEFINITION` schema: it is the Roadmap's pre-Record representation
+boundary, saying which 069 elements a source carries and which the commit path assigns, and it
+applies to all fourteen alike. If 069's live representation and this table differ, 069 governs
+the committed Record and Roadmap §0.8 governs the source.
 
 ## 7. AD-LS1-R-BOOTSTRAP — the Binding Author Revision
 
@@ -441,9 +457,10 @@ reference list is carried; a legal reference creates no dependency and transfers
 authority; resolution does not prove legality (069 §5; Artifact 063 §11, §12). This contract adds no
 reference requirement to 069 and is not a reference schema.
 
-**Envelope.** This document is not a Record and has no envelope. Each member carries the universal
-seven-field envelope because 069 requires it. No set-level, bootstrap or ordinal field is added to
-the members or to the envelope (RMS §4).
+**Envelope.** This document is not a Record and has no envelope. Each committed member carries the
+universal seven-field envelope because 069 requires it; as authored source in row 075 it carries
+the source-owned envelope elements only (Roadmap §0.8, *Source envelope*; §6). No set-level,
+bootstrap or ordinal field is added to the members or to the envelope (RMS §4).
 
 **Order.** The tables follow RMS §10.1 order for auditability. The roster position is presentation
 order only: it is not a member's `object_id`, not a version, not a file name, not a load, creation,
@@ -499,7 +516,7 @@ material no RMS §10.1 Kind maps remains unmapped until its owning contract reso
 | **RKS-074-02** | **Exact cardinality.** The set has exactly fourteen `KIND-DEFINITION` members. | row 074 `Val`; row 075 `Val` |
 | **RKS-074-03** | **One-to-one.** Each Registry Kind is the subject of exactly one member, and each member defines exactly one Registry Kind. | row 074 `Val` (*"one for each Kind of 064"*); 069 C-069-03; synthesis |
 | **RKS-074-04** | **Registry scope.** Every member has `subject_model` R. | 064 §6; 069 §3 |
-| **RKS-074-05** | **Structural conformance.** Every member conforms to Artifact 069, with no variant, relaxation or added element. | row 074 `H`; row 075 `Val`; 069 |
+| **RKS-074-05** | **Structural conformance.** Every committed member conforms to Artifact 069, with no variant, relaxation or added element. As authored source, every member carries 069's source-owned elements and no commit-owned element (Roadmap §0.8, *Source envelope*); that boundary is the same for all fourteen and is not a schema variant. | row 074 `H`; row 075 `Val`; 069; Roadmap §0.8 |
 | **RKS-074-06** | **Record family.** Every member is a `KIND-DEFINITION` Record — partition R, `kind` `KIND-DEFINITION` — never a Record of its subject Kind. | 069 §2; 064 §22 |
 | **RKS-074-07** | **No extra Kind.** No subject lies outside the fourteen, and no member creates or implies a fifteenth Kind. | row 074 `Val`; RMS §10.1; 064 §23 |
 | **RKS-074-08** | **No duplicate, no missing subject.** Count alone does not satisfy the set; membership must be complete and unique. | §9; synthesis |
@@ -751,7 +768,7 @@ artifact owns its resolution, and the treatment.
 | **C-074-03** | **Exact roster equality.** The subject set equals the RMS §10.1 / 064 roster exactly, in exact spelling. | §8; RKS-074-01 |
 | **C-074-04** | **Subject model.** Every member's `subject_model` is R. | §6; RKS-074-04 |
 | **C-074-05** | **Member family.** Every member is a `KIND-DEFINITION` Record. | §6; RKS-074-06 |
-| **C-074-06** | **069 conformance.** Every member must conform to the current Artifact 069. | §6; RKS-074-05 |
+| **C-074-06** | **069 conformance.** Every committed member must conform to the current Artifact 069; every authored member must conform to it as Roadmap §0.8 *Source envelope* defines for a canonicalization source. | §6; RKS-074-05 |
 | **C-074-07** | **No missing Kind.** Every 064 Kind has one member. | §9 |
 | **C-074-08** | **No duplicate Kind.** No 064 Kind has more than one member. | §9; RKS-074-08 |
 | **C-074-09** | **No extra subject.** No subject outside the 064 roster is present. | §9, §17; RKS-074-07 |
@@ -789,7 +806,8 @@ Row 075 may take from this contract, without redesign:
 - the exact fourteen subject names, in RMS spelling (§8);
 - `subject_model` R for every member (§6; RKS-074-04);
 - the one-to-one correspondence and its eight invariants (§9);
-- conformance to 069 for every member, with no variant (§6; RKS-074-05);
+- conformance to 069 for every member, with no variant — at authoring, as Roadmap §0.8 *Source
+  envelope* defines for a source (§6; RKS-074-05);
 - the semantic source of each member's definition (§10);
 - the self-hosted member as an ordinary member (§11);
 - no axiom Record, no Bootstrap Meta-Contract member, no fifteenth Kind, no `SEMANTIC-DEFINITION`

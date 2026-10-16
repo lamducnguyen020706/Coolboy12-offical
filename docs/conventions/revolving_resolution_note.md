@@ -491,6 +491,8 @@ entry therefore could not interpret 069 or make a six-element source 069-conform
 §0.8 now carries the rule as its *Source envelope* bullet (AD-REG-SOURCE-ENVELOPE). The rule binds
 from the Roadmap, not from this note. It states how a row's *conform* clause applies to a
 canonicalization source and leaves 069's text unchanged. Artifact 075 closes SC-075-G under §0.8.
+Artifact 074 is synchronized to it (§6, §16, RKS-074-05, C-074-06): the authored source carries the
+source-owned elements, and every committed member carries all ten 069 elements with no variant.
 
 **Recorded, not resolved.** The referent of `registry_ref` and the `sot_class` value of a
 Registry definition Record are still unfixed; both must be fixed before the commit path may commit

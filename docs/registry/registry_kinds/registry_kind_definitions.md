@@ -57,13 +57,12 @@ conforms when each source-owned element appears exactly once and is valid under 
 no commit-owned element appears"*. Full conformance of the committed Record is checked on the
 commit path before the Human Gate. The audit trail is the Revolving Resolution Note, CONFLICT-G.
 
-**Artifact 074 is not yet synchronized with that rule.** 074 predates the amendment. Its text still
-says each member *"carries the universal seven-field envelope because 069 requires it"* (074 §16,
-*Envelope*). Its application table still gives `object_id`, `slug`, `provenance`, `registry_ref`
-and `sot_class` a *"NATIVE (presence)"* check (074 §6), and RKS-074-05 still forbids any
-*"variant, relaxation or added element"*. 074 states that where it differs from the Roadmap, the
-Roadmap is correct. 075 therefore follows §0.8, but it does not treat 074's unamended text as
-satisfied: `H: 074` stays BLOCKED until 074 is synchronized (SC-075-G).
+**Artifact 074 is synchronized with that rule.** 074 originally predated the amendment and
+required the seven-field envelope on every member. It now applies 069 in two stages (074 §6
+*Two stages, one contract*, §16 *Envelope*, RKS-074-05, C-074-06). The authored source carries
+the source-owned elements and no commit-owned element. Every committed member carries all ten 069
+elements, with no variant. The source envelope is not a second or relaxed schema (074 §6 *No
+variant*). Both hard dependencies therefore agree with the source as authored here (SC-075-G).
 
 **What each block carries.** The six source-owned elements, in 069's order: `partition`,
 `kind`, `slug`, `subject_model`, `subject_kind`, `definition`. The four commit-owned elements are
@@ -419,7 +418,7 @@ END MEMBER
 | **SC-075-D** | The withdrawn `SEMANTIC-DEFINITION` family. | No member; no catch-all; unmapped semantic material stays with its owning contract (Roadmap §0.7). |
 | **SC-075-E** | Packaging of the directory. | Not established by any source (074 SC-074-M). One member file plus `PURPOSE.md` is an Artifact 075 local representation choice. |
 | **SC-075-F** | Authored source against committed Record. | *"An authored source is not a Record and is not canon."* (Roadmap §0.8). Row 152 commits after G-CANON-R; nothing here is written to `canon/**`. |
-| **SC-075-G** | Pre-canon envelope realization against required 069 values. **Source A:** row 075 `Val` *"all conform to 069"*. **Source B:** 069 defines ten elements of a materialized Record, each `REQUIRED yes`, `exactly-one` (069 §2, §3; C-069-09), and names row 075's sources as conforming (069 §5 MATERIALIZATION); it defines no deferred-value marker. **Source C:** 074 consumes 069 unchanged, requires the seven-field envelope on every member (074 §16) with a NATIVE presence check (074 §6), and forbids any relaxation (RKS-074-05). **Source D:** Roadmap §0.8 — AD-REG-AUTHORING-SPLIT (CONFLICT-F: authored source is not a Record; row 152 sole writer after G-CANON-R) and AD-REG-SOURCE-ENVELOPE (*Source envelope*, CONFLICT-G, commit `be6a2c1`: the four commit-owned elements are absent from a source, and a source conforms on its source-owned elements). **Resolution against 069:** by Source D, which outranks 069 and 074. **Open against 074:** Source C's unamended text contradicts Source D; 074's own precedence clause yields to the Roadmap, but 074 has not been synchronized. | Source-owned elements authored; `object_id`, `provenance`, `registry_ref`, `sot_class` absent as §0.8 requires; no value, marker or placeholder stands in for them. `H: 074` is BLOCKED until an author-authorized synchronization of 074 adopts §0.8. Open as a precondition on the commit (§0.8): the `registry_ref` referent and the record-level `sot_class`. |
+| **SC-075-G** | Pre-canon envelope realization against required 069 values. **Source A:** row 075 `Val` *"all conform to 069"*. **Source B:** 069 defines ten elements of a materialized Record, each `REQUIRED yes`, `exactly-one` (069 §2, §3; C-069-09), and names row 075's sources as conforming (069 §5 MATERIALIZATION); it defines no deferred-value marker. **Source C:** 074 consumes 069 unchanged and, synchronized to Source D, requires the source-owned elements at authoring and all ten on the committed Record, with no variant (074 §6, §16; RKS-074-05; C-074-06). **Source D:** Roadmap §0.8 — AD-REG-AUTHORING-SPLIT (CONFLICT-F: an authored source is not a Record; row 152 sole writer after G-CANON-R) and AD-REG-SOURCE-ENVELOPE (*Source envelope*, audit trail CONFLICT-G: the four commit-owned elements are absent from a source, and a source conforms on its source-owned elements). **Resolution:** Source D governs the source; Source B governs the committed Record; Source C applies both, so the members satisfy 069 and 074 at the authoring stage. | Source-owned elements authored; `object_id`, `provenance`, `registry_ref`, `sot_class` absent as §0.8 requires; no value, marker or placeholder stands in for them. Open as preconditions on the commit, not on this source (§0.8): the `registry_ref` referent and the record-level `sot_class`. |
 | **SC-075-H** | Set identity across Registry evolution. | Rows 108–110 own it; no version element and no future-count rule is set (074 SC-074-L). |
 | **SC-075-I** | Whether Records of an L1 family's Kind depend on their Kind's `KIND-DEFINITION`. | Not decided; row 111 owns dependency rules; no dependency is encoded (074 SC-074-K). |
 | **SC-075-J** | Support files against the member count. | `PURPOSE.md`, this file's headings, tables and sections are non-member text; the count is the number of `MEMBER` blocks. |
@@ -433,7 +432,7 @@ END MEMBER
 | **C-075-03** | The subject set equals the RMS §10.1 / 064 roster exactly. | §1 |
 | **C-075-04** | Every `subject_model` is R. | §2 |
 | **C-075-05** | Every member's `kind` is `KIND-DEFINITION` and `partition` is R. | §2 |
-| **C-075-06** | **069 conformance gate, under Roadmap §0.8 *Source envelope*.** Every member carries each source-owned 069 element (`partition`, `kind`, `slug`, `subject_model`, `subject_kind`, `definition`) exactly once, valid under 069, in 069's order, and no commit-owned element (`object_id`, `provenance`, `registry_ref`, `sot_class`). **PASS** — the rule is the Roadmap's (§0.8), and the check parses the fourteen blocks. Ten-element conformance of the committed Record is a later commit-path check and is not claimed here. Conformance to 074's unamended envelope wording is not claimed (SC-075-G). | §0, §2; SC-075-G |
+| **C-075-06** | **069 conformance gate, under Roadmap §0.8 *Source envelope*.** Every member carries each source-owned 069 element (`partition`, `kind`, `slug`, `subject_model`, `subject_kind`, `definition`) exactly once, valid under 069, in 069's order, and no commit-owned element (`object_id`, `provenance`, `registry_ref`, `sot_class`). **PASS** — the rule is the Roadmap's (§0.8), and the check parses the fourteen blocks. Ten-element conformance of the committed Record is a later commit-path check and is not claimed here. This is also what 074 requires of an authored member (074 §6; C-074-06). | §0, §2; SC-075-G |
 | **C-075-07** | No Registry Kind is missing. | §1 |
 | **C-075-08** | No Registry Kind is duplicated. | §1 |
 | **C-075-09** | No subject lies outside the roster. | §1, §3 |
@@ -462,10 +461,10 @@ prove them; the evidence for each change is repository inspection (`git diff --n
 (Registry lockstep tests; `Val`: *"no unpaired lockstep member"*): a complete fourteen-member
 authored set, one `KIND-DEFINITION` per Registry Kind, the 064 ↔ 075 pairing, the ordinary
 self-hosted member, and the concrete definition bodies, conforming to 069 as Roadmap §0.8
-defines it for a source. Commit-owned values arrive only with the committed Records. The `H: 074`
-synchronization is still open (SC-075-G). Nothing here implements the kernel, resolution, the
-lockstep tests, row 124's G-REG, G-CANON-R or row 152, and neither row's `Val` or `Done` is
-enlarged.
+defines it for a source and 074 §6 applies it. Both hard dependencies are satisfied (SC-075-G).
+Commit-owned values arrive only with the committed Records. Nothing here implements the kernel,
+resolution, the lockstep tests, row 124's G-REG, G-CANON-R or row 152, and neither row's `Val` or
+`Done` is enlarged.
 
 ## 7. Roadmap Completion Trace
 
@@ -477,9 +476,15 @@ enlarged.
 | `Val`: *"no extra definition implies a fifteenth Kind"* | **SATISFIED** | §3 |
 | `Val`: canonicalization source, *"committed only through 152 after G-CANON-R"* | **SATISFIED** for authoring — authored source only; no write to `canon/**`, shown by repository inspection. The commit itself is row 152's, after G-CANON-R | §0; SC-075-F |
 | `Done`: *"fourteen"* | **SATISFIED** | §2 |
-| `H: 074,069` | **069: SATISFIED** under Roadmap §0.8. **074: BLOCKED** — set, subjects and self-hosting follow 074, but 074's envelope wording (§6, §16; RKS-074-05) predates §0.8's *Source envelope* and is not yet synchronized | §0–§2; SC-075-G |
+| `H: 074,069` | **074: SATISFIED** — exact set, subjects, self-hosting and the authored-source application of 069, synchronized to Roadmap §0.8 (074 §6, §16; RKS-074-05). **069: SATISFIED at the authored-source stage** under Roadmap §0.8; committed-Record conformance is deferred to the commit path | §0–§2; SC-075-G |
 | `LS: LS-1` | **SATISFIED** as authoring-cycle atomicity (Roadmap §0.8 *Lockstep*) — the fourteen definition-side partners of 064 ↔ 075 are authored | §3 |
-| `→ 114,123` | **HANDED OFF** | §6 |
+| `→ 114,123` | **HANDED OFF** — both hard dependencies are satisfied and every `Val` clause above holds at the authoring stage | §6 |
+
+**Overall authoring state: COMPLETE — handoff to 114 and 123 allowed.** The authored source is
+complete and both hard dependencies are satisfied. This does not mean the fourteen are committed
+or canonical. They become Registry Records only when row 152 commits them after G-CANON-R, once
+the `registry_ref` referent and the record-level `sot_class` are fixed (Roadmap §0.8). Ten-element
+069 conformance is checked then, on the commit path.
 
 ---
 
