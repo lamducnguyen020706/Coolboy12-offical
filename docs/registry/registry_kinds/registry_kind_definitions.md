@@ -31,43 +31,53 @@ order is not identity, version, or a creation, load, commit or resolution order 
 member count is the number of such blocks — exactly fourteen. Nothing outside a block is a member:
 headings, tables, the source conditions and this section are non-member text.
 
-Artifact 069 requires ten elements, each `REQUIRED yes` and `exactly-one`:
+**What 069 requires.** Artifact 069 (`docs/registry/kind_definition.schema`) defines ten elements of
+*"a materialized Record"* (069 NOTATION, STATUS), each `REQUIRED yes` and `exactly-one` (069 §2,
+§3):
 
 ```
 ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref · sot_class
 FAMILY    subject_model · subject_kind · definition
 ```
 
-Artifact 075 is a canonicalization source, not a Record (Roadmap §0.8). Under
-AD-REG-SOURCE-ENVELOPE (Revolving Resolution Note, CONFLICT-G — an author decision, delegated) a
-source carries its **source-owned** elements, and its **commit-owned** elements are absent by rule:
-they are assigned on the governed commit path when the Record is committed. Each block therefore
-carries six elements — `partition`, `kind`, `slug`, `subject_model`, `subject_kind`, `definition`
-— in 069's order.
+069 defines no separate source representation and permits no required element to be absent. Its
+MATERIALIZATION boundary says row 075 authors the fourteen *"as canonicalization sources
+conforming to 069"* (069 §5).
+
+**What each block carries.** Six elements, in 069's order: `partition`, `kind`, `slug`,
+`subject_model`, `subject_kind`, `definition`. `object_id`, `provenance`, `registry_ref` and
+`sot_class` are absent. The split follows AD-REG-SOURCE-ENVELOPE, recorded as CONFLICT-G in the
+Revolving Resolution Note (`docs/conventions/revolving_resolution_note.md`, *CONFLICT-G —
+Canonicalization Source Envelope against Required 069 Values*). That entry is a build resolution
+the author delegated to the session. The note states its own authority as **NONE** and yields to
+the Blueprint, the RMS and the Roadmap wherever they differ. It does not amend 069 or row 075, so
+it cannot make an incomplete member 069-conforming. It explains the absence; it does not cure it.
 
 **Element status.**
 
-| Element | Owner | Representation here | Source-level 069 status |
+| Element | Representation here | Basis | 069 status |
 |---|---|---|---|
-| `partition` | source | `R` — a `KIND-DEFINITION` is a Registry Record (069 §2) | CONFORMING |
-| `kind` | source | `KIND-DEFINITION`, symbolic until row 117 binds codes (069 §2, SC-069-C) | CONFORMING |
-| `object_id` | commit path — Artifact 036 allocation, never at authoring | absent by rule | CONFORMING (commit-owned) |
-| `slug` | source | the subject's name with `-` written `_`; valid under Artifact 035 | CONFORMING |
-| `provenance` | commit path — shared capture (047); meaning is Registry's | absent by rule | CONFORMING (commit-owned) |
-| `registry_ref` | commit path, once its referent is fixed (033 left it open) | absent by rule | CONFORMING (commit-owned) |
-| `sot_class` | Registry, from Blueprint §29.6a's five, at commit | absent by rule | CONFORMING (commit-owned) |
-| `subject_model` | source | `R` — every subject is a Registry Kind (074 RKS-074-04) | CONFORMING |
-| `subject_kind` | source | one RMS §10.1 name, exact spelling (074 §8, §9) | CONFORMING |
-| `definition` | source | the governed Kind-level meaning of the subject (069 §3) | CONFORMING |
+| `partition` | `R` | the committed `KIND-DEFINITION` Record this source is for belongs to the Registry partition (069 §2 `partition`; RMS §10.1) | CONFORMING |
+| `kind` | `KIND-DEFINITION`, symbolic | 069 checks the Kind symbolically until row 117 binds codes (069 §2 `kind`, SC-069-C) | CONFORMING |
+| `object_id` | absent | 069 requires this Record's identity component (069 §2; C-069-09). Allocation is Artifact 036's mechanism; only CONFLICT-G, which is not authoritative, places it on the commit path | UNRESOLVED — BLOCKING |
+| `slug` | the subject's name with `-` written `_` | 069 §2 `slug`: *"decoration only; never identity"*, checked for presence and a single value. Each value passes Artifact 035's slug rule. Ownership rests on CONFLICT-G only | CONFORMING |
+| `provenance` | absent | 069 requires one value; capture is the shared mechanism's (047); only CONFLICT-G places it on the commit path | UNRESOLVED — BLOCKING |
+| `registry_ref` | absent | 069 requires one value and attaches no referent; Artifact 033 leaves the referent unresolved | UNRESOLVED — BLOCKING |
+| `sot_class` | absent | 069 requires one value and fixes none; no Record-level rule assigns one | UNRESOLVED — BLOCKING |
+| `subject_model` | `R` | every subject is a Registry Kind (074 RKS-074-04) | CONFORMING |
+| `subject_kind` | one RMS §10.1 name | exact spelling; one per member (074 §8, §9) | CONFORMING |
+| `definition` | authored here | the governed Kind-level meaning of the subject (069 §3), bounded by its 064 section | CONFORMING |
 
-**No value is invented.** No identifier, Registry Kind code, provenance value, `registry_ref`
-referent or `sot_class` value appears here, and no marker stands in for one. The slug is decoration
-only and carries no identity (Artifact 034).
+**No identity-bearing or commit-owned value is invented here.** No `object_id`, Registry Kind code,
+provenance value, `registry_ref` referent or `sot_class` value appears, and no placeholder or
+marker stands in for one. Each `slug` is derived from `subject_kind` and carries no identity
+(069 §2; Artifact 034).
 
-**069 conformance, as established here.** Every member conforms at source level: each
-source-owned element appears once and is valid under 069, and no commit-owned element appears.
-Ten-element 069 conformance of each committed Record is checked on the commit path before the human
-gate; it is not claimed here (SC-075-G).
+**069 conformance is NOT established.** Each member carries six of 069's ten required elements.
+Four required elements are absent, and no authoritative source permits their absence or supplies
+their values. Artifact 075 therefore does not satisfy the Roadmap clause *"all conform to 069"*
+(SC-075-G). The authored source is not a committed Registry Record, no committed Record is claimed
+here, and nothing here is written to `canon/**`.
 
 ## 1. The Set
 
@@ -249,7 +259,8 @@ definition     A Record of the Kind IDENTITY-GRAMMAR is the recorded identity gr
                that the grammar is governed rather than hard-coded. It records the grammar and
                the kind-code mapping; it does not re-decide the grammar, which is constitutional,
                and it gives no kind code meaning: each model owns its Kind taxonomy and what its
-               Kinds mean. This definition records no grammar and binds no code itself.
+               Kinds mean. This KIND-DEFINITION member itself records no identity grammar and
+               binds no kind code.
 END MEMBER
 ```
 
@@ -391,7 +402,7 @@ END MEMBER
 | **SC-075-D** | The withdrawn `SEMANTIC-DEFINITION` family. | No member; no catch-all; unmapped semantic material stays with its owning contract (Roadmap §0.7). |
 | **SC-075-E** | Packaging of the directory. | Not established by any source (074 SC-074-M). One member file plus `PURPOSE.md` is an Artifact 075 local representation choice. |
 | **SC-075-F** | Authored source against committed Record. | *"An authored source is not a Record and is not canon."* (Roadmap §0.8). Row 152 commits after G-CANON-R; nothing here is written to `canon/**`. |
-| **SC-075-G** | Pre-canon envelope realization against required 069 values. **Source A:** row 075 requires all fourteen members to conform to 069; 069 makes all seven envelope elements required and exactly-one (C-069-09). **Source B:** Roadmap §0.8 — an authored source is not a Record; row 152 is the sole writer of `canon/**`; no source supplied `object_id`, `slug`, `provenance`, `registry_ref` or `sot_class` for a source. **Closed by** AD-REG-SOURCE-ENVELOPE (Revolving Resolution Note, CONFLICT-G; author decision, delegated). | Source-owned elements authored; `slug` authored from the subject name; `object_id`, `provenance`, `registry_ref`, `sot_class` absent by rule and assigned on the commit path. Still open, as a precondition on the commit and not on this source: the `registry_ref` referent and the `sot_class` value. |
+| **SC-075-G** | Pre-canon envelope realization against required 069 values. **Source A:** row 075 `Val` *"all conform to 069"*; 069 defines ten elements of a materialized Record, each `REQUIRED yes`, `exactly-one` (069 §2, §3; C-069-09), and expects row 075's sources to conform (069 §5 MATERIALIZATION). **Source B:** Roadmap §0.8 — *"An authored source is not a Record and is not canon"*; row 152 is the sole writer of `canon/**`, after G-CANON-R; no authoritative source supplies `object_id`, `provenance`, `registry_ref` or `sot_class` for a source. **Recorded build resolution:** AD-REG-SOURCE-ENVELOPE (Revolving Resolution Note, CONFLICT-G) assigns the four to the commit path and `slug` to the source. The note's authority is NONE, so the entry neither amends nor interprets 069. **Owner of closure:** an authoritative-layer decision — a Roadmap amendment to row 075 or §0.8, or a revision of 069 — not made here. | The four are not fabricated and no marker stands in for them; `slug` is carried as decoration; no 069 conformance is claimed; Artifact 075 remains blocked until the gap is closed by an authoritative source. |
 | **SC-075-H** | Set identity across Registry evolution. | Rows 108–110 own it; no version element and no future-count rule is set (074 SC-074-L). |
 | **SC-075-I** | Whether Records of an L1 family's Kind depend on their Kind's `KIND-DEFINITION`. | Not decided; row 111 owns dependency rules; no dependency is encoded (074 SC-074-K). |
 | **SC-075-J** | Support files against the member count. | `PURPOSE.md`, this file's headings, tables and sections are non-member text; the count is the number of `MEMBER` blocks. |
@@ -405,7 +416,7 @@ END MEMBER
 | **C-075-03** | The subject set equals the RMS §10.1 / 064 roster exactly. | §1 |
 | **C-075-04** | Every `subject_model` is R. | §2 |
 | **C-075-05** | Every member's `kind` is `KIND-DEFINITION` and `partition` is R. | §2 |
-| **C-075-06** | **069 conformance gate (source level, CONFLICT-G).** Every member carries each source-owned 069 element once, valid under 069, in 069's order, and no commit-owned element. **PASS.** Ten-element conformance of the committed Record is checked on the commit path. | §0, §2; SC-075-G |
+| **C-075-06** | **069 conformance gate.** Every member carries all ten 069 elements, each `REQUIRED yes` and `exactly-one` (069 §2, §3). **Current status: FAIL / BLOCKED** — `object_id`, `provenance`, `registry_ref` and `sot_class` are absent, and only CONFLICT-G, a non-authoritative build resolution, accounts for their absence. | §0, §2; SC-075-G |
 | **C-075-07** | No Registry Kind is missing. | §1 |
 | **C-075-08** | No Registry Kind is duplicated. | §1 |
 | **C-075-09** | No subject lies outside the roster. | §1, §3 |
@@ -424,29 +435,32 @@ END MEMBER
 | **C-075-22** | Every `definition` is non-empty, grounded in its subject's 064 section, and merges no other Kind's responsibility. | §1, §2 |
 | **C-075-23** | Only files under `docs/registry/registry_kinds/` are created. | row 075 |
 
+C-075-15, C-075-16 and C-075-23 are normative conditions on the repository. This text cannot
+prove them; the evidence for each change is repository inspection (`git diff --name-only`,
+`git status`).
+
 ## 6. Handoff
 
 **To 114** (Registry kernel; `Val`: *"create/resolve/version a definition"*) and **123**
 (Registry lockstep tests; `Val`: *"no unpaired lockstep member"*): a complete fourteen-member
 authored set, one `KIND-DEFINITION` per Registry Kind, the 064 ↔ 075 pairing, the ordinary
-self-hosted member, and the concrete definition bodies. They receive source-level 069
-conformance under CONFLICT-G; commit-owned values arrive only with the committed Records. Nothing
-here implements the kernel, resolution,
-the lockstep tests, row 124's G-REG, G-CANON-R or row 152, and neither row's `Val` or `Done` is
-enlarged.
+self-hosted member, and the concrete definition bodies. They may not treat Artifact 075 as
+069-conforming until SC-075-G is closed by an authoritative source. Nothing here implements the
+kernel, resolution, the lockstep tests, row 124's G-REG, G-CANON-R or row 152, and neither row's
+`Val` or `Done` is enlarged.
 
 ## 7. Roadmap Completion Trace
 
 | Row 075 | Status | Where |
 |---|---|---|
-| `Val`: *"exactly fourteen KIND-DEFINITIONs, one per Registry Kind of 064"* | **SATISFIED** — fourteen members, one-to-one, as authored source | §1, §2 |
-| `Val`: *"all conform to 069"* | **SATISFIED at source level** under AD-REG-SOURCE-ENVELOPE (CONFLICT-G); committed-Record conformance is the commit path's | §0; SC-075-G |
-| `Val`: *"names match the RMS §10.1 roster exactly"* | **SATISFIED** | §1 |
+| `Val`: *"exactly fourteen KIND-DEFINITIONs, one per Registry Kind of 064"* | **SATISFIED** — fourteen `MEMBER` blocks, one-to-one with the 064 / RMS §10.1 roster; checked by counting blocks and comparing subjects | §1, §2 |
+| `Val`: *"all conform to 069"* | **BLOCKED** — four of 069's required elements are absent; CONFLICT-G is a non-authoritative build resolution and is not treated as conformance | §0; SC-075-G |
+| `Val`: *"names match the RMS §10.1 roster exactly"* | **SATISFIED** — compared against RMS §10.1 itself | §1 |
 | `Val`: *"no extra definition implies a fifteenth Kind"* | **SATISFIED** | §3 |
-| `Val`: canonicalization source, *"committed only through 152 after G-CANON-R"* | **SATISFIED** — authored source only; no canon write | §0; SC-075-F |
-| `Done`: *"fourteen"* | **SATISFIED** | §2 |
+| `Val`: canonicalization source, *"committed only through 152 after G-CANON-R"* | **SATISFIED** for authoring — authored source only; no write to `canon/**`, shown by repository inspection. The commit itself is row 152's, after G-CANON-R | §0; SC-075-F |
+| `Done`: *"fourteen"* | **SATISFIED** numerically; it does not override the blocked `Val` clause | §2 |
 | `H: 074,069` | **SATISFIED** — set from 074, structure from 069, meaning bounded by 064 | §0–§2 |
-| `LS: LS-1` | **SATISFIED** — the fourteen definition-side partners of 064 ↔ 075 are authored | §3 |
+| `LS: LS-1` | **SATISFIED** as authoring-cycle atomicity (Roadmap §0.8 *Lockstep*) — the fourteen definition-side partners of 064 ↔ 075 are authored; 069 conformance is SC-075-G's | §3 |
 | `→ 114,123` | **HANDED OFF** | §6 |
 
 ---

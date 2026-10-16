@@ -93,7 +93,7 @@ separate packaging decisions.
 | **CONFLICT-D** | Artifact 022's unconditional `OPAQUE` deny cannot coexist with Artifact 024 registering it at `PreToolUse` across Bash | Route 3 approved by the author: 022 unfrozen under control, decision axis moved from command provability to canonical reachability, re-frozen | **RESOLVED FOR BUILD · AUTHORIAL RULING — SOURCE UNCHANGED** | None |
 | **CONFLICT-E** | Registry self-hosting: LS-1 requires a concrete `KIND-DEFINITION` partner for each of the Registry's fourteen Kinds, but no row owned them; RMS §13 question 13 has no stated application to Registry candidates | AD-LS1-R-BOOTSTRAP (Artifact 003 ordering exception; Roadmap rows 074–075 repurposed, §0.7) and AD-057-R13 (Artifact 057 §5.4) | **RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED** | None |
 | **CONFLICT-F** | P3 Registry rows targeted `canon/registry/**`, which only the Mutation Coordinator (row 152, P5) may write | AD-REG-AUTHORING-SPLIT: P3 authors contracts and canonicalization sources under `docs/registry/`; Registry Records committed only through 152 after G-CANON-R; G-REG licenses consumption only (Roadmap §0.8) | **RESOLVED FOR BUILD · AUTHOR-DECIDED — RMS/BLUEPRINT UNCHANGED** | None |
-| **CONFLICT-G** | Row 075 requires its fourteen members to conform to 069, whose seven envelope elements are required; §0.8 says an authored source is not a Record, and no source supplies `object_id`, `slug`, `provenance`, `registry_ref` or `sot_class` for one | AD-REG-SOURCE-ENVELOPE: a canonicalization source is a pre-Record representation carrying its source-owned elements; `object_id`, `provenance`, `registry_ref`, `sot_class` are assigned on the commit path; full 069 conformance is a property of the committed Record | **RESOLVED FOR BUILD · AUTHOR-DECIDED (DELEGATED) — RMS/BLUEPRINT/ROADMAP UNCHANGED** | None |
+| **CONFLICT-G** | Row 075 requires its fourteen members to conform to 069, whose seven envelope elements are required; §0.8 says an authored source is not a Record, and no source supplies `object_id`, `slug`, `provenance`, `registry_ref` or `sot_class` for one | AD-REG-SOURCE-ENVELOPE: a canonicalization source is a pre-Record representation carrying its source-owned elements; `object_id`, `provenance`, `registry_ref`, `sot_class` are assigned on the commit path; full 069 conformance is a property of the committed Record. Authority NONE: does not establish 069 conformance; 075 stays BLOCKED until an authoritative layer adopts it | **RECORDED — BUILD CHOICE, AUTHOR-DELEGATED** | None |
 | **GAP-C** | missing requirement register | build not blocked; requirement text not verified | **NON-BLOCKING — UNVERIFIED** | None |
 | **GAP-D** | purpose-file convention | every directory carries a purpose file | **RESOLVED** | None |
 | **GAP-E.3** | unsourced pyproject values | implementation-level resolution for Python requirement, backend, version | **RESOLVED FOR BUILD** | None |
@@ -458,10 +458,8 @@ authored source. Artifact 075 stopped `NO-GO` (SC-075-G, C-075-06) without inven
 1. **Source against Record — option B.** A canonicalization source is a distinct pre-Record
    representation. It carries its **source-owned** elements; its **commit-owned** elements are
    absent from the source by rule and are assigned on the governed commit path when the Record is
-   committed. A source conforms to 069 when every source-owned element is present exactly once and
-   valid under 069, and no commit-owned element is present. Full ten-element 069 conformance is a
-   property of the committed Record and is checked on the commit path before the human gate, not
-   claimed by the source.
+   committed. Full ten-element 069 conformance is a property of the committed Record and is checked
+   on the commit path before the human gate.
    *Rejected — option A* (every value in the source before P5): it would allocate never-reused
    ordinals before any governed write path exists, record authoring rather than the governed act as
    provenance, and force the open `registry_ref` question early.
@@ -483,13 +481,21 @@ it when built; it is not applied to them here.
 Kind code, ordinal, provenance value, referent or class is minted; 069, 033, 036, 047, rows 117
 and 152 and the Roadmap are unchanged; nothing is written to `canon/**`.
 
+**Authority limit (hostile-audit correction).** This note's authority is NONE (Status; Authority).
+069 defines its ten elements for *"a materialized Record"*, each `REQUIRED yes` and `exactly-one`,
+and expects row 075's sources to conform to it (069 §5 MATERIALIZATION). This entry therefore
+cannot interpret 069 or make a six-element source 069-conforming. It records the build choice
+and the intended ownership. Artifact 075 keeps "all conform to 069" BLOCKED (SC-075-G, C-075-06)
+until an authoritative layer adopts the split: a Roadmap amendment to row 075 or §0.8, or a
+revision of 069.
+
 **Recorded, not resolved.** The referent of `registry_ref` and the `sot_class` value of a
 Registry definition Record are still unfixed; both must be fixed before the commit path may commit
 these Records, which is a precondition on that commit, not on authoring. No Roadmap row yet names
 the commit-time 069 check; row 148 (*"all validators run before the gate"*) is its nearest home.
 
-**Status:** RESOLVED FOR BUILD · AUTHOR-DECIDED (DELEGATED) — RMS/BLUEPRINT/ROADMAP UNCHANGED ·
-**Constitutional change:** NONE
+**Status:** RECORDED — BUILD CHOICE, AUTHOR-DELEGATED · DOES NOT ESTABLISH 069 CONFORMANCE ·
+RMS/BLUEPRINT/ROADMAP UNCHANGED · **Constitutional change:** NONE
 
 ---
 
