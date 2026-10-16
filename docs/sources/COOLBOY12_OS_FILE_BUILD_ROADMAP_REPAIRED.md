@@ -103,11 +103,26 @@ G-CANON-R. No second write path exists.
   `G: G-CANON-R`, which requires G-REG first.
 - **Lockstep.** LS atomicity is authoring-cycle atomicity (PART II, class L); it is met by the
   authored sources. Commit atomicity is row 153's.
+- **Source envelope** *(AUTHOR-DECIDED, AD-REG-SOURCE-ENVELOPE; audit trail: Revolving Resolution
+  Note, CONFLICT-G).* A canonicalization source (rows 075, 085, 105, 106, 107) is a pre-Record
+  representation of the Records it is committed as. It carries the **source-owned** elements:
+  `partition`, `kind`, `slug` and every family element of its structural contract. The
+  **commit-owned** envelope elements — `object_id`, `provenance`, `registry_ref`, `sot_class` —
+  are absent from the source and are assigned on the commit path when 152 commits the Record:
+  `object_id` by ordinal allocation (036), never at authoring; `provenance` by the shared capture
+  mechanism; `registry_ref` and `sot_class` as their owning contracts fix them. Where a row
+  requires its source to *conform* to a structural contract (row 075: *"all conform to 069"*),
+  the source conforms when each source-owned element appears exactly once and is valid under that
+  contract and no commit-owned element appears. Full conformance of the committed Record is
+  checked on the commit path before the Human Gate. The `registry_ref` referent and the record-level
+  `sot_class` of a Registry definition Record must be fixed before 152 may commit these sources;
+  that is a precondition on the commit, not on authoring.
 - **Row 067's unlock** `→ 040` pointed back to a P2 artifact; it now reads `→ 114`, whose `H`
   already lists 066–107.
 
 Nothing else changes: `Canon`, `CD`, `SoT`, `H`, `S` and `LS` of the moved rows are preserved;
-row 152 remains the sole writer; no hook, zone or test is weakened.
+row 152 remains the sole writer; no hook, zone or test is weakened. The source envelope rule adds
+no envelope field, mints no value and changes no structural contract.
 
 ---
 
