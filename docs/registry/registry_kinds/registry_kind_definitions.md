@@ -20,6 +20,15 @@ member below is a committed Registry Record. Committed Registry Records are writ
 `canon/registry/registry_kinds/` only through the Mutation Coordinator (row 152), the sole writer
 of `canon/**`, after G-CANON-R.
 
+**Identity — which Roadmap revision governs.** The header reproduces live Roadmap row 075 exactly
+(`docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md`). The in-repository copy as first
+committed gave rows 074 and 075 as a SEMANTIC-DEFINITION specification and schema. The author
+revision AD-LS1-R-BOOTSTRAP (Roadmap §0.7; audit trail Revolving Resolution Note, CONFLICT-E)
+withdrew that family, which matches no RMS §10.1 Kind, and repurposed 074 to specify and 075 to
+author the Registry's fourteen `KIND-DEFINITION`s. The live revision governs (SC-075-D). Its two
+§0.8 decisions, AD-REG-AUTHORING-SPLIT and AD-REG-SOURCE-ENVELOPE, are cited below from their
+§0.8 text.
+
 **Packaging — an Artifact 075 local representation choice.** No source and no existing repository
 convention fixes how this directory is packaged (074 SC-074-M). This artifact uses one file holding
 all fourteen members, so that the set can be counted and compared in one place, plus the
@@ -375,12 +384,19 @@ slug           SIMULATION_MODEL_DEFINITION
 subject_model  R
 subject_kind   SIMULATION-MODEL-DEFINITION
 definition     A Record of the Kind SIMULATION-MODEL-DEFINITION is the Registry's governed
-               definition of a simulation model: it states how an indicator behaves — its
-               dependencies, equations and thresholds. It defines behaviour only: what the
-               indicator means is a WSVR-INDICATOR-DEFINITION's, and its values are World's. It
-               creates no Simulation Record Model, and a simulation run is not a Registry Record.
+               definition of a simulation model: it states how the indicators the model governs
+               behave — their dependencies, equations and thresholds, and the relations among
+               the quantities involved. One model may govern several indicators. It defines
+               behaviour only: what each indicator means is a WSVR-INDICATOR-DEFINITION's, and
+               current values are World's. It creates no Simulation Record Model and no
+               Simulation partition; executing a model is not a Registry Record.
 END MEMBER
 ```
+
+*Basis:* 064 §21; RMS §10.7 (*"defines behaviour"*); Blueprint §15.17 (*"A Simulation Model is a
+Registry definition, not a component"*; *"A model declares which indicators it governs"*). The
+Kind-level definition does not restate §15.17's component list, which belongs to each concrete
+simulation-model definition.
 
 ## 3. Set Rules Applied
 
@@ -413,9 +429,9 @@ END MEMBER
 | **SC-075-A** | `Req: RR-16` — the requirement register is not in the source set (GAP-C). | The ID is carried exactly; no requirement text is stated or claimed met. |
 | **SC-075-B** | Blueprint §13.6's ten-item roster and aliases against RMS §10.1's fourteen. | Closed at source: the RMS §10.1 names are used exactly; aliases are not subjects (074 SC-074-C, SC-074-G). |
 | **SC-075-C** | Blueprint FG-V7-05 — Registry's own `KIND-DEF` without a prior one. | Closed by RMS §10.4: an ordinary self-hosted member; no axiom Record; no first-Record decision (074 SC-074-B). |
-| **SC-075-D** | The withdrawn `SEMANTIC-DEFINITION` family. | No member; no catch-all; unmapped semantic material stays with its owning contract (Roadmap §0.7). |
+| **SC-075-D** | `SEMANTIC-DEFINITION` and the identity of rows 074–075. **Constitutional fact:** RMS §10.1 (FROZEN) has no Kind of that name. **Roadmap history:** the in-repository copy as first committed had row 074 *SEMANTIC-DEFINITION spec* (`docs/registry/semantic_definition.md`) and row 075 *SEMANTIC-DEFINITION schema* (`canon/registry/semantic_definition.schema`). **Verified Roadmap decision:** AD-LS1-R-BOOTSTRAP (Roadmap §0.7; CONFLICT-E) withdrew the family and repurposed both rows; §0.8 moved 075 to `docs/registry/`. | Closed: no `SEMANTIC-DEFINITION` member, no catch-all, no fifteenth Kind; unmapped semantic material stays with its owning contract (§0.7). No version conflict remains in the live Roadmap. |
 | **SC-075-E** | Packaging of the directory. | Not established by any source (074 SC-074-M). One member file plus `PURPOSE.md` is an Artifact 075 local representation choice. |
-| **SC-075-F** | Authored source against committed Record. | *"An authored source is not a Record and is not canon."* (Roadmap §0.8). Row 152 commits after G-CANON-R; nothing here is written to `canon/**`. |
+| **SC-075-F** | Authored source against committed Record; the Registry canonical gate. *"An authored source is not a Record and is not canon."* (Roadmap §0.8). G-CANON-R is established by Roadmap PART VIII — defined by row 145/166, licensing *"Registry definition Records only"*, after *"G-REG passed; write path proven (152, 159, exit-P5)"*. Row 145's contract (`docs/constitution/canonical_gates.md`) is not built. | Nothing here is written to `canon/**`; row 152 alone commits, after G-CANON-R. No gate behaviour beyond PART VIII's row is asserted or implemented here. |
 | **SC-075-G** | Pre-canon envelope realization against required 069 values — **CLOSED AT AUTHORING STAGE.** **Source A:** row 075 `Val` *"all conform to 069"*. **Source B:** 069 defines the full materialized Record — ten elements, each `REQUIRED yes`, `exactly-one` (069 §2, §3; C-069-09) — and its SOURCE PROJECTION boundary (069 §5; C-069-S01 to S04). **Source C:** Roadmap §0.8 AD-REG-SOURCE-ENVELOPE defines the source projection and the P5 materialization sequence; AD-REG-AUTHORING-SPLIT keeps the source out of `canon/**`. **Source D:** 074 consumes the same two-stage rule (074 §6, §16; RKS-074-05; C-074-06). | The source carries only the source-carried elements; the four materialization-resolved elements are absent by rule, with no placeholder. Source-stage conformance: PASS. Full Record conformance remains a mandatory P5 condition, checked on the complete candidate at preflight before the Human Gate; row 152 writes the approved candidate unchanged. If `registry_ref` or `sot_class` cannot be established at P5, canonicalization blocks there; that does not make this source incomplete. |
 | **SC-075-H** | Set identity across Registry evolution. | Rows 108–110 own it; no version element and no future-count rule is set (074 SC-074-L). |
 | **SC-075-I** | Whether Records of an L1 family's Kind depend on their Kind's `KIND-DEFINITION`. | Not decided; row 111 owns dependency rules; no dependency is encoded (074 SC-074-K). |
@@ -449,11 +465,21 @@ END MEMBER
 | **C-075-22** | Every `definition` is non-empty, grounded in its subject's 064 section, and merges no other Kind's responsibility. | §1, §2 |
 | **C-075-23** | Only files under `docs/registry/registry_kinds/` are created. | row 075 |
 
-C-075-15, C-075-16 and C-075-23 are normative conditions on the repository. This text cannot
-prove them; the evidence for each change is repository inspection (`git diff --name-only`,
-`git status`).
+**Evidence classes.** Each condition is proved by a different kind of evidence:
+
+- **Structural** — by parsing the member blocks: C-075-01, 02, 04, 05, 06, 11, 12, 13, 17, 18, 21.
+- **Cross-source** — by comparison with RMS §10.1, 064, 069 and 074: C-075-03, 07, 08, 09, 10,
+  14, 19, 22.
+- **Repository** — by inspecting the repository for each change (`git diff --name-only`,
+  `git status`): C-075-15, 16, 23. This text cannot prove them.
+- **Static** — by reading this file: C-075-20.
+- **Materialization** — full ten-element Record conformance (069 C-069-S04) is a P5 preflight
+  check on a complete candidate. It is not a C-075 condition and is not checked at authoring.
 
 ## 6. Handoff
+
+Row 075's `→` names 114 and 123. Each of those rows has `H: 066–107`, so 075 supplies one of the
+inputs each requires; neither is authorized to start until every row in 066–107 is complete.
 
 **To 114** (Registry kernel; `Val`: *"create/resolve/version a definition"*) and **123**
 (Registry lockstep tests; `Val`: *"no unpaired lockstep member"*): a complete fourteen-member
@@ -466,20 +492,21 @@ neither row's `Val` or `Done` is enlarged.
 
 ## 7. Roadmap Completion Trace
 
-| Row 075 | Status | Where |
-|---|---|---|
-| `Val`: *"exactly fourteen KIND-DEFINITIONs, one per Registry Kind of 064"* | **SATISFIED** — fourteen `MEMBER` blocks, one-to-one with the 064 / RMS §10.1 roster; checked by counting blocks and comparing subjects | §1, §2 |
-| `Val`: *"all conform to 069"* | **SATISFIED AT SOURCE STAGE UNDER ROADMAP §0.8 / 069 SOURCE-PROJECTION RULE** (C-075-06). This is not full Record conformance: full ten-element 069 conformance is a P5 preflight precondition before the Human Gate | §0; SC-075-G; C-075-06 |
-| `Val`: *"names match the RMS §10.1 roster exactly"* | **SATISFIED** — compared against RMS §10.1 itself | §1 |
-| `Val`: *"no extra definition implies a fifteenth Kind"* | **SATISFIED** | §3 |
-| `Val`: canonicalization source, *"committed only through 152 after G-CANON-R"* | **SATISFIED** for authoring — authored source only; no write to `canon/**`, shown by repository inspection. The commit itself is row 152's, after G-CANON-R | §0; SC-075-F |
-| `Done`: *"fourteen"* | **SATISFIED** | §2 |
-| `H: 074,069` | **074: SATISFIED** — exact set, subjects, self-hosting and the two-stage application of 069 (074 §6, §16; RKS-074-05; C-074-06). **069: SATISFIED at source stage** (069 §5; C-069-S01 to S03); full Record conformance is a P5 preflight condition | §0–§2; SC-075-G |
-| `LS: LS-1` | **SATISFIED** as authoring-cycle atomicity (Roadmap §0.8 *Lockstep*) — the fourteen definition-side partners of 064 ↔ 075 are authored | §3 |
-| `→ 114,123` | **HANDED OFF** — both hard dependencies are satisfied and every `Val` clause above holds at the authoring stage | §6 |
+| Row 075 criterion | Status | Evidence | Remaining limitation | Where |
+|---|---|---|---|---|
+| `Val`: *"exactly fourteen KIND-DEFINITIONs, one per Registry Kind of 064"* | **PASS — VERIFIED** | block parser: 14 `MEMBER` / 14 `END MEMBER`, paired; 14 distinct subjects equal to 064 §6 and RMS §10.1 | — | §1, §2 |
+| `Val`: *"all conform to 069"* | **PASS — VERIFIED at source stage** | block parser against 069 C-069-S01 to S03, under Roadmap §0.8 AD-REG-SOURCE-ENVELOPE (C-075-06) | not full Record conformance: ten-element 069 conformance is a P5 preflight condition on the complete candidate before the Human Gate (C-069-S04) | §0; SC-075-G |
+| `Val`: *"names match the RMS §10.1 roster exactly"* | **PASS — VERIFIED** | subjects compared with the roster parsed from RMS §10.1 | — | §1 |
+| `Val`: *"no extra definition implies a fifteenth Kind"* | **PASS — VERIFIED** | no subject outside RMS §10.1; definitions reviewed against 064 §8–§21 | — | §2, §3 |
+| `Val`: canonicalization source, *"committed only through 152 after G-CANON-R (§0.8)"* | **PASS — VERIFIED for authoring** | repository inspection: no change under `canon/**`; files only under `docs/registry/registry_kinds/` | the commit is row 152's, after G-CANON-R (PART VIII); neither is built | §0; SC-075-F |
+| `Done`: *"fourteen"* | **PASS — VERIFIED** | as the first row | — | §2 |
+| `H: 074,069` | **PASS — VERIFIED** | 074 (§6, §16; RKS-074-05; C-074-06) and 069 (§5; C-069-S01 to S04) exist and carry the same two-stage rule as Roadmap §0.8 | — | §0; SC-075-G |
+| `LS: LS-1` | **PASS — VERIFIED** | Roadmap §0.7 (*"the Registry's own pairs are 064 ↔ 075"*) and PART III LS-1; 064 exists; authoring-cycle atomicity per §0.8 *Lockstep* | — | §3 |
+| `→ 114,123` | **PASS — VERIFIED as input** | this set is one of the `H: 066–107` inputs of rows 114 and 123 | **PENDING — DEPENDENCY NOT AVAILABLE** for 114 and 123 themselves: the rest of 066–107 is not complete | §6 |
 
-**Overall authoring state: COMPLETE — handoff to 114 and 123 allowed.** The authored source is
-complete and both hard dependencies are satisfied. This does not mean the fourteen are committed
+**Overall authoring state: COMPLETE — VERIFIED.** The authored source is complete, both hard
+dependencies are satisfied, and the set is available as input to 114 and 123. Those rows start only
+when the rest of their `H: 066–107` is complete. This does not mean the fourteen are committed
 or canonical. Each may become a Registry Record only through P5: a complete candidate is
 assembled with its four materialization-resolved values fixed, preflight validates it against full
 069, the Human Gate approves that exact candidate, and row 152 writes it unchanged after
