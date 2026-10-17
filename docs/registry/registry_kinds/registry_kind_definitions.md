@@ -446,7 +446,7 @@ simulation-model definition.
 | **C-075-03** | The subject set equals the RMS §10.1 / 064 roster exactly. | §1 |
 | **C-075-04** | Every `subject_model` is R. | §2 |
 | **C-075-05** | Every member's `kind` is `KIND-DEFINITION` and `partition` is R. | §2 |
-| **C-075-06** | **069 source-projection conformance.** Every member carries each source-carried 069 element (`partition`, `kind`, `slug`) and every family element (`subject_model`, `subject_kind`, `definition`) exactly once, in 069's order and valid under 069; contains no materialization-resolved element (`object_id`, `provenance`, `registry_ref`, `sot_class`) and no placeholder for one (069 C-069-S01 to S03; Roadmap §0.8; 074 C-074-06). **PASS** — checked by parsing the fourteen blocks. **Full Record conformance** is not a P3 condition: it is mandatory at P5 preflight on the complete candidate before the Human Gate (069 C-069-S04). | §0, §2; SC-075-G |
+| **C-075-06** | **069 source-projection conformance.** Every member carries each source-carried 069 element (`partition`, `kind`, `slug`) and every family element (`subject_model`, `subject_kind`, `definition`) exactly once, in 069's order and valid under 069; contains no materialization-resolved element (`object_id`, `provenance`, `registry_ref`, `sot_class`) and no placeholder for one (069 C-069-S01 to S03; Roadmap §0.8; 074 C-074-06). **PASS** — structural part by parsing the fourteen blocks; contractual part by comparison with 069 §2–§5, Roadmap §0.8 and 074 C-074-06. **Full Record conformance** is not a P3 condition: it is mandatory at P5 preflight on the complete candidate before the Human Gate (069 C-069-S04). | §0, §2; SC-075-G |
 | **C-075-07** | No Registry Kind is missing. | §1 |
 | **C-075-08** | No Registry Kind is duplicated. | §1 |
 | **C-075-09** | No subject lies outside the roster. | §1, §3 |
@@ -467,9 +467,13 @@ simulation-model definition.
 
 **Evidence classes.** Each condition is proved by a different kind of evidence:
 
-- **Structural** — by parsing the member blocks: C-075-01, 02, 04, 05, 06, 11, 12, 13, 17, 18, 21.
+- **Structural** — by parsing the member blocks: C-075-01, 02, 04, 05, 11, 12, 13, 17, 18, 21;
+  and the structural part of C-075-06 — required elements, cardinality, order, fixed values, and
+  the absence of materialization-resolved elements and placeholders.
 - **Cross-source** — by comparison with RMS §10.1, 064, 069 and 074: C-075-03, 07, 08, 09, 10,
-  14, 19, 22.
+  14, 19, 22; and the contractual part of C-075-06 — that 069 §2–§5 and C-069-S01 to S03,
+  Roadmap §0.8 AD-REG-SOURCE-ENVELOPE and 074 C-074-06 authorize this source-stage
+  representation, and that the parser's element list matches them.
 - **Repository** — by inspecting the repository for each change (`git diff --name-only`,
   `git status`): C-075-15, 16, 23. This text cannot prove them.
 - **Static** — by reading this file: C-075-20.
@@ -495,7 +499,7 @@ neither row's `Val` or `Done` is enlarged.
 | Row 075 criterion | Status | Evidence | Remaining limitation | Where |
 |---|---|---|---|---|
 | `Val`: *"exactly fourteen KIND-DEFINITIONs, one per Registry Kind of 064"* | **PASS — VERIFIED** | block parser: 14 `MEMBER` / 14 `END MEMBER`, paired; 14 distinct subjects equal to 064 §6 and RMS §10.1 | — | §1, §2 |
-| `Val`: *"all conform to 069"* | **PASS — VERIFIED at source stage** | block parser against 069 C-069-S01 to S03, under Roadmap §0.8 AD-REG-SOURCE-ENVELOPE (C-075-06) | not full Record conformance: ten-element 069 conformance is a P5 preflight condition on the complete candidate before the Human Gate (C-069-S04) | §0; SC-075-G |
+| `Val`: *"all conform to 069"* | **PASS — VERIFIED at source stage** | structural: block parser against 069 C-069-S01 to S03; cross-source: 069 §2–§5, Roadmap §0.8 AD-REG-SOURCE-ENVELOPE and 074 C-074-06 authorize the source-stage representation (C-075-06) | not full Record conformance: ten-element 069 conformance is a P5 preflight condition on the complete candidate before the Human Gate (C-069-S04) | §0; SC-075-G |
 | `Val`: *"names match the RMS §10.1 roster exactly"* | **PASS — VERIFIED** | subjects compared with the roster parsed from RMS §10.1 | — | §1 |
 | `Val`: *"no extra definition implies a fifteenth Kind"* | **PASS — VERIFIED** | no subject outside RMS §10.1; definitions reviewed against 064 §8–§21 | — | §2, §3 |
 | `Val`: canonicalization source, *"committed only through 152 after G-CANON-R (§0.8)"* | **PASS — VERIFIED for authoring** | repository inspection: no change under `canon/**`; files only under `docs/registry/registry_kinds/` | the commit is row 152's, after G-CANON-R (PART VIII); neither is built | §0; SC-075-F |
