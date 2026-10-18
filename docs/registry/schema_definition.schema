@@ -1,0 +1,1169 @@
+COOLBOY12 — SCHEMA-DEFINITION SCHEMA (structural contract)
+
+ARTIFACT 077 · SCHEMA-DEFINITION schema · docs/registry/schema_definition.schema · Own: R ·
+RM: R · T: schema · R: CONTRACT · SoT: AUTHORITATIVE · Auth: defining ·
+Canon: canonical-about-meaning · CD: yes · Ph/St: P3/3b · Req: RR-17 · BP: §9.4 · RMS: §10.1 ·
+H: 076 · S: — · LS: LS-1 · G: — · → all model schemas · Val: definition resolves; versionable;
+references only declared entities (063) · Done: schema · Why: LS-1 · Risk: high · ∥: yes
+
+==================================================================================================
+0. HOW TO READ THIS FILE
+==================================================================================================
+
+NOTATION   This file reuses the local declarative notation of Artifact 067, with the CHECK line
+           Artifact 069 added, the REPOSITORY CONVENTION basis label Artifact 071 added, and the
+           conditional and absent words Artifact 073 added. It is an implementation choice, not
+           COOLBOY12 architecture, and establishes no repository-wide schema language
+           (SC-077-J). No parser exists for it.
+
+           ELEMENT <name>        a structural element of a materialized Record
+           ELEMENT <a>.<b>       part <b> of each value of element <a>: structure inside that
+                                 one family element, not a separate family element
+           LAYER                 ENVELOPE (universal, RMS §4) or FAMILY (Registry-model-owned)
+           REQUIRED              yes | no — no element of this family is conditional
+           CARDINALITY           exactly-one | zero-or-one | one-or-more — the count of the
+                                 carrier in the Record, never the count of Models, Kinds or
+                                 fields the defined schema may name (§1)
+           CONSTRAINT            what a conforming value must satisfy
+           CHECK                 how the constraint is checked, as Artifact 069 defines it:
+                                   NATIVE    decidable from the Record alone
+                                   EXTERNAL  needs evidence outside the Record; the line names
+                                             who supplies it, and this contract does not claim
+                                             it proven
+                                   STATIC    a property of this contract, checked by reading it
+           BASIS                 where the element or rule comes from:
+                                   SOURCE FACT            stated by a governing source
+                                   REQUIRED SYNTHESIS     forced by several source facts together
+                                   REPOSITORY CONVENTION  a choice of Artifact 067, 069, 071 or
+                                                          073, reused
+                                   077 CHOICE             a representation decision of this file
+           REJECT                a value that does not conform, with the rule it breaks and its
+                                 CHECK
+
+           Dotted parts, zero-or-one and one-or-more are this file's additions to the notation,
+           a 077 choice: SCHEMA-DEFINITION is the first family whose content is a list of like
+           entries — applicability targets and field occurrences (§3).
+
+OUTCOMES   A candidate Record has exactly one of three outcomes under this contract:
+             CONFORMS    every NATIVE rule holds and no shape marked UNRESOLVED is present.
+                         EXTERNAL obligations stay open until their owners prove them.
+             REJECT      a REJECT rule applies. A REJECT outranks UNRESOLVED (§4 A-10).
+             UNRESOLVED  every NATIVE rule holds, but the applicability shape is one whose
+                         admissibility the governing sources leave open (076 SC-076-N;
+                         SC-077-C). This contract neither accepts nor rejects it, and a
+                         carrier able to hold the shape is no authority for it.
+           The third outcome is a 077 CHOICE. It exists so that structural representability is
+           never read as semantic legality, in either direction.
+
+STATUS     This contract describes the structure a materialized SCHEMA-DEFINITION Record must
+           satisfy. It is not a SCHEMA-DEFINITION Record, not the schema of any Record of W, E,
+           P, V or I, not a model-owned schema such as row 184's CHARACTER schema, not a
+           validator, a schema engine or a Registry service, and not canonical data. It is an
+           authored source outside canon/** (Roadmap §0.8; CONFLICT-F), and not a
+           canonicalization source. Concrete SCHEMA-DEFINITION Records are committed only
+           through the Mutation Coordinator (row 152) after G-CANON-R. Where this contract
+           differs from the Master Blueprint, the Record Model System, the Roadmap, or Artifact
+           076, those sources are right and this contract is wrong.
+
+SPEC       Artifact 076 — docs/registry/schema_definition.md — is the semantic contract this file
+           encodes, consumed unchanged (H: 076). This file encodes only the structural
+           consequences of the obligations 076 establishes and hands to 077 (076 §21). Artifacts
+           067, 069, 071 and 073 are precedents for notation and representation conventions
+           only: no semantics is taken from the MODEL-, KIND-, SUBTYPE- or FIELD-DEFINITION
+           families, and none of those rows is a dependency of row 077.
+
+==================================================================================================
+1. RECORD SHAPE
+==================================================================================================
+
+SCHEMA-DEFINITION RECORD
+├── ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref · sot_class
+└── FAMILY    applicability · occurrence · definition
+              ├── applicability   one or more targets, each:   model · kind (zero or one)
+              ├── occurrence      one or more entries, each:   field · required · cardinality
+              └── definition      the governed account of the schema as one definition
+
+Artifact 077 defines exactly these ten elements: the universal seven-field envelope (RMS §4) and
+three family elements. The family elements have seven parts in all — two of applicability, three
+of occurrence — and no other. It defines no other element or part.
+
+That is the scope boundary of this contract, not a closure over everything a SCHEMA-DEFINITION
+Record may later carry. Rows 108–110 keep their authority to establish Registry-owned evolution,
+versioning, supersession and deprecation representation (§6 VERSIONABILITY; 076 VS-076-2). The
+envelope, by contrast, stays exactly seven fields: no downstream Registry representation becomes
+an eighth universal field (RMS §4; P-05).
+
+One schema, three carriers. 076 requires that a SCHEMA-DEFINITION govern the definition of one
+schema — "the structure the schema defines and the scope to which that structure applies" (076
+§6). This contract carries the scope in applicability, the field composition in occurrence, and
+the governed account of the schema in definition. No carrier alone is the schema definition.
+
+Carrier count is not semantic count. applicability can hold more than one target, and a target
+can omit kind. That makes two shapes representable — several scopes, and a scope at Model level
+without a Kind. It does not make either admissible: how many Models and Kinds a schema may name,
+and whether both categories are always present, is not established (076 SC-076-N). §4 marks both
+shapes UNRESOLVED. The one shape this contract confirms is the shape 076 shows as legal: one
+target naming a declared Kind of its declared model (076 §17 A).
+
+Two roles of "kind", never merged. The envelope element kind names this Record's own Kind —
+always SCHEMA-DEFINITION. applicability.kind names a declared Kind the schema applies to — for
+example CHARACTER. They are different elements in different roles, and neither is a
+two-character kind code.
+
+Not the Records it applies to. A Character Record conforms, or fails to conform, to a schema; it
+stays World's either way (076 §13). This contract is the structure of the Registry Record that
+defines the schema, not of any Record the schema applies to, and it defines no field of any
+model's Records (P-04).
+
+==================================================================================================
+2. ENVELOPE — the universal seven (RMS §4; Artifact 033)
+==================================================================================================
+
+Types, defaults, nullability and serialization of the envelope fields are not established by the
+governing sources (Artifact 033) and are not stated here.
+
+ELEMENT     partition
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  R — the Registry partition
+CHECK       NATIVE
+BASIS       SOURCE FACT — "SCHEMA-DEFINITION is a Registry Record." (RMS §10.2); RMS §10.1; 076
+            §6, SD-1
+REJECT      W, E, P, V or I — a Record of a domain model, such as a World Character Record, is
+            never a SCHEMA-DEFINITION                             (SD-1, SD-9)      NATIVE
+
+ELEMENT     kind
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  identifies the declared Registry Kind SCHEMA-DEFINITION (Kind 5 of RMS §10.1) — this
+            Record's own Kind, never the Kind the schema applies to (076 §14). The constraint is
+            symbolic. No two-character Registry Kind code is established; none is minted here
+            (SC-077-I).
+CHECK       NATIVE against the symbolic Kind; against a code only once the Registry's codes are
+            bound by their own rows (row 117; Artifact 060 writes the code schematically as <kind>)
+BASIS       SOURCE FACT — RMS §10.1; Artifact 064 §12; 076 §14, SD-11
+REJECT      FIELD-DEFINITION — field meaning is another Registry Kind (SD-3)       NATIVE
+            CONSTRAINT-DEFINITION or VALIDATION-RULE — a condition or a check is another
+            Registry Kind                                         (SD-6)            NATIVE
+            CONTROLLED-VOCABULARY, KIND-DEFINITION or any other Registry Kind      NATIVE
+            a domain Kind (for example CHARACTER) placed here     (076 §14)         NATIVE
+            any invented code (for example SD) presented as established            NATIVE
+
+ELEMENT     object_id
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the object identity component under the universal identity grammar. It is this
+            Record's identity — not the schema's name or label, not a field name, not the
+            identity of an applicable Kind or of any Record of it, not a file name, and not the
+            identity of any implementation that checks the schema (076 RS-076-2, SD-2).
+CHECK       NATIVE — presence, a single value
+            STATIC — this contract makes no family element a substitute for it
+BASIS       SOURCE FACT — RMS §4, §5; 076 RS-076-1, RS-076-2
+
+ELEMENT     slug
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  decoration only; never identity, never the basis of resolution
+CHECK       NATIVE — presence, a single value
+            STATIC — this contract gives slug no identity or resolution role
+BASIS       SOURCE FACT — RMS §5; Artifact 033; 076 RS-076-2
+
+ELEMENT     provenance
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it: this Record's own provenance capture.
+            Provenance meaning is not defined here, and the provenance of a Record the schema
+            applies to is never carried here.
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033
+
+ELEMENT     registry_ref
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the universal envelope field, unchanged. This contract attaches no referent,
+            self-reference convention, bootstrap target or resolution meaning to it, and it
+            carries neither the schema's applicability nor any field it composes.
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033 leaves its referent unresolved; Blueprint §9.4:
+            "Reference resolution is not Registry work"
+
+ELEMENT     sot_class
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it. No value is fixed here; Artifact 077's own
+            manifest SoT and Canon are not Record-level values and are not copied into it.
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033
+
+==================================================================================================
+3. FAMILY — SCHEMA-DEFINITION content (Registry-model-owned; not envelope fields)
+==================================================================================================
+
+applicability, occurrence and definition are required. No family element or part has a default
+value. A required element or part may not be left empty, and an absent part is absent — not an
+empty value, a null placeholder or a wildcard (REPOSITORY CONVENTION, 073). Types and
+serialization of the family elements are not established by the governing sources and are not
+stated here; this contract fixes structure, not an encoding.
+
+ELEMENT     applicability
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY one-or-more — each value is one applicability target, with the parts
+            applicability.model and applicability.kind
+CONSTRAINT  each target states one scope the schema applies to, through RMS §10.2's
+            "applicable Model · applicable Kind": a declared Record Model and, for a Kind-scoped
+            target, a declared Kind of that model.
+            At least one. 076 §7: every SCHEMA-DEFINITION "states the structure its schema
+            defines and the declared scope it applies to", and SD-4 states that scope through the
+            applicable-Model and applicable-Kind categories. A Record with no target states no
+            scope.
+            No count beyond one is fixed. A second target, or a target without kind, is
+            representable and UNRESOLVED (§4 A-08, A-09): this contract does not establish that
+            a schema may apply to several scopes or at Model level, and does not establish that
+            it may not (076 SC-076-N; SC-077-C).
+            Declaration-level. Each target names declared entities only. It is not a reference
+            to a MODEL-DEFINITION or KIND-DEFINITION Record (076 RF-076-1, RF-076-5), not a
+            domain instance, and not by itself a semantic dependency (RF-076-11; Artifact 062
+            D-9). Naming a target creates, declares or admits no Model or Kind, and transfers no
+            Record, authority or canonicality to the Registry (SD-4, SD-9, SD-11).
+CHECK       NATIVE — presence; at least one target; no two targets identical; each target's
+            parts as below.
+            EXTERNAL — whether a shape §4 marks UNRESOLVED is admissible. No current source
+            decides it, and this contract does not.
+BASIS       REQUIRED SYNTHESIS — 076 §7, SD-4, RF-076-1; RMS §10.2; 064 §12 Q2 (at least one
+            stated scope). A target as a model with an optional Kind follows 073's domain_model
+            and domain_kind and 069's subject_model and subject_kind (REPOSITORY CONVENTION).
+            Carrying scope as a list of targets rather than one fixed Model/Kind pair, the
+            duplicate rule and the element NAME are 077 CHOICES (§6 REPRESENTATION). None decides
+            SC-076-N.
+REJECT      no target — a schema that applies to nothing          (SD-4)            NATIVE
+            two identical targets                                 (077 CHOICE)      NATIVE
+
+ELEMENT     applicability.model
+LAYER       FAMILY — part of each applicability target
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  one value from the closed set   W | E | P | R | V | I
+              W  World       E  Epistemic   P  Production
+              R  Registry    V  Visual      I  Issue
+            In a Kind-scoped target, it is the Kind's owning model: it says whose Kind taxonomy
+            declares applicability.kind, and widens the scope to nothing beyond that Kind. In a
+            target without kind, the model is itself the stated scope — an UNRESOLVED shape (§4
+            A-08). It names the declared Record Model itself — the six constitutionally
+            established models are the declared models Artifact 063 admits (§7 row 2). It is a
+            declaration reference, not a MODEL-DEFINITION reference (076 RF-076-5).
+            R is in the set because the Registry is one of the six sovereign Record Models. That
+            this contract can represent an R-scoped target does not mean any is scheduled, and
+            no Registry structural contract — this one included — becomes a SCHEMA-DEFINITION
+            Record by it (076 §18 row 19).
+CHECK       NATIVE — presence; a single value; membership of the closed set. Membership is the
+            declared-status check for a model: the closed set is the set of declared Record
+            Models (Artifact 063 §7 row 2; RMS §2), so no external proof is needed.
+BASIS       REQUIRED SYNTHESIS — 076 RF-076-1; Artifact 063 §7 row 2; RMS §2. The closed set
+            follows 069's subject_model and 073's domain_model (REPOSITORY CONVENTION).
+            Requiring the model in every target, Kind-scoped ones included, is REQUIRED
+            SYNTHESIS: an applicable Kind is a declared Kind "of its owning model" (076 RF-076-1)
+            and its declared status is established by that model's own Kind architecture, so a
+            Kind named without its model has no establishable declared status, and an
+            undetermined target is not legal (Artifact 063 RB-6). It decides nothing about
+            whether a schema must name a Kind.
+REJECT      absent — including a target that names a Kind and no model
+                                                          (RF-076-1; RB-6)  NATIVE
+            two or more values in one target — several scopes are several targets
+                                                          (077 CHOICE)      NATIVE
+            a value outside the set, e.g. S "Simulation" claimed as a seventh model
+                                                          (RMS §2)          NATIVE
+            a Record identifier or a MODEL-DEFINITION Record identifier, R-<kind>-…
+                                                          (RF-076-5, RF-076-7)
+                                                                            NATIVE
+
+ELEMENT     applicability.kind
+LAYER       FAMILY — part of each applicability target
+REQUIRED    no — present in a Kind-scoped target; absent in a target that states Model scope
+            only, which is UNRESOLVED (§4 A-08)
+CARDINALITY zero-or-one
+CONSTRAINT  names one Kind exactly as the Kind taxonomy of applicability.model declares it — for
+            example CHARACTER under W. The name is read only within applicability.model. The
+            value names the Kind itself — never a Record of that Kind (RF-076-7), never the
+            Kind's KIND-DEFINITION Record (RF-076-5), never a two-character kind code
+            (SC-077-I), never a subtype and never a runtime object (RF-076-9).
+            Declared status. The named Kind must be a declared Kind of applicability.model, with
+            that status established by the owning model's own Kind architecture (076 RF-076-1;
+            Artifact 063 §7 row 3, §8.3). A SCHEMA-DEFINITION neither declares nor admits it,
+            and creates no Kind (076 SD-4, SD-11).
+            Form. applicability.kind is a declaration reference to the declared Kind, not an
+            R → R reference to its KIND-DEFINITION Record (RF-076-1, RF-076-5). Naming it is not
+            by itself a semantic dependency on the Kind's semantics (RF-076-11; Artifact 062
+            D-9).
+CHECK       NATIVE — at most one value; the value is not shaped as a Record identifier under the
+            universal grammar (RMS §5); the pair (applicability.model, applicability.kind) is not
+            (W, WSV).
+            EXTERNAL — declared status, and that the Kind is applicability.model's. The proof
+            comes from the owning model's Kind architecture (Artifact 063 SC-063-H; SC-077-K).
+            This contract does not define or prove that evidence. Downstream legality validation
+            may enforce this requirement under its own contract; row 112 independently enforces
+            its narrower domain-instance reference prohibition. An undetermined Kind is not
+            legal (Artifact 063 RB-6).
+BASIS       REQUIRED SYNTHESIS — 076 RF-076-1, RF-076-5, RF-076-7, SD-4; Artifact 063 §6, §8.3,
+            SC-063-G (the form of a declaration reference is fixed by the applicable family
+            contract or schema). The declaration form and naming the Kind by its declared name
+            follow 069's subject_kind and 073's domain_kind (REPOSITORY CONVENTION). Making the
+            part optional, so that a Model-scoped target can be written and marked UNRESOLVED
+            rather than made unwritable, is a 077 CHOICE (§6 REPRESENTATION; SC-077-C). The
+            element NAME is a 077 CHOICE.
+REJECT      two or more Kinds in one target — several scopes are several targets
+                                                          (077 CHOICE)      NATIVE
+            a Record identifier, e.g. W-CH-…-<slug> (a domain instance)
+                                                          (RF-076-7)        NATIVE
+            a KIND-DEFINITION Record's identifier, R-<kind>-…     (RF-076-5)        NATIVE
+            WSV under W — "the WSV singleton is not a Kind" (Roadmap PART III)      NATIVE
+            a name applicability.model has not declared — a candidate, a rejected candidate, or
+            a subtype such as GENERATED-IMAGE under V              (RF-076-1)        EXTERNAL
+            a declared name under the wrong model, e.g. CHARACTER under P
+                                                                  (RF-076-1)        EXTERNAL
+            a kind code, e.g. CH, written in place of the Kind's name
+                                                                  (SC-077-I)        EXTERNAL
+
+ELEMENT     occurrence
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY one-or-more — each value is one field occurrence, with the parts occurrence.field,
+            occurrence.required and occurrence.cardinality
+CONSTRAINT  each value states that one field occurs in the structure the schema defines, whether
+            it is required there, and how many values it may carry there. That is the schema
+            side of the split: row 078's Done — "a schema composes field definitions and owns
+            cardinality/required/order; a field definition owns meaning and domain" — and 076
+            §8, SD-5.
+            Structure, not meaning. An occurrence carries no field meaning and no field domain;
+            the field's FIELD-DEFINITION stays the sole holder of both (076 §8, SD-3). Composing
+            a field respects its governed meaning and domain: "A schema that carries the field
+            conforms to the field's definition" (Artifact 072 §10; 076 RF-076-2).
+            Not a reference. An occurrence is a structural element of the schema, not a Record
+            reference, and no reference carrier is attached to it (076 RF-076-2; §6 COMPOSITION).
+            At least one. The structure a schema defines is a composition of fields: "Schema
+            defines the structure of a record — fields, types, required-ness, defaults."
+            (Blueprint §9.4); "a schema composes fields and owns cardinality, requiredness and
+            order; it is not one field" (064 §12 Q8). This fixes no count beyond one and names
+            no field any schema must contain.
+            Each field at most once. One schema definition states one requiredness and one
+            cardinality for a field, so no two occurrences name the same field.
+            Order. The sequence in which occurrences are written carries no meaning defined
+            here. Whether field order is significant, and how it is carried, is closed by row 078
+            — "078 closes it, 077 encodes it" (076 §7) — and this contract neither establishes
+            nor excludes it (SC-077-D).
+CHECK       NATIVE — presence; at least one occurrence; no two occurrences with the same
+            occurrence.field; each occurrence's parts as below.
+            EXTERNAL — that each composed field is one the applicable model's field architecture
+            establishes, and that composing it respects its governed meaning and domain. Judged
+            against 072 and the governing FIELD-DEFINITION Records; this contract does not
+            prove it.
+BASIS       REQUIRED SYNTHESIS — RMS §10.2 ("required fields · cardinality"); Blueprint §9.4; 064
+            §12 Q8, Q13; 076 §7, §8, SD-3, SD-5, RF-076-2; row 078 Done. 076 §7 hands the
+            representation of requiredness and cardinality to 077 ("its representation (077)").
+            The entry form, the at-most-once rule and the element NAME are 077 CHOICES (§6
+            REPRESENTATION).
+REJECT      no occurrence — a schema that composes no field       (Blueprint §9.4; Q8)
+                                                                                    NATIVE
+            two occurrences naming the same field                 (077 CHOICE)      NATIVE
+            any part beyond field, required and cardinality — e.g. a meaning, domain, type or
+            default stated on the occurrence                      (SD-3; P-01A, P-01C)
+                                                                                    NATIVE
+
+ELEMENT     occurrence.field
+LAYER       FAMILY — part of each occurrence
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  names the one field that occurs, written as the governing sources or the applicable
+            model's field architecture name it — e.g. <field> in a schema applicable to
+            (W, CHARACTER). The name is read within the schema's applicability. It names the
+            field itself — never a Record or Record identifier (RF-076-7), never a Registry
+            Record identifier, never a Kind or kind code, never a value, value set or
+            vocabulary, never a constraint, a validation rule or a validator (SD-6), never a
+            runtime object (RF-076-9).
+            Which definition governs it. How a field's domain relates to a schema's applicability
+            — and so which FIELD-DEFINITION governs a named field within this schema's scope — is
+            not decided here (076 §8, SC-076-D; row 078; SC-077-D).
+            Envelope fields. Whether a schema lists the seven envelope fields is not established
+            (SC-077-M). Where an occurrence names one, it does not change that field's universal
+            presence or role: "An envelope field binds every Record in every model." (Artifact
+            033), so occurrence.required is yes.
+            Name form. This contract fixes no case rule, punctuation, spelling, URI or handle
+            for the name (SC-077-D).
+CHECK       NATIVE — presence; a single value; the value is not shaped as a Record identifier
+            under the universal grammar (RMS §5); where it is one of the seven envelope fields,
+            occurrence.required is yes.
+            EXTERNAL — that the value names a field the applicable model's field architecture,
+            or for an envelope field RMS §4, establishes, and that it is no Kind name, kind
+            code, value or runtime object.
+BASIS       REQUIRED SYNTHESIS — 076 RF-076-2, SD-3, SD-5, §8; Artifact 072 §10; Artifact 063
+            §7 (no declared-field category); RMS §4; Artifact 033. Carrying the field by name,
+            and not by a concrete reference, is a 077 CHOICE (§6 REPRESENTATION) following 073's
+            subject_field (REPOSITORY CONVENTION). The element NAME is a 077 CHOICE.
+REJECT      no value                                              (SD-5)            NATIVE
+            two or more fields in one occurrence                  (077 CHOICE)      NATIVE
+            a Record identifier, e.g. W-CH-…-<slug> (a domain instance)
+                                                                  (RF-076-7)        NATIVE
+            a Registry Record identifier, R-<kind>-…, in the name's place — this part carries a
+            name; no reference element is defined (§6 COMPOSITION)                 NATIVE
+            an envelope field, e.g. slug, with occurrence.required no
+                                                                  (RMS §4; 033)     NATIVE
+            a field the applicable model's field architecture does not establish
+                                                                  (RF-076-2)        EXTERNAL
+            a running service, validator or engine named as the field
+                                                                  (RF-076-9)        EXTERNAL
+
+ELEMENT     occurrence.required
+LAYER       FAMILY — part of each occurrence
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  one value from the closed set   yes | no
+              yes  the field must occur in a Record that conforms to the schema
+              no   the field may be absent from such a Record
+            Stated, never defaulted: an occurrence without it does not conform, and no default
+            requiredness is assumed. The tokens are local to this contract. Requiredness here is
+            the schema's statement about Records it applies to; it is not the requiredness of
+            this contract's own carriers.
+CHECK       NATIVE — presence, a single value, membership of the closed set
+BASIS       SOURCE FACT — RMS §10.2 ("required fields"); Blueprint §9.4 ("required-ness"); row
+            078 Done; 076 §7 (representation 077's). The closed set, the token spelling and the
+            no-default rule are 077 CHOICES; the no-default rule follows 073 (REPOSITORY
+            CONVENTION).
+REJECT      no value                                              (076 §7)          NATIVE
+            a value outside the set, e.g. sometimes or a condition  (077 CHOICE)    NATIVE
+            two values                                            (077 CHOICE)      NATIVE
+
+ELEMENT     occurrence.cardinality
+LAYER       FAMILY — part of each occurrence
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  how many values the field may carry where it occurs, written L..U:
+              L  a whole number, 0 or more — the fewest values
+              U  a whole number not less than L and not less than 1 — the most values — or *
+                 for no upper bound
+            For example 1..1, 0..*, 1..*, 2..5. Cardinality and requiredness are independent:
+            occurrence.required says whether the field must occur, occurrence.cardinality how
+            many values it carries where it does. The values are the schema's to state; this
+            contract fixes no cardinality for any field of any model. It is the cardinality of a
+            field in the defined schema — not a CARDINALITY line of this contract, which counts
+            this contract's own carriers (§0).
+CHECK       NATIVE — presence, a single value, the L..U form and its bounds
+BASIS       SOURCE FACT — RMS §10.2 ("cardinality"); 064 §12 Q8; row 078 Done; 076 §7 ("how many
+            values a field occurrence may carry in the structure"; representation 077's). The
+            L..U notation, its bounds and the * token are 077 CHOICES (§6 REPRESENTATION).
+REJECT      no value                                              (076 §7)          NATIVE
+            a malformed value — 2..1, 0..0, -1..3, or a word such as many
+                                                                  (077 CHOICE)      NATIVE
+            two values                                            (077 CHOICE)      NATIVE
+
+ELEMENT     definition
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the governed account of the schema as one definition — "the governed definition of a
+            schema" (064 §12 Q1) — stated once for the Records within its applicability. A
+            Registry definition "Governs; never instantiates" (RMS §6.1). Non-empty. Its
+            internal form is not prescribed by this contract.
+            What it may state. Beyond what applicability and occurrence carry, RMS §10.2 permits
+            a schema definition to define constraints, relationships and validation references.
+            definition may state them as definition content, and none is required (076 SD-14).
+            Whether a schema's constraints are its own content or references to
+            CONSTRAINT-DEFINITION Records, what relationships denotes, and which family a
+            validation reference targets are not established (076 SC-076-J; SC-077-E). This
+            contract fixes no form and no target for any of them. Where the content carries a
+            reference:
+              — a validation reference targets an admissible category only: a VALIDATION-RULE
+                is a Registry definition, an admissible R → R target; a runtime validator,
+                validator process or engine never is (076 RF-076-3, RF-076-9);
+              — a constraint or relationship expressed as a reference targets an admissible
+                category only, e.g. a CONSTRAINT-DEFINITION or RELATIONSHIP-TYPE-DEFINITION
+                Record; whether they are references at all is not established (RF-076-4);
+              — any other reference — to a CONTROLLED-VOCABULARY, a MODEL-DEFINITION, another
+                SCHEMA-DEFINITION or any other definition — lies in no relation this family
+                establishes; an admissible category alone does not authorize it (RF-076-6;
+                Artifact 063 RB-5).
+            A condition stated here does not make this Record a CONSTRAINT-DEFINITION, and a
+            validation reference does not make it a VALIDATION-RULE or a check (076 SD-6).
+            Types and defaults are schema-side (Blueprint §9.4) and never a field definition's;
+            whether a SCHEMA-DEFINITION carries them is not established (076 SC-076-K). This
+            contract gives them no element and neither requires nor forbids definition to state
+            them (P-01C).
+            What it carries none of: a field's meaning or domain (SD-3); a field occurrence, or a
+            requiredness or cardinality that overrides or contradicts an occurrence's — those
+            are occurrence's alone; executable behaviour — a parser, loader, check, repair,
+            migration or rewrite, or a validator's verdict, state, configuration or session (076
+            §9; SD-8; Blueprint §26.3b); any Record, value or current state of any model used as
+            authority (RF-076-7, RF-076-8); a claim of ownership over conforming Records, or of
+            admission, declaration or canonical status (SD-9, SD-11); version, supersession or
+            deprecation mechanics (076 VS-076-2); the relation to a model-owned schema artifact
+            (076 SC-076-I).
+CHECK       NATIVE — presence, a single value, non-empty.
+            EXTERNAL — the content limits are semantic and not decidable from structure; they
+            are judged against 076, and this contract does not claim them proven. Whether a
+            reference in the content is legal is also EXTERNAL (Artifact 063; row 112).
+BASIS       REQUIRED SYNTHESIS — 076 §6, §7, §9, SD-1, SD-6, SD-7, SD-8, SD-14, RF-076-3,
+            RF-076-4, RF-076-6; RMS §6.1, §10.2; 064 §12 Q1, Q4 ("the schema's defined content;
+            detail is 076's"). The single carrier, the element NAME and the non-empty rule
+            follow Artifacts 067, 069, 071 and 073 (REPOSITORY CONVENTION). Carrying RMS §10.2's
+            constraints, relationships and validation references as definition content, and not
+            as dedicated elements with fixed targets, is a 077 CHOICE (§6 REPRESENTATION).
+REJECT      no value, or an empty one                             (SD-1)            NATIVE
+            executable code or a procedure the Registry would run to check or rewrite Records
+                                                          (SD-8; RMS §10.2) EXTERNAL
+            a validator's verdict or run state stored as content  (076 §9; §26.3b)  EXTERNAL
+            a domain instance, domain state or runtime object as the source of meaning — e.g.
+            W-CH-000001-Maximus cited as what the structure should be
+                                                  (RF-076-7, RF-076-8, RF-076-9)    EXTERNAL
+            a reference to a running validator presented as a validation reference
+                                                                  (RF-076-3)        EXTERNAL
+            a reference in a relation this family does not establish, e.g. to a
+            CONTROLLED-VOCABULARY Record                          (RF-076-6)        EXTERNAL
+            a requiredness or cardinality that contradicts an occurrence
+                                                                  (077 CHOICE)      EXTERNAL
+            a statement that the schema admits, declares or owns anything
+                                                                  (SD-9, SD-11)     EXTERNAL
+
+==================================================================================================
+4. APPLICABILITY AND COMPOSITION RULES — the cross-element conditions
+==================================================================================================
+
+APPLICABILITY. The table is the rule of §3 written out. A shape is a pattern of targets.
+
+  targets    each target              outcome
+  none       —                        REJECT      A-01                            NATIVE
+  one        model + kind             CONFORMS    on applicability; the Kind's declared
+                                                  status stays EXTERNAL (A-06)
+  one        model, no kind           UNRESOLVED  A-08 — Model-level scope
+  two+       any                      UNRESOLVED  A-09 — several scopes; every target is still
+                                                  checked by A-02 to A-07
+
+A-01  no applicability target                                         → REJECT     NATIVE
+A-02  a target with no applicability.model, including one that names only a Kind
+                                                                      → REJECT     NATIVE
+A-03  a target with two applicability.model or two applicability.kind values
+                                                                      → REJECT     NATIVE
+A-04  applicability.model outside W | E | P | R | V | I                 → REJECT     NATIVE
+A-05  applicability.kind shaped as a Record identifier, or (W, WSV)    → REJECT     NATIVE
+A-06  applicability.kind not a declared Kind of applicability.model    → REJECT     EXTERNAL
+A-07  two identical targets                                           → REJECT     NATIVE
+A-08  exactly one target, and it has no applicability.kind            → UNRESOLVED
+A-09  two or more targets                                             → UNRESOLVED
+A-10  any REJECT anywhere in the Record outranks A-08 and A-09: a Record with a REJECT does not
+      conform, whatever its applicability shape.
+
+BASIS       REQUIRED SYNTHESIS — 076 SD-4, RF-076-1 (A-01, A-02, A-04 to A-06); Artifact 063
+            §7 rows 2–3, RB-6; Roadmap PART III (A-05). 077 CHOICE — A-03, A-07, the table form
+            and the UNRESOLVED outcome for A-08 and A-09. SOURCE GAP — A-08, A-09 (076 SC-076-N;
+            SC-077-C).
+
+What UNRESOLVED means here. A-08 and A-09 are not accepted: nothing in this contract licenses
+a schema to apply at Model level or to several scopes, and a carrier able to hold the shape is
+no evidence that the shape is legal. They are not rejected either: no source forbids them, and
+absence of a prohibition is not a prohibition. Each stays UNRESOLVED until a governing source
+settles SC-076-N. No owner is assigned by any source, row 078 included (076 SC-076-N).
+
+COMPOSITION.
+
+O-01  no occurrence                                                   → REJECT     NATIVE
+O-02  an occurrence missing field, required or cardinality             → REJECT     NATIVE
+O-03  two occurrences with the same occurrence.field                   → REJECT     NATIVE
+O-04  occurrence.required outside yes | no                            → REJECT     NATIVE
+O-05  occurrence.cardinality not of the L..U form, or out of bounds    → REJECT     NATIVE
+O-06  occurrence.field shaped as a Record identifier                   → REJECT     NATIVE
+O-07  occurrence.field an envelope field with occurrence.required no   → REJECT     NATIVE
+O-08  a composed field not established by the applicable model's field architecture, or
+      composed contrary to its governed meaning or domain             → REJECT     EXTERNAL
+O-09  definition restating a requiredness or cardinality that contradicts an occurrence
+                                                                      → REJECT     EXTERNAL
+
+BASIS       REQUIRED SYNTHESIS — Blueprint §9.4; 064 §12 Q8; 076 SD-5, RF-076-2; Artifact 072
+            §10; RMS §4 and Artifact 033 (O-07). 077 CHOICE — O-02 to O-06, O-09 and the L..U
+            form.
+
+The rules fix structure only. They derive no field, requiredness, cardinality, type, default,
+order, constraint or relationship for any schema of any model, and no relation between a field's
+domain and the schema's applicability (076 §8; SC-076-D).
+
+==================================================================================================
+5. STRUCTURAL PROHIBITIONS
+==================================================================================================
+
+P-01A Artifact 077 introduces no element or part beyond the ten elements and seven parts of §1. A
+      Record carrying any of the following does not conform (NATIVE):
+      — a fixed applicability pair, which would decide SC-076-N (076 SD-4; SC-077-C):
+        applicable_model, applicable_kind, model_scope_only, multi_model;
+      — field meaning or domain (076 SD-3, §8): meaning, field_meaning, domain, field_domain,
+        semantic_definition;
+      — execution or runtime structure (076 §9, SD-8; RMS §10.2): validator, validator_config,
+        engine, executor, loader, callback, hook, verdict, check_result, last_validated,
+        validation_state, cache, session, process, service, worker, handler, implementation,
+        implementation_path, migration, repair;
+      — universal semantics or ownership (076 §14, SD-9, SD-12; RMS §4): status, tier,
+        lifecycle_state, canonical, history, relationship_record, owner, owns_records,
+        conforming_records, admitted, declared, layer, kind_code;
+      — a binding to a model-owned schema artifact (076 SC-076-I): model_schema,
+        model_schema_ref, schema_file, schema_path.
+P-01B Artifact 077 introduces no version, revision, latest-version, supersession, replacement,
+      deprecation, retirement, effective-date, migration, compatibility, retention or history
+      element or mechanism, and no lifecycle or state machine. That representation is deferred
+      to rows 108–110: neither defined nor permanently prohibited here (076 VS-076-2; SC-077-N).
+      Whatever
+      those rows establish stays Registry-owned, is not an envelope field (P-05) and is not a
+      universal semantic shared by W, E, P, V or I (P-06).
+P-01C Artifact 077 introduces no type or default element, on occurrence or anywhere else.
+      Whether a SCHEMA-DEFINITION carries types and defaults is not established (076 SC-076-K;
+      SC-077-F): that is a scope boundary of this contract, not a decision that a schema
+      definition may never carry them, and definition may state them (§3). Types and defaults are
+      never transferred to FIELD-DEFINITION by their absence here (Blueprint §9.4; Artifact 072).
+P-02  No generic reference or dependency list, and no reference element the obligations of 076
+      do not require: references, refs, dependencies, related_definitions, definition_refs,
+      field_definition_ref, field_definition_refs, field_ref, constraint_ref, constraint_refs,
+      validation_ref, validation_rule_ref, relationship_ref, vocabulary_ref,
+      model_definition_ref, kind_definition_ref, schema_ref, extends, includes, inherits. A
+      structural reference encodes only an obligation 076 establishes — here, the applicability
+      targets — and an admissible target category alone authorizes nothing (076 RF-076-6;
+      Artifact 063 RB-5). This contract requires no field-definition, vocabulary, constraint,
+      relationship or validation reference, and is not a ruling that a concrete R → R
+      reference to a FIELD-DEFINITION is illegal (076 RF-076-2; §6 COMPOSITION).
+P-03  No element names, carries or implies ownership of a Record the schema applies to, of its
+      values, or of a model-owned schema artifact; admission or declaration of a Model or Kind;
+      or the conferral or removal of canonical status. The applicable model keeps its Records,
+      their identity, values, lifecycle, authority, canonicality and semantic validation; the
+      Registry owns this Record and governs the definition of the schema (076 §13, SD-9). A
+      legal reference transfers no ownership, mutation authority, semantic authority,
+      admission, canonicality or source-of-truth class (076 RF-076-10).
+P-04  Not the schema of any domain Record. No element carries the fields, requiredness,
+      cardinality, type or default of any particular model's Records: occurrence entries are
+      what a concrete SCHEMA-DEFINITION Record states, and this contract states none. No
+      CHARACTER, ORGANIZATION or other Kind's schema is defined or implied here.
+P-05  No envelope field added, removed or renamed. The family elements and parts are not
+      envelope fields; applicability, a field occurrence, requiredness, cardinality, version,
+      status and tier never become one (RMS §4; 076 §14).
+P-06  None of RMS §4's prohibited universal semantics. For this family that means: no universal
+      semantic schema for W, E, P, R, V and I together; no Universal Record Base assembled from
+      occurrences; no Universal Relationship Record from a schema's relationships; no Universal
+      History Record for schema versions; no universal lifecycle, state model or status from a
+      field a schema composes; no universal canonicality conferred by conformance; no
+      universal Kind taxonomy from applicability; no universal identity composition from a
+      schema's name or applicability (076 §14, SD-12).
+P-07  Not another family's contract: not FIELD-DEFINITION (076 SD-3), not CONTROLLED-VOCABULARY,
+      not CONSTRAINT-DEFINITION or VALIDATION-RULE (SD-6), not RELATIONSHIP-TYPE-DEFINITION
+      (SD-7), and not MODEL-, KIND- or SUBTYPE-DEFINITION. No element embeds another family's
+      definitions, and nothing here pre-builds rows 078, 081–082, 088–091 or 108–116.
+P-08  No element records an LS-1 pairing or a lockstep partner. LS-1 is not a reference and
+      creates no commit atomicity here, and no 076 ↔ 077 pair exists (076 §15; SC-077-B).
+P-09  No dependency element. applicability.model and applicability.kind are declaration
+      references, which are not by themselves semantic dependencies (Artifact 062 D-9; 076
+      RF-076-11). No layer is assigned to SCHEMA-DEFINITION, so no layer-based dependency rule
+      is applied; concrete dependency rules are row 111's (076 SC-076-L; SC-077-L).
+P-10  No element represents how a schema definition is proposed, approved, deprecated or
+      admitted; governance is Artifact 065's (076 §11).
+
+REJECTION REGISTER — each with the check that rejects it and where
+
+ 1  partition other than R                         NATIVE                §2 partition
+ 2  envelope kind other than SCHEMA-DEFINITION     NATIVE                §2 kind
+ 3  envelope kind holding the applicable Kind      NATIVE                §2 kind
+ 4  envelope kind given as an invented code        NATIVE                §2 kind
+ 5  an eighth envelope field, e.g. version         NATIVE                P-05
+ 6  applicability missing                          NATIVE                §3 applicability; A-01
+ 7  a target without a model                       NATIVE                A-02
+ 8  two models or two Kinds in one target          NATIVE                A-03
+ 9  model outside W, E, P, R, V, I                 NATIVE                A-04
+10  Kind shaped as a Record identifier             NATIVE                A-05
+11  WSV under W as a Kind                          NATIVE                A-05
+12  Kind not declared by its model                 EXTERNAL              A-06
+13  two identical targets                          NATIVE                A-07
+14  a fixed applicable_model / applicable_kind pair
+                                                   NATIVE, STATIC        P-01A; SC-077-C
+15  occurrence missing                             NATIVE                §3 occurrence; O-01
+16  occurrence missing a part                      NATIVE                O-02
+17  the same field in two occurrences              NATIVE                O-03
+18  requiredness outside yes, no                   NATIVE                O-04
+19  malformed cardinality                          NATIVE                O-05
+20  field shaped as a Record identifier            NATIVE                O-06
+21  envelope field made optional                   NATIVE                O-07
+22  field not established, or composed against its meaning
+                                                   EXTERNAL              O-08
+23  meaning or domain carried on an occurrence     NATIVE                §3 occurrence; P-01A
+24  definition missing or empty                    NATIVE                §3 definition
+25  definition contradicting an occurrence         EXTERNAL              O-09
+26  executable code or a stored verdict            NATIVE, EXTERNAL      P-01A; §3 definition
+27  a domain instance or runtime object as authority
+                                                   NATIVE, EXTERNAL      §3; RF-076-7 to RF-076-9
+28  a generic references list                      NATIVE, STATIC        P-02
+29  a mandatory field_definition_ref               NATIVE, STATIC        P-02; §6 COMPOSITION
+30  a reference in an unestablished relation       EXTERNAL              §3 definition; P-02
+31  a type or default element                      NATIVE, STATIC        P-01C
+32  a version or supersession element added now    STATIC                P-01B
+33  status or tier as universal fields             NATIVE, STATIC        P-05; P-06
+34  ownership, admission or canonicality claimed   EXTERNAL, STATIC      §3 definition; P-03
+35  a binding to a model-owned schema artifact     NATIVE, STATIC        P-01A; SC-077-G
+36  canonical data written from Artifact 077       STATIC                §0; §6 MATERIALIZATION
+37  LS: LS-1 read as a 076 ↔ 077 pair              STATIC                P-08; SC-077-B
+38  → all model schemas read as a hard dependency  STATIC                §6 DOWNSTREAM; SC-077-G
+
+PROHIBITED INFERENCES — each false deduction, and where this contract answers it
+
+PI-01 This structural contract is itself a SCHEMA-DEFINITION Record.              §0 STATUS
+PI-02 Registry defines schemas, therefore Registry executes them.             §6 EXECUTION
+PI-03 A schema definition owns the Records that conform to it.                  P-03; §6
+PI-04 The applicable Kind is the Record's envelope kind.                        §1; §2 kind
+PI-05 A declared schema is automatically a SCHEMA-DEFINITION Record.     §6 SOVEREIGNTY
+PI-06 Every model-owned schema must resolve to a SCHEMA-DEFINITION Record.  SC-077-G
+PI-07 A field occurrence must be a direct R → R reference.               §6 COMPOSITION
+PI-08 An admissible reference category makes every relation legal.  P-02; §3 definition
+PI-09 A reference creates a semantic dependency.                           P-09; §6
+PI-10 A resolved target is legal.                                      §6 REFERENCES
+PI-11 A candidate's syntax proves that a Kind is declared.          §3; §6 APPLICABILITY
+PI-12 Every schema definition names exactly one Model and exactly one Kind.  §4; SC-077-C
+PI-13 A schema may be Model-level because the carrier can hold that shape.    §4 A-08
+PI-14 A schema may never be Model-level because a carrier expects a Kind.      §4 A-08
+PI-15 Every RMS §10.2 category must be a mandatory family element.        §3 definition
+PI-16 Types and defaults belong to FIELD-DEFINITION because no element carries them.
+                                                                                P-01C
+PI-17 A validator's results are authoritative Registry data.            §6 EXECUTION
+PI-18 Constraint definitions and validation rules are interchangeable.     §6 CONTENT
+PI-19 A schema's relationships create a universal Relationship Record.      P-06; §6
+PI-20 Registry versionability requires a World History Record.      §6 VERSIONABILITY
+PI-21 A version field may be added to the universal envelope.            P-01B, P-05
+PI-22 This notation establishes a universal schema language.                SC-077-J
+PI-23 A self-describing .schema file implies executable validation exists.   §0; §6
+PI-24 Registry Kind codes may be minted before identity binding.            SC-077-I
+PI-25 076 ↔ 077 is an LS-1 pair because the rows are adjacent.        P-08; SC-077-B
+PI-26 Artifact 077 may write canonical Registry Records.         §6 MATERIALIZATION
+PI-27 The unlock → all model schemas is an undeclared hard dependency.  §6 DOWNSTREAM
+PI-28 A successful NATIVE check proves full semantic conformance.           §0 OUTCOMES
+
+==================================================================================================
+6. BOUNDARIES
+==================================================================================================
+
+REPRESENTATION  076 leaves the structural form to 077: no element names, carrier shapes,
+                applicability form, field-identification form or cardinality notation are
+                prescribed (076 §7, SC-076-G, RF-076-1, RF-076-2). The choices, each a 077
+                CHOICE and not a Blueprint or RMS fact:
+                (1) applicability as a list of targets, each a model and at most one Kind — the
+                    declaration form Artifacts 069 and 073 use for a declared-Kind scope
+                    (REPOSITORY CONVENTION). A fixed single Model/Kind pair would decide
+                    SC-076-N by syntax; a list with UNRESOLVED shapes decides nothing (§4);
+                (2) the declaration form for the model and Kind, not an R → R reference to a
+                    MODEL-DEFINITION or KIND-DEFINITION Record, and not both: a second relation
+                    would be an invented one (076 RF-076-1, RF-076-5, RF-076-6). The
+                    declaration form needs no definition Record to exist first, and no
+                    Registry Record identifier while no Registry Kind code is bound (row 117);
+                (3) occurrence entries with three parts — field by name, required, and
+                    cardinality written L..U — so that the schema side of row 078's split,
+                    "cardinality/required", has a checkable representation (076 §7);
+                (4) definition as the governed account of the schema, holding RMS §10.2's
+                    constraints, relationships and validation references as content, because no
+                    source fixes their form or targets (076 SC-076-J): a dedicated element with
+                    a fixed target would invent the relation.
+                None of these choices is offered as the only representation a governing source
+                could later establish. A later governed change of this contract may add one;
+                this contract does not pre-empt it.
+
+APPLICABILITY   Any Model or Kind a SCHEMA-DEFINITION names is declared and named by
+                declaration reference (076 RF-076-1). Three questions stay apart, and only the
+                first is decided here:
+                  representability — can the Record carry the scope? Yes, for every shape (§3)
+                  declared status — is each named target declared? NATIVE for a model (the
+                    closed set); EXTERNAL for a Kind (the owning model's Kind architecture)
+                  admissibility — is the shape an authorized applicability? Confirmed for one
+                    Kind-scoped target (076 §17 A); UNRESOLVED for a Model-level target or
+                    several targets (§4 A-08, A-09; SC-077-C)
+                No candidate's syntax proves that a Kind is declared.
+
+COMPOSITION     A schema composes fields; a field definition owns meaning and domain (row 078
+                Done). An occurrence names a field and states its requiredness and cardinality in
+                the schema; it carries no meaning, domain or reference. Composing a field
+                respects its governed meaning and domain (Artifact 072 §10; 076 RF-076-2) — an
+                EXTERNAL obligation, never waived by a NATIVE pass.
+                No reference carrier. No source mandates a field-definition reference for every
+                occurrence, and this contract defines none (076 RF-076-2). A field occurrence is
+                therefore never an illegal reference merely because no FIELD-DEFINITION Record
+                resolves for it: it is not a reference. Whether the composed field is governed
+                as 072 requires is the EXTERNAL check of O-08.
+                Concrete references. RMS §10.3 permits R → R references to Registry
+                definitions, including FIELD-DEFINITION Records; they are permitted, not
+                required (076 RF-076-2). This contract carries none. Where a later governing
+                source establishes one, its target must actually be a FIELD-DEFINITION Record
+                and the relation must satisfy Artifact 063 (RB-1, RB-5, RB-6).
+                Not 078's closure. Which FIELD-DEFINITION governs a named field within a
+                schema's scope, whether field order is significant, and the final overlap
+                closure are row 078's, exactly as its row assigns them (076 §8, SC-076-D). This
+                contract does not preempt 078 and adds nothing to its Done; if 078's closure
+                calls for a different encoding, this contract changes through its own governed
+                change, and row 078 is not edited here.
+
+RESOLUTION      A conforming Record carries the baseline Record identity that later
+                Registry-definition resolution requires (§2): partition, kind and object_id.
+                Artifact 077 does not by itself establish the complete id+version resolution
+                representation: rows 108–110 retain authority over Registry evolution and version
+                representation, and row 115 owns consumer resolution — "consumer resolves by
+                id+version". Resolution never relies on slug, which is decoration only.
+                applicability, occurrence and definition do not thereby become this Record's
+                identity. This contract implements no resolver, lookup, index, cache, storage
+                path, fallback or version selection, and defines no lookup of the schema that
+                applies to a given Kind; row 114 owns Registry operations —
+                "create/resolve/version a definition". Resolution transfers nothing, and
+                resolvable is not legal (Artifact 063 §11). (076 RS-076-1 to RS-076-6)
+
+VERSIONABILITY  Nothing here prevents the Registry evolution and versioning model of rows 108–110
+                from applying to a SCHEMA-DEFINITION. Artifact 077 defines no version
+                identifier, numbering scheme, pinning representation, supersession, replacement
+                or deprecation representation, effective date, migration, retention or
+                compatibility rule, or temporal lifecycle mechanism; those decisions stay with
+                rows 108 (evolution), 109 (versioning, pinning) and 110 (supersession,
+                deprecation). Nor does it say whether two Records may define the same schema —
+                as versions of one definition, for example — or how such Records relate; that is
+                theirs too. This contract is open to whatever Registry-owned representation those
+                rows establish, provided it leaves the seven-field envelope unchanged and keeps
+                within the Record Model boundaries (P-05, P-06); no World History Record is used
+                or required (I-102). Changing or superseding a schema definition does not by
+                itself migrate, rewrite or revalidate any Record of any model, and this contract
+                neither requires nor forbids a later governed response (076 VS-076-3).
+                Versionable therefore means: Artifact 077 does not structurally obstruct the
+                evolution and versioning architecture rows 108–110 own, under Registry-owned
+                rules and no lifecycle shared with other models (076 SD-10). Absence here is not
+                a decision that a SCHEMA-DEFINITION carries no version. (076 VS-076-1 to
+                VS-076-3; SC-077-N)
+
+REFERENCES      The one concrete reference obligation this family carries is the applicability
+                target (076 RF-076-1): a declaration reference to a declared Record Model and,
+                for a Kind-scoped target, to a declared Kind of that model. Neither is an R → R
+                reference to a definition Record, an owned edge or a Relationship Record (076
+                RF-076-5; I-102). A field occurrence is no reference (§6 COMPOSITION). References
+                that definition content carries are bounded by 076 RF-076-3, RF-076-4 and
+                RF-076-6 (§3 definition). No W/E/P/V/I domain instance, no domain state and no
+                runtime instance is a target, a dependency or an authority (076 RF-076-7 to
+                RF-076-9; Artifact 063 RB-2 to RB-4). A reference transfers no ownership,
+                admission or authority, is not by itself a semantic dependency, and is not legal
+                because it resolves. An undetermined target is not legal: "Undetermined is not
+                permitted." (Artifact 063 RB-6). Every reference a Record carries is legal, not
+                merely resolvable (076 SD-13). (076 RF-076-1 to RF-076-11)
+
+LAYER           Artifact 062 §6 does not place SCHEMA-DEFINITION: "Their layer placement is not
+                established by current sources". No layer is assigned here, no element takes
+                its meaning from a layer, and no layer-based dependency rule is applied (076
+                SC-076-L; SC-077-L).
+
+EXECUTION       "Registry does not execute schemas." (RMS §10.2). No element of this contract
+                parses, loads or applies a schema; runs, records or blocks a check; creates,
+                mutates, repairs or migrates a Record; or holds validator state (076 §9 items
+                1–9; P-01A). A shared structural validator may read a conforming Record and check
+                another model's Record against it; that is implementation validation (RMS §20),
+                and its output is a "DERIVED verdict" (Blueprint §26.3b), never Registry content.
+                The NATIVE checks of this file are contract statements, not an implemented
+                validator. Blueprint §12.15 names JSON Schema as the adopted structural-validation
+                realization; this file is not JSON Schema, generates no validator, and does not
+                decide what a later realization looks like (SC-077-J).
+
+CONTENT         Constraints, relationships and validation references stay three things, and the
+                tiers stay apart: CONSTRAINT-DEFINITION (what must hold), VALIDATION-RULE (how a
+                condition is checked) and implementation validation (the running check) are not
+                collapsed into this Record or into each other (076 SD-6; RMS §10.6, §20). A
+                schema's relationships create no Relationship Record and no runtime relationship
+                ownership (076 SD-7; RMS §15). The binder of constraints to validation rules is
+                row 113's.
+
+SOVEREIGNTY     Registry governs the definitions; each Record Model owns its Records (Blueprint
+                §13.6e; I-105). A SCHEMA-DEFINITION applicable to World Records gives the
+                Registry no World Record, and the same holds for E, P, V and I. Conforming is not
+                belonging, and failing to conform gives the Registry no authority over a Record
+                (076 §13). Whether a model-owned schema artifact — row 184's CHARACTER schema,
+                for example — is described by, declared through or independent of a
+                SCHEMA-DEFINITION Record is not established; no element binds the two
+                (076 SC-076-I; SC-077-G).
+
+LS              Row 077 carries LS: LS-1 and Why: LS-1. Roadmap PART III defines LS-1 as "every
+                Kind spec ↔ its Registry KIND-DEFINITION. ATOMIC-PAIR." A SCHEMA-DEFINITION
+                structural contract is neither a Kind specification nor a KIND-DEFINITION, and
+                the Registry's own fourteen pairs are 064 ↔ 075 (Roadmap §0.7). This file is not
+                a lockstep partner: 076 ↔ 077 is no pair, and no LS-1 meaning is attached to the
+                family (076 §15; SC-077-B).
+
+MATERIALIZATION This file is an authored source. A SCHEMA-DEFINITION Record conforming to it is
+                committed to canon/registry/** only through the Mutation Coordinator after
+                G-CANON-R (Roadmap §0.8, PART X; 076 §13). Nothing here authors or commits any
+                Record, and Canon: canonical-about-meaning and CD: yes license no write
+                (SC-077-H). The canonicalization-source rule of Roadmap §0.8 does not apply to
+                this file: rows 075, 085, 105, 106 and 107 are the canonicalization sources, and
+                row 077 is a structural contract.
+
+DOWNSTREAM      Row 077's → names all model schemas. Every concrete SCHEMA-DEFINITION Record
+                conforms to this contract, whatever schema it defines. The model-owned schema
+                rows — World 184, 186, 188, 190, 192, 194, 196, 199, 201, 233, 236; Epistemic
+                260, 262, 264, 267, 269, 271, 273; Production 304, 306, 308, 310, 312, 315, 317,
+                319, 322, 324, 326, 329, 331, 406; Visual 347, 349, 352; Issue 368, 370, 372,
+                374, 376 — do not list 077 in their H. The
+                unlock is preserved as written; no row's H, Val or Done is changed, and no model
+                schema is required to have a SCHEMA-DEFINITION Record (SC-077-G). Row 114 lists
+                066–107, and so 077, in its H; it consumes this contract under its own Val. Row
+                078 (H: 076, 072) does not list 077 and is not changed. A downstream artifact uses
+                this contract only as its own H and Val allow.
+
+==================================================================================================
+7. DECISION CASES (schematic — no identifier is minted; nothing here is Registry data)
+==================================================================================================
+
+Field names are written <field-a>, <field-b>: this contract defines no field of any Kind's
+schema (P-04).
+
+CONFORMS   A  partition R, kind SCHEMA-DEFINITION; one target, model W, kind CHARACTER;
+              occurrences <field-a> required yes 1..1 and <field-b> required no 0..*; a
+              non-empty definition. Registry owns this Record; World owns every Character
+              Record; no check runs inside the definition (076 §17 A)              NATIVE
+                         + EXTERNAL (CHARACTER declared by World; both fields established by
+                           World's field architecture; composition respects their meaning)
+REJECT     B  partition W with kind SCHEMA-DEFINITION                 (SD-1)        NATIVE
+REJECT     C  envelope kind CHARACTER — the applicable Kind in the Record's own Kind
+                                                                      (076 §14)     NATIVE
+REJECT     D  a validator element, or a verdict stored on the Record   (P-01A)       NATIVE
+REJECT     D  definition holding a procedure that checks Character Records and rewrites the
+              failing fields                                          (SD-8)        EXTERNAL
+REJECT     E  definition citing W-CH-000001-Maximus as what the structure should be
+                                                                      (RF-076-7)    EXTERNAL
+REJECT     E  applicability.kind W-CH-…-<slug> — a domain instance    (A-05)        NATIVE
+BOUNDARY   F  occurrences naming fields, and no field-definition reference anywhere — conforms
+              on composition: no reference carrier is required (076 RF-076-2); whether each
+              field is governed as 072 requires is O-08's                          EXTERNAL
+BOUNDARY   F  a field_definition_ref element added — outside this contract's element set
+              (P-02). That is not a ruling that an R → R reference to a FIELD-DEFINITION is
+              illegal; no source mandates such a carrier and this contract defines none
+                                                                                   STATIC
+UNRESOLVED G  one target, model W, no kind — a Model-level scope. Representable; not accepted,
+              not rejected (A-08; SC-076-N)                                        STATIC
+UNRESOLVED H  two targets, (W, CHARACTER) and (W, ORGANIZATION) — several scopes (A-09)
+                                                                                   STATIC
+UNRESOLVED H  targets (W, CHARACTER) and (E, <DECLARED-KIND>) — several models; the carrier
+              holds it; nothing here authorizes cross-model applicability (A-09)    STATIC
+REJECT     H  targets (W, CHARACTER) and (W, CHARACTER)               (A-07)        NATIVE
+BOUNDARY   I  no version element present — conforming: version representation is 108–110's
+              to establish, and its absence here is not a decision (P-01B)          STATIC
+REJECT     J  version, status, tier or applicable_kind added as an eighth envelope field
+                                                                      (P-05)        NATIVE
+REJECT     K  a references list naming several unrelated Registry definitions
+                                                                      (P-02)        NATIVE
+REJECT     K  definition referring to a CONTROLLED-VOCABULARY Record — an admissible category,
+              no established relation                                 (RF-076-6)    EXTERNAL
+REJECT     L  envelope kind SD, an invented code                       (§2 kind)     NATIVE
+REJECT     M  target model W, kind WSV                                (A-05)        NATIVE
+REJECT     N  target model S                                          (A-04)        NATIVE
+REJECT     O  target kind CHARACTER with no model                     (A-02)        NATIVE
+REJECT     P  target model P, kind CHARACTER — not declared by Production
+                                                                      (A-06)        EXTERNAL
+REJECT     Q  <field-a> in two occurrences                            (O-03)        NATIVE
+REJECT     Q  occurrence.cardinality 2..1; occurrence.required sometimes
+                                                                      (O-04, O-05)  NATIVE
+REJECT     R  occurrence slug with required no                        (O-07)        NATIVE
+REJECT     R  a target that is otherwise UNRESOLVED (model W, no kind) in a Record whose
+              definition is empty — the REJECT outranks UNRESOLVED    (A-10)        NATIVE
+BOUNDARY   S  a validation reference in definition to a VALIDATION-RULE Record — an admissible
+              category; which family a validation reference targets is not established
+              (SC-076-J)                                                           EXTERNAL
+REJECT     S  a validation reference to a running validator process   (RF-076-3)    EXTERNAL
+BOUNDARY   T  a type or default stated in definition — neither required nor forbidden
+              (P-01C; SC-076-K)                                                    STATIC
+BOUNDARY   U  every NATIVE check passes but applicability.kind's declared status cannot be
+              established — not legal (Artifact 063 RB-6)                          EXTERNAL
+BOUNDARY   V  structurally conforming, not yet resolved by any consumer — the structure
+              conforms; whether it resolves is row 115's, and resolvable is not legal
+                                                                                   EXTERNAL
+BOUNDARY   W  a schema definition superseded by a later one — no Record of any model is
+              migrated or revalidated by that fact, and a later governed response is not
+              forbidden here (076 VS-076-3)                                        STATIC
+BOUNDARY   X  whether this Record describes row 184's CHARACTER schema — not established; no
+              element binds the two (SC-076-I)                                     STATIC
+
+==================================================================================================
+8. SOURCE CONDITIONS
+==================================================================================================
+
+SC-077-A  Req: RR-17 is carried exactly; its text is unavailable (GAP-C) and is not invented (076
+          SC-076-F). Non-blocking.
+SC-077-B  LS metadata. Row 077 carries LS: LS-1 and Why: LS-1. Roadmap PART III defines LS-1 as
+          every Kind spec ↔ its Registry KIND-DEFINITION, and the Registry's own pairs are 064 ↔
+          075 (Roadmap §0.7). A SCHEMA-DEFINITION structural contract is neither; no source
+          states how row 077's label or its Why relates to PART III (076 SC-076-H). The
+          metadata is preserved exactly. No LS-1 meaning, 076 ↔ 077 pair, lockstep class,
+          commit atomicity, dependency or reference is invented. Recorded, not resolved; ROADMAP
+          ISSUE, non-blocking.
+SC-077-C  Applicability cardinality and presence (076 SC-076-N). No source states how many
+          Models and Kinds one schema definition may name, whether both categories are always
+          present, or whether a schema may apply at Model level without a Kind. No source assigns
+          the question, row 078 included. 077 owns only the representation: a list of targets,
+          each a model with an optional Kind, with the Model-level and several-target shapes
+          UNRESOLVED (§4 A-08, A-09). Treatment: representable, neither accepted nor rejected;
+          no admissibility decided. That a Kind is always written with its owning model (A-02)
+          is how the Kind is identified — "of its owning model" (076 RF-076-1) — not a decision
+          that a schema must state a Model scope apart from its Kind; a Kind-scoped target
+          states one scope, the Kind's. Non-blocking for Val — every named target is a declared
+          entity (§3) — and for Done — the structure is fully specified. Settling it is for a
+          governing source; if one does, A-08 and A-09 change through a governed change of this
+          contract. SOURCE GAP.
+SC-077-D  Field identification, name form and order (076 SC-076-D, §7). No source fixes how a
+          schema identifies the fields it composes; this contract carries the field by name, a
+          077 CHOICE, and fixes no case rule or spelling. Which FIELD-DEFINITION governs a named
+          field within a schema's scope, and whether field order is significant, are row 078's
+          (H: 076, 072). This contract preempts neither and adds nothing to row 078's Done. If
+          078's closure calls for a different encoding, this contract changes through its own
+          governed change. DEFERRED TO 078, non-blocking.
+SC-077-E  Constraints, relationships and validation references (076 SC-076-J). No source fixes
+          their form or target family. They are definition content here; no dedicated element,
+          target family or relation is fixed, and any reference carried is bounded by 076
+          RF-076-3, RF-076-4 and RF-076-6. The constraint/validation binder is row 113's. No
+          owner is established for the form. SOURCE GAP, non-blocking.
+SC-077-F  Types and defaults (076 SC-076-K). Schema-side and never a field definition's
+          (Blueprint §9.4; Artifact 072); whether a SCHEMA-DEFINITION carries them is not
+          established. No element is defined, none is required, and definition may state them
+          (P-01C). No owner is established. SOURCE GAP, non-blocking.
+SC-077-G  Model-owned schemas and → all model schemas (076 SC-076-I). The model-owned schema rows
+          (§6 DOWNSTREAM) are owned by their models, carry their own canonical gates, and list
+          no 077 in their H. Whether such a schema is described by, declared through or
+          independent of a SCHEMA-DEFINITION Record is not established, and no element binds
+          the two. The unlock is preserved; no row is edited and no dependency is added. SOURCE
+          GAP and ROADMAP ISSUE, non-blocking.
+SC-077-H  Row 077 carries T: schema · Canon: canonical-about-meaning · CD: yes on a docs/** path.
+          Artifact 003's general convention gives a docs/** specification Canon: n/a; whether it
+          reaches a structural contract is not stated (076 SC-076-M; 073 SC-073-F). The metadata
+          is preserved exactly; this file is not a Registry Record, and CD: yes licenses nothing.
+          Recorded, not resolved.
+SC-077-I  No two-character Registry Kind code is established, and kind codes outside World are
+          not frozen (Artifact 063 §9). The envelope kind is constrained symbolically,
+          applicability.kind is named rather than coded, and no code is minted. Identity binding
+          is row 117's.
+SC-077-J  Realization and notation. The Blueprint names JSON Schema and LinkML as realization
+          choices (§12.15, §26.3b). This file follows the repository's local structural-contract
+          notation (§0) — Artifact 067's, with 069's CHECK line, 071's REPOSITORY CONVENTION
+          label, 073's conditional and absent, and this file's dotted parts, one-or-more,
+          zero-or-one and UNRESOLVED — and adopts no serialization, schema language or generated
+          validator. No repository-wide schema language is established.
+SC-077-K  Declared status has no single proof mechanism across the six models (Artifact 063
+          SC-063-H). applicability.kind's declared status and ownership by applicability.model
+          are therefore an EXTERNAL check whose proof is the owning model's. For
+          applicability.model the closed set is itself the declared set (Artifact 063 §7 row 2).
+          Recorded; non-blocking.
+SC-077-L  Layer placement (076 SC-076-L; Artifact 062 §6). Not established; none is assigned,
+          and no layer-based dependency rule is applied. Concrete dependency rules are row 111's.
+          Non-blocking.
+SC-077-M  Envelope fields as occurrences. The seven envelope fields bind every Record (RMS §4;
+          Artifact 033), yet no source states whether a schema definition lists them among its
+          occurrences. This contract neither requires nor forbids listing them; where one is
+          listed it must be required (O-07), and nothing else about it is decided. Recorded, not
+          resolved; non-blocking.
+SC-077-N  Version representation (076 SC-076-E). Deferred to rows 108–110; not defined and not
+          prohibited here (P-01B). Non-blocking.
+
+==================================================================================================
+9. CONFORMANCE CONDITIONS — each labelled NATIVE, EXTERNAL, STATIC or REPOSITORY
+==================================================================================================
+
+C-077-01  STATIC    The header reproduces repaired Roadmap row 077 exactly.             header
+C-077-02  STATIC    Artifact 076 is the only hard dependency, consumed unchanged; 067, 069, 071
+                    and 073 are notation precedents only.                                §0
+C-077-03  STATIC    The file is a structural contract, not a SCHEMA-DEFINITION Record, a
+                    model-owned schema or a validator.                                   §0
+C-077-04  NATIVE    Universal envelope: exactly the seven RMS §4 fields, each present and
+                    exactly-one, none added, removed or renamed. STATIC: the family elements are
+                    not envelope fields.                                        §1, §2, P-05
+C-077-05  NATIVE    partition is R.                                                   §2
+C-077-06  NATIVE    Envelope kind is the symbolic Registry Kind SCHEMA-DEFINITION, never the
+                    applicable Kind.                                                    §2
+C-077-07  STATIC    No Registry Kind code is invented.                          §2; SC-077-I
+C-077-08  STATIC    Identity is object_id under the universal grammar, independent of the
+                    schema's name, applicability, fields and domain Records. NATIVE: object_id is
+                    present.                                                         §2, §6
+C-077-09  STATIC    slug is never the basis of identity or resolution.              §2, §6
+C-077-10  NATIVE    Family content represents one governed schema definition: applicability,
+                    occurrence and definition are each present.                       §1, §3
+C-077-11  NATIVE    Content is not empty: at least one target, at least one occurrence, and a
+                    non-empty definition. EXTERNAL: that the content expresses lawful schema
+                    structure.                                                    §3, §4
+C-077-12  STATIC    Applicability is represented without inventing Model/Kind cardinality: the
+                    Model-level and several-target shapes are UNRESOLVED, not accepted or
+                    rejected.                                         §0, §4 A-08, A-09; SC-077-C
+C-077-13  NATIVE    Any named model is one of W, E, P, R, V, I. EXTERNAL: any named Kind is
+                    declared by its model.                                       §3, §4 A-04, A-06
+C-077-14  STATIC    No applicability target creates, declares or admits a Model or Kind.  §3; P-03
+C-077-15  EXTERNAL  Composition respects each field's FIELD-DEFINITION meaning and domain.
+                    STATIC: an occurrence carries no meaning or domain.     §3, §6; O-08
+C-077-16  STATIC    No mandatory R → R reference carrier is invented for field occurrences, and
+                    R → R references are not declared illegal.                P-02; §6
+C-077-17  NATIVE    Every occurrence states requiredness and cardinality. STATIC: both are
+                    schema-side.                                                  §3, §4 O-02
+C-077-18  STATIC    Constraints, validation rules and implementation validation are not
+                    collapsed.                                                      §3; §6 CONTENT
+C-077-19  STATIC    No constraint, relationship or validation-reference relation or target family
+                    is invented.                                         §3 definition; P-02
+C-077-20  NATIVE    No structured part holds a Record identifier. EXTERNAL: definition uses no
+                    domain or runtime instance as a target or authority.       §3; §6 REFERENCES
+C-077-21  STATIC    Reference legality is distinguished from mechanical resolution.      §6
+C-077-22  STATIC    Reference is distinguished from semantic dependency; no dependency element.
+                                                                                     P-09; §6
+C-077-23  NATIVE    Resolution prerequisite: partition, kind and object_id are present. STATIC:
+                    no resolver is implemented, and the complete id+version representation is
+                    not claimed.                                                     §2, §6
+C-077-24  STATIC    The representation rows 108–110 own is not obstructed.      §1, §6, P-01B
+C-077-25  STATIC    No version or supersession mechanism is invented.               P-01B, §6
+C-077-26  STATIC    No schema execution or validator implementation is defined.  §6 EXECUTION
+C-077-27  STATIC    No domain Record ownership transfers to the Registry.         P-03; §6
+C-077-28  NATIVE    No extra envelope field. STATIC: no universal semantic schema.  P-05, P-06
+C-077-29  STATIC    Every check that needs evidence outside the Record is labelled EXTERNAL, and
+                    no parser or validator is claimed.                       §0, §3, §4, §6
+C-077-30  STATIC    Every element, part and rule names its basis, and every 077 choice is labelled
+                    with what it does not decide.                     §3, §4, §6 REPRESENTATION
+C-077-31  STATIC    Row 078's final schema/field closure is preserved.       §6; SC-077-D
+C-077-32  STATIC    LS: LS-1 is preserved without an invented pair.         P-08; SC-077-B
+C-077-33  STATIC    → all model schemas is preserved; no other row's H is changed.
+                                                                    §6 DOWNSTREAM; SC-077-G
+C-077-34  REPOSITORY No canonical Registry Record is authored or committed.  §0; §6
+C-077-35  REPOSITORY Only docs/registry/schema_definition.schema is created by this artifact.
+                                                                                    row 077
+C-077-36  STATIC    Row 077's Val is mapped clause by clause to evidence.                §10
+C-077-37  STATIC    Done: schema is shown by elements, parts, rules, prohibitions and a
+                    rejection register.                                           §1–§5; §10
+C-077-38  STATIC    Source gaps are classified as recorded, deferred or unresolved, and none is
+                    closed without a source.                                             §8
+
+==================================================================================================
+10. ROADMAP TRACE — contract-level
+==================================================================================================
+
+The statuses below assess this file as a structural contract. They claim no resolver, version
+mechanism, validator, declared-status proof or concrete SCHEMA-DEFINITION Record; those belong to
+their own rows.
+
+Val  definition resolves          §2 baseline Record identity; §6 RESOLUTION — the prerequisite
+                                  for later Registry resolution, without claiming the complete
+                                  id+version representation; version representation stays with
+                                  rows 108–110, and resolution itself is 114's and 115's
+Val  versionable                  §6 VERSIONABILITY: 077 defines no version mechanics and does
+                                  not obstruct the Registry evolution and versioning
+                                  representation rows 108–110 own; §1; P-01B (deferred, not
+                                  prohibited)
+Val  references only declared     §3 applicability.model (a declared Record Model, the closed
+     entities (063)               set) and applicability.kind (a declared Kind of that model, an
+                                  EXTERNAL check); a field occurrence is no reference;
+                                  definition-content references bounded by 076 RF-076-3,
+                                  RF-076-4, RF-076-6; §4; §6 REFERENCES, COMPOSITION; P-02
+Done schema                       §1–§5: ten elements and seven parts, each with requiredness,
+                                  cardinality, constraint, check and basis; the applicability
+                                  and composition rules of §4; the structural prohibitions and
+                                  rejection register of §5
+Why  LS-1                         preserved as row metadata; no pair invented; SC-077-B
+H    076                          consumed unchanged; §1–§6 encode 076 §21 items 1–10, SD-1 to
+                                  SD-14, RS-076-1 to RS-076-6, VS-076-1 to VS-076-3 and RF-076-1
+                                  to RF-076-11
+LS   LS-1                         preserved; no pair invented; SC-077-B
+G    —                            no gate introduced
+→    all model schemas            preserved; every concrete SCHEMA-DEFINITION Record conforms;
+                                  no model-schema row lists 077 in H, and none is changed;
+                                  SC-077-G
+Req  RR-17                        carried; text unavailable; SC-077-A
