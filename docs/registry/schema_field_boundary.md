@@ -214,7 +214,7 @@ Roadmap `COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md`.
 | SD-6; SD-7 | constraints, validation references and relationships kept apart and executing nothing | §10.3 |
 | SD-8; SD-9 | no execution; no ownership transfer | SF-078-13, SF-078-14 |
 | SD-11; SD-12 | no new Kind; no universal semantic schema | SF-078-19 |
-| SD-13; RF-076-2 | every reference carried is legal under 063; no field-reference carrier is mandated | §7.4; SF-078-11, SF-078-12 |
+| SD-13; RF-076-2 | every reference carried must be legal under 063, not merely resolvable; no field-reference carrier is mandated | §7.4; SF-078-11, SF-078-12 |
 | SD-14 | *"may define"* is a permission, not a required element | §6 |
 | RF-076-11 | reference ≠ dependency | §7.5 |
 | RS-076-1, RS-076-2; VS-076-1 | independent R Record identity; versionable under 108–110 | §11.3, §11.4 |
@@ -306,12 +306,28 @@ required element of every `SCHEMA-DEFINITION` Record: RMS §10.2's *"may define"
 ### 7.1 What composition is
 
 **078 CLOSURE**, from row 078 `Done`, Blueprint §9.4 and 076 §7–§8. *To compose a field* is for a
-schema to state, as part of the structure it defines, that the field occurs in the Records the
-schema applies to, and, for that occurrence, whether it is required, how many values it may carry
-and, where the schema makes order meaningful, where it stands. What the field means, and over what
-domain, the schema does not state: those are the governing `FIELD-DEFINITION`'s. A *field
-occurrence* is that structural presence — *"the field present in a schema or Record — structure"*
-(072 §28).
+schema to include it as a declared occurrence in the structure it defines, and to govern its
+structural participation there: whether it is required, how many values it may carry and, where
+the schema makes order meaningful, where it stands. Composition gives the field its place in the
+schema-defined structure. It does not by itself assert that every Record the schema applies to
+carries the field: whether a conforming Record must carry it is the schema's requiredness, within
+the higher governing constraints (§8.1, §8.4). **REQUIRED SYNTHESIS:** schema structure includes
+*"required-ness"* (Blueprint §9.4) and a schema definition may define *"required fields"* (RMS
+§10.2); that distinction would be empty if composing a field already required it in every Record.
+What the field means, and over what domain, the schema does not state: those are the governing
+`FIELD-DEFINITION`'s.
+
+A *field occurrence* is the field's structural presence — *"the field present in a schema or Record
+— structure"* (072 §28). The two levels stay apart:
+
+- **in a schema** — the field as part of the structure the schema defines, permitted or required;
+- **in a Record** — a conforming Record actually carrying the field, with a value its own Record
+  Model owns.
+
+Inclusion at the first level does not by itself put the field into every conforming Record. 077's
+`occurrence.required` makes the difference explicit: `yes` — *"the field must occur in a Record
+that conforms to the schema"*; `no` — *"the field may be absent from such a Record"*. Neither level
+is a Registry Kind, and neither carries a Record identity of its own (§11.2).
 
 For a schema applicable to the declared World Kind `CHARACTER`, conceptually:
 
@@ -320,7 +336,8 @@ For a schema applicable to the declared World Kind `CHARACTER`, conceptually:
 3. the schema states whether the occurrence is required;
 4. the schema states how many values the occurrence may carry;
 5. the schema states any order it makes meaningful;
-6. a Character Record carries a value under World's ownership;
+6. a Character Record that carries the field carries its value under World's ownership; where the
+   schema does not require the field, a conforming Character Record may omit it;
 7. no step changes what the field means, or the domain over which that meaning holds;
 8. no step gives the Registry ownership of the Character Record or its value.
 
@@ -349,7 +366,7 @@ contains no such Record or its content, and is not *"a collection that replaces 
 
 | | Composition | Embedding — not permitted |
 |---|---|---|
-| what the schema states about the field | that it occurs, its requiredness, its cardinality, any meaningful order | what the field means, or the domain over which it means it |
+| what the schema states about the field | that it is part of the structure, its requiredness, its cardinality, any meaningful order | what the field means, or the domain over which it means it |
 | where the field's meaning is held | in its `FIELD-DEFINITION` only | in the schema as well, as a second authoritative account |
 | many schemas composing one field | many structural contexts, one meaning | one meaning per schema, free to diverge — the risk 064 §11 question 13 names |
 
@@ -382,7 +399,14 @@ representation is not fixed here:
   `SCHEMA-DEFINITION` Records; it is not the only representation the constitution permits, and
   this note neither requires nor forbids a governed change of it;
 - **absence of a carrier is not absence of meaning.** The governed meaning of a composed field
-  stands whether or not its occurrence carries a reference.
+  stands whether or not its occurrence carries a reference;
+- **possible is not present.** A concrete reference to a `FIELD-DEFINITION` is possible only
+  conditionally: RF-076-2 states what it must be where one is carried, Artifact 063 must be
+  satisfied, and a governed representation must carry it. Artifact 077's occurrence has three parts
+  — `occurrence.field`, `occurrence.required`, `occurrence.cardinality` — and no reference part. An
+  added one, such as `field_definition_ref`, is outside 077's element set (077 P-02), and 077 adds:
+  *"That is not a ruling that an R → R reference to a FIELD-DEFINITION is illegal"* (077 §7, case
+  F). Neither an admissible target category (063 RB-5) nor composition itself creates a carrier.
 
 ### 7.5 Composition is not a dependency edge
 
@@ -423,13 +447,14 @@ cycle rules apply to it.
 `SCHEMA-DEFINITION` define *"required fields"*; row 078 places *"required"* with the schema; 072
 FD-9 gives the field side none.
 
-Requiredness is a property of an occurrence in one schema: whether the field must occur in the
-structure that schema defines. A `FIELD-DEFINITION` does not make its field mandatory in every
-schema that could use its meaning, or in any. Two schemas composing the same governed field may
-state different requiredness; that produces no second meaning. The schema's statement is bounded by
-the constitution — a universal envelope field cannot be made optional (§8.4) — and by the model:
-*"Which Records carry the field is decided by the model's field architecture and schemas."* (072
-§10).
+Requiredness is a property of an occurrence in one schema: whether a Record that conforms to that
+schema must carry the field. An occurrence that is not required is still part of the schema's
+structure, and a conforming Record may omit it (§7.1). A `FIELD-DEFINITION` does not make its field
+mandatory in every schema that could use its meaning, or in any. Two schemas composing the same
+governed field may state different requiredness; that produces no second meaning. The schema's
+statement is bounded by the constitution — a universal envelope field cannot be made optional
+(§8.4) — and by the model: *"Which Records carry the field is decided by the model's field
+architecture and schemas."* (072 §10).
 
 ### 8.2 Cardinality — schema side
 
@@ -596,8 +621,9 @@ Three responsibilities and a value stay apart:
 - the schema governs the field's structural occurrence;
 - the owning model's Record carries the value.
 
-For World's `status` (World-owned, not universal; RMS §14): World owns each Character Record's
-`status` value and its own state semantics; the Registry governs the applicable definitions;
+For World's `status` (World-owned, not universal; RMS §14): World owns the `status` value of any
+Character Record that carries the field, and its own state semantics; the Registry governs the
+applicable definitions;
 per-Kind vocabularies may differ; a schema states whether `status` occurs, is required and how many
 values it carries; no forced enum union arises. No `FIELD-DEFINITION` ↔ `CONTROLLED-VOCABULARY`
 reference or cardinality is created (SC-072-H; SC-078-H). 081 and 082 are not implemented here.
@@ -677,8 +703,9 @@ created, and none is prevented.
 ### 11.5 Row 078 `Val`: *"references only declared entities (063)"*
 
 - Composition requires no reference (§7.4).
-- Any concrete field reference carried is R → R to a `FIELD-DEFINITION` Record, and must lie in a
-  relation the family establishes and satisfy 063 RB-1 to RB-6 (RF-076-2; RF-072-2).
+- Where a concrete field-definition reference is authorized and structurally carried, it is R → R
+  to a `FIELD-DEFINITION` Record, and must lie in a relation the family establishes and satisfy 063
+  RB-1 to RB-6 (RF-076-2; RF-072-2). Artifact 077's current occurrence carries none (§7.4).
 - Any Model or Kind a schema names as applicability, or a field definition names as domain, is a
   declared one (RF-076-1; RF-072-1).
 - An admissible target category is not a concrete relation (063 RB-5): nothing here authorizes a
@@ -770,8 +797,12 @@ No row is marked closed because a representation can carry it.
 | a schema claims a World-scoped meaning as universal because it names the field | ILLEGAL — the claimed expansion | SF-078-09 |
 | a schema composes a field whose governing definition cannot be identified | UNRESOLVED — no complete semantic conformity claimed | SF-078-10; SC-078-E |
 | a schema's applicability reaches Records outside a field's domain | that definition's meaning does not reach them; the rest UNRESOLVED | SF-078-09; SC-078-D |
-| an occurrence names its field by name, with no Record reference | LEGAL as current representation (077) | SF-078-11 |
-| an occurrence carries an R → R reference to a `FIELD-DEFINITION` Record | LEGAL at the boundary where carried as RF-076-2 describes — its target actually a `FIELD-DEFINITION`, 063 satisfied; 077 currently defines no element for one | SF-078-12 |
+| an occurrence names its field by name, with no Record reference | VALID as the current representation (077), subject to 077's NATIVE and EXTERNAL checks — not thereby conforming | SF-078-11 |
+| an occurrence carries an R → R reference to a `FIELD-DEFINITION` Record | CONDITIONALLY ADMISSIBLE IN ARCHITECTURE; NOT A CURRENT 077 OCCURRENCE CARRIER — RF-076-2 states what such a reference must be where carried, and 063 must be satisfied; 077's occurrence has no reference part, and a carrier needs a governed representation, which this note neither introduces nor prohibits | SF-078-11, SF-078-12; §7.4 |
+| a current `SCHEMA-DEFINITION` Record adds an occurrence part such as `field_definition_ref`, pointing to a real `FIELD-DEFINITION` | NOT CONFORMING to 077's current element set (077 P-02); the target's existence does not authorize the carrier; no ruling that the reference is illegal | SF-078-11; §7.4 |
+| a reference to a real `FIELD-DEFINITION` Record whose concrete relation no family contract establishes | NOT LEGAL — an admissible category is necessary, not sufficient (063 RB-5) | SF-078-12 |
+| a reference whose target's category or declared status cannot be established | NOT LEGAL — *"Undetermined is not permitted."* (063 RB-6) | SF-078-12 |
+| a later governed revision establishes both the relation and a carrier | potentially LEGAL under that contract, if 063 is met; not approved in advance here | SF-078-12; §7.4 |
 | a schema cites a domain Record as authority for a field's meaning | ILLEGAL | SF-078-12; RMS §10.3 |
 | a schema that makes order meaningful states it | LEGAL; encoding 077's | SF-078-07 |
 | a reader treats 077's occurrence sequence as semantic order | ILLEGAL inference | SF-078-07 |
@@ -789,7 +820,9 @@ Model W and the declared World Kind `CHARACTER` composes World's `status` with r
 and cardinality `<c>`. The schema owns that `status` occurs in its structure, and its requiredness
 and cardinality. The `FIELD-DEFINITION` of `status` keeps what `status` means and over what domain.
 The applicable `CONTROLLED-VOCABULARY` definition, where one governs, stays separate. World owns
-every Character Record's `status` value. No Registry definition runs a check. Nothing here says
+the `status` value of any Character Record that carries the field; whether a conforming Character
+Record must carry it is the schema's requiredness `<r>`, and where `<r>` does not require it, a
+conforming Character Record may omit it. No Registry definition runs a check. Nothing here says
 what `<r>` or `<c>` is, adds a `status` value, or makes `status` universal.
 
 **B. Illegal — semantic redefinition.** A schema composes a governed field and states that, in its
@@ -817,11 +850,14 @@ example invents no compatibility rule for other domain and applicability shapes 
 077 writes that as required yes and 1..1 (O-07). It does not follow that every schema must list all
 seven envelope fields (SC-078-K).
 
-**G. Legal as current representation — no reference carrier.** Artifact 077 names an occurrence by
-field name rather than by a Registry Record reference. That is legal as the current structural
-representation, subject to 077's EXTERNAL checks and the source gaps recorded here. The absence of
-a carrier does not remove the field's governed meaning (§7.4). Field-name lookup and domain
-compatibility are not thereby resolved (SC-078-D, SC-078-E).
+**G. Valid as current representation — no reference carrier.** Artifact 077 names an occurrence by
+field name rather than by a Registry Record reference. That is valid as the current structural
+representation, subject to 077's NATIVE and EXTERNAL checks and the source gaps recorded here. The
+absence of a carrier does not remove the field's governed meaning (§7.4). Field-name lookup and
+domain compatibility are not thereby resolved (SC-078-D, SC-078-E). A current Record that instead
+adds an occurrence part such as `field_definition_ref` does not conform to 077's element set (077
+P-02), even if it points to a real `FIELD-DEFINITION`; that is no ruling that such a reference is
+illegal, only that 077 does not carry one.
 
 **H. Order.** A schematic schema composes `<field-a>`, `<field-b>` and `<field-c>`. If the schema
 makes their order meaningful, that order is the schema's (SF-078-07). None of the three
@@ -871,6 +907,8 @@ Rejected: a domain instance is never a Registry reference target or semantic aut
 | PI-30 | Closing DG-03 changes model-owned schema custody | not established; unchanged | Blueprint §13.7; SC-078-L |
 | PI-31 | 077's by-name occurrence is the only representation the constitution permits | current representation, a 077 CHOICE | §7.4 |
 | PI-32 | DG-03 is a gate this row introduces or must pass | row 078 carries `G: —`; DG-03 is not in PART VIII's decision gates | SC-078-C |
+| PI-33 | A field composed into a schema is present in every Record the schema applies to | inclusion in the structure is not presence in every Record; requiredness decides whether a conforming Record must carry it | Blueprint §9.4; RMS §10.2; §7.1, §8.1 |
+| PI-34 | An admissible target category means 077 currently carries a `FIELD-DEFINITION` reference | category ≠ relation ≠ carrier; 077's occurrence has no reference part | 063 RB-5; 077 P-02; §7.4 |
 
 ## 16. Source-Condition Register
 
@@ -930,8 +968,8 @@ blocks.
 |---|---|
 | **Sources** | 076 RF-076-2, RS-076-6; 072 RS-072-5 (*"how a consumer finds the definition of a given field is not defined here"*); 077 SC-077-D; RMS §10.3; 063 §7 |
 | **Question** | which `FIELD-DEFINITION` governs a named occurrence; how a field name is resolved to a definition; what carrier, if any, an occurrence holds |
-| **Established** | no carrier is required (SF-078-11); any carried is R → R and obeys 063 (SF-078-12); whichever definition governs holds meaning and domain |
-| **Undecided** | a field-name grammar, uniqueness rule, lookup, default choice among same-name definitions, and any carrier |
+| **Established** | no carrier is required (SF-078-11); a field name is not a Registry Record identifier; 077's current occurrence carries no reference (077 P-02); any reference later carried under a governed representation is R → R and obeys 063 (SF-078-12); whichever definition governs holds meaning and domain |
+| **Undecided** | a field-name grammar, uniqueness rule, lookup, default choice among same-name definitions, the governing definition of each occurrence, and any carrier or future representation of one |
 | **078 owns?** | no |
 | **Owner** | none established for the mapping; resolution by id+version is 115's, create/resolve/version 114's |
 | **Blocks?** | no |
@@ -1116,14 +1154,14 @@ text. No runtime execution is needed to prove a textual ownership boundary, and 
 | **C-078-06** | The direction of composition is stated: schema over fields, never the reverse. | STATIC | §7.2; SF-078-02 |
 | **C-078-07** | Composition neither copies nor redefines field meaning. | CROSS-SOURCE | §7.3; SF-078-03 |
 | **C-078-08** | A `FIELD-DEFINITION` creates no field occurrence. | CROSS-SOURCE | §7.2; SF-078-04 |
-| **C-078-09** | Requiredness is schema-owned. | CROSS-SOURCE | §8.1; SF-078-05 |
+| **C-078-09** | Requiredness is schema-owned, and including a field in a schema does not by itself make it present in every conforming Record. | CROSS-SOURCE | §7.1, §8.1; SF-078-05; PI-33 |
 | **C-078-10** | Cardinality is schema-owned. | CROSS-SOURCE | §8.2; SF-078-06 |
 | **C-078-11** | Order is schema-owned where meaningful; no schema is required to be order-sensitive; sequence is not semantic order. | CROSS-SOURCE | §8.3; SF-078-07 |
 | **C-078-12** | `FIELD-DEFINITION` owns meaning. | CROSS-SOURCE | §9.1; SF-078-08 |
 | **C-078-13** | `FIELD-DEFINITION` owns domain, and composition does not expand it. | CROSS-SOURCE | §9.2, §9.4; SF-078-09 |
 | **C-078-14** | Schema applicability does not itself redefine field domain. | CROSS-SOURCE | §9.3; SF-078-10 |
 | **C-078-15** | No universal domain/applicability matching algorithm is invented. | STATIC | §9.5; SC-078-D |
-| **C-078-16** | No mandatory field-definition Record reference is invented. | CROSS-SOURCE | §7.4; SF-078-11 |
+| **C-078-16** | No mandatory field-definition Record reference is invented, and 077's current occurrence is not presented as carrying one. | CROSS-SOURCE | §7.4, §13.2; SF-078-11; PI-34 |
 | **C-078-17** | Any reference actually carried obeys Artifact 063. | CROSS-SOURCE | §11.5; SF-078-12 |
 | **C-078-18** | Reference and dependency stay distinct. | CROSS-SOURCE | §7.5; SF-078-12 |
 | **C-078-19** | Type and default ownership follows Blueprint §9.4, with no carrier invented. | CROSS-SOURCE | §10.1; SF-078-16 |
