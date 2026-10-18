@@ -425,14 +425,16 @@ CONSTRAINT  names the one field that occurs, written as the governing sources or
             — and so which FIELD-DEFINITION governs a named field within this schema's scope — is
             not decided here (076 §8, SC-076-D; row 078; SC-077-D).
             Envelope fields. Whether a schema lists the seven envelope fields is not established
-            (SC-077-M). Where an occurrence names one, it does not change that field's universal
-            presence or role: "An envelope field binds every Record in every model." (Artifact
-            033), so occurrence.required is yes.
+            (SC-077-M), and this contract neither requires nor forbids listing them. Where an
+            occurrence names one, it does not change that field's universal presence, role or
+            count: "An envelope field binds every Record in every model." (Artifact 033), and the
+            envelope carries each of its seven fields exactly once (§2). So occurrence.required
+            is yes and occurrence.cardinality is 1..1 — both, for all seven (§4 O-07).
             Name form. This contract fixes no case rule, punctuation, spelling, URI or handle
             for the name (SC-077-D).
 CHECK       NATIVE — presence; a single value; the value is not shaped as a Record identifier
             under the universal grammar (RMS §5); where it is one of the seven envelope fields,
-            occurrence.required is yes.
+            occurrence.required is yes and occurrence.cardinality is 1..1.
             EXTERNAL — that the value names a field the applicable model's field architecture,
             or for an envelope field RMS §4, establishes, and that it is no Kind name, kind
             code, value or runtime object.
@@ -449,6 +451,8 @@ REJECT      no value                                              (077 CHOICE)  
             name; no reference element is defined (§6 COMPOSITION)                 NATIVE
             an envelope field, e.g. slug, with occurrence.required no
                                                                   (RMS §4; 033)     NATIVE
+            an envelope field with any occurrence.cardinality but 1..1 — e.g. slug with 2..5,
+            0..1, 1..* or 0..*                                    (RMS §4; 033; §2) NATIVE
             a field the applicable model's field architecture does not establish
                                                                   (RF-076-2)        EXTERNAL
             a running service, validator or engine named as the field
@@ -482,21 +486,35 @@ CONSTRAINT  how many values the field may carry where it occurs, written L..U:
               L  a whole number, 0 or more — the fewest values
               U  a whole number not less than L and not less than 1 — the most values — or *
                  for no upper bound
-            For example 1..1, 0..*, 1..*, 2..5. Cardinality and requiredness are independent:
-            occurrence.required says whether the field must occur, occurrence.cardinality how
-            many values it carries where it does. The values are the schema's to state; this
-            contract fixes no cardinality for any field of any model. It is the cardinality of a
-            field in the defined schema — not a CARDINALITY line of this contract, which counts
-            this contract's own carriers (§0).
-CHECK       NATIVE — presence, a single value, the L..U form and its bounds
+            For example 1..1, 0..*, 1..*, 2..5. For a model's own fields, requiredness and
+            cardinality are stated independently: occurrence.required says whether the field
+            must occur, occurrence.cardinality how many values it carries where it does. The
+            values are the schema's to state; this contract fixes no cardinality for any field a
+            model owns.
+            Envelope fields. The seven envelope fields are the exception, and not one this
+            contract makes: the envelope already carries each exactly once (§2; RMS §4; Artifact
+            033). An occurrence naming one must say 1..1 and be required (§4 O-07). That
+            preserves the envelope; it is no new cardinality rule. 1..1 counts values only: it
+            decides no type, default, nullability or serialization of an envelope field, which
+            Artifact 033 leaves unestablished.
+            It is the cardinality of a field in the defined schema — not a CARDINALITY line of
+            this contract, which counts this contract's own carriers (§0).
+CHECK       NATIVE — presence, a single value, the L..U form and its bounds; and, where
+            occurrence.field is one of the seven envelope fields, exactly 1..1 (§4 O-07).
 BASIS       SOURCE FACT — cardinality is schema-side: RMS §10.2 ("cardinality"); 064 §12 Q8; row
             078 Done; 076 §7 ("how many values a field occurrence may carry in the structure";
-            representation 077's). 077 CHOICES — stating cardinality on every occurrence, the
-            L..U notation, its bounds and the * token (§6 REPRESENTATION).
+            representation 077's). SOURCE FACT — the envelope is universal and closed and carries
+            each of its seven fields exactly once (RMS §4; Artifact 033; §2, as in Artifacts 067,
+            069, 071 and 073). REQUIRED SYNTHESIS — an occurrence naming an envelope field cannot
+            state another count (O-07). 077 CHOICES — stating cardinality on every occurrence,
+            the L..U notation, its bounds, the * token, and writing the envelope's count as 1..1
+            (§6 REPRESENTATION).
 REJECT      no value                                              (077 CHOICE)      NATIVE
             a malformed value — 2..1, 0..0, -1..3, or a word such as many
                                                                   (077 CHOICE)      NATIVE
             two values                                            (077 CHOICE)      NATIVE
+            a well-formed value other than 1..1 on an occurrence naming an envelope field —
+            e.g. 2..5 for slug                                    (O-07)            NATIVE
 
 ELEMENT     definition
 LAYER       FAMILY
@@ -621,7 +639,8 @@ O-03  two occurrences with the same occurrence.field                   → REJEC
 O-04  occurrence.required outside yes | no                            → REJECT     NATIVE
 O-05  occurrence.cardinality not of the L..U form, or out of bounds    → REJECT     NATIVE
 O-06  occurrence.field shaped as a Record identifier                   → REJECT     NATIVE
-O-07  occurrence.field an envelope field with occurrence.required no   → REJECT     NATIVE
+O-07  occurrence.field is one of the seven envelope fields, and occurrence.required is
+      not yes or occurrence.cardinality is not 1..1                   → REJECT     NATIVE
 O-08  a composed field not established by the applicable model's field architecture, or
       composed contrary to its governed meaning or domain             → REJECT     EXTERNAL
 O-09  definition restating a requiredness or cardinality that contradicts an occurrence
@@ -631,8 +650,10 @@ O-10  no occurrence, and definition content shown to define no schema structure
 
 BASIS       SOURCE FACT — the schema side owns composition, requiredness and cardinality
             (Blueprint §9.4; 064 §12 Q8; row 078 Done; 076 SD-5). REQUIRED SYNTHESIS — O-07 (RMS
-            §4; Artifact 033), O-08 (076 RF-076-2; Artifact 072 §10), O-10 (076 §7). 077 CHOICE
-            — O-02 to O-06, O-09 and the L..U form. SOURCE GAP — O-01 (SC-077-O).
+            §4; Artifact 033; §2: a listed envelope field keeps its universal presence and its
+            exactly-one count), O-08 (076 RF-076-2; Artifact 072 §10), O-10 (076 §7). 077 CHOICE
+            — O-02 to O-06, O-09, the L..U form and 1..1 as the envelope's count in it. SOURCE
+            GAP — O-01 (SC-077-O).
 
 What O-01 means. No source states that every schema definition lists at least one field
 occurrence, or that one may list none (SC-077-O). A Record with no occurrence is representable and
@@ -642,8 +663,9 @@ shown to define no structure at all is REJECT, because such a Record does not an
 semantic question (076 §7).
 
 The rules fix structure only. They derive no field, requiredness, cardinality, type, default,
-order, constraint or relationship for any schema of any model, and no relation between a field's
-domain and the schema's applicability (076 §8; SC-076-D).
+order, constraint or relationship for any field a model owns — O-07 only carries the envelope's
+own presence and count into an occurrence that names an envelope field — and no relation between
+a field's domain and the schema's applicability (076 §8; SC-076-D).
 
 ==================================================================================================
 5. STRUCTURAL PROHIBITIONS
@@ -743,7 +765,7 @@ REJECTION REGISTER — each with the check that rejects it and where
 18  requiredness outside yes, no                   NATIVE                O-04
 19  malformed cardinality                          NATIVE                O-05
 20  field shaped as a Record identifier            NATIVE                O-06
-21  envelope field made optional                   NATIVE                O-07
+21  envelope field made optional, or not 1..1     NATIVE                O-07
 22  field not established, or composed against its meaning
                                                    EXTERNAL              O-08
 23  meaning or domain carried on an occurrence     NATIVE                §3 occurrence; P-01A
@@ -1038,6 +1060,15 @@ REJECT     Q  <field-a> in two occurrences                            (O-03)    
 REJECT     Q  occurrence.cardinality 2..1; occurrence.required sometimes
                                                                       (O-04, O-05)  NATIVE
 REJECT     R  occurrence slug with required no                        (O-07)        NATIVE
+REJECT     R  occurrence slug with required yes and cardinality 2..5 — slug, an envelope field,
+              carries exactly one value, and a schema occurrence cannot change that
+                                                                      (O-07)        NATIVE
+REJECT     R  the same for slug 0..1 or 1..*, registry_ref 0..*, provenance 1..*, object_id
+              2..2, or partition with required no                     (O-07)        NATIVE
+BOUNDARY   R  slug, sot_class or kind with required yes and 1..1 — no O-07 violation, which
+              alone grants nothing: every other rule and EXTERNAL check still applies (§0);
+              <field-b> required no 0..* in case A is not touched by O-07, which governs the
+              seven envelope fields only                                           STATIC
 REJECT     R  a target that is otherwise UNRESOLVED (model W, no kind) in a Record whose
               definition is empty — the REJECT outranks UNRESOLVED    (A-10)        NATIVE
 REJECT     R  a Model-level target (otherwise UNRESOLVED) in a Record with partition W — the
@@ -1137,10 +1168,12 @@ SC-077-L  Layer placement (076 SC-076-L; Artifact 062 §6). Not established; non
           Non-blocking.
 SC-077-M  Envelope fields as occurrences. The seven envelope fields bind every Record (RMS §4;
           Artifact 033), yet no source states whether a schema definition lists them among its
-          occurrences. This contract neither requires nor forbids listing them; where one is
-          listed it must be required (O-07), and nothing else about it is decided. The envelope
-          stays required on every Record whether or not a schema lists its fields. Recorded, not
-          resolved; non-blocking.
+          occurrences. This contract neither requires nor forbids listing them. When one is
+          listed, its occurrence must preserve the envelope: occurrence.required yes and
+          occurrence.cardinality 1..1 (O-07). The listing question stays open; the listed field's
+          requiredness and exactly-one count do not, because the envelope already fixes them
+          (RMS §4; Artifact 033; §2). The envelope stays required on every Record whether or not
+          a schema lists its fields. Recorded, not resolved; non-blocking.
 SC-077-N  Version representation (076 SC-076-E). Deferred to rows 108–110; not defined and not
           prohibited here (P-01B). Non-blocking.
 SC-077-O  Zero field occurrences. Blueprint §9.4 and 064 §12 Q8 place field composition on the
@@ -1192,7 +1225,9 @@ C-077-15  EXTERNAL  Composition respects each field's FIELD-DEFINITION meaning a
 C-077-16  STATIC    No mandatory R → R reference carrier is invented for field occurrences, and
                     R → R references are not declared illegal.                P-02; §6
 C-077-17  NATIVE    Every occurrence listed states requiredness and cardinality — a 077 CHOICE
-                    of representation. STATIC: both are schema-side (SOURCE FACT). §3, §4 O-02
+                    of representation — and one naming an envelope field states yes and 1..1,
+                    preserving the envelope. STATIC: both are schema-side (SOURCE FACT); the
+                    envelope's presence and count are its own (RMS §4; 033). §3, §4 O-02, O-07
 C-077-18  STATIC    Constraints, validation rules and implementation validation are not
                     collapsed.                                                      §3; §6 CONTENT
 C-077-19  STATIC    No constraint, relationship or validation-reference relation or target family
