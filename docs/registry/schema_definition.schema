@@ -441,7 +441,7 @@ BASIS       REQUIRED SYNTHESIS — 076 RF-076-2, SD-3, SD-5, §8; Artifact 072 �
             and not by a concrete reference, is a 077 CHOICE (§6 REPRESENTATION) following 073's
             subject_field (REPOSITORY CONVENTION). The part's presence in every occurrence, and
             the element NAME, are 077 CHOICES of the entry form.
-REJECT      no value                                              (SD-5)            NATIVE
+REJECT      no value                                              (077 CHOICE)      NATIVE
             two or more fields in one occurrence                  (077 CHOICE)      NATIVE
             a Record identifier, e.g. W-CH-…-<slug> (a domain instance)
                                                                   (RF-076-7)        NATIVE
