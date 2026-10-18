@@ -12,9 +12,9 @@ references only declared entities (063) · Done: schema · Why: LS-1 · Risk: hi
 
 NOTATION   This file reuses the local declarative notation of Artifact 067, with the CHECK line
            Artifact 069 added, the REPOSITORY CONVENTION basis label Artifact 071 added, and the
-           conditional and absent words Artifact 073 added. It is an implementation choice, not
-           COOLBOY12 architecture, and establishes no repository-wide schema language
-           (SC-077-J). No parser exists for it.
+           absent word Artifact 073 added. It is an implementation choice, not COOLBOY12
+           architecture, and establishes no repository-wide schema language (SC-077-J). No
+           parser exists for it.
 
            ELEMENT <name>        a structural element of a materialized Record
            ELEMENT <a>.<b>       part <b> of each value of element <a>: structure inside that
@@ -46,7 +46,8 @@ NOTATION   This file reuses the local declarative notation of Artifact 067, with
 
 OUTCOMES   A candidate Record has exactly one of three outcomes under this contract:
              CONFORMS    every NATIVE rule holds and no shape marked UNRESOLVED is present.
-                         EXTERNAL obligations stay open until their owners prove them.
+                         EXTERNAL obligations stay open until their owners prove them; an
+                         EXTERNAL REJECT, once shown, turns the outcome into REJECT.
              REJECT      a REJECT rule applies. A REJECT outranks UNRESOLVED (§4 A-10).
              UNRESOLVED  every NATIVE rule holds, but the applicability shape is one whose
                          admissibility the governing sources leave open (076 SC-076-N;
@@ -501,8 +502,10 @@ CONSTRAINT  the governed account of the schema as one definition — "the govern
             §9; SD-8; Blueprint §26.3b); any Record, value or current state of any model used as
             authority (RF-076-7, RF-076-8); a claim of ownership over conforming Records, or of
             admission, declaration or canonical status (SD-9, SD-11); version, supersession or
-            deprecation mechanics (076 VS-076-2); the relation to a model-owned schema artifact
-            (076 SC-076-I).
+            deprecation mechanics (076 VS-076-2); a claim to own or replace a model-owned schema
+            artifact (076 §6). Whether a SCHEMA-DEFINITION describes such an artifact is not
+            established (076 SC-076-I): this contract neither requires nor forbids content to
+            say so, and no such statement is a reference relation this family establishes.
 CHECK       NATIVE — presence, a single value, non-empty.
             EXTERNAL — the content limits are semantic and not decidable from structure; they
             are judged against 076, and this contract does not claim them proven. Whether a
@@ -607,15 +610,15 @@ P-01A Artifact 077 introduces no element or part beyond the ten elements and sev
       — universal semantics or ownership (076 §14, SD-9, SD-12; RMS §4): status, tier,
         lifecycle_state, canonical, history, relationship_record, owner, owns_records,
         conforming_records, admitted, declared, layer, kind_code;
-      — a binding to a model-owned schema artifact (076 SC-076-I): model_schema,
-        model_schema_ref, schema_file, schema_path.
+      — a binding element to a model-owned schema artifact — no such relation is established,
+        and none is invented (076 SC-076-I, RF-076-6): model_schema, model_schema_ref,
+        schema_file, schema_path.
 P-01B Artifact 077 introduces no version, revision, latest-version, supersession, replacement,
       deprecation, retirement, effective-date, migration, compatibility, retention or history
       element or mechanism, and no lifecycle or state machine. That representation is deferred
       to rows 108–110: neither defined nor permanently prohibited here (076 VS-076-2; SC-077-N).
-      Whatever
-      those rows establish stays Registry-owned, is not an envelope field (P-05) and is not a
-      universal semantic shared by W, E, P, V or I (P-06).
+      Whatever those rows establish stays Registry-owned, is not an envelope field (P-05) and is
+      not a universal semantic shared by W, E, P, V or I (P-06).
 P-01C Artifact 077 introduces no type or default element, on occurrence or anywhere else.
       Whether a SCHEMA-DEFINITION carries types and defaults is not established (076 SC-076-K;
       SC-077-F): that is a scope boundary of this contract, not a decision that a schema
@@ -704,7 +707,7 @@ REJECTION REGISTER — each with the check that rejects it and where
 32  a version or supersession element added now    STATIC                P-01B
 33  status or tier as universal fields             NATIVE, STATIC        P-05; P-06
 34  ownership, admission or canonicality claimed   EXTERNAL, STATIC      §3 definition; P-03
-35  a binding to a model-owned schema artifact     NATIVE, STATIC        P-01A; SC-077-G
+35  a model-owned schema binding element           NATIVE, STATIC        P-01A; SC-077-G
 36  canonical data written from Artifact 077       STATIC                §0; §6 MATERIALIZATION
 37  LS: LS-1 read as a 076 ↔ 077 pair              STATIC                P-08; SC-077-B
 38  → all model schemas read as a hard dependency  STATIC                §6 DOWNSTREAM; SC-077-G
@@ -880,7 +883,9 @@ SOVEREIGNTY     Registry governs the definitions; each Record Model owns its Rec
                 (076 §13). Whether a model-owned schema artifact — row 184's CHARACTER schema,
                 for example — is described by, declared through or independent of a
                 SCHEMA-DEFINITION Record is not established; no element binds the two
-                (076 SC-076-I; SC-077-G).
+                (076 SC-076-I; SC-077-G). A declared schema (RMS §10.3) is not thereby a
+                SCHEMA-DEFINITION Record, and how a schema acquires declared status is not
+                established (076 RF-076-5; Artifact 063 §8.4).
 
 LS              Row 077 carries LS: LS-1 and Why: LS-1. Roadmap PART III defines LS-1 as "every
                 Kind spec ↔ its Registry KIND-DEFINITION. ATOMIC-PAIR." A SCHEMA-DEFINITION
@@ -902,12 +907,12 @@ DOWNSTREAM      Row 077's → names all model schemas. Every concrete SCHEMA-DEF
                 rows — World 184, 186, 188, 190, 192, 194, 196, 199, 201, 233, 236; Epistemic
                 260, 262, 264, 267, 269, 271, 273; Production 304, 306, 308, 310, 312, 315, 317,
                 319, 322, 324, 326, 329, 331, 406; Visual 347, 349, 352; Issue 368, 370, 372,
-                374, 376 — do not list 077 in their H. The
-                unlock is preserved as written; no row's H, Val or Done is changed, and no model
-                schema is required to have a SCHEMA-DEFINITION Record (SC-077-G). Row 114 lists
-                066–107, and so 077, in its H; it consumes this contract under its own Val. Row
-                078 (H: 076, 072) does not list 077 and is not changed. A downstream artifact uses
-                this contract only as its own H and Val allow.
+                374, 376 — do not list 077 in their H. The unlock is preserved as written; no
+                row's H, Val or Done is changed, and no model schema is required to have a
+                SCHEMA-DEFINITION Record (SC-077-G). Row 114 lists 066–107, and so 077, in its
+                H; it consumes this contract under its own Val. Row 078 (H: 076, 072) does not
+                list 077 and is not changed. A downstream artifact uses this contract only as its
+                own H and Val allow.
 
 ==================================================================================================
 7. DECISION CASES (schematic — no identifier is minted; nothing here is Registry data)
