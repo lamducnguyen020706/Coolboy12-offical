@@ -149,8 +149,10 @@ under the universal grammar (§13.9a), provenance, a governed change path, and a
 (Blueprint §13.6e).
 
 **Definition.** A `SCHEMA-DEFINITION` is an R-partition Registry Record that governs the definition
-of one schema: the structure the schema defines and the declared Record Model and Kind it applies to
-(064 §12 questions 1–2). It is authoritative about that definition. It is not executable.
+of one schema: the structure the schema defines and the scope to which that structure applies (064
+§12 questions 1–2). Any applicable Record Model or Kind it identifies is a declared one. How many it
+may identify, and whether both are always present, is not established (SC-076-N). It is
+authoritative about that definition. It is not executable.
 
 **Five levels, never collapsed.**
 
@@ -199,8 +201,8 @@ its Kind's semantic question.
 
 | Category | Source | What it means at family level | Not decided here |
 |---|---|---|---|
-| **Applicable Model · applicable Kind** | RMS §10.2; 064 §12 Q2 | the declared Record Model, and the declared Kind, whose Records the schema applies to; stated as declaration references (§12, RF-076-1) | how many Models or Kinds one schema may name; whether a schema may apply at Model level without a Kind (SC-076-N) |
-| **Required fields** | RMS §10.2; Blueprint §9.4 (*"A field's existence is schema"*) | which fields occur in the structure and which are required; each field is reached through its `FIELD-DEFINITION` (RF-076-2) | final composition semantics (078) |
+| **Applicable Model · applicable Kind** | RMS §10.2; 064 §12 Q2 | the scope whose Records the schema applies to, stated through the applicable-Model and applicable-Kind categories; any Model or Kind named is declared and is named by declaration reference (§12, RF-076-1) | how many Models or Kinds one schema may name; whether both are always present; whether a schema may apply at Model level without a Kind; the structural form (SC-076-N) |
+| **Required fields** | RMS §10.2; Blueprint §9.4 (*"A field's existence is schema"*) | which fields occur in the structure and which are required; the composition respects the meaning and domain each field's `FIELD-DEFINITION` governs (§8; RF-076-2) | how a schema identifies the fields it composes — no reference carrier is fixed (077); final composition semantics (078) |
 | **Cardinality** | RMS §10.2; 064 §12 Q8 | how many values a field occurrence may carry in the structure | its representation (077) |
 | **Requiredness** | Blueprint §9.4 (*"required-ness"*); RMS §10.2; 064 §12 Q8 | whether a field occurrence is mandatory in the structure | its representation (077) |
 | **Order** | 064 §12 Q8; row 078 `Done` | assigned to the schema side by row 078's closure target | whether and how order is carried — 078 closes it, 077 encodes it |
@@ -328,7 +330,7 @@ path, and a temporal account"* (Blueprint §13.6e). Row 108 owns the evolution m
 |---|---|
 | **VS-076-1** | A `SCHEMA-DEFINITION` participates in governed Registry definition evolution and must be capable of being versioned and superseded under the model rows 108–110 define. Every version stays bound by this specification. Its temporal account is the Registry's own: no World History Record is used or required (row 108; I-102). |
 | **VS-076-2** | **Not defined here ≠ forbidden.** That this document defines no version mechanism is not a decision that a `SCHEMA-DEFINITION` carries no version, supersession or deprecation information. Rows 108–110 keep their authority to establish the Registry-owned representation, and nothing here asks 077 to close it. Whatever they establish stays Registry-owned: it adds no field to the universal envelope and is not a version, lifecycle or state model shared by W, E, P, V or I (RMS §4, §16). |
-| **VS-076-3** | Evolving a `SCHEMA-DEFINITION` changes a definition, not Records. Superseding a schema definition migrates, rewrites or revalidates no Record of any model; how a model responds to a schema change is that model's own. |
+| **VS-076-3** | Evolving a `SCHEMA-DEFINITION` changes a definition, not Records. Changing or superseding a schema definition does not by itself migrate, rewrite or revalidate any Record of any model. Any later model-owned or governed response to the change is outside Artifact 076 and remains subject to the applicable contracts; this document neither requires nor forbids one. |
 
 **Not decided here** (108–110): a version field or identifier; numbering; revision identifiers;
 *latest* semantics; pin representation; supersession, replacement or deprecation representation;
@@ -346,8 +348,8 @@ carries"* (063 §22). For this family the answer is below.
 
 | ID | Rule | Basis |
 |---|---|---|
-| **RF-076-1** | **Applicability names only declared entities.** A schema's applicable Model is a declared Record Model; its applicable Kind is a declared Kind of that model, whose declared status is established by that model's own Kind architecture. These are declaration references (063 §8.2, §8.3). This is the family's first source-established concrete relation; it fixes no count of Models or Kinds and no proof formula, and an undetermined target is not legal (063 RB-6). Its structural form is 077's. | RMS §10.2, §10.3; 064 §12 Q2; Artifact 063 §7 rows 2–3, RB-1, RB-6 |
-| **RF-076-2** | **Fields are reached through their `FIELD-DEFINITION`.** RMS §10.3 has no declared-field category, and 063 §7: *"those are reached as Registry definitions (row 1)"*. REQUIRED SYNTHESIS: where a `SCHEMA-DEFINITION` names a field its structure contains, the reference is an R → R reference to that field's `FIELD-DEFINITION` Record — the second source-established relation. A field with no establishable `FIELD-DEFINITION` is not a legal target (063 RB-6). The final composition semantics are 078's; the form is 077's. | RMS §10.2, §10.3; Artifact 063 §7, §8.1; row 078 |
+| **RF-076-1** | **Named applicability targets are declared.** Any applicable Record Model a schema definition identifies is a declared Record Model; any applicable Kind it identifies is a declared Kind of its owning model, whose declared status is established by that model's own Kind architecture. These are declaration-level targets (063 §8.2, §8.3) — not domain instances, and not automatically references to `MODEL-DEFINITION` or `KIND-DEFINITION` Records. This is the family's one source-established concrete relation. It does not determine how many such targets a schema may identify, or whether every definition names both categories (SC-076-N); it defines no declaration state or proof format; an undetermined target is not legal (063 RB-6). Its structural form is 077's. | RMS §10.2, §10.3; 064 §12 Q2; Artifact 063 §7 rows 2–3, RB-1, RB-6 |
+| **RF-076-2** | **Governed field composition, without an invented reference carrier.** A schema definition describes the fields its structure contains, and that composition respects the meaning and domain each field's `FIELD-DEFINITION` governs: *"A schema that carries the field conforms to the field's definition"* (072 §10); row 078: *"a schema composes field definitions"*. A field occurrence is a structural element of the schema; it is not thereby a concrete Record reference, and no source fixes how a schema identifies its fields. Where a schema definition does carry a concrete reference to a field, RMS §10.3 has no declared-field category and 063 §7 says such targets *"are reached as Registry definitions (row 1)"*: the reference is an R → R reference to a `FIELD-DEFINITION` Record, its target must actually be one (063 RB-1, RB-6), and the relation must satisfy Artifact 063. R → R references are permitted, not required (RMS §10.3). Final composition is 078's; structural representation is 077's. | RMS §10.2, §10.3; Blueprint §9.4; Artifact 072 §10; Artifact 063 §7, §8.1, RB-1, RB-5, RB-6; row 078 |
 | **RF-076-3** | **Validation references, where carried, target admissible categories only.** RMS §10.2 permits them, and 064 §12 Q7 makes them references the schema defines. A `VALIDATION-RULE` is a Registry definition (an admissible R → R target, 063 row 1); a runtime validator, validator process or engine never is (063 row 8). Which family a validation reference targets is not stated by any source (SC-076-J). | RMS §10.2, §10.6, §20; Artifact 063 §7 rows 1, 8 |
 | **RF-076-4** | **Constraints and relationships carry no invented reference.** If a schema's constraints or relationships are expressed as references, each target must lie in an admissible category (e.g. a `CONSTRAINT-DEFINITION` or `RELATIONSHIP-TYPE-DEFINITION` is an R Record, 063 row 1). Whether they are references at all is not established (SC-076-J); none is created here. | RMS §10.2, §10.6, §15; Artifact 063 RB-5 |
 | **RF-076-5** | **Declared ≠ definition Record.** A declared schema (RMS §10.3) is not automatically the same referent as a `SCHEMA-DEFINITION` Record; a declared Model is not a `MODEL-DEFINITION`; a declared Kind is not a `KIND-DEFINITION`; a field is not its `FIELD-DEFINITION`; a Record conforming to a schema is not a schema declaration. How a schema acquires declared status is not established (063 §8.4; SC-076-I). No reference field is invented for any of these distinctions. | Artifact 063 §8.2–§8.4; RMS §10.3 |
@@ -356,7 +358,7 @@ carries"* (063 §22). For this family the answer is below.
 | **RF-076-8** | **No domain state.** No current World-state value (e.g. a WSV indicator value) is the semantic authority of a schema definition. | RMS §10.7; Artifact 063 §7 row 7 |
 | **RF-076-9** | **No runtime instance.** No live schema engine, validator process, check run, session, worker or service is a target, a dependency or the semantic authority of a `SCHEMA-DEFINITION`. | RMS §10.3; Artifact 063 §7 row 8, §13 |
 | **RF-076-10** | **Resolvable ≠ legal; no transfer.** A target that resolves mechanically may still be illegal, and an undetermined target is not legal. A legal reference transfers no ownership, mutation authority, semantic authority, admission, canonicality or source-of-truth class. | Artifact 063 §11, §12 |
-| **RF-076-11** | **Reference ≠ dependency.** Naming a declared Model or Kind as applicability, or a field through its `FIELD-DEFINITION`, is not by itself a semantic dependency, and the named target is not semantic authority for the schema definition. `SCHEMA-DEFINITION`'s layer placement is not established (Artifact 062 §6), so no layer-based dependency rule is applied or assigned here; concrete dependency rules are row 111's. | Artifact 062 D-9, §6; Artifact 063 RB-5; row 111; SC-076-L |
+| **RF-076-11** | **Reference ≠ dependency.** Naming a declared Model or Kind as applicability is not by itself a semantic dependency; nor is a concrete Registry-definition reference, such as one to a `FIELD-DEFINITION` where it is carried. Neither target becomes semantic authority for the schema definition. A relation established as both a reference and a semantic dependency must also satisfy the dependency rules; concrete direction, asymmetry and cycles are row 111's. `SCHEMA-DEFINITION`'s layer placement is not established (Artifact 062 §6), so no layer-based dependency rule is applied or assigned here. | Artifact 062 D-9, §6; Artifact 063 RB-5; row 111; SC-076-L |
 
 Blueprint §9.4's older wording — *"A Registry definition may never reference a kind, a subtype, or
 an instance"* — is not current law for reference legality. RMS §10.3 corrects it (*"v0.1 stated the
@@ -441,8 +443,8 @@ authoring and waives no hard dependency: 064 exists and is consumed unchanged.
 | **SD-1** | **Governed schema definition.** A `SCHEMA-DEFINITION` is a Registry Record that governs the definition of one schema. It is not the schema's runtime implementation. | RMS §10.2, §6.1; 064 §12 Q1 | SOURCE FACT |
 | **SD-2** | **Independent identity.** Each schema definition is identity-bearing as an R Record. Its identity is not the schema's name, a field name, the applicable Kind's identity, a conforming Record's identity, or an implementation file. | 064 §12 Q3; RMS §4, §5; RS-076-1, RS-076-2 | SOURCE FACT |
 | **SD-3** | **Structure, not field meaning.** The family governs structural composition and applicability; field meaning and domain stay `FIELD-DEFINITION`'s. | Blueprint §9.4; 064 §11, §12; 072; §8 | SOURCE FACT |
-| **SD-4** | **Declared applicability.** Every schema definition states the declared scope it applies to — a declared Record Model and, as the definition requires, a declared Kind of that model — as declaration references. Applicability creates no Model or Kind, admits nothing, and leaves the model's sovereignty and Kind taxonomy its own. No cardinality of applicability is fixed. | RMS §10.2, §10.3; 064 §12 Q2; RF-076-1; SC-076-N | REQUIRED SYNTHESIS |
-| **SD-5** | **Fields, requiredness and cardinality.** The family may express which fields a structure contains, whether each is required, and its cardinality — as structure, not as field meaning. Each field is reached through its `FIELD-DEFINITION`. | RMS §10.2; Blueprint §9.4; RF-076-2 | SOURCE FACT + REQUIRED SYNTHESIS |
+| **SD-4** | **Declared applicability.** Every schema definition states the scope it applies to, through the applicable-Model and applicable-Kind categories of RMS §10.2. Any Model or Kind it names is declared and named by declaration reference. Applicability creates no Model or Kind, admits nothing, and leaves the model's sovereignty and Kind taxonomy its own. No cardinality is fixed, and whether both categories are always present is not established. | RMS §10.2, §10.3; 064 §12 Q2; RF-076-1; SC-076-N | REQUIRED SYNTHESIS |
+| **SD-5** | **Fields, requiredness and cardinality.** The family may express which fields a structure contains, whether each is required, and its cardinality — as structure, not as field meaning. The composition respects each field's governed meaning and domain; no field-reference carrier is required by this rule (RF-076-2). | RMS §10.2; Blueprint §9.4; Artifact 072 §10; row 078; RF-076-2 | SOURCE FACT + REQUIRED SYNTHESIS |
 | **SD-6** | **Constraints and validation references, kept apart.** A schema definition may express constraints and validation references. `CONSTRAINT-DEFINITION` (what must hold), `VALIDATION-RULE` (how a condition is checked) and implementation validation (the running check) are never collapsed into the schema definition or into each other. No validator architecture is defined. | RMS §10.2, §10.6, §20; RF-076-3; SC-076-J | SOURCE FACT |
 | **SD-7** | **Relationships as definition content.** A schema definition may express relationships. That creates no Relationship Record, no runtime relationship ownership, no arbitrary Registry reference and no mandatory relationship-definition list. | RMS §10.2, §15; RF-076-4; SC-076-J | SOURCE FACT |
 | **SD-8** | **No execution.** A schema definition governs a definition; it executes nothing (§9 items 1–9). | RMS §10.2, §4, §20; Blueprint §9.4, §12.6 | SOURCE FACT |
@@ -465,8 +467,8 @@ World Kind `CHARACTER`, and defines some structure for Character Records — whi
 which are required. Registry holds the structural definition. World owns every Character Record,
 its values and its canonicality. No check runs inside the definition: a shared structural validator
 may read the definition and check a Character Record, and its verdict is DERIVED. Nothing here says
-what the structure is, and nothing says this Record is, or replaces, row 184's World-owned
-*CHARACTER schema* (SC-076-I).
+what the structure is, how many Models or Kinds a schema may name (SC-076-N), or that this Record
+is, or replaces, row 184's World-owned *CHARACTER schema* (SC-076-I).
 
 **B. Illegal — a schema definition acting as a validator.** A Registry definition is made to load a
 Character Record, check it, and rewrite the Record's fields where they fail. Rejected: *"Registry
@@ -474,18 +476,29 @@ does not execute schemas"* (RMS §10.2); Registry *"MAY NOT … mutate domain in
 the check is implementation validation, a shared runtime tier (RMS §20); and the Character Record is
 World's (I-105).
 
-**C. Boundary — schema versus field meaning.** World's `status` field (Blueprint §9.4; RMS §4:
-World-owned). The values a Character Record carries under `status`, and the per-Kind value set, are
-World's (§13.6e; §9.4). What `status` means, and over what domain, is its `FIELD-DEFINITION`'s
-(072). Whether `status` occurs in a schema's structure, whether it is required and with what
-cardinality is the schema definition's. Nothing here says `status` is required in any schema, or
-universal anywhere.
+**C. Boundary — schema, field, vocabulary and value.** World's `status` field (Blueprint §9.4;
+RMS §4: World-owned, not universal). Four responsibilities stay apart:
+
+- **World** owns the `status` value each Character Record carries (§13.6e: *"The values its Records
+  carry"*) and its own state semantics: *"each Record Model owns the meaning of its own
+  authoritative state"* (Blueprint §13.7c).
+- **Registry** governs the applicable `CONTROLLED-VOCABULARY` definition — the per-Kind set of
+  permitted terms and what each means: *"the vocabulary is a Registry-owned controlled vocabulary"*
+  (§13.7c); *"Registry governs the vocabulary; the model decides which value its Records carry"*
+  (064 §14 Q6). Per-Kind sets may diverge, and a forced union is prohibited (§9.4; row 081).
+  Governing the vocabulary gives Registry no World Record, state machine or lifecycle.
+- The field's **`FIELD-DEFINITION`** governs what `status` means and over what domain (072).
+- The **`SCHEMA-DEFINITION`** governs whether `status` occurs in its structure, whether it is
+  required and with what cardinality.
+
+Nothing here says `status` is required in any schema or universal anywhere, and no schema →
+vocabulary reference is created.
 
 **D. Deferred — a versioned schema definition.** A `SCHEMA-DEFINITION` must be able to evolve: a
 later version may change the structure it defines. How versions are identified, how consumers pin
 one, how supersession and deprecation are represented, and how resolution chooses a version are
 108–110's and 114–115's. No version value, format, history mechanism or migration algorithm is given
-here, and no Character Record is rewritten because a schema definition changes.
+here, and a schema definition's change does not by itself rewrite any Character Record (VS-076-3).
 
 **E. Illegal — a domain instance as semantic authority.** A `SCHEMA-DEFINITION` cites
 `W-CH-000001-Maximus` as the model of what a Character Record's structure should be. Rejected even
@@ -506,7 +519,7 @@ Whether such a relation is ever carried is for a governing source to establish.
 | 2 | A schema applicable to World makes the Registry owner of World Records | conforming Records stay World's | 061 §7 row 8; I-105; §13 |
 | 3 | A `SCHEMA-DEFINITION` is a `FIELD-DEFINITION` | two distinct Registry Kinds | RMS §10.1; 064 §11, §12 |
 | 4 | Schema structure and field meaning are interchangeable | structure is the schema's; meaning and domain are the field definition's | Blueprint §9.4; row 078; §8 |
-| 5 | A schema definition creates the Kind it applies to | applicability names a declared Kind; it admits or creates nothing | RMS §10.3; 057; §6 |
+| 5 | A schema definition creates the Kind it applies to | any Kind named as applicability is a declared one; applicability admits or creates nothing | RMS §10.3; 057; §6 |
 | 6 | A schema definition creates Records that conform to it | a Definition *"Governs; never instantiates"* | RMS §6.1 |
 | 7 | A declared schema is automatically its `SCHEMA-DEFINITION` Record | not established; distinct referents unless a source says otherwise | 063 §8.4; RF-076-5 |
 | 8 | A resolvable reference is legal | resolvable ≠ legal | 063 §11; RS-076-4 |
@@ -524,6 +537,9 @@ Whether such a relation is ever carried is for a governing source to establish.
 | 20 | A validator's verdict is part of the schema definition | verdicts are DERIVED and never Registry content | Blueprint §26.3b; §9 |
 | 21 | A model-owned schema (e.g. row 184) is Registry-owned, or is a `SCHEMA-DEFINITION` Record | not established; never Registry-owned by inference | row 184; SC-076-I |
 | 22 | `SCHEMA-DEFINITION` sits in a known Registry layer | its layer placement is not established | 062 §6; SC-076-L |
+| 23 | World owns a `CONTROLLED-VOCABULARY` definition because its Records carry the values | Registry governs the vocabulary definition; World owns the values its Records carry | Blueprint §13.7c; 064 §14 Q6; 061 §7 row 9 |
+| 24 | Every field occurrence in a schema is a concrete R → R reference to a `FIELD-DEFINITION` | a field occurrence is structure; a reference exists only where carried, and then satisfies 063 | RF-076-2; RMS §10.3 |
+| 25 | Every schema definition names exactly one Model and exactly one Kind | the count and the presence of each category are not established | SC-076-N |
 
 ## 19. Source Conditions and Gaps
 
@@ -630,8 +646,8 @@ Whether such a relation is ever carried is for a governing source to establish.
 | | |
 |---|---|
 | **Sources** | RMS §10.2 (*"applicable Model · applicable Kind"*); 064 §12 Q2 |
-| **Issue** | how many Models and Kinds one schema definition may name, and whether a schema may apply at Model level without a Kind |
-| **Owner / treatment** | not established. This document requires applicability to name declared entities only (RF-076-1) and fixes no count; 077 must not encode a closed cardinality that the sources do not establish without recording it as its own source condition. Does not block. |
+| **Issue** | how many Models and Kinds one schema definition may name; whether both categories are always present; whether a schema may apply at Model level without a Kind; how applicability is structurally expressed |
+| **Owner / treatment** | not established, and no source assigns it — not to 078, whose closure is the schema/field boundary. This document requires any named Model or Kind to be declared (RF-076-1), keeps applicability meaningful (SD-4), fixes no count and decides no presence rule. If 077 needs a cardinality to encode, it records that choice as its own source condition rather than presenting it as constitutional. Does not block. |
 
 ## 20. Conformance Conditions
 
@@ -646,17 +662,17 @@ sources; **REPOSITORY** — checked by repository inspection, not provable from 
 | **C-076-04** | No Kind is admitted, created or reclassified. | STATIC | §5, §6; SD-11 |
 | **C-076-05** | A `SCHEMA-DEFINITION` is defined as a Registry Record governing the definition of a schema. | CROSS-SOURCE | §6; SD-1 |
 | **C-076-06** | Structural meaning and field meaning stay separate. | CROSS-SOURCE | §8; SD-3 |
-| **C-076-07** | Applicability names declared Models and Kinds and transfers no ownership. | CROSS-SOURCE | §7, §12, §13; SD-4, RF-076-1 |
+| **C-076-07** | Any Model or Kind named as applicability is declared and named by declaration reference; no applicability cardinality or presence rule is invented; no ownership transfers. | CROSS-SOURCE | §6, §7, §12, §13; SD-4, RF-076-1, SC-076-N |
 | **C-076-08** | Required fields, cardinality and constraints are addressed at the permitted semantic level. | CROSS-SOURCE | §7; SD-5, SD-6 |
 | **C-076-09** | RMS §10.2's permissions are not turned into invented mandatory structural elements. | STATIC | §7; SD-14 |
 | **C-076-10** | Registry schema execution is explicitly prohibited. | CROSS-SOURCE | §9; SD-8 |
 | **C-076-11** | No runtime validator implementation is defined. | STATIC | §9 |
 | **C-076-12** | Independent Record identity and resolvability are required without a resolver being implemented. | CROSS-SOURCE | §10 |
 | **C-076-13** | Versionability is preserved without version mechanics being chosen. | CROSS-SOURCE | §11 |
-| **C-076-14** | Registry references obey RMS §10.3 and Artifact 063. | CROSS-SOURCE | §12 |
+| **C-076-14** | Every reference a schema definition actually carries obeys RMS §10.3 and Artifact 063; no reference relation or carrier is invented. | CROSS-SOURCE | §12 |
 | **C-076-15** | No domain instance, domain state or runtime instance becomes a target or semantic authority. | CROSS-SOURCE | §12 RF-076-7–9 |
 | **C-076-16** | Reference legality is distinguished from mechanical resolution. | STATIC | §10 RS-076-4; §12 RF-076-10 |
-| **C-076-17** | Artifact 072's field meaning and domain are preserved. | CROSS-SOURCE | §8 |
+| **C-076-17** | Artifact 072's field meaning and domain are preserved, and schema composition respects them without a mandated reference carrier. | CROSS-SOURCE | §7, §8; RF-076-2, SD-5 |
 | **C-076-18** | Final schema/field overlap closure stays with 078. | CROSS-SOURCE | §8; SC-076-D |
 | **C-076-19** | No universal semantic schema and no forbidden universal field is created. | CROSS-SOURCE | §14; SD-12 |
 | **C-076-20** | No canonical Registry Record is written, and no materialization value is authored. | REPOSITORY | §2, §13 |
@@ -680,16 +696,19 @@ sources; **REPOSITORY** — checked by repository inspection, not provable from 
    verdict or mutates anything (§9; SD-8).
 3. **What a definition can express.** RMS §10.2's categories at the reach §7 gives each, with
    *"may define"* read as permission (SD-14).
-4. **Applicability.** Every definition states its declared Model and Kind scope as declaration
-   references; no cardinality is fixed (SD-4; RF-076-1; SC-076-N).
-5. **Composition vs meaning.** Fields are reached through their `FIELD-DEFINITION`; no element
-   carries field meaning or domain (§8; RF-076-2).
+4. **Applicability.** Every definition states the scope it applies to; any Model or Kind it names
+   is declared and named by declaration reference. How many, and whether both are always present,
+   is not established: if 077 must encode a cardinality, it records that choice as its own source
+   condition (SD-4; RF-076-1; SC-076-N).
+5. **Composition vs meaning.** Composition respects each field's governed meaning and domain; no
+   element carries field meaning or domain; no field-reference carrier is mandated, and any
+   concrete reference 077 carries must satisfy Artifact 063 (§8; RF-076-2).
 6. **Resolution.** Ordinary R Record identity under the universal grammar and envelope; no resolver
    (§10).
 7. **Versionability.** Nothing in 077 may obstruct the representation 108–110 will define; 077 is
    not asked to define it (§11; VS-076-2).
-8. **Reference legality.** Only the relations RF-076-1 to RF-076-4 describe; nothing else created;
-   no domain or runtime target (§12).
+8. **Reference legality.** Only the relations RF-076-1 to RF-076-4 describe, each where carried;
+   nothing else is created; no domain or runtime target (§12).
 9. **Sovereignty.** No element claims ownership of a conforming Record or of a model-owned schema
    (§13; SD-9).
 10. **Envelope.** The universal envelope is unchanged; envelope `kind` is `SCHEMA-DEFINITION`, never
@@ -714,7 +733,7 @@ writer. No row's `Val` or `Done` is enlarged.
 |---|---|---|
 | `Val`: *"definition resolves"* | **SATISFIED** — independent R Record identity under the universal grammar and envelope is required; resolution is mechanical and 114/115's; resolvable ≠ legal | §10 |
 | `Val`: *"versionable"* | **SATISFIED** — participation in Registry-owned evolution under 108–110; not defined ≠ forbidden; no World History Record | §11 |
-| `Val`: *"references only declared entities (063)"* | **SATISFIED** — concrete relations limited to declared applicability and fields through `FIELD-DEFINITION`; all other relations admissible only, none created; domain and runtime targets forbidden | §12 |
+| `Val`: *"references only declared entities (063)"* | **SATISFIED** — any applicability target named is a declared Model or Kind (RF-076-1); field composition respects governed field definitions, and any concrete R → R reference carried satisfies 063 (RF-076-2); all other relations are admissible only and none is created; domain and runtime targets are forbidden | §12 |
 | `Done`: *"Registry **defines** schemas; **does not execute** them"* | **SATISFIED** — definition stated (§6, §7); execution prohibited in nine testable items and a legal/illegal table | §6, §7, §9 |
 | `Why`: *"closes the schema/runtime ambiguity"* | **ADDRESSED** — 064 §12 Q14's ambiguity is closed by §9 | §9 |
 | `H: 064` | **SATISFIED** — consumed unchanged; §12 inherited; no Kind reopened | §5 |
