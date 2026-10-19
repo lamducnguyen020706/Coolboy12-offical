@@ -386,13 +386,35 @@ different endpoint from the one the type's owning role names.
 
 ### 8.5 Mandatory whatever the packaging
 
-Row 079's `Done` applies to every Record of this family, so a type defined for a model that holds no
-Relationship Record still declares an owning role. The sources state the declaration's effect only
-where Relationship Records are used (I-73, I-90; §13.9). What it governs inside another model's
-mechanism — Epistemic knowledge relationships *"within KNOWLEDGE-STATE"*, Production's references
-and workflow transitions — is that model's relationship architecture to state (rows 276, 338, 356,
-366; SC-079-H). The declaration is not made optional because a model packages differently, and its
-effect there is not invented.
+Three layers stay apart.
+
+- **A — the family obligation.** Every Record of Kind `RELATIONSHIP-TYPE-DEFINITION` declares its
+  type's meaning, its participant roles and exactly one owning role among them (§5.3; row 079
+  `Done`). This holds for every Record of the family, whether or not the model that uses the type
+  holds Relationship Records. A type defined for a model without them is not exempt.
+- **B — the model's relationship architecture.** Each Record Model decides how its own connections
+  are represented: Relationship Records where its architecture establishes them; its references,
+  dependencies or workflow transitions; knowledge relationships *"within KNOWLEDGE-STATE"*;
+  composition (RMS §15; §13.6e). These mechanisms are not equivalent, and the family's existence
+  reclassifies none of them. Blueprint §13.3 gives every relationship in its sense a
+  Registry-defined type; it does not make every connection such a relationship (§10). Which of a
+  model's other connections, if any, a `RELATIONSHIP-TYPE-DEFINITION` governs is that model's
+  architecture to state (rows 197, 276, 338, 356, 366).
+- **C — the owning role's effect.** Where Relationship Records are used, §8.2 to §8.4 apply: the
+  participant occupying the declared role is the endpoint that holds the edge; the edge is
+  authoritative in exactly one Relationship Record; the non-owning endpoint's view is Derived; and
+  no creation-order, editing-context, role-order or direction-based tie-breaker replaces the
+  declared role (§13.9; I-73). Where they are not used, the declaration stands and nothing further
+  is inferred: no storage mechanism, endpoint-ownership algorithm or World Relationship Record is
+  required, and the declaration does not by itself change who owns a reference or a workflow
+  transition. What it governs there is that model's to state (SC-079-H).
+
+> **The owning-role declaration applies to every `RELATIONSHIP-TYPE-DEFINITION` Record. It does not
+> require every connection in every Record Model to be represented by such a definition. Whether a
+> reference, dependency, workflow transition, composition link or other connection is governed by a
+> relationship-type definition is decided by the governing sources and that model's relationship
+> architecture. Where Relationship Records are used, the owning role's effect follows I-73 and
+> Blueprint §13.9; where they are not, it is not invented here.**
 
 ## 9. Direction, Cardinality and Legality
 
@@ -408,7 +430,8 @@ direction, cardinality, legality, owning role"*.
 **REQUIRED SYNTHESIS.** A `RELATIONSHIP-TYPE-DEFINITION` that types a relationship in §13.3's sense
 governs its direction, cardinality and legality constraints as type semantics, beside its roles and
 owning role. Whether all three apply to the types of a model's connections that are not reified —
-Production's references, for example — is that model's architecture to state (SC-079-H).
+Production's references, for example — and whether such connections are typed by this family at
+all, is that model's architecture to state (§8.5; SC-079-H).
 
 ### 9.2 Direction
 
@@ -423,18 +446,26 @@ default, reversal rule, inverse type or *source*/*target* serialization is defin
 
 ### 9.3 Cardinality
 
-Cardinality is part of the Registry-defined type (§13.3) and is governed definition content. It is
-not:
+**SOURCE FACT.** Cardinality is part of the Registry-defined type of a relationship in §13.3's
+sense (§9.1), and is governed definition content of such a type. It is distinct from:
 
-- the cardinality of a field occurrence in a schema (Artifact 077's `occurrence.cardinality`);
-- the number of `RELATIONSHIP-TYPE-DEFINITION` Records;
-- the number of participants in one relationship — that is arity (§7);
-- the number of edges an owning Record currently holds;
+- participant-role arity — how many participant positions a type has (§7);
+- field-occurrence cardinality — how many values a field occurrence may carry in a schema. Artifact
+  077's `occurrence.cardinality` is that, and is not thereby a representation of this cardinality;
+- edge count — how many actual relationships an object currently holds;
+- definition count — how many `RELATIONSHIP-TYPE-DEFINITION` Records exist;
+- the cardinality of any Registry reference a definition carries;
 - a universal binary-relationship grammar.
 
-**SOURCE GAP.** The sources name a type's cardinality and do not state what it bounds beyond the
-word, or how it is expressed. No value, *one-to-one*/*one-to-many* enumeration, syntax, carrier or
-cross-model policy is defined (SC-079-F).
+**SOURCE GAP.** No inspected source states what a type's cardinality bounds — per role, per
+participant, per relationship or otherwise — what values it admits, a default, a notation or a
+carrier. No value, *one-to-one*/*one-to-many* enumeration, syntax or cross-model policy is defined
+(SC-079-F).
+
+**Who does what.** This specification states the semantic concern and keeps the gap open. Artifact
+080 represents only what the governing sources and this specification justify. It may choose how a
+cardinality statement is carried, but a carrier is not a decision about what cardinality means, and
+the gap is not settled to make the schema look complete (§21).
 
 ### 9.4 Legality — participant eligibility
 
@@ -467,7 +498,7 @@ Kind of every partition is defined (SC-079-G).
 | participant roles | mandatory | row 079 `Done`; §13.3 | 080 |
 | owning role | mandatory — exactly one, one of its roles | row 079 `Done`; §13.9; LS-3 | 080 |
 | direction | type semantics where the type is of a §13.3 relationship | §13.3 | 080; SC-079-F |
-| cardinality | type semantics where the type is of a §13.3 relationship | §13.3 | 080; SC-079-F |
+| cardinality | type semantics where the type is of a §13.3 relationship; what it bounds, its values, default and notation are a SOURCE GAP | §13.3 | 080, without deciding SC-079-F |
 | legality — eligibility per role | type semantics where the type is of a §13.3 relationship; declared entities only | §13.3; RMS §10.3 | 080; SC-079-G |
 | an instance's identity, endpoints, validity, provenance, history | never in the definition | §13.3; I-74; RMS §10.3 | — |
 
@@ -486,8 +517,8 @@ ownership is *ambiguous*.
 | **B — owning role:** for a relationship that is held in Relationship Records, which participant's Record holds the edge? | the type's owning role, declared by this family | §13.9; I-73 |
 
 - The reification decision does not choose a type's owning role.
-- The owning-role declaration does not reify a connection, and does not make every connection a
-  Relationship Record.
+- The owning-role declaration does not reify a connection, does not make every connection a
+  Relationship Record, and does not bring every connection under this family (§8.5).
 - A type definition existing for a model is no evidence that the model uses Relationship Records:
   row 338 pairs Production's relationship architecture — *"References · dependencies · workflow
   transitions. No Relationship Record"* (RMS §15) — with type definitions.
@@ -513,10 +544,11 @@ semantics."*
 | **I** | *"Composition · placement · credit · supersession references"* | defines I's relationship types (row 366) | not imposed; composition is not relationship | 366 | I's mechanism and the owning role's effect in it |
 
 The mechanism column is RMS §15's. No model is required to use a Relationship Record, and none is
-barred from adopting a structure of the same shape on its own evidence (§13.9; Artifact 055 §8.3).
-Blueprint §13.6d's package rows for non-World models are *"MODEL-DESIGN INPUT (not a freeze)"* and
-are not imposed. Shared definition infrastructure imposes no common instance kind, storage,
-lifecycle, canonicality, temporal schema, package or relationship-type roster.
+barred from adopting a structure of the same shape on its own evidence (§13.9; Artifact 055 §8.3),
+and the family requires no model to type every connection through it (§8.5). Blueprint §13.6d's
+package rows for non-World models are *"MODEL-DESIGN INPUT (not a freeze)"* and are not imposed.
+Shared definition infrastructure imposes no common instance kind, storage, lifecycle, canonicality,
+temporal schema, package or relationship-type roster.
 
 ## 12. Relationship versus Field, Reference, Composition and Dependency
 
@@ -636,7 +668,7 @@ The IDs below are this specification's, not pre-existing constitutional identifi
 | **RT-079-11** | **Model-owned packaging.** The family requires no Relationship Record of E, P, R, V or I, and forbids no model's own source-authorized mechanism. | I-102; §13.6e; RMS §15 | SOURCE FACT |
 | **RT-079-12** | **Reification apart.** The reification criterion and the owning role answer separate questions; neither decides the other, and a type definition reifies nothing. | RMS §15; 055 §5.2; §13.9 | REQUIRED SYNTHESIS |
 | **RT-079-13** | **Direction.** Direction is type semantics where the type is of a §13.3 relationship; it is declared separately from the owning role; no representation is invented. | §13.3 | SOURCE FACT + 079 FAMILY INTERPRETATION |
-| **RT-079-14** | **Cardinality.** Cardinality is governed type content where the type is of a §13.3 relationship; its meaning beyond the word and its representation are not invented. | §13.3; SC-079-F | SOURCE FACT; detail SOURCE GAP |
+| **RT-079-14** | **Cardinality.** Cardinality is governed type content where the type is of a §13.3 relationship, distinct from arity, field-occurrence cardinality, edge count and definition count. What it bounds, its values, default, notation and carrier are not invented here, and a structural representation does not settle them. | §13.3; §9.3; SC-079-F | SOURCE FACT; detail SOURCE GAP |
 | **RT-079-15** | **Participant eligibility.** Eligibility names declared Kinds of declared Models only, admits nothing, and overrides neither 058 nor a model's own constraints. | §13.3; RMS §10.3; 057 §9; 058; RMS §7 | SOURCE FACT + REQUIRED SYNTHESIS |
 | **RT-079-16** | **Not an instance.** A definition holds no actual endpoint, edge identity, temporal validity, provenance, history or graph data. | §13.3; I-74; RMS §10.3 | REQUIRED SYNTHESIS |
 | **RT-079-17** | **Not a field or a reference.** A relationship type is neither a field nor a reference, and makes no field or reference a relationship. | §13.3; RMS §6.1; 044 §8 | SOURCE FACT |
@@ -647,7 +679,7 @@ The IDs below are this specification's, not pre-existing constitutional identifi
 | **RT-079-22** | **No execution.** The definition creates, moves, mutates, projects or validates no relationship. | RMS §6.1; §13.6e; I-84 | SOURCE FACT |
 | **RT-079-23** | **No universalization.** No Universal Relationship Record, Universal History Record, universal relationship schema or package, or universal role grammar is introduced. | RMS §4; §13.7a; I-102 | SOURCE FACT |
 | **RT-079-24** | **Structural handoff.** Artifact 080 receives the semantic obligations of §21 and no mandatory field inventory. | row 080 | 079 FAMILY INTERPRETATION |
-| **RT-079-25** | **Mandatory whatever the packaging.** The owning role is declared for every type, including types of models that hold no Relationship Record; its effect there is that model's to state. | row 079 `Done`; I-73; RMS §15; SC-079-H | SOURCE FACT + SOURCE GAP |
+| **RT-079-25** | **Mandatory whatever the packaging.** The owning role is declared for every Record of the family, including types of models that hold no Relationship Record; its effect there is that model's to state. The obligation brings no model-owned connection under the family (§8.5). | row 079 `Done`; §13.3; I-73; RMS §15; SC-079-H | SOURCE FACT + SOURCE GAP |
 
 ## 17. Worked Examples
 
@@ -684,10 +716,16 @@ the type's own roles (RT-079-05).
 **G. Illegal — no owning role.** A type declares its participant roles and designates no owning
 role. Rejected against this family: row 079's `Done` requires the owning role (RT-079-04).
 
-**H. Boundary — a Production reference.** A Production Record references another Record as part of
-a workflow dependency. It does not become a World-style Relationship Record: Production has
-*"References · dependencies · workflow transitions. No Relationship Record"* (RMS §15). No
-Production type roster is given here (row 338).
+**H. Boundary — a Production reference or workflow dependency.** A Production Record references
+another Record as part of a workflow dependency. Invalid inference: because the Registry has a
+relationship-type family, the dependency must become a World-style Relationship Record, or must be
+given a `RELATIONSHIP-TYPE-DEFINITION`. Rejected: Production has *"References · dependencies ·
+workflow transitions. No Relationship Record"* (RMS §15), and the family's existence reclassifies
+no connection (§8.5). How the dependency is represented is Production's architecture's (row 338).
+If that architecture does govern a relationship type through a `RELATIONSHIP-TYPE-DEFINITION`, the
+definition still declares its participant roles and exactly one owning role, and what that role
+governs inside Production's mechanism is Production's to state (SC-079-H). No Production Kind,
+type name or type roster is given here.
 
 **I. Boundary — a Registry dependency.** A Registry definition refers to another Registry definition
 where a family contract establishes the relation. That makes the Registry the owner of no runtime
@@ -748,6 +786,10 @@ RF-079-2), however well it resolves.
 | PI-35 | 079 implements World's relationship-type data | row 198's | row 198 |
 | PI-36 | The Blueprint's ten-item Registry roster overrides RMS §10.1 | historical state | 064 §5; SC-079-B |
 | PI-37 | The Blueprint's *capability* classification overrides Registry sovereignty | stale wording | RMS §10; SC-079-A |
+| PI-38 | Every model-owned connection — reference, dependency, workflow transition, composition link — must be typed by a `RELATIONSHIP-TYPE-DEFINITION` | the family types what each model's architecture brings under it; its existence reclassifies nothing | RMS §15; §8.5 |
+| PI-39 | Because every definition declares an owning role, every model that uses the family must hold Relationship Records | the declaration is mandatory; Relationship Records are not | I-102; §8.5 |
+| PI-40 | A schema's need to represent cardinality authorizes deciding what it bounds, its values or its default | a representation choice is not a semantic decision | §9.3; SC-079-F |
+| PI-41 | Field-occurrence cardinality and relationship-type cardinality are interchangeable | separate concerns | §9.3 |
 
 ## 19. Source-Condition Register
 
@@ -806,9 +848,9 @@ this artifact owns its resolution, the owner where one is established, and wheth
 | | |
 |---|---|
 | **Sources** | Blueprint §13.3 |
-| **Established** | direction and cardinality are type semantics of a §13.3 relationship's type |
-| **Undecided** | what a type's cardinality bounds beyond the word; carriers, tokens, defaults and notation for both |
-| **079 owns?** | no — representation is 080's, within this specification |
+| **Established** | direction and cardinality are type semantics of a §13.3 relationship's type; cardinality is distinct from arity, field-occurrence cardinality, edge count and definition count (§9.3) |
+| **Undecided** | what a type's cardinality bounds — per role, per participant, per relationship or otherwise — its value set, default, notation and carrier; carriers, tokens, defaults and notation for direction |
+| **079 owns?** | no — representation is 080's, within this specification. A representation choice does not resolve the semantic gap: any choice 080 makes beyond the sources is recorded as its own and not presented as source semantics |
 | **Blocks?** | no — the conceptual responsibility is stated (§9) |
 
 ### SC-079-G — participant eligibility and cross-model types — SOURCE GAP
@@ -826,8 +868,8 @@ this artifact owns its resolution, the owner where one is established, and wheth
 | | |
 |---|---|
 | **Sources** | row 079 `Done`; I-73 and I-90 (*"Wherever a Record Model uses Relationship Records"*); RMS §15 rows E, P, V, I; rows 276, 277, 338, 356, 366 |
-| **Established** | the declaration is mandatory for every type; its effect where Relationship Records are used |
-| **Undecided** | what a declared owning role governs inside a mechanism with no Relationship Record; whether §13.3's direction, cardinality and legality apply to those models' typed connections |
+| **Established** | the declaration is mandatory for every Record of the family; its effect where Relationship Records are used; the obligation brings no model-owned connection under the family (§8.5) |
+| **Undecided** | what a declared owning role governs inside a mechanism with no Relationship Record; which of a model's connections, if any, this family types; whether §13.3's direction, cardinality and legality apply to those models' typed connections |
 | **079 owns?** | no — each model's relationship architecture |
 | **Blocks?** | no |
 
@@ -972,6 +1014,8 @@ sources; **REPOSITORY** — checked against the repository's actual changes.
 | **C-079-41** | The owning role picks out exactly one endpoint of each edge, with no tie-breaker. | CROSS-SOURCE | §8.4; SC-079-Q |
 | **C-079-42** | The family's L1 placement is respected: eligibility naming a declared Kind is not a semantic dependency. | CROSS-SOURCE | §15 RF-079-7; SC-079-L |
 | **C-079-43** | Roadmap unlock and hard-dependency mismatches are recorded, not repaired. | CROSS-SOURCE | SC-079-O |
+| **C-079-44** | The owning-role obligation is scoped to `RELATIONSHIP-TYPE-DEFINITION` Records: every such Record declares exactly one owning role, and the obligation neither reclassifies a model-owned connection nor requires every reference, dependency, composition link or workflow transition to be typed by this family. | CROSS-SOURCE | §8.5; RT-079-25; PI-38, PI-39; SC-079-H |
+| **C-079-45** | Relationship-type cardinality stays distinct from participant-role arity, field-occurrence cardinality, edge count and definition count, and no cardinality interpretation, value set, notation, default or schema obligation the sources do not establish is imposed on Artifact 080. | CROSS-SOURCE | §9.3, §21; RT-079-14; PI-40, PI-41; SC-079-F |
 
 ## 21. Downstream Handoff
 
@@ -982,9 +1026,11 @@ sources; **REPOSITORY** — checked against the repository's actual changes.
 1. **Meaning.** A `RELATIONSHIP-TYPE-DEFINITION` is an R Record governing one relationship type
    (§5; RT-079-01, RT-079-02).
 2. **Participant roles.** Declared and distinguishable within the type (§7; RT-079-03).
-3. **Owning role.** Exactly one, one of the declared roles, stated not inferred, for every type
-   (§8; RT-079-04, RT-079-05, RT-079-25).
-4. **Type semantics.** Direction, cardinality and per-role eligibility as §13.3 attaches them (§9).
+3. **Owning role.** Exactly one, one of the declared roles, stated not inferred, for every type —
+   a definition-level obligation, not an instruction to reclassify any model's connections (§8,
+   §8.5; RT-079-04, RT-079-05, RT-079-25).
+4. **Type semantics.** Direction, cardinality and per-role eligibility as §13.3 attaches them, and
+   only that far (§9).
 5. **Definition, not instance.** No endpoint, edge, validity, provenance or history in the Record
    (§6; RT-079-16).
 6. **Declared participant categories.** Only declared Kinds of declared Models, by declaration
@@ -1001,6 +1047,20 @@ syntax, direction tokens, cardinality notation, defaults, reference-carrier stru
 fields, parser logic, validator interface, storage or materialized values. Where 080 must make a
 representation choice the sources do not settle, it records it as its own. 080's `Val` and `Done`
 are not enlarged.
+
+**Cardinality, specifically.** 080 inherits the source fact that cardinality is a relationship-type
+semantic concern within §13.3's scope. It does not inherit an interpretation of what cardinality
+bounds, a permitted-value enumeration, a default or a notation, because none is established
+(SC-079-F). 080 may choose how to carry a cardinality statement; it does not decide those semantics
+merely to provide the carrier, keeps any representation choice distinct from a source-established
+rule, and leaves any unresolved semantic requirement explicit.
+
+**080 does not assume** that every model connection is a relationship instance or needs a type
+definition, that every model uses Relationship Records, that the owning role is the first
+participant or follows direction, universal binary arity, one multiplicity model or fixed
+cardinality values or defaults, that relationship-type cardinality is field-occurrence
+cardinality, that a declaration reference is an R → R reference, or that a definition creates or
+owns an edge (PI-09, PI-11, PI-14, PI-15, PI-23, PI-38 to PI-41; §15).
 
 **Unlock is not dependency.** Row 079's `→` names 080 only. Row 197 lists 079 in its own `H` and
 consumes it through that `H`. Row 080's `→` and the `H` of the rows downstream of it do not match
