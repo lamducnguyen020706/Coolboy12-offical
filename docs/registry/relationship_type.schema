@@ -1,0 +1,1436 @@
+COOLBOY12 — RELATIONSHIP-TYPE-DEFINITION SCHEMA (structural contract)
+
+ARTIFACT 080 · RELATIONSHIP-TYPE-DEFINITION schema · docs/registry/relationship_type.schema ·
+Own: R · RM: R · T: schema · R: CONTRACT · SoT: AUTHORITATIVE · Auth: defining ·
+Canon: canonical-about-meaning · CD: yes · Ph/St: P3/3b · Req: RR-16 · BP: §9.4 · RMS: §10.1 ·
+H: 079 · S: — · LS: LS-1 · G: — · → 177,277,338,352,375 · Val: definition resolves; versionable;
+references only declared entities (063) · Done: schema · Why: LS-3 · Risk: high · ∥: yes
+
+==================================================================================================
+0. HOW TO READ THIS FILE
+==================================================================================================
+
+NOTATION   This file reuses the local declarative notation of Artifact 067, with the CHECK line
+           Artifact 069 added, the REPOSITORY CONVENTION basis label Artifact 071 added, the
+           absent word Artifact 073 added, and the dotted parts, list counts and outcomes
+           Artifact 077 added. It is an implementation choice, not COOLBOY12 architecture, and
+           establishes no repository-wide schema language (SC-080-K). No parser exists for it.
+
+           ELEMENT <name>        a structural element of a materialized Record
+           ELEMENT <a>.<b>       part <b> of each value of element <a>; <a>.<b>.<c> is a part of
+                                 a part. Structure inside one family element, not a separate
+                                 family element
+           LAYER                 ENVELOPE (universal, RMS §4) or FAMILY (Registry-model-owned)
+           REQUIRED              yes | no — where no, the line says when the carrier is needed
+           CARDINALITY           exactly-one | zero-or-one | zero-or-more | one-or-more — how many
+                                 times the carrier occurs in the Record. It is never
+                                 relationship-type cardinality, which this contract does not
+                                 represent (§3 NOT REPRESENTED; OD-079-1)
+           CONSTRAINT            what a conforming value must satisfy
+           CHECK                   NATIVE      decidable from the Record's own structure and its
+                                               expressly declared values
+                                   EXTERNAL    needs evidence outside the Record; the line names
+                                               the evidence and who supplies it, and this
+                                               contract does not claim it established
+                                   STATIC      a property of this contract, checked by reading it
+                                   REPOSITORY  a property of the change that adds this file
+           BASIS                   SOURCE FACT            stated by a governing source
+                                   REQUIRED SYNTHESIS     forced by several source facts together
+                                   REPOSITORY CONVENTION  a choice of Artifact 067, 069, 071, 073
+                                                          or 077, reused
+                                   080 CHOICE             a representation decision of this file
+                                   SOURCE GAP             not established by any current source
+           REJECT                a value that does not conform, with the rule it breaks and its
+                                 CHECK
+
+           A part of a part, <a>.<b>.<c>, is this file's one addition to the notation, an 080
+           CHOICE: an eligibility entry belongs to one role (§3 role.eligibility). REPOSITORY
+           CONVENTION and 080 CHOICE authorize no semantic rule; where a choice is made, the line
+           says what it does not decide.
+
+OUTCOMES   A candidate Record has exactly one of the four outcomes of Artifact 077 (REPOSITORY
+           CONVENTION), decided in this order; the first that applies is the outcome (§4 X-01):
+             REJECT            a rule is shown to be violated: a NATIVE rule fails; an EXTERNAL
+                               check establishes a violation; or a status that must be
+                               established — the declared status of a named Kind — cannot be
+                               established when its owner's check is run: "Undetermined is not
+                               permitted." (Artifact 063 RB-6). A known violation is never
+                               excused by an unrelated open question.
+             UNRESOLVED        no violation is shown, but the Record has a shape whose
+                               admissibility the governing sources leave open (§4 S-02, S-03,
+                               S-04, D-04, D-05, E-04, E-08). This contract neither accepts nor
+                               rejects the shape, and a carrier able to hold it is no authority
+                               for it. It is not a success.
+             PENDING_EXTERNAL  every NATIVE rule holds and no shape is UNRESOLVED, but one or more
+                               EXTERNAL checks have not yet been established. A pre-final
+                               evidence state, not acceptance.
+             CONFORMS          every NATIVE rule holds, every applicable EXTERNAL check has been
+                               established by its owner, no shape is UNRESOLVED, and no rule is
+                               violated.
+           Three evidence states stay apart. Not yet checked: PENDING_EXTERNAL. Checked, and a
+           required declared status cannot be established: REJECT (RB-6). Checked and shown
+           invalid: REJECT. A NATIVE pass alone is never CONFORMS.
+           CONFORMS is bounded to this contract. It does not establish that Blueprint §13.3's
+           cardinality obligation is met — no carrier for it exists here (OD-079-1); it says
+           nothing about what the owning role governs where no Relationship Record is used
+           (OD-079-2); and it shows no actual edge's ownership, no resolution by a consumer and no
+           version mechanism. The labels are contract vocabulary, never Record fields; no outcome
+           named here reports a real Record, and this file implements no validator (§6
+           EXECUTION).
+
+STATUS     This contract describes the structure a materialized RELATIONSHIP-TYPE-DEFINITION
+           Record must satisfy. It is an authored structural contract under docs/registry/. It is
+           not a Registry Record, not canonical data, not a concrete relationship-type
+           definition, not a SCHEMA-DEFINITION Record, not a World Relationship Record schema,
+           not a relationship-instance schema, not a catalog of relationship types, not a schema
+           execution engine and not a universal relationship architecture. Its header copies row
+           080's SoT: AUTHORITATIVE, Auth: defining, Canon: canonical-about-meaning and CD: yes
+           exactly; those values do not make this file a Record and license no canonical write
+           (SC-080-G). Roadmap §0.8 lets this contract be authored before canonical
+           materialization: "Structural contracts — rows 067, 069, 071, 073, 077, 080, 082, 084,
+           087, 089, 091, 093, 095, 097, 099, 102, 104 — move to docs/registry/<family>.schema".
+           Concrete RELATIONSHIP-TYPE-DEFINITION Records are committed only through the Mutation
+           Coordinator (row 152) after G-CANON-R. Where this contract differs from the Master
+           Blueprint, the Record Model System, the Roadmap, or Artifact 079, those sources are
+           right and this contract is wrong.
+
+SPEC       Artifact 079 — docs/registry/relationship_type.md — is the semantic contract this file
+           encodes, consumed unchanged (H: 079). This file encodes the structural consequences of
+           079 §5–§15 and the handoff of 079 §21, and nothing 079 leaves open: OD-079-1 and
+           OD-079-2 stay open (079 §19.1). Artifacts 067, 069, 071, 073 and 077 are precedents for
+           notation and representation conventions only: no semantics is taken from the MODEL-,
+           KIND-, SUBTYPE-, FIELD- or SCHEMA-DEFINITION families, and none of those rows is a
+           dependency of row 080. Artifacts 003, 033, 034, 044, 055, 058, 061, 062, 063, 064 and
+           078 are supporting constraints, not entries in H or S.
+
+==================================================================================================
+1. RECORD SHAPE
+==================================================================================================
+
+RELATIONSHIP-TYPE-DEFINITION RECORD
+├── ENVELOPE  partition · kind · object_id · slug · provenance · registry_ref · sot_class
+└── FAMILY    definition · role · owning_role · direction
+              ├── definition   the governed meaning of the one relationship type
+              ├── role         one or more, each:  key · meaning · eligibility
+              │                └── eligibility   zero or more, each:  model · kind (zero or one)
+              ├── owning_role  exactly one designation of one declared role, by its key
+              └── direction    zero or one, with:  from · to — each a declared role, by its key
+
+NOT REPRESENTED   relationship-type cardinality (§3; §6 CARDINALITY; OD-079-1)
+
+Artifact 080 defines exactly these eleven elements: the universal seven-field envelope (RMS §4)
+and four family elements. The family elements have seven parts — role.key, role.meaning,
+role.eligibility, role.eligibility.model, role.eligibility.kind, direction.from and direction.to.
+It defines no other element or part.
+
+That is the inventory of this revision of the contract, not a closure over everything a
+RELATIONSHIP-TYPE-DEFINITION Record may later carry. Rows 108–110 keep their authority to
+establish Registry-owned evolution, versioning, supersession and deprecation representation, and a
+governed revision of this contract may add what they establish (§6 VERSIONABILITY). The envelope,
+by contrast, stays exactly seven fields: no later representation becomes an eighth universal field
+(RMS §4; P-05).
+
+One type, four carriers. 079 requires that each Record govern one relationship type's meaning,
+declare its participant roles and designate exactly one of them as the owning role (079 §5.3; row
+079 Done), and attaches direction and per-role eligibility to the type of a relationship in
+Blueprint §13.3's sense (079 §9). This contract carries the meaning in definition, the roles in
+role, the designation in owning_role and the reading in direction. No carrier alone is the
+definition.
+
+Roles are local positions. A role entry declares one position a participant occupies in every
+relationship of the type (079 §7). role.key distinguishes it inside this Record and nowhere else:
+it is not a Record, a Kind, a subtype, a field or a global code, and it identifies no participant.
+owning_role and direction name roles by role.key, so each can be checked against the declared
+roles of the same Record (§4).
+
+Three things called "kind" or "type", never merged. The envelope element kind names this Record's
+own Kind — always RELATIONSHIP-TYPE-DEFINITION. role.eligibility.kind names a declared Kind whose
+Records may stand in a role — for example CHARACTER. The relationship type itself — for example
+MEMBER_OF — is neither: it is what this Record defines, and it is not a Kind.
+
+Carrier count is not semantic count. The number of role entries is not relationship-type
+cardinality, and a list able to hold three roles does not make a three-role type admissible (§4
+S-02, S-03). The number of eligibility entries is not a multiplicity rule. The CARDINALITY lines of
+this file count carriers, nothing else.
+
+Not the edges. A Character MEMBER_OF an Organization is an actual relationship, owned by the model
+whose mechanism holds it — World's Relationship Record of the member (Blueprint §13.9; I-73). This
+contract is the structure of the Registry Record that defines MEMBER_OF. It carries no endpoint,
+edge, edge identity, temporal validity, edge provenance, history or back-reference (079 RT-079-16;
+P-04).
+
+==================================================================================================
+2. ENVELOPE — the universal seven (RMS §4; Artifact 033)
+==================================================================================================
+
+Types, defaults, nullability and serialization of the envelope fields are not established by the
+governing sources (Artifact 033) and are not stated here.
+
+ELEMENT     partition
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  R — the Registry partition
+CHECK       NATIVE
+BASIS       SOURCE FACT — RELATIONSHIP-TYPE-DEFINITION is a Registry Kind (RMS §10.1); 079 §5.2,
+            RT-079-01
+REJECT      W, E, P, V or I — for example a World Record, such as a Relationship Record, is never
+            a RELATIONSHIP-TYPE-DEFINITION                          (RT-079-01)      NATIVE
+
+ELEMENT     kind
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  identifies the declared Registry Kind RELATIONSHIP-TYPE-DEFINITION (Kind 6 of RMS
+            §10.1) — this Record's own Kind, never the Kind of any participant
+            (role.eligibility.kind) and never the relationship type it defines. The constraint is
+            symbolic. No two-character Registry Kind code is established; none is minted here
+            (SC-080-I). Blueprint §13.6's RELATIONSHIP-TYPE-DEF is a source alias, not another
+            Kind (064 §5; SC-080-A).
+CHECK       NATIVE against the symbolic Kind; against a code only once the Registry's codes are
+            bound by their own row (row 117)
+BASIS       SOURCE FACT — RMS §10.1; Artifact 064 §6, §13; 079 RT-079-01
+REJECT      KIND-DEFINITION, SCHEMA-DEFINITION or any other Registry Kind            NATIVE
+            a participant's Kind (for example CHARACTER) placed here                NATIVE
+            a relationship type's name (for example MEMBER_OF) placed here           NATIVE
+            an invented code presented as established                               NATIVE
+
+ELEMENT     object_id
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the object identity component under the universal identity grammar
+            [PARTITION]-[KIND]-[OBJECT_ID]-[SLUG]. It is this definition Record's own identity —
+            not the relationship type's name, not a role key, not a participant's identifier, not
+            an edge's identity and not a Relationship Record's identity (079 RS-079-2, RS-079-3).
+CHECK       NATIVE — presence, a single value
+            STATIC — this contract makes no family element a substitute for it
+BASIS       SOURCE FACT — RMS §4, §5; Artifact 034; 079 RS-079-1 to RS-079-3
+
+ELEMENT     slug
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  decoration only; never identity, never a lookup key, never the basis of resolution or
+            ownership
+CHECK       NATIVE — presence, a single value
+            STATIC — this contract gives slug no identity, lookup, resolution or ownership role
+BASIS       SOURCE FACT — RMS §5; Artifact 033; 079 RS-079-2
+
+ELEMENT     provenance
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it: this definition Record's own provenance
+            capture. Provenance meaning is not defined here. The provenance of an actual
+            relationship — "provenanced" in §13.3 — belongs to each relationship and the model
+            that holds it (079 §6), and is never carried here, in this element or another.
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4 (provenance capture universal, meaning model-owned); Artifact 033;
+            079 §6, RT-079-16
+REJECT      absent — a definition Record's provenance is not optional        (RMS §4)  NATIVE
+            replaced by an edge's provenance                                (RT-079-16) EXTERNAL
+
+ELEMENT     registry_ref
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the universal envelope field, unchanged. This contract attaches no referent,
+            self-reference convention, bootstrap target or resolution meaning to it, and it
+            carries neither a participant Kind nor an owning role (SC-080-R).
+CHECK       NATIVE for presence
+BASIS       SOURCE FACT — RMS §4; Artifact 033 leaves its referent unresolved; Blueprint §9.4:
+            "Reference resolution is not Registry work"
+
+ELEMENT     sot_class
+LAYER       ENVELOPE
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  as the universal envelope carries it: a Record-level source-of-truth class, which
+            Artifact 033 §5.7 identifies as one of the Blueprint's five — AUTHORITATIVE · DERIVED
+            · CACHED · TEMPORARY · EXTERNAL. No value is fixed here. Row 080's manifest SoT and
+            Canon are not Record-level values and are not copied into it, and sot_class is not
+            canonicality (I-104).
+CHECK       NATIVE — presence; a single value; membership of the five Record-level classes
+BASIS       SOURCE FACT — RMS §4 ("Source-of-truth classification | §29.6a — five classes");
+            Artifact 033 §5.7; Artifact 016
+REJECT      DEV-ENV — a repository-artifact class, "not a record-level value" (Artifact 033 §5.7)
+                                                                                     NATIVE
+            canonical-about-meaning, or any Canon value, written as a source-of-truth class
+                                                                        (I-104)      NATIVE
+
+==================================================================================================
+3. FAMILY — RELATIONSHIP-TYPE-DEFINITION content (Registry-model-owned; not envelope fields)
+==================================================================================================
+
+definition, role and owning_role are required in every Record. direction and role.eligibility are
+present or absent as §4 S-04 requires. No family element or part has a default value. A required
+element or part may not be left empty, and an absent part is absent — not an empty value, a null
+placeholder or a wildcard (REPOSITORY CONVENTION, 073). Types and serialization of the family
+elements are not established by the governing sources and are not stated here; this contract fixes
+structure, not an encoding.
+
+ELEMENT     definition
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the governed account of one relationship type's meaning: what a relationship of this
+            type says (079 §5.3 item 1; 064 §13 Q4). A Registry definition "Governs; never
+            instantiates" (RMS §6.1). Non-empty. Its internal form is not prescribed.
+            A name. The content may state the name by which the type is known — for example
+            MEMBER_OF. A name is not this Record's identity, is not unique by this contract, and is
+            no lookup or resolution key (079 RS-079-2). No name element is defined (§6
+            REPRESENTATION).
+            What it carries none of (§4 M-01 to M-05): a second, independently governed type or a
+            catalog of types; any actual endpoint, participant identifier, edge, edge identity,
+            temporal validity, edge provenance, history or graph data; a statement contradicting
+            role, owning_role, direction or eligibility; a cardinality presented as the type's
+            governed cardinality while OD-079-1 is open; an application of the owning role that
+            the governing model's architecture does not establish (OD-079-2); executable
+            behaviour; a domain instance, domain state or runtime object as authority; a
+            reference in a relation this family does not establish. Unstructured prose is no
+            exemption from the reference boundary (§6 REFERENCES).
+CHECK       NATIVE — presence, a single value, non-empty.
+            EXTERNAL — the content limits are semantic and not decidable from structure; they are
+            judged against 079, and this contract does not claim them proven. A non-empty value
+            is not thereby an adequate meaning.
+BASIS       REQUIRED SYNTHESIS — 079 §5.2, §5.3, RT-079-02, RT-079-16, RT-079-22, RF-079-2 to
+            RF-079-5; RMS §6.1; 064 §13 Q1, Q4. The single carrier, the element NAME and the
+            non-empty rule follow Artifacts 067, 069, 071, 073 and 077 (REPOSITORY CONVENTION).
+            Carrying a type's name only as content is an 080 CHOICE.
+REJECT      no value, or an empty one                                (079 §5.3)        NATIVE
+            content defining two independently governed types         (RT-079-02; M-01) EXTERNAL
+            content shown to be a statement of edges, for example "Character A is a member of
+            Organization B" as the type's content                    (RT-079-16; M-01) EXTERNAL
+            content using W-CH-000001-Maximus as what "the member" means
+                                                                     (RF-079-2; M-05)  EXTERNAL
+
+ELEMENT     role
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY one-or-more — each value is one declared participant role, with the parts role.key,
+            role.meaning and role.eligibility
+CONSTRAINT  each value declares one participant role of this type: a position a participant
+            occupies in every relationship of the type (079 §7). The roles are declared here, not
+            inferred from the type's name, a participant Kind, a domain instance, entry order,
+            direction or an example (079 §7, RT-079-03).
+            At least one: a Record with no declared role has no role for owning_role to designate
+            (RT-079-05). This element fixes no further count. How many roles a type has is the
+            arity rule of §4 S-02 and S-03: two for a World type (Blueprint §13.9: "An edge joins
+            two objects."); for other models, what their own architecture establishes.
+            Unordered. The order in which entries are written carries no meaning, and no rule of
+            this contract reads it (079 §8.2 item 4; RT-079-08).
+            A role is part of this one definition. It is not a Record, a Kind, a subtype, a field,
+            a participant or a participant's identifier, and has no identity outside this Record
+            (079 §7).
+CHECK       NATIVE — presence; at least one entry; each entry's parts; key uniqueness (§4 R-03)
+            EXTERNAL — the count against the governing model's arity (§4 S-02, S-03)
+BASIS       SOURCE FACT — the type carries "its participant roles" (Blueprint §13.3); the Registry
+            holds "relationship-type definitions with their participant roles" (§9.4); row 079
+            Done. REQUIRED SYNTHESIS — distinguishable and declared (079 §7; RT-079-03). 080
+            CHOICE — a list of role entries; unordered; the element NAME. 079 §7: "How roles are
+            named or identified is 080's."
+REJECT      no entry                                                  (R-01)           NATIVE
+
+ELEMENT     role.key
+LAYER       FAMILY — part of each role
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  a local designator that distinguishes this role from every other role of the same
+            Record, and by which owning_role and direction name it.
+            Form. Non-empty, with no leading or trailing whitespace, and not shaped as a Record
+            identifier under the universal grammar.
+            Matching. Exact, character for character, with no case folding, trimming or other
+            normalization. A designation names a role only if it equals that role's key exactly.
+            Uniqueness. No two keys of one Record are equal, and no two are equal ignoring letter
+            case: member and Member cannot both be keys, so no designation can be read two ways.
+            Local only. A key means nothing outside this Record. It is not a Registry Kind, a kind
+            code, a role Record, a global role code or a member of a universal role vocabulary.
+            Spellings such as source, target, subject or object receive no meaning from this
+            contract, and a key's spelling is never a basis for ownership or direction (079 §7
+            "No universal role grammar"). The key does not state the role's meaning — role.meaning
+            does — and identifies no participant.
+CHECK       NATIVE — presence; a single value; non-empty; no leading or trailing whitespace; not
+            shaped as a Record identifier; uniqueness, exact and ignoring case
+BASIS       REQUIRED SYNTHESIS — each declared role is distinguishable within the type, because
+            the owning role must designate exactly one of them (079 §7; RT-079-03 to RT-079-05).
+            080 CHOICE — a keyed form, exact matching, case-insensitive uniqueness, the
+            whitespace rule and the part NAME (§6 REPRESENTATION). The choice decides no role
+            vocabulary and no key spelling.
+REJECT      absent, or empty                                          (R-02)           NATIVE
+            two keys equal, or equal ignoring case — member and Member  (R-03)           NATIVE
+            a key with leading or trailing whitespace                 (R-04)           NATIVE
+            a key shaped as a Record identifier, e.g. W-CH-…-<slug>    (R-04)           NATIVE
+
+ELEMENT     role.meaning
+LAYER       FAMILY — part of each role
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  what occupying this role means in a relationship of the type — for MEMBER_OF, the
+            member, and the organization the member belongs to (079 §7). Non-empty. Stated by
+            this definition, never taken from an actual participant, a Kind, an instance or an
+            example (079 §7 "Held by the definition"; RF-079-2). It states the position, not who
+            may stand in it (role.eligibility), not ownership (owning_role) and not the reading
+            (direction).
+CHECK       NATIVE — presence, a single value, non-empty
+            EXTERNAL — adequacy is semantic and judged against 079; this contract does not claim
+            it proven
+BASIS       REQUIRED SYNTHESIS — "A role's meaning is stated in the definition" and "Its meaning is
+            part of the type's meaning" (079 §7). 080 CHOICE — a per-role carrier rather than
+            leaving each role's meaning to definition alone, so that every declared role has a
+            stated meaning; the part NAME.
+REJECT      absent, or empty                                          (R-02)           NATIVE
+            meaning taken from a domain instance, e.g. "whatever W-CH-000001-Maximus is"
+                                                                     (RF-079-2)        EXTERNAL
+            a participant identifier given as the meaning            (079 §7)          EXTERNAL
+
+ELEMENT     role.eligibility
+LAYER       FAMILY — part of each role
+REQUIRED    no — at least one entry per role where the type's §13.3 scope is established;
+            otherwise as §4 S-04 states
+CARDINALITY zero-or-more — each value is one eligibility entry, with the parts
+            role.eligibility.model and role.eligibility.kind
+CONSTRAINT  each entry states one category of participant that may stand in this role: the
+            type's "legality constraints (which kinds may stand at each end)" (Blueprint §13.3),
+            stated per role (079 §9.4). Several entries list several Kinds, each of which may
+            stand in the role. No combination, exclusion, negation, condition, precedence or
+            count rule among entries is represented, and the number of entries is no multiplicity
+            rule (SC-080-N).
+            Absence. A role with no entry states no eligibility. That is not "every Kind may
+            stand" and not "no Kind may stand"; its effect is §4 S-04. An explicitly empty value,
+            a null placeholder and a wildcard are not absence and do not conform (§4 E-03, E-06).
+            "All Kinds" has no representation.
+            Declaration level. An entry names a declared Record Model and, normally, a declared
+            Kind of that model, by declaration reference: the declared Model and Kind themselves,
+            not a MODEL-DEFINITION or KIND-DEFINITION Record (079 RF-079-1; Artifact 063 §8.2,
+            §8.3). Naming them creates, declares or admits nothing (Artifact 057 §9; RT-079-15),
+            and overrides neither Artifact 058 nor the model's own constraints (§4 E-09).
+CHECK       NATIVE — each entry well formed (below); no two identical entries in one role
+            EXTERNAL — whether entries are required (§4 S-04), and the checks of the parts
+BASIS       SOURCE FACT — Blueprint §13.3; RMS §10.3 (declared Record Models and declared Kinds
+            are admissible). REQUIRED SYNTHESIS — 079 §9.4, RF-079-1, RT-079-15. An entry as a
+            model with an optional Kind follows 069's subject_model and subject_kind, 073's
+            domain_model and domain_kind and 077's applicability (REPOSITORY CONVENTION). A
+            per-role list, the duplicate rule, the declaration-reference form and the part NAME
+            are 080 CHOICES (§6 REPRESENTATION).
+REJECT      two identical entries in one role                         (E-05)           NATIVE
+            an explicitly empty, null or placeholder value            (E-06)           NATIVE
+
+ELEMENT     role.eligibility.model
+LAYER       FAMILY — part of each eligibility entry
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  one value from the closed set   W | E | P | R | V | I
+              W  World       E  Epistemic   P  Production
+              R  Registry    V  Visual      I  Issue
+            The declared Record Model whose own Kind taxonomy declares role.eligibility.kind, or,
+            in an entry without a Kind, the model named as the category — an UNRESOLVED shape (§4
+            E-04). It names the declared Record Model itself — the six constitutionally
+            established models are the declared models Artifact 063 admits (§7 row 2). It is a
+            declaration reference, not a MODEL-DEFINITION reference, and confers no ownership.
+CHECK       NATIVE — presence; a single value; membership of the closed set. Membership is the
+            declared-status check for a model: the closed set is the set of declared Record Models
+            (RMS §2; Artifact 063 §7 row 2).
+BASIS       SOURCE FACT — RMS §2; RMS §10.3; Artifact 063 §7 row 2. The closed set follows 069,
+            073 and 077 (REPOSITORY CONVENTION). Writing the model in every entry, Kind-scoped ones
+            included, is an 080 CHOICE: it tells the EXTERNAL check of role.eligibility.kind whose
+            taxonomy to consult. It decides neither whether Model-only eligibility is admissible
+            nor whether one type may have participants of different models (SC-080-N).
+REJECT      absent — including an entry naming a Kind and no model    (E-01)           NATIVE
+            two or more values in one entry                           (E-01)           NATIVE
+            a value outside the set, e.g. S "Simulation" claimed as a seventh model
+                                                                     (E-02; RMS §2)    NATIVE
+            a Record identifier, or a MODEL-DEFINITION Record's identifier R-<kind>-…
+                                                                     (E-01; RF-079-1)  NATIVE
+
+ELEMENT     role.eligibility.kind
+LAYER       FAMILY — part of each eligibility entry
+REQUIRED    no — present in a Kind-scoped entry; absent in a Model-only entry, which is
+            UNRESOLVED (§4 E-04)
+CARDINALITY zero-or-one
+CONSTRAINT  names one Kind exactly as the Kind taxonomy of role.eligibility.model declares it —
+            for example CHARACTER under W. The name is read only within role.eligibility.model.
+            It names the Kind itself: never a Record of that Kind (RF-079-2), never the Kind's
+            KIND-DEFINITION Record (RF-079-1; Artifact 063 §8.3), never a two-character kind code
+            (SC-080-I), never a subtype, never a runtime object (RF-079-4), never a wildcard.
+            Declared status. The named Kind must be a declared Kind of role.eligibility.model,
+            with that status established by the owning model's own Kind architecture (RF-079-1;
+            Artifact 063 §7 row 3, §8.3). Naming it does not admit it (Artifact 057 §9).
+            Form. A declaration reference to the declared Kind, not an R → R reference to its
+            KIND-DEFINITION Record. Naming a declared Kind does not, by itself, establish a
+            semantic dependency (Artifact 062 D-9; RF-079-7, RF-079-8).
+CHECK       NATIVE — at most one value; the value is not shaped as a Record identifier under the
+            universal grammar; the pair (role.eligibility.model, role.eligibility.kind) is not
+            (W, WSV); the value is not the wildcard *.
+            EXTERNAL — declared status, and that the Kind is role.eligibility.model's. The proof
+            comes from the owning model's Kind architecture (Artifact 063 SC-063-H; SC-080-L).
+            This contract does not define or prove that evidence. Downstream legality validation
+            may enforce it under its own contract; row 112 independently enforces its narrower
+            domain-instance reference prohibition. An undetermined Kind is not legal (Artifact 063
+            RB-6).
+BASIS       REQUIRED SYNTHESIS — 079 §9.4, RF-079-1, RF-079-2, RF-079-7; Artifact 063 §6, §8.3,
+            SC-063-G (the form of a declaration reference is the family's to fix). The declaration
+            form and naming the Kind by its declared name follow 069, 073 and 077 (REPOSITORY
+            CONVENTION). Making the part optional, so that a Model-only entry can be written and
+            marked UNRESOLVED rather than made unwritable, is an 080 CHOICE. (W, WSV): "WSV is
+            World state, not a Kind" (row 231); "the WSV singleton is not a Kind" (Roadmap PART
+            III, LS-1).
+REJECT      two or more Kinds in one entry                            (E-01)           NATIVE
+            a Record identifier, e.g. W-CH-…-<slug> — a domain instance (E-03; RF-079-2) NATIVE
+            a KIND-DEFINITION Record's identifier, R-<kind>-…          (E-03; RF-079-1) NATIVE
+            WSV under W                                               (E-03; row 231)  NATIVE
+            the wildcard *                                            (E-03)           NATIVE
+            a name role.eligibility.model has not declared — a candidate, a rejected candidate,
+            a subtype such as GENERATED-IMAGE under V, or a word meant as "any Kind"
+                                                                     (E-07; RF-079-1)  EXTERNAL
+            a declared name under the wrong model, e.g. CHARACTER under P
+                                                                     (E-07)            EXTERNAL
+            a kind code, e.g. CH, written in place of the Kind's name  (SC-080-I)      EXTERNAL
+
+ELEMENT     owning_role
+LAYER       FAMILY
+REQUIRED    yes
+CARDINALITY exactly-one
+CONSTRAINT  the one owning-role designation: the role.key of exactly one role declared in this
+            Record — the participant role that owns the edge (Blueprint §13.9; 079 §8.2).
+            One carrier. The designation is made once, here. No role entry carries an owner flag,
+            and no second element repeats or qualifies the designation, so no two carriers can
+            disagree (§4 O-03).
+            Stated, never defaulted. Nothing substitutes for it: not entry order, not the only
+            role of a one-role Record, not direction, not a key's spelling or a role's meaning, not
+            a participant Kind, not creation order or editing context (079 §8.2 item 4;
+            RT-079-08; §13.9: the rule "requires no tie-breaking").
+            A role, not a thing. It names a role of this definition — never a Record, a
+            participant, a model, the Registry partition, a storage location or a Relationship
+            Record (079 §8.2 item 5).
+            Validity, not application. Every Record of the family carries it, whether or not the
+            model that uses the type holds Relationship Records (079 §8.5 A; RT-079-25). It states
+            which role owns. What that does to actual connections is not represented here: where
+            Relationship Records are used, the endpoint occupying the role holds the edge (I-73;
+            §13.9), which rows 197–199 and 224 implement; elsewhere it is open (OD-079-2). A
+            structural pass of this element proves nothing about any actual edge.
+CHECK       NATIVE — presence; a single value; equal, exactly, to the role.key of exactly one role
+            of this Record
+BASIS       SOURCE FACT — "The relationship type definition in the Registry declares which
+            participant role owns the edge." (Blueprint §13.9); "Exactly one endpoint owns it"
+            (§13.9); row 079 Done; Roadmap PART III LS-3 ("including the owning-role
+            declaration"). REQUIRED SYNTHESIS — exactly one, one of the type's own roles (079 §8.2
+            items 1–3; RT-079-04, RT-079-05). 080 CHOICE — a single designation by role.key rather
+            than per-role flags; the element NAME.
+REJECT      absent                                                    (O-01)           NATIVE
+            two or more values, or an owner flag on a role beside or instead of it
+                                                                     (O-03)           NATIVE
+            a value equal to no role.key — e.g. observer when the roles are member and
+            organization                                              (O-04)           NATIVE
+            a value equal to a key only ignoring case — MEMBER for the key member  (O-04) NATIVE
+            a value matching two roles — possible only where R-03 fails  (O-05)        NATIVE
+            a Record identifier, e.g. W-CH-…-<slug>                   (O-04; 079 §8.2) NATIVE
+
+ELEMENT     direction
+LAYER       FAMILY
+REQUIRED    no — required where the type's §13.3 scope is established; otherwise as §4 S-04
+            states
+CARDINALITY zero-or-one — with the parts direction.from and direction.to
+CONSTRAINT  how a relationship of the type reads from one declared role to another (079 §9.2):
+            MEMBER_OF reads from the member to the organization.
+            Its own declaration. Direction neither derives from owning_role nor determines it.
+            direction.from may be the owning role or another role; both conform (§4 D-03). In
+            each of §13.9's four examples the owning role happens to be the role the type's name
+            reads from; no source makes that a rule (079 §9.2).
+            No default. Absence is not a direction, and nothing derives one from entry order,
+            keys or names.
+            Not represented: an inverse type, a reversal rule, symmetry, transitivity, reflexivity,
+            a direction vocabulary or token set, or a reading that is the same from both ends
+            (SC-080-N; 079 SC-079-F, SC-079-Q).
+CHECK       NATIVE — at most one; when present, both parts present
+            EXTERNAL — whether it is required (§4 S-04)
+BASIS       SOURCE FACT — the type carries "its direction" (Blueprint §13.3). REQUIRED SYNTHESIS —
+            079 §9.2, RT-079-13. 080 CHOICE — an ordered pair of declared roles; optional, with
+            its presence governed by §4 S-04; the element NAME. The choice is not offered as the
+            only representation a governing source could establish (§6 REPRESENTATION).
+REJECT      present with a part missing                               (D-01)           NATIVE
+
+ELEMENT     direction.from
+ELEMENT     direction.to
+LAYER       FAMILY — parts of direction
+REQUIRED    yes, when direction is present
+CARDINALITY exactly-one each
+CONSTRAINT  direction.from names the role the type reads from, direction.to the role it reads
+            to, each by the exact role.key of a role declared in this Record. Local referential
+            integrity: a part that names no declared role does not conform. from and to naming the
+            same role is UNRESOLVED (§4 D-04), not a statement of symmetry.
+CHECK       NATIVE — presence; a single value each; each equal, exactly, to one role.key
+BASIS       REQUIRED SYNTHESIS — 079 §9.2 ("reads from one role to another"). 080 CHOICE — the
+            parts, their NAMES and naming roles by role.key.
+REJECT      a part naming no declared role                            (D-02)           NATIVE
+            a part with two values                                    (D-01)           NATIVE
+            a part holding a Record identifier or a Kind name rather than a role key
+                                                                     (D-02)           NATIVE
+
+NOT REPRESENTED   relationship-type cardinality
+
+            Source fact. The Registry-defined type of a relationship in §13.3's sense carries
+            "its cardinality" (Blueprint §13.3); cardinality is governed type content (079 §9.3).
+            Source gap. No source states what it bounds — per role, per participant, per
+            relationship or otherwise — its value set, a default, a notation, or whether its
+            meaning is uniform across models (OD-079-1; 079 §9.3).
+            Treatment. This revision takes the omission route 079 §9.3 permits while OD-079-1 is
+            open — "leave cardinality unrepresented, recording that the omission defers §13.3 and
+            does not deny it". No element, part, value or token carries relationship-type
+            cardinality, and none is reserved.
+            What the omission does and does not do:
+              — it defers the requirement; it does not deny that cardinality is a type concern;
+              — it neither satisfies nor closes OD-079-1;
+              — it authorizes no downstream enforcement of a cardinality on edges, and no type set
+                may present a cardinality as checkable under this contract;
+              — it does not prevent a governed representation once an authoritative source closes
+                OD-079-1: a later governed revision of this contract may add one;
+              — a CONFORMS outcome never reports §13.3's cardinality obligation as met (§0).
+            Not cardinality. The CARDINALITY lines of this file count carriers. The number of role
+            entries is arity, governed by §4 S-02 and S-03. Artifact 077's occurrence.cardinality
+            is field-occurrence cardinality in a SCHEMA-DEFINITION, and Artifact 078's
+            "cardinality/required" is schema-side field composition; neither is relationship-type
+            cardinality, and neither resolves OD-079-1 (079 §9.3).
+CHECK       NATIVE — no cardinality element or part (P-01A)
+            EXTERNAL — no cardinality presented as governed type content in definition (§4 M-03)
+BASIS       SOURCE FACT — Blueprint §13.3. SOURCE GAP — OD-079-1 (079 §19.1). The omission is the
+            route 079 §9.3 names; choosing it for this revision is an 080 CHOICE.
+REJECT      a cardinality, multiplicity, minimum or maximum element or part, per role or per type
+                                                                     (P-01A)          NATIVE
+            a one-to-one, one-to-many or many-to-many token, an L..U bound, or a default such as
+            zero, one or unlimited, carried anywhere in the family structure   (P-01A)  NATIVE
+            a placeholder or deferred-value token standing for cardinality    (P-01A)  NATIVE
+            definition content presenting a cardinality as the type's governed cardinality
+                                                                     (M-03)           EXTERNAL
+
+==================================================================================================
+4. CROSS-ELEMENT RULES
+==================================================================================================
+
+ROLE INTEGRITY
+
+R-01  no role entry                                                     → REJECT     NATIVE
+R-02  a role entry without role.key or role.meaning, with an empty one, or with two values of
+      either                                                            → REJECT     NATIVE
+R-03  two role.key values equal, or equal ignoring letter case          → REJECT     NATIVE
+R-04  a role.key with leading or trailing whitespace, or shaped as a Record identifier
+                                                                        → REJECT     NATIVE
+
+BASIS       REQUIRED SYNTHESIS — roles declared and distinguishable (079 §7; RT-079-03). 080
+            CHOICE — R-03's case rule and R-04.
+
+OWNING ROLE — the five cases
+
+  owning_role                                     result
+  case 1   absent                                 REJECT     O-01                       NATIVE
+  case 2   one value, equal to exactly one key    satisfies the owning-role declaration
+                                                  requirement; every other rule still applies
+                                                  O-02                       NATIVE
+  case 3   two or more values, or a second
+           designating carrier                    REJECT     O-03                       NATIVE
+  case 4   one value, equal to no key             REJECT     O-04                       NATIVE
+  case 5   one value, equal to more than one key  REJECT     O-05                       NATIVE
+
+O-01  no owning_role                                                    → REJECT     NATIVE
+O-02  exactly one owning_role, equal to the role.key of exactly one declared role — the only
+      shape that satisfies the owning-role declaration requirement (079 §8.2; row 079 Done)
+O-03  two or more owning_role values; an owner flag, marker or ordering convention on a role; or
+      any second element designating an owner                           → REJECT     NATIVE
+O-04  an owning_role equal to no role.key — including one equal only ignoring case
+                                                                        → REJECT     NATIVE
+O-05  an owning_role equal to more than one role.key. Only possible where R-03 already fails;
+      stated so that ambiguity is never read as a choice              → REJECT     NATIVE
+O-06  nothing substitutes for O-02: a Record whose owner could be guessed — from the first entry,
+      from the only role, from direction.from, from a key spelled owner or source, from a
+      role.meaning — and that has no owning_role is O-01                → REJECT     NATIVE
+
+BASIS       SOURCE FACT — Blueprint §13.9; row 079 Done; Roadmap PART III LS-3. REQUIRED SYNTHESIS
+            — 079 §8.2 items 1–4, RT-079-04 to RT-079-06, RT-079-08. 080 CHOICE — the single
+            carrier that makes case 3 a NATIVE check. The five cases are the obligation of 079
+            §8.2 written out for this representation.
+
+What O-02 proves and does not prove. It proves that the definition declares exactly one of its own
+roles as owning role — definition validity (079 §8.5 A). It proves nothing about an actual edge:
+that an edge has one authoritative owner is instance behaviour, checked where Relationship Records
+are used (§13.9: "blocked by the linter"; rows 197–199, 224), and what the declaration governs
+where they are not used is open (OD-079-2). No rule of this contract makes a Record UNRESOLVED or
+REJECT because OD-079-2 is open.
+
+DIRECTION
+
+D-01  direction present without both parts, or with two values for a part
+                                                                        → REJECT     NATIVE
+D-02  direction.from or direction.to equal to no role.key               → REJECT     NATIVE
+D-03  no rule relates direction.from to owning_role. Equal or different, both conform under D;
+      neither is inferred from the other                                (STATIC)
+D-04  direction.from equal to direction.to — a reading from a role to itself. No symmetry
+      meaning is given to it (SC-079-Q; SC-079-F)                       → UNRESOLVED
+D-05  direction present on a Record with more than two roles — whether one from/to pair states
+      such a type's direction is not established (SC-079-E; SC-079-F)   → UNRESOLVED
+
+BASIS       REQUIRED SYNTHESIS — 079 §9.2, RT-079-13. 080 CHOICE — D-01, D-02. SOURCE GAP — D-04,
+            D-05.
+
+ELIGIBILITY
+
+E-01  an eligibility entry without role.eligibility.model, or with two values of either part
+                                                                        → REJECT     NATIVE
+E-02  role.eligibility.model outside W | E | P | R | V | I              → REJECT     NATIVE
+E-03  role.eligibility.kind shaped as a Record identifier, the pair (W, WSV), or the wildcard *
+                                                                        → REJECT     NATIVE
+E-04  an entry with role.eligibility.model and no role.eligibility.kind — Model-only
+      eligibility (SC-079-G)                                            → UNRESOLVED
+E-05  two identical entries in one role                                 → REJECT     NATIVE
+E-06  an explicitly empty, null or placeholder eligibility value        → REJECT     NATIVE
+E-07  role.eligibility.kind not a declared Kind of role.eligibility.model, or its declared status
+      cannot be established when checked (Artifact 063 RB-6)            → REJECT     EXTERNAL
+E-08  the eligibility entries of the Record, across all roles, name more than one Record Model —
+      participants of different models (SC-079-G; Artifact 058 §8.4)   → UNRESOLVED
+E-09  eligibility contrary to a rule Artifact 058 states, or to a named model's own constraint —
+      for example World's: "no World field may reference an issue, tier, medium, artifact, or
+      the real world" (RMS §7)                                          → REJECT     EXTERNAL
+
+BASIS       SOURCE FACT — Blueprint §13.3; RMS §2, §10.3; Artifact 063 RB-6. REQUIRED SYNTHESIS —
+            079 §9.4, RF-079-1, RT-079-15. 080 CHOICE — E-01, E-05, E-06 and the * token of E-03.
+            SOURCE GAP — E-04, E-08.
+
+E-07 and E-08 are different rules on purpose. E-07 is Artifact 063's fail-closed rule for the
+declared status of a named Kind: an undetermined Kind is not legal. E-08 is a cross-model question
+Artifact 058 neither grants nor forbids where no source states the edge (058 §8.4); spelling two
+model codes establishes no permission, and this contract does not turn 063's category rule into a
+cross-model permission matrix. A Record under E-08 is still checked by E-07 and E-09 for every Kind
+it names, and a violation found there makes it REJECT (X-01).
+
+SCOPE AND ARITY — evidence about the governing model
+
+S-01  Which Record Model's relationship architecture governs the type, and whether the type is of
+      a relationship in Blueprint §13.3's sense, are EXTERNAL evidence. Their owner is the type
+      set in which the definition is authored and that model's relationship architecture: rows
+      198 with 197 for W; 277 with 276 for E; 338 for P; 356 for V; 366 for I. This contract
+      carries no model-scope element (§6 REPRESENTATION): a carrier would restate, not supply,
+      that evidence.                                                                  EXTERNAL
+S-02  A World type has exactly two role entries — Blueprint §13.9: "An edge joins two objects.";
+      079 §7.
+        three or more role entries                                      → REJECT     EXTERNAL
+        one role entry — both endpoints would stand in the same role (SC-079-Q)
+                                                                        → UNRESOLVED
+S-03  A type of any other model has the role count its model's relationship architecture
+      establishes.
+        a count that architecture contradicts                          → REJECT     EXTERNAL
+        no count established by that architecture (SC-079-E)            → UNRESOLVED
+      No count — two included — is assumed for these models (079 §7; PI-23 of 079). No Registry
+      relationship type set exists (079 §8.5, R row), so a type claimed for R falls in the second
+      case.
+S-04  Direction and per-role eligibility follow §13.3's scope:
+        scope established — World types are: §13.3 describes the reified relationship whose
+        packaging is World's (§13.3 scoping note; RMS §15 World row "reified"; 079 §9.1, §9.5).
+        Direction present, and at least one eligibility entry on every role. Either absent
+                                                                        → REJECT     EXTERNAL
+        scope established not to apply by the governing architecture: no presence requirement
+        from §13.3; anything present is still checked by D and E
+        scope neither established nor excluded — the case 079 SC-079-H records for E, P, V and
+        I until their rows answer it                                    → UNRESOLVED
+S-05  The owning role's application is not a scope question of this contract. A Record of E, P,
+      V or I is never UNRESOLVED, PENDING_EXTERNAL or REJECT because OD-079-2 is open: the
+      declaration is definition validity, and its application is not represented (079 §8.5).
+
+BASIS       SOURCE FACT — Blueprint §13.3, §13.9; I-73; RMS §15. REQUIRED SYNTHESIS — 079 §7, §8.5,
+            §9.1, §9.5; that World types fall in §13.3's scope (S-04). SOURCE GAP — S-02's
+            one-role case (SC-079-Q), S-03 (SC-079-E), S-04's open scope (SC-079-H). 080 CHOICE —
+            S-01's evidence route instead of a model-scope element.
+
+DEFINITION CONTENT
+
+M-01  content defining more than one independently governed type, or stating actual edges,
+      endpoints, participant identifiers, edge identity, validity, provenance or history as the
+      type's content                                                    → REJECT     EXTERNAL
+M-02  content contradicting role, owning_role, direction or eligibility — e.g. naming a different
+      owning role                                                       → REJECT     EXTERNAL
+M-03  content presenting a cardinality — a bound, a value set, a default, a one-to-one or
+      one-to-many classification — as the type's governed cardinality while OD-079-1 is open
+                                                                        → REJECT     EXTERNAL
+M-04  content stating what the owning role governs inside a mechanism with no Relationship
+      Record, where the governing model's architecture establishes no such thing (OD-079-2)
+                                                                        → REJECT     EXTERNAL
+M-05  content using a domain instance, domain state or runtime object as authority, carrying
+      executable behaviour, or carrying a reference in a relation this family does not establish
+      (RF-079-2 to RF-079-5)                                            → REJECT     EXTERNAL
+
+BASIS       REQUIRED SYNTHESIS — 079 RT-079-02, RT-079-16, RT-079-22, §8.5, §9.3, RF-079-2 to
+            RF-079-5. M-02 follows 077's O-09 (REPOSITORY CONVENTION). M-03 and M-04 keep 079's
+            two open decisions from being closed inside content.
+
+OUTCOME ORDER
+
+X-01  Outcomes follow §0: a REJECT anywhere in the Record outranks every UNRESOLVED shape, and an
+      UNRESOLVED shape outranks PENDING_EXTERNAL. No shape, admissible or not, makes a Record
+      CONFORMS while an EXTERNAL check is unestablished, and no open question excuses a shown
+      violation.
+
+The rules fix structure only. They derive no relationship type, role, owning role, direction,
+eligible Kind or cardinality for any concrete type, and no rule of a model's relationship
+architecture.
+
+==================================================================================================
+5. STRUCTURAL PROHIBITIONS, REJECTION REGISTER, PROHIBITED INFERENCES
+==================================================================================================
+
+P-01A This revision introduces no element or part beyond the eleven elements and seven parts of
+      §1. A Record carrying any of the following does not conform to this revision (NATIVE):
+      — instance or edge structure (079 RT-079-16; §6 SOVEREIGNTY): endpoint, endpoints,
+        participant, participants, participant_id, source_record, target_record, edge, edges,
+        edge_id, relationship_record, back_reference, graph, history, valid_from, valid_until,
+        edge_provenance;
+      — ownership application or a second owner carrier (079 §8.5; §4 O-03): is_owner, owner,
+        owner_flag, owning_endpoint, owning_record, owning_model, holder, storage_location;
+      — relationship-type cardinality (OD-079-1; §3 NOT REPRESENTED): cardinality, multiplicity,
+        min, max, min_count, max_count, one_to_one, one_to_many, many_to_many, bounds;
+      — invented direction semantics (SC-079-F): inverse, inverse_type, reverse_name,
+        symmetric, transitive, reflexive, default_direction;
+      — a model-scope or applicability element (§4 S-01): model, using_model, scope_model,
+        applies_to_model;
+      — a name or code element (§3 definition): name, type_name, label, code, type_code;
+      — universal semantics or Registry status (RMS §4): status, tier, lifecycle_state,
+        canonical, owner_model, kind_code, layer;
+      — execution or runtime structure (RMS §10.2; RT-079-22): validator, resolver, engine,
+        index, cache, session, process, service, worker, handler, implementation, verdict.
+      The list explains P-01A; it does not exhaust it. P-01A binds this revision only: a later
+      governed revision of this contract may add an element a governing source establishes.
+P-01B This revision introduces no version, revision, latest-version, supersession, replacement,
+      deprecation, retirement, effective-date, migration, compatibility or retention element or
+      mechanism, and no rule that re-owns, rewrites or revalidates an edge when a definition
+      changes. That representation is deferred to rows 108–110: neither defined nor
+      permanently prohibited here (079 VS-079-1 to VS-079-3; RMS §10.2 lists "version ·
+      supersession" among what the Registry may define). Whatever those rows establish stays
+      Registry-owned, is not an envelope field (P-05) and is not a universal semantic (P-06).
+P-02  No generic reference or dependency list, and no reference element 079 does not require:
+      references, refs, dependencies, related_types, kind_definition_ref, model_definition_ref,
+      relationship_type_ref, inverse_ref, field_definition_ref, schema_ref, extends, includes. The
+      one concrete reference relation this family carries is eligibility (079 RF-079-1); an
+      admissible target category alone authorizes nothing (RF-079-5; Artifact 063 RB-5).
+P-03  No element names, carries or implies ownership of a relationship instance, an edge, a
+      Relationship Record, a participant Record or a model's mechanism. The Registry owns this
+      Record and the definition; each model owns its relationships (079 RT-079-10; RMS §15:
+      "Relationship definitions; never runtime relationship ownership"; Artifact 061 §7 row 3).
+P-04  Not a World Relationship Record schema, a relationship-instance schema or a type catalog.
+      No element carries what an actual relationship holds, and no Relationship Record is
+      required of any model (079 RT-079-11; I-102).
+P-05  No envelope field added, removed or renamed. The family elements and parts are not envelope
+      fields; role, owning_role, direction, version, status, tier and relationship_type never
+      become one (RMS §4).
+P-06  None of RMS §4's nine prohibited universal semantics: no Universal Record Base, Universal
+      Relationship Record, Universal History Record, universal lifecycle, universal
+      canonicality, universal Kind taxonomy, universal identity composition, universal state
+      model or universal semantic schema. For this family: no universal role vocabulary, arity,
+      direction grammar or relationship roster either (079 RT-079-23).
+P-07  Not another family's contract: not KIND-, MODEL-, SUBTYPE-, FIELD- or SCHEMA-DEFINITION,
+      CONTROLLED-VOCABULARY, CONSTRAINT-DEFINITION or VALIDATION-RULE. No element embeds another
+      family's definitions.
+P-08  No element records a lockstep pairing or partner. 079 ↔ 080 is no lockstep pair (SC-080-E),
+      and LS-3's pairing of a model's relationships with their type definitions is not a
+      reference (079 SC-079-P; 064 §13 Q7).
+P-09  No dependency element. Eligibility is a declaration reference, not by itself a semantic
+      dependency (Artifact 062 D-9). The family sits in L1 stratum 1b (062 §6); D-8 forbids its
+      meaning to depend on L2–L5; concrete dependency rules are row 111's.
+P-10  No element represents how a definition is proposed, approved, admitted or deprecated;
+      governance is Artifact 065's.
+P-11  No inbound reference: nothing here represents how an actual relationship or a Relationship
+      Record identifies its type (079 SC-079-P), and no type-reference format is defined.
+
+REJECTION REGISTER — each with the check that rejects it and where
+
+ 1  partition other than R                         NATIVE                §2 partition
+ 2  envelope kind other than RELATIONSHIP-TYPE-DEFINITION
+                                                   NATIVE                §2 kind
+ 3  envelope kind holding a participant Kind or a type name
+                                                   NATIVE                §2 kind
+ 4  envelope kind given as an invented code        NATIVE                §2 kind; SC-080-I
+ 5  provenance absent, or an edge's provenance in its place
+                                                   NATIVE, EXTERNAL      §2 provenance
+ 6  sot_class DEV-ENV or a Canon value             NATIVE                §2 sot_class
+ 7  an eighth envelope field, e.g. version         NATIVE                P-05
+ 8  definition missing or empty                    NATIVE                §3 definition
+ 9  definition stating edges, two types, or a contradiction
+                                                   EXTERNAL              M-01, M-02
+10  no role                                        NATIVE                R-01
+11  role missing key or meaning                    NATIVE                R-02
+12  duplicate keys, exactly or ignoring case       NATIVE                R-03
+13  key malformed or shaped as a Record identifier NATIVE                R-04
+14  no owning_role                                 NATIVE                O-01, O-06
+15  two owning designations or an owner flag       NATIVE                O-03
+16  owning_role naming no declared role            NATIVE                O-04
+17  owning_role matching two roles                 NATIVE                O-05
+18  direction incomplete or naming no declared role
+                                                   NATIVE                D-01, D-02
+19  eligibility entry without a model              NATIVE                E-01
+20  model outside W, E, P, R, V, I                 NATIVE                E-02
+21  Kind as a Record identifier, WSV, or *         NATIVE                E-03
+22  duplicate eligibility entry                    NATIVE                E-05
+23  empty or placeholder eligibility value         NATIVE                E-06
+24  Kind undeclared, wrong model, or unprovable    EXTERNAL              E-07; RB-6
+25  eligibility against 058 or a model constraint  EXTERNAL              E-09
+26  a World type with three or more roles          EXTERNAL              S-02
+27  a role count the model's architecture contradicts
+                                                   EXTERNAL              S-03
+28  direction or eligibility absent where §13.3 scope is established
+                                                   EXTERNAL              S-04
+29  a cardinality element, token or default        NATIVE                P-01A; §3
+30  cardinality presented as governed in content   EXTERNAL              M-03
+31  an owning-role application asserted in content EXTERNAL              M-04
+32  domain instance, runtime object or unestablished reference in content
+                                                   EXTERNAL              M-05
+33  an element outside this revision's inventory   NATIVE                P-01A, P-01B
+34  a generic reference list                       NATIVE                P-02
+35  canonical data written from Artifact 080       STATIC, REPOSITORY    §0; §6 MATERIALIZATION
+
+Not in this register, because they are UNRESOLVED unless something above rejects them: a one-role
+World type (S-02), a non-World role count not established (S-03), an open §13.3 scope (S-04), a
+direction from a role to itself (D-04), direction on a type of more than two roles (D-05),
+Model-only eligibility (E-04) and participants of more than one model (E-08).
+
+PROHIBITED INFERENCES — each false deduction, and where this contract answers it
+
+PI-01 A schema declaration executes validation.                              §0; §6 EXECUTION
+PI-02 A Record that passes every NATIVE check is semantically legal.               §0 OUTCOMES
+PI-03 A resolvable reference is legal.                                         §6 REFERENCES
+PI-04 A Kind name that parses proves the Kind is declared.        §3 role.eligibility.kind; E-07
+PI-05 A Kind is its KIND-DEFINITION Record.                       §3 role.eligibility.kind
+PI-06 A Model is its MODEL-DEFINITION Record.                     §3 role.eligibility.model
+PI-07 A legal reference creates a semantic dependency.                         P-09; §6
+PI-08 A relationship-type definition owns its relationship instances.          P-03; §6
+PI-09 A type name or role key is the definition Record's identity.     §2 object_id; §3; §6
+PI-10 The owning role follows from direction or from entry order.          §3 owning_role; O-06
+PI-11 Declaring an owning role forces a model to use Relationship Records.     S-05; P-04; §6
+PI-12 Every reference, dependency or composition link needs a relationship-type definition.
+                                                                                §6 SOVEREIGNTY
+PI-13 The number of role entries is the type's cardinality.          §1; §3 NOT REPRESENTED
+PI-14 The CARDINALITY lines of this contract resolve OD-079-1.                §0; §3
+PI-15 A shape this contract can hold is thereby authorized.                  §0; §4 UNRESOLVED
+PI-16 Canon: canonical-about-meaning or CD: yes authorizes a canonical write.   §0; SC-080-G
+PI-17 079 ↔ 080 is a lockstep pair because the rows are adjacent.           P-08; SC-080-E
+PI-18 Row 123 demonstrates LS-3.                                                     SC-080-F
+PI-19 Deferring version representation forbids later versionability.   P-01B; §6 VERSIONABILITY
+PI-20 A key spelled source or owner carries ownership or direction.           §3 role.key
+PI-21 Every relationship type has two roles in every model.                       S-02, S-03
+PI-22 Absent eligibility means every Kind may stand in the role.        §3 role.eligibility
+PI-23 Spelling two model codes in one type establishes cross-model permission.         E-08
+PI-24 A passing owning_role check shows that an actual edge has one owner.     §4 O-02 note
+PI-25 A version element today conforms because versionability is required. P-01A, P-01B
+PI-26 Artifact 077's occurrence.cardinality represents relationship-type cardinality.
+                                                                         §3 NOT REPRESENTED
+
+==================================================================================================
+6. BOUNDARIES
+==================================================================================================
+
+REPRESENTATION  079 leaves the structural form to 080. It "decides none of 080's choices: no
+                schema grammar, element names, role-list representation, owning-role syntax,
+                direction tokens, cardinality notation, defaults, reference-carrier structure,
+                version fields" (079 §21), and "How roles are named or identified is 080's." (079
+                §7). The choices, each an 080 CHOICE and not a Blueprint or RMS fact:
+                (1) roles as an unordered list of entries, each with a local key, a stated
+                    meaning and its own eligibility — so that roles are declared, distinguishable
+                    and each has a meaning;
+                (2) role.key compared exactly, unique ignoring case, never a global code — so that
+                    a designation is never read two ways;
+                (3) owning_role as one designation by role.key — one carrier, so that case 3 of
+                    §4 is NATIVE and no two carriers can disagree;
+                (4) direction as an optional ordered pair of role keys, from and to, required
+                    only where §13.3 scope is established — so that direction is stated apart
+                    from the owning role without a direction vocabulary;
+                (5) eligibility as a declaration reference — the declared Model and the declared
+                    Kind themselves, the form 079 RF-079-1 describes and 069, 073 and 077 use — not
+                    an R → R reference to a KIND-DEFINITION or MODEL-DEFINITION Record, and not
+                    both. The declaration form needs no definition Record to exist first and no
+                    Registry Record identifier while no Registry Kind code is bound (row 117). An
+                    R → R carrier is not unconstitutional; it is not chosen, and if a governed
+                    revision adopts one it is classified as R → R (Artifact 063 §8.1), with its
+                    dependency status left to 062 and row 111 (079 §21 item 6);
+                (6) no model-scope element — the governing model is EXTERNAL evidence (§4 S-01);
+                (7) no name element — a name is definition content, not identity;
+                (8) no relationship-type cardinality carrier — the omission route of 079 §9.3.
+                None is offered as the only representation a governing source could establish. A
+                later governed revision may change one; this contract does not pre-empt it.
+
+DECLARATION     079 §8.5 keeps four statements apart, and this contract represents only the first:
+AND             A — definition validity: participant roles and exactly one owning role are
+APPLICATION         declared — role and owning_role, with §4 O-01 to O-06;
+                B — the model's relationship architecture decides which connections are typed by
+                    this family — not represented; §4 S-01 consults it as evidence;
+                C — where Relationship Records are used, the endpoint occupying the owning role
+                    holds the edge (I-73, "Wherever a Record Model uses Relationship Records";
+                    §13.9) — instance behaviour, rows 197–199 and 224;
+                D — elsewhere the application is open (OD-079-2) — not represented, and not a
+                    ground for any outcome (§4 S-05).
+                A definition used by a model without Relationship Records carries the same
+                owning_role; nothing here makes that model use one (079 RT-079-11, RT-079-25).
+
+CARDINALITY     Not represented in this revision (§3 NOT REPRESENTED). OD-079-1 — what a type's
+                cardinality bounds — belongs to the Blueprint/RMS author, with no Roadmap row
+                assigned (079 §19.1; 079 SC-079-T). If an authoritative source closes it, this
+                contract changes through its own governed revision and cites the closure; it does
+                not close it here. Until then: no type set may present a cardinality as
+                checkable under this contract; rows 112 and 116 have no cardinality to validate
+                from it; no model mechanism may cite it to enforce a bound on edges (079 §9.3
+                "What OD-079-1 blocks").
+
+RESOLUTION      A structurally valid Record carries the baseline Record identity that later
+                Registry-definition resolution requires (§2): partition, kind and object_id under
+                [PARTITION]-[KIND]-[OBJECT_ID]-[SLUG]. Artifact 080 does not establish the
+                complete id+version resolution representation: rows 108–110 retain authority over
+                version representation, row 114 owns "create/resolve/version a definition", row
+                115 owns "consumer resolves by id+version", and row 117 binds Registry codes.
+                Resolution never relies on slug, a type name or a role key. A role key resolving
+                within one Record is local referential integrity (§4), not Registry resolution.
+                This contract implements no resolver, lookup, index, registration or minting, and
+                defines no lookup of a type by name. Resolvable is not legal (Artifact 063 §11).
+                (079 RS-079-1 to RS-079-5)
+
+VERSIONABILITY  Nothing here prevents the Registry evolution and versioning model of rows 108–110
+                from applying to a RELATIONSHIP-TYPE-DEFINITION. Artifact 080 defines no version
+                identifier, token syntax, revision numbering, pinning, supersession link,
+                deprecation state, compatibility class, migration, retention or temporal
+                lifecycle; those stay with rows 108 (evolution: "temporal account without a World
+                History Record"), 109 (versioning, pinning) and 110 (supersession, deprecation).
+                Three things are kept apart: an element this revision does not support (P-01A,
+                P-01B — not conforming today); an element a later governed revision may introduce
+                once rows 108–110 establish it (not prohibited); an eighth universal envelope
+                field (prohibited, P-05). A definition's version history is not edge history:
+                revising a type re-owns, rewrites or revalidates no edge by itself, and any
+                consequence for existing edges is left to rows 108–110 and the owning model (079
+                VS-079-3). Versionable therefore means: Artifact 080 does not structurally
+                obstruct the architecture rows 108–110 own. (079 VS-079-1 to VS-079-3)
+
+REFERENCES      One concrete reference relation: eligibility, a declaration reference to a
+                declared Record Model and a declared Kind of it (079 RF-079-1). Kept apart: a
+                declared Kind (named in role.eligibility.kind); a KIND-DEFINITION Record (not
+                named); a domain Record of that Kind (never named); a declared Model (named in
+                role.eligibility.model); a MODEL-DEFINITION Record (not named). No W, E, P, V or I
+                domain instance, no domain state and no runtime instance is a target, a
+                dependency or an authority, in a structured part or in definition content (079
+                RF-079-2 to RF-079-4; RMS §10.3: "R → R definitions = ALLOWED. R → domain
+                instances = FORBIDDEN."). A reference transfers no ownership, admission,
+                mutation authority, canonicality or semantic authority, is not by itself a
+                semantic dependency, and is not legal because it resolves (RF-079-8, RF-079-9).
+                An undetermined target is not legal: "Undetermined is not permitted." (Artifact
+                063 RB-6). Admissible category is not a family relation: no other reference is
+                carried (P-02). No inbound type reference is defined (P-11).
+
+LAYER           Artifact 062 places "relationship type and participant-role semantics" in L1
+                stratum 1b, which may depend on RFS and must not depend on L2–L5 (062 §6, D-8).
+                Naming a declared Kind does not, by itself, establish a semantic dependency (D-9).
+                Where a concrete relation is also a semantic dependency, 062 and row 111 govern
+                it; this contract carries no dependency element and designs no graph (P-09).
+
+EXECUTION       "Registry does not execute schemas." (RMS §10.2). No element of this contract
+                creates, moves, mutates, projects or validates a relationship, holds validator
+                state or runs a check (079 RT-079-22). The NATIVE checks of this file are contract
+                statements, not an implemented validator. The Blueprint names JSON Schema as the
+                adopted structural-validation realization and LinkML as an authoring aid (§12.15,
+                §26.3b); this file is neither and generates neither (SC-080-K).
+
+SOVEREIGNTY     The Registry governs the definition; each Record Model owns its relationships and
+                decides whether it uses Relationship Records at all (Blueprint §13.6e; RMS §15:
+                "Model relationships are not identical and are never made so."). A definition
+                naming World Kinds gives the Registry no World Record or edge. A relationship type
+                is neither a field nor a reference, and this family makes no field or reference a
+                relationship (079 RT-079-17). The family's existence brings no reference,
+                dependency, workflow transition or composition link under it: which connections a
+                model types through this family is that model's architecture (079 §8.5 B; PI-38
+                of 079).
+
+LS              Row 080 carries LS: LS-1 and Why: LS-3. Roadmap PART III defines LS-1 as "every
+                Kind spec ↔ its Registry KIND-DEFINITION" and LS-3 as "Relationship ↔
+                Relationship-Type-Definition — including the owning-role declaration". This file is
+                neither a Kind specification nor a KIND-DEFINITION, and it is not a relationship.
+                Both values are preserved; no LS-1 pair, no 079 ↔ 080 pair and no new lockstep
+                class is invented. The LS-3 pairs are formed downstream, where a model's
+                relationships meet their type definitions (rows 197–198, 276–277, 338, 356, 366)
+                (SC-080-E, SC-080-F).
+
+MATERIALIZATION This file is an authored structural contract. A RELATIONSHIP-TYPE-DEFINITION Record
+                conforming to it is committed to canon/registry/** only through the Mutation
+                Coordinator after G-CANON-R (Roadmap §0.8, PART X); the type sets that author such
+                Records — rows 198, 277, 338, 356 and 366 — carry G: G-CANON-R. Nothing here
+                authors or commits any Record. AD-REG-SOURCE-ENVELOPE does not apply to this file
+                or relax it: that ruling concerns the canonicalization sources Roadmap §0.8 names —
+                rows 075, 085, 105, 106 and 107 — and this file is neither such a source nor a
+                Record. Every element of §1 stays REQUIRED as §2–§3 state; no envelope field
+                becomes optional on a candidate or a materialized Record.
+
+DOWNSTREAM      Unlocks are not dependencies. Row 080's → names 177, 277, 338, 352, 375, preserved
+                as written. The rows that list 080 in H are 198, 277, 338, 356 and 366. Neither
+                list is rewritten to match the other (SC-080-J).
+
+                Unlock  Row's own responsibility and Val                 Treatment by 080
+                177     World identity semantics; Val: W-CH/OR/LI/SP/EV/CO/LO;
+                        WSV bears no ordinal (H: 176,046)              unlock preserved; no
+                                                                      relationship-type work
+                                                                      assigned; H unchanged
+                277     E relationship type definitions; Val: evidence-for,
+                        contradicts, supersedes (H: 276,080)           the structure its Records
+                                                                      conform to; E's types and
+                                                                      application not authored
+                338     P relationship architecture + type definitions;
+                        Val: references (H: 055,080)                   the structure; references
+                                                                      not turned into
+                                                                      Relationship Records
+                352     VISUAL-ANALYSIS schema; Val: artifact present and
+                        internally consistent (H: 351)                 unlock preserved; no 080
+                                                                      dependency invented; Val
+                                                                      not expanded
+                375     CONTRIBUTOR-CREDIT spec; Val: the credit is the unit
+                        of attribution (H: 363)                        unlock preserved; no credit
+                                                                      semantics authored
+
+                H: 080  Row and Val                                     What 080 supplies
+                198     World relationship type definitions; Val: each type declares its owning
+                        participant role; causal and pressure families named
+                                                                      the structure; World's
+                                                                      types not authored
+                277     as above                                       as above
+                338     as above                                       as above
+                356     V relationship architecture + type definitions; Val: represents
+                                                                      the structure only
+                366     I composition architecture + field/relationship definitions; Val as
+                        printed in the repository copy: **SECTION (SC-080-Q)
+                                                                      the structure only
+
+                To each consumer this contract supplies: the structure of the family; role
+                declaration and owning-role integrity (§4 R, O); direction and eligibility
+                representation (§3; §4 D, E); the reference boundary (§6 REFERENCES); the
+                EXTERNAL evidence each Record needs (§4 S-01 to S-04, E-07, E-09); and what is
+                deferred (§3 NOT REPRESENTED; OD-079-2). It supplies no concrete type, no
+                canonical Record and no model-owned storage.
+
+                Adjacent owners, unchanged:
+                  definition governance                         065
+                  evolution; versioning, pinning; supersession, deprecation   108; 109; 110
+                  concrete Registry semantic-dependency rules   111
+                  Registry reference validator                  112
+                  create/resolve/version kernel                 114
+                  consumer resolution by id+version             115
+                  Registry definition validation                116
+                  identity binding                              117
+                  Registry tests and P3 conformance             120, 121, 122, 123, 124
+                  canonical write path                          152, after G-CANON-R
+                  World relationship architecture, types, schema  197, 198, 199
+                  back-reference and graph projection           224
+                  Epistemic relationship architecture           276
+                  other models' relationship architectures      338, 356, 366
+                No row's Val, Done or H is changed. Row 112's "rejects any definition referencing
+                a domain instance" stays what it is: it gains no obligation to enforce
+                relationship-type cardinality or edge ownership. No runtime row becomes a
+                prerequisite for authoring 080.
+
+==================================================================================================
+7. DECISION CASES (schematic — no identifier is minted; nothing here is Registry data)
+==================================================================================================
+
+Role keys, Kinds and type names below are illustrations. The four World types are Blueprint §13.9's
+examples; World's concrete type set is row 198's. No external check has been run for any case.
+
+PENDING_EXTERNAL
+           A  partition R, kind RELATIONSHIP-TYPE-DEFINITION; definition stating what MEMBER_OF
+              means; roles member (meaning: the member; eligibility W CHARACTER) and organization
+              (meaning: the organization the member belongs to; eligibility W ORGANIZATION);
+              owning_role member; direction from member to organization. Every NATIVE rule
+              holds; World scope, the two-role count and the declared status of CHARACTER and
+              ORGANIZATION are EXTERNAL and not yet established. Registry owns this Record; World
+              owns every Character, Organization and edge                          NATIVE
+CONFORMS   A  the same Record once its owners have established that the type is World's (198,
+              197), that CHARACTER and ORGANIZATION are declared by World, and that the content
+              limits hold — a conditional, schematic case; no such evidence exists here. Bounded
+              to this contract: cardinality is not represented (OD-079-1), and nothing is shown
+              about any actual edge                                     NATIVE + EXTERNAL
+REJECT     A  the same Record when the declared status of CHARACTER cannot be established when
+              checked                                                 (E-07; RB-6)  EXTERNAL
+REJECT     B  case A without owning_role — nothing substitutes for it  (O-01)       NATIVE
+REJECT     C  owning_role member and owning_role organization         (O-03)        NATIVE
+REJECT     C  owning_role member, and an owner flag on the role member  (O-03)      NATIVE
+REJECT     D  roles member and organization; owning_role observer     (O-04)        NATIVE
+REJECT     E  roles member and Member — ambiguous local identity       (R-03)        NATIVE
+REJECT     E  owning_role MEMBER where the key is member              (O-04)        NATIVE
+REJECT     F  no owning_role, member written first "so it owns"       (O-01, O-06)  NATIVE
+REJECT     G  no owning_role, direction from member "so member owns"  (O-01, O-06)  NATIVE
+BOUNDARY   G  owning_role organization, direction from member to organization — direction and
+              ownership are separate declarations; NATIVE rules hold (D-03)          STATIC
+PENDING_EXTERNAL
+           H  case A's shape with eligibility W CHARACTER whose declared status nobody has yet
+              checked — no conformance claimed                        (E-07)        EXTERNAL
+REJECT     I  eligibility kind W-CH-000001-Maximus — a domain instance, resolvable or not
+                                                                      (E-03)        NATIVE
+REJECT     I  role.meaning "whatever W-CH-000001-Maximus is"          (M-05)        EXTERNAL
+REJECT     I  eligibility kind R-<kind>-… — a KIND-DEFINITION Record, not a Kind  (E-03) NATIVE
+UNRESOLVED J  a type authored in row 338 for Production, roles requester and request with
+              owning_role requester, whose Production scope, role count and §13.3 scope row 338
+              has not yet established. The declaration is valid; no Relationship Record is
+              required of Production; what owning_role governs in Production's references is
+              OD-079-2 and is no ground for this outcome (S-05). The outcome comes from S-03 and
+              S-04 until row 338 answers them                                    STATIC
+UNRESOLVED K  an Epistemic type with three roles, no count established by row 276 (S-03)
+                                                                                   STATIC
+REJECT     K  a World type with three roles                           (S-02)        EXTERNAL
+UNRESOLVED K  a World type with one role, occupied at both ends (S-02; SC-079-Q)  STATIC
+UNRESOLVED L  eligibility W with no Kind — Model-only (E-04)                       STATIC
+UNRESOLVED L  role member eligible W CHARACTER, role record eligible E <DECLARED-KIND> —
+              participants of two models; nothing here authorizes it (E-08)        STATIC
+REJECT     L  the same, where an EXTERNAL check finds the pairing contrary to a rule Artifact
+              058 states or to World's own constraint                  (E-09)        EXTERNAL
+REJECT     M  role entries each carrying min 0 and max many, or a one_to_many element
+                                                                      (P-01A)       NATIVE
+REJECT     M  definition stating "one-to-many" as the type's governed cardinality
+                                                                      (M-03)        EXTERNAL
+BOUNDARY   M  no cardinality element at all — not a defect; the omission defers §13.3, closes
+              nothing, and makes no cardinality checkable (§3 NOT REPRESENTED)     STATIC
+REJECT     N  provenance absent                                       (§2)          NATIVE
+REJECT     N  an edge_provenance element, or provenance holding an edge's provenance
+                                                                      (P-01A; §2)   NATIVE, EXTERNAL
+BOUNDARY   N  the definition Record's own provenance present — retained, as every Record's is
+                                                                                   STATIC
+REJECT     O  a version element added to the family today — outside this revision's inventory
+              (P-01A, P-01B). Not a permanent prohibition: once rows 108–110 establish a
+              Registry-owned version representation, a governed revision may add it  NATIVE
+REJECT     O  version added as an eighth envelope field — prohibited in every revision
+                                                                      (P-05)        NATIVE
+BOUNDARY   O  a revised definition changing its owning role — no edge is re-owned by that fact;
+              any consequence is 108–110's and the owning model's (079 VS-079-3)   STATIC
+REJECT     P  eligibility W WSV                                       (E-03)        NATIVE
+REJECT     P  eligibility W *                                         (E-03)        NATIVE
+REJECT     P  eligibility written as an explicitly empty list         (E-06)        NATIVE
+REJECT     Q  a World type with direction absent, or a role without eligibility
+                                                                      (S-04)        EXTERNAL
+UNRESOLVED Q  direction from member to member                         (D-04)        STATIC
+REJECT     R  envelope kind CHARACTER, or MEMBER_OF                   (§2 kind)     NATIVE
+REJECT     R  sot_class DEV-ENV                                       (§2 sot_class) NATIVE
+REJECT     S  a Model-only eligibility entry (otherwise UNRESOLVED) in a Record with no
+              owning_role — the REJECT outranks the open shape        (X-01)        NATIVE
+BOUNDARY   T  structurally valid, not yet resolved by any consumer — whether it resolves is row
+              115's, and resolvable is not legal                                   EXTERNAL
+
+==================================================================================================
+8. SOURCE CONDITIONS
+==================================================================================================
+
+Each entry: the source statements, the condition, whether 080 owns its resolution, its treatment,
+the remaining owner where one is established, and its effect.
+
+SC-080-A  Registry classification and roster. Blueprint §9.4 classifies the Registry as a
+          capability; RMS §10 closes that (COLLISION-1) — the Registry is a sovereign Record
+          Model. RMS §10.1 fixes fourteen Registry Kinds, RELATIONSHIP-TYPE-DEFINITION Kind 6;
+          Blueprint §13.6's RELATIONSHIP-TYPE-DEF is an alias (064 §5; 079 SC-079-A, SC-079-B).
+          080 owns nothing here; no roster is revived and no Kind is created. CLOSED BY SOURCE;
+          no effect on 080's completion.
+SC-080-B  Registry references to Kinds. Blueprint §9.4 and §13.6e say a Registry definition "may
+          never reference a kind, a subtype, or an instance"; RMS §10.3 corrects it — "v0.1
+          stated the boundary too bluntly" — admitting declared Kinds and keeping domain
+          instances forbidden (079 SC-079-R). role.eligibility.kind follows RMS §10.3. CLOSED BY
+          SOURCE; no effect.
+SC-080-C  Schema definition against execution. RMS §10.2: "SCHEMA-DEFINITION is a Registry
+          Record." and "Registry does not execute schemas." Older wording that the Registry is
+          not schema does not forbid this structural contract, which defines structure and
+          executes nothing (§6 EXECUTION). CLOSED BY SOURCE; no effect.
+SC-080-D  Open decisions inherited from 079 §19.1. OD-079-1 (what cardinality bounds; owner the
+          Blueprint/RMS author, no row assigned) and OD-079-2 (what the owning role governs
+          outside Relationship Records; owners rows 276, 338, 356, 366, escalating to the author).
+          080 owns neither. Treatment: cardinality is not represented (§3); owning_role is
+          represented as a declaration and its application is not (§6 DECLARATION AND
+          APPLICATION; S-05). Neither is a G gate on 080 (row 080 carries G: —). Effect: 080's
+          Val and Done do not depend on them; the type sets, 112, 116 and the model mechanisms
+          are limited as 079 §19.1 states.
+SC-080-E  LS metadata. Row 080 carries LS: LS-1 and Why: LS-3; PART III defines LS-1 as Kind spec ↔
+          KIND-DEFINITION and LS-3 as Relationship ↔ Relationship-Type-Definition. A structural
+          contract is neither (079 SC-079-I; 077 SC-077-B). Both values preserved; no 079 ↔ 080
+          pair, no LS-1 pair and no lockstep class invented. Owner: the Roadmap author. ROADMAP
+          ISSUE, recorded; no effect on completion.
+SC-080-F  LS-3 verification pointer. 079 §22 reports, for its Why: LS-3 partner, that "lockstep
+          tests are row 123's". Row 123 carries LS: LS-1,4,5,6,7,8 and does not list LS-3; rows
+          217 (World) and 293 (Epistemic) list LS-1,LS-2,LS-3. No P, V or I test row listing LS-3
+          was found in the repository copy. 080 uses the Roadmap's assignments (§6 LS) and does
+          not repeat the pointer; 079, row 123 and the test rows are not edited, and no
+          dependency or gate is created. Owner: 079's author for the pointer; the Roadmap author
+          for LS-3 test coverage of P, V and I. UPSTREAM TRACEABILITY DISCREPANCY, recorded;
+          non-blocking for 080.
+SC-080-G  Manifest metadata against file status. Row 080 carries T: schema · Canon:
+          canonical-about-meaning · CD: yes on a docs/** path; Artifact 003 gives a docs/**
+          specification Canon: n/a and says CD "licenses nothing"; the Revolving Resolution
+          Note records the same inconsistency for the rows AD-REG-AUTHORING-SPLIT moved under
+          docs/registry/ (CONFLICT-F), of which 080 is one. The values are copied exactly; the
+          effective status is §0 STATUS — an authored structural contract, not a Record,
+          licensing no canonical write. Owner: the Roadmap author. Recorded, not resolved; no
+          effect on completion.
+SC-080-H  Req: RR-16 is carried exactly. Its text is not in the repository (Revolving Resolution
+          Note, GAP-C); no text is stated and no requirement-level compliance is claimed.
+          NON-BLOCKING, UNVERIFIED.
+SC-080-I  Registry Kind code. No two-character Registry Kind code is established, and kind codes
+          outside World are not frozen (Artifact 063 §9). The envelope kind is constrained
+          symbolically; eligibility names Kinds, not codes. Owner: row 117. Non-blocking.
+SC-080-J  Unlocks against consumers. Row 080's → (177, 277, 338, 352, 375) and the rows listing
+          080 in H (198, 277, 338, 356, 366) differ: 177, 352 and 375 do not list 080 in H, and
+          198, 356 and 366 are not in 080's → (079 SC-079-O). Both lists preserved; neither
+          rewritten; an unlock is not a hard dependency. Owner: the Roadmap author. ROADMAP
+          ISSUE, recorded; non-blocking.
+SC-080-K  Realization and notation. The Blueprint names JSON Schema (ADOPT) and LinkML (ADAPT) as
+          realizations (§12.15, §26.3b). This file follows the repository's local
+          structural-contract notation (§0) and adopts no serialization, schema language or
+          generated validator; no parser exists for the notation. Recorded.
+SC-080-L  Declared status has no single proof mechanism across the six models (Artifact 063
+          SC-063-H). role.eligibility.kind's declared status is therefore EXTERNAL; for
+          role.eligibility.model the closed set is the declared set. Recorded; non-blocking.
+SC-080-M  WSV as a participant. RMS §7 places WSV as "always the non-owning endpoint" of World's
+          pressure edges, while row 231 says "WSV is World state, not a Kind" and Blueprint §13.10
+          is headed PROPOSED (079 SC-079-M). (W, WSV) is rejected as an eligible Kind (E-03),
+          because WSV is not a Kind. How a World pressure-edge type states WSV's end is World's
+          (rows 197–198); 080 neither represents nor forbids another form. SOURCE GAP for World;
+          non-blocking for 080.
+SC-080-N  Remaining representation and semantic gaps, each bounded:
+            — non-World arity (079 SC-079-E): UNRESOLVED until the model's architecture states it
+              (S-03); owner the model rows;
+            — Model-only eligibility and participants of several models (079 SC-079-G; Artifact
+              058 §8.4): UNRESOLVED (E-04, E-08); owners the model rows and 058's successors; no
+              matrix invented;
+            — combination rules among eligibility entries: none represented; a list names Kinds
+              that may each stand, nothing more;
+            — a World type whose endpoints stand in the same role (079 SC-079-Q): UNRESOLVED
+              (S-02, D-04); owner World (197–198);
+            — direction vocabulary, inverse types, symmetry, transitivity (079 SC-079-F): not
+              represented; no owner established;
+            — direction for types of more than two roles: UNRESOLVED (D-05);
+            — §13.3 scope for E, P, V, I (079 SC-079-H): UNRESOLVED (S-04); owners the model rows.
+          None blocks 080's Val or Done: each is a shape a Record may have, held open.
+SC-080-O  Inbound type references (079 SC-079-P; 064 §13 Q7). How an actual relationship or a
+          Relationship Record identifies its type is not established; 080 defines nothing for it
+          (P-11). Owner: each model's relationship-record and type rows (e.g. 199). Non-blocking.
+SC-080-P  Reification wording residual (079 SC-079-S). RMS §15's criterion and §13.9's custody use
+          two senses of "own", reconciled in 079 §10 and not stated in the sources' own text.
+          080 represents the custody side only — owning_role — and decides no reification.
+          Owner: the Blueprint/RMS author. Non-blocking.
+SC-080-Q  Row 366's Val is printed in the repository copy as **SECTION, with no closing emphasis
+          and no further text. 080 does not interpret it, cites it as printed, and adds nothing to
+          it (§6 DOWNSTREAM). Owner: the Roadmap author. Recorded; non-blocking.
+SC-080-R  registry_ref referent. Artifact 033 leaves the referent unresolved; 080 attaches none
+          and uses registry_ref for neither eligibility nor the owning role (§2). Non-blocking.
+SC-080-S  Version representation and Registry evolution (079 VS-079-1 to VS-079-3). Deferred to
+          rows 108–110; not defined and not permanently prohibited (P-01B). Non-blocking.
+
+==================================================================================================
+9. CONFORMANCE CONDITIONS — each labelled NATIVE, EXTERNAL, STATIC or REPOSITORY
+==================================================================================================
+
+These state what a conforming candidate, or this contract, must satisfy. No runtime checker
+exists for them; a NATIVE label says what is decidable from a Record, not that a check has run.
+
+C-080-01  STATIC    The header reproduces repaired Roadmap row 080's 25 values exactly.   header
+C-080-02  STATIC    H: 079 is the only hard dependency, consumed unchanged.               §0 SPEC
+C-080-03  STATIC    Supporting sources — 003, 033, 034, 044, 055, 058, 061–064, 067, 069, 071, 073,
+                    077, 078 — are not promoted into H or S.                          §0 SPEC
+C-080-04  STATIC    The file's effective status is distinguished from a Registry Record and from
+                    canonical data; Canon and CD are copied and license no write.
+                                                                       §0 STATUS; SC-080-G
+C-080-05  NATIVE    The envelope is exactly the seven RMS §4 fields, each present and exactly-one,
+                    none added, removed or renamed.                           §1, §2, P-05
+C-080-06  NATIVE    partition is R.                                                     §2
+C-080-07  NATIVE    The envelope kind is the symbolic Registry Kind RELATIONSHIP-TYPE-DEFINITION,
+                    never a participant Kind or a type name.                           §2
+C-080-08  STATIC    No Registry Kind code is invented.                          §2; SC-080-I
+C-080-09  STATIC    Definition identity is object_id, distinct from type names, role keys,
+                    participants, edges and Relationship Records. NATIVE: object_id present.
+                                                                                  §2, §6
+C-080-10  STATIC    Every element and part of §1 has requiredness, carrier count, constraint,
+                    check and basis, and every 080 CHOICE says what it does not decide.  §2, §3
+C-080-11  NATIVE    One type's meaning is represented: definition present and non-empty.
+                    EXTERNAL: one type only, and no edges as content.           §3; M-01
+C-080-12  NATIVE    Participant roles are declared — at least one entry, each with key and
+                    meaning — and locally distinguishable.                    §3; R-01 to R-04
+C-080-13  NATIVE    Exactly one owning-role designation is required; none, two or a second
+                    carrier is rejected.                                       §3; O-01, O-03
+C-080-14  NATIVE    The designation equals the key of exactly one role of the same Record.
+                                                                              §3; O-04, O-05
+C-080-15  NATIVE    Entry order and direction cannot substitute for the designation.
+                                                                              §3; O-06; D-03
+C-080-16  STATIC    No model is required to adopt Relationship Records, and the owning role's
+                    application outside them is not represented.          §6 DECLARATION; S-05
+C-080-17  EXTERNAL  World's two-position rule is applied to World types only; other models' arity
+                    is what their architecture establishes, else UNRESOLVED.       S-02, S-03
+C-080-18  STATIC    Direction is separate from ownership: no rule derives either from the other,
+                    and no inverse, symmetry, transitivity or default is represented.  §3; D-03
+C-080-19  STATIC    Eligibility is classified by its actual carrier — a declaration reference to
+                    the declared Model and Kind, not R → R.                 §3; §6 REPRESENTATION
+C-080-20  EXTERNAL  Declared-Kind status is established by the owning model, never inferred from
+                    syntax; an undeterminable status is REJECT (RB-6).               E-07
+C-080-21  NATIVE    No structured part holds a Record identifier, and (W, WSV) and * are
+                    rejected. EXTERNAL: content uses no domain or runtime instance as authority.
+                                                                          E-03; M-05; §6
+C-080-22  STATIC    No reference becomes a semantic dependency by itself; no dependency element.
+                                                                          P-09; §6 LAYER
+C-080-23  STATIC    Relationship-type cardinality is not represented while OD-079-1 is open, and
+                    the deferral, its limits and its non-closure are stated.  §3 NOT REPRESENTED
+C-080-24  STATIC    Carrier counts are distinguished from relationship-type cardinality and from
+                    077's occurrence.cardinality.                       §0; §1; §3 NOT REPRESENTED
+C-080-25  STATIC    OD-079-2 is not resolved: no element or rule states what the owning role
+                    governs where no Relationship Record is used.                   S-05; M-04
+C-080-26  STATIC    Unchecked or unresolved evidence is never reported as conformance: outcomes
+                    follow §0's order, REJECT first; no Record is CONFORMS while an EXTERNAL
+                    check is unestablished or a shape is UNRESOLVED.                §0; X-01
+C-080-27  NATIVE    The definition Record's own provenance is present. STATIC: an edge's
+                    provenance is not family content.                           §2; P-01A
+C-080-28  STATIC    Versionability is preserved: no version mechanism is invented, and later
+                    governed version representation is not permanently prohibited.
+                                                                  P-01B; §6 VERSIONABILITY
+C-080-29  STATIC    No resolver, validator, parser or canonical Record is created.   §6
+C-080-30  STATIC    Unlocks (177, 277, 338, 352, 375) and hard-dependency consumers (198, 277,
+                    338, 356, 366) are kept apart; neither list is rewritten.
+                                                                    §6 DOWNSTREAM; SC-080-J
+C-080-31  STATIC    No downstream Val, Done or H is expanded, row 112's included.  §6 DOWNSTREAM
+C-080-32  STATIC    Known source discrepancies are recorded, not repaired upstream.
+                                                                     SC-080-E, F, G, J, Q
+C-080-33  STATIC    No lockstep pair, gate or dependency is invented.     P-08; SC-080-E, F
+C-080-34  STATIC    None of RMS §4's nine prohibited universal semantics, and no universal role
+                    vocabulary, arity or direction grammar, is introduced.          P-06
+C-080-35  NATIVE    A participant Kind can be named only in role.eligibility.kind, never in the
+                    envelope kind.                                                  §1, §2
+C-080-36  STATIC    AD-REG-SOURCE-ENVELOPE is not used to make an envelope field optional.
+                                                                     §6 MATERIALIZATION
+C-080-37  REPOSITORY Only docs/registry/relationship_type.schema is created by this artifact.
+                                                                                   row 080
+C-080-38  REPOSITORY No canonical Registry Record is authored or committed.       §0; §6
+C-080-39  STATIC    Completion is claimed at contract level only: no runtime behaviour, resolver
+                    result, validator run or edge ownership is reported as shown.     §10
+
+==================================================================================================
+10. ROADMAP TRACE — contract-level
+==================================================================================================
+
+The statuses assess this file as a structural contract. They claim no resolver, version mechanism,
+validator, declared-status proof, concrete RELATIONSHIP-TYPE-DEFINITION Record or edge behaviour;
+those belong to their own rows and have not run.
+
+Val  definition resolves          §2 baseline Record identity (partition, kind, object_id) under
+                                  the universal grammar; §6 RESOLUTION — the prerequisite for
+                                  later Registry resolution. Not shown: a resolver (114, 115),
+                                  identity binding (117), the id+version form (108–110)
+Val  versionable                  §6 VERSIONABILITY; P-01B: no version mechanics invented, later
+                                  governed representation not obstructed; version history is not
+                                  edge history. Not shown: any version mechanism (108–110)
+Val  references only declared     §3 role.eligibility.model (the closed set of declared models)
+     entities (063)               and role.eligibility.kind (a declared Kind, EXTERNAL); no
+                                  domain, runtime or unestablished reference in structure or
+                                  content (§4 E, M-05; P-02; §6 REFERENCES). A Record reaches
+                                  CONFORMS only once its EXTERNAL checks are established; RB-6
+                                  rejects what cannot be. Not shown: the validator (112, 116)
+Done schema                       §1–§5: eleven elements and seven parts, each with requiredness,
+                                  carrier count, constraint, check and basis; the five
+                                  owning-role cases and the rules of §4; the prohibitions,
+                                  rejection register and prohibited inferences of §5. Cardinality
+                                  deferred by design (OD-079-1)
+H    079                          consumed unchanged; §1–§6 encode 079 §5–§15 and §21 items 1–9,
+                                  RT-079-01 to RT-079-25, RS-079-1 to RS-079-5, VS-079-1 to
+                                  VS-079-3 and RF-079-1 to RF-079-9; OD-079-1 and OD-079-2 kept
+                                  open
+S    —                            none introduced
+LS   LS-1                         preserved; no pair invented; SC-080-E
+G    —                            no gate introduced; open decisions are not gates; SC-080-D
+→    177,277,338,352,375          preserved; consumers through H kept apart; SC-080-J
+Why  LS-3                         preserved as row metadata; LS-3 pairs are formed downstream;
+                                  SC-080-E, SC-080-F
+Req  RR-16                        carried; text unavailable; SC-080-H
