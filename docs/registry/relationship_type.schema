@@ -60,16 +60,22 @@ OUTCOMES   A candidate Record has exactly one of the four outcomes of Artifact 0
                                admissibility the governing sources leave open (§4 S-02, S-03,
                                S-04, D-04, D-05, E-04, E-08). This contract neither accepts nor
                                rejects the shape, and a carrier able to hold it is no authority
-                               for it. It is not a success.
+                               for it. It is not a success. It is a source gap, not a missing
+                               lookup: no check anyone could run today settles it.
              PENDING_EXTERNAL  every NATIVE rule holds and no shape is UNRESOLVED, but one or more
-                               EXTERNAL checks have not yet been established. A pre-final
-                               evidence state, not acceptance.
+                               EXTERNAL obligations have not been established — because the check
+                               has not been run, or, for an obligation other than the declared
+                               status of a named Kind, because the check ran and established
+                               nothing either way. A pre-final evidence state, not acceptance; an
+                               unrun check is never reported as failed.
              CONFORMS          every NATIVE rule holds, every applicable EXTERNAL check has been
                                established by its owner, no shape is UNRESOLVED, and no rule is
                                violated.
-           Three evidence states stay apart. Not yet checked: PENDING_EXTERNAL. Checked, and a
-           required declared status cannot be established: REJECT (RB-6). Checked and shown
-           invalid: REJECT. A NATIVE pass alone is never CONFORMS.
+           Four evidence states stay apart. Not yet checked: PENDING_EXTERNAL. Checked, and a named
+           Kind's required declared status cannot be established: REJECT (RB-6) — never
+           PENDING_EXTERNAL and never UNRESOLVED. Checked and shown invalid: REJECT. Answer left
+           open by the governing sources themselves: UNRESOLVED. A NATIVE pass alone is never
+           CONFORMS. The decision matrix of §4 OUTCOME ORDER applies these states.
            CONFORMS is bounded to this contract. It does not establish that Blueprint §13.3's
            cardinality obligation is met — no carrier for it exists here (OD-079-1); it says
            nothing about what the owning role governs where no Relationship Record is used
@@ -315,9 +321,13 @@ CONSTRAINT  each value declares one participant role of this type: a position a 
             inferred from the type's name, a participant Kind, a domain instance, entry order,
             direction or an example (079 §7, RT-079-03).
             At least one: a Record with no declared role has no role for owning_role to designate
-            (RT-079-05). This element fixes no further count. How many roles a type has is the
-            arity rule of §4 S-02 and S-03: two for a World type (Blueprint §13.9: "An edge joins
-            two objects."); for other models, what their own architecture establishes.
+            (RT-079-05). This element fixes no further count. How many roles a type may declare
+            is the arity rule of §4 S-02 and S-03. For World, the sources fix two endpoints per
+            edge (Blueprint §13.9: "An edge joins two objects.") and show two distinct roles;
+            they do not fix that every endpoint occupies its own declared role, so one or more
+            than two World roles is UNRESOLVED, not rejected (S-02). For other models, the count
+            is what their own architecture establishes (S-03). A count of role entries is never
+            read as a count of endpoints.
             Unordered. The order in which entries are written carries no meaning, and no rule of
             this contract reads it (079 §8.2 item 4; RT-079-08).
             A role is part of this one definition. It is not a Record, a Kind, a subtype, a field,
@@ -386,8 +396,9 @@ REJECT      absent, or empty                                          (R-02)    
 
 ELEMENT     role.eligibility
 LAYER       FAMILY — part of each role
-REQUIRED    no — at least one entry per role where the type's §13.3 scope is established;
-            otherwise as §4 S-04 states
+REQUIRED    no — at least one entry on each of the two roles of a two-role World type, as this
+            contract's representation of §13.3's legality obligation (§4 S-04); otherwise as
+            S-04 states
 CARDINALITY zero-or-more — each value is one eligibility entry, with the parts
             role.eligibility.model and role.eligibility.kind
 CONSTRAINT  each entry states one category of participant that may stand in this role: the
@@ -397,9 +408,11 @@ CONSTRAINT  each entry states one category of participant that may stand in this
             count rule among entries is represented, and the number of entries is no multiplicity
             rule (SC-080-N).
             Absence. A role with no entry states no eligibility. That is not "every Kind may
-            stand" and not "no Kind may stand"; its effect is §4 S-04. An explicitly empty value,
-            a null placeholder and a wildcard are not absence and do not conform (§4 E-03, E-06).
-            "All Kinds" has no representation.
+            stand" and not "no Kind may stand"; its effect is §4 S-04. It is also not an
+            undeclared Kind: absence fails, where it fails, under S-04, and no Kind is checked
+            for it under E-07. An explicitly empty value, a null placeholder and a wildcard are
+            not absence and do not conform (§4 E-03, E-06). "All Kinds" has no representation
+            (SC-080-N).
             Declaration level. An entry names a declared Record Model and, normally, a declared
             Kind of that model, by declaration reference: the declared Model and Kind themselves,
             not a MODEL-DEFINITION or KIND-DEFINITION Record (079 RF-079-1; Artifact 063 §8.2,
@@ -528,8 +541,8 @@ REJECT      absent                                                    (O-01)    
 
 ELEMENT     direction
 LAYER       FAMILY
-REQUIRED    no — required where the type's §13.3 scope is established; otherwise as §4 S-04
-            states
+REQUIRED    no — required on a two-role World type, as this contract's representation of
+            §13.3's direction obligation (§4 S-04); otherwise as S-04 states
 CARDINALITY zero-or-one — with the parts direction.from and direction.to
 CONSTRAINT  how a relationship of the type reads from one declared role to another (079 §9.2):
             MEMBER_OF reads from the member to the organization.
@@ -544,10 +557,12 @@ CONSTRAINT  how a relationship of the type reads from one declared role to anoth
             (SC-080-N; 079 SC-079-F, SC-079-Q).
 CHECK       NATIVE — at most one; when present, both parts present
             EXTERNAL — whether it is required (§4 S-04)
-BASIS       SOURCE FACT — the type carries "its direction" (Blueprint §13.3). REQUIRED SYNTHESIS —
-            079 §9.2, RT-079-13. 080 CHOICE — an ordered pair of declared roles; optional, with
-            its presence governed by §4 S-04; the element NAME. The choice is not offered as the
-            only representation a governing source could establish (§6 REPRESENTATION).
+BASIS       SOURCE FACT — the type carries "its direction" (Blueprint §13.3), and every relationship
+            is "typed, directional" (§13.3). REQUIRED SYNTHESIS — 079 §9.2, RT-079-13. 080 CHOICE —
+            an ordered pair of declared roles; optional, with its presence governed by §4 S-04;
+            the element NAME. The sources oblige a §13.3 type to carry its direction; they do
+            not name this element. The choice is not offered as the only representation a
+            governing source could establish (§6 REPRESENTATION).
 REJECT      present with a part missing                               (D-01)           NATIVE
 
 ELEMENT     direction.from
@@ -709,11 +724,27 @@ S-01  Which Record Model's relationship architecture governs the type, and wheth
       198 with 197 for W; 277 with 276 for E; 338 for P; 356 for V; 366 for I. This contract
       carries no model-scope element (§6 REPRESENTATION): a carrier would restate, not supply,
       that evidence.                                                                  EXTERNAL
-S-02  A World type has exactly two role entries — Blueprint §13.9: "An edge joins two objects.";
-      079 §7.
-        three or more role entries                                      → REJECT     EXTERNAL
-        one role entry — both endpoints would stand in the same role (SC-079-Q)
+S-02  World role count. What the sources establish, and what they do not:
+        established — an actual World edge joins two endpoints (Blueprint §13.9: "An edge joins
+        two objects."), and the type states legality "at each end" (§13.3);
+        shown — two distinct roles, in §13.9's four examples and 079 §17 Examples A–D. With two
+        distinct roles the endpoints divide them: exactly one endpoint occupies the owning role
+        (079 §8.4), and the other endpoint, which as a participant occupies a role (079 §7),
+        occupies the other — one role at each end;
+        not established — that each endpoint occupies its own declared role, or that no
+        endpoint occupies two. 079 leaves open how World types a relationship whose two
+        endpoints stand in the same role (SC-079-Q), and no source maps declared roles onto
+        endpoints one-to-one (SC-080-T).
+      The count of role entries is therefore not read as a count of endpoints:
+        two role entries — the shape the sources show; every other rule still applies
+        one role entry — both endpoints would occupy the one role, which is then the owning
+        role, while 079 §8.4 requires exactly one endpoint in it; how World types such a
+        relationship is World's (SC-079-Q)                             → UNRESOLVED
+        three or more role entries — two endpoints cannot occupy three roles one each, and no
+        source establishes or excludes an endpoint occupying more than one (SC-080-T)
                                                                         → UNRESOLVED
+      Neither open shape is accepted, and neither is rejected on the endpoint count alone. The
+      World count applies only once S-01 establishes that the type is World's.
 S-03  A type of any other model has the role count its model's relationship architecture
       establishes.
         a count that architecture contradicts                          → REJECT     EXTERNAL
@@ -721,23 +752,48 @@ S-03  A type of any other model has the role count its model's relationship arch
       No count — two included — is assumed for these models (079 §7; PI-23 of 079). No Registry
       relationship type set exists (079 §8.5, R row), so a type claimed for R falls in the second
       case.
-S-04  Direction and per-role eligibility follow §13.3's scope:
-        scope established — World types are: §13.3 describes the reified relationship whose
-        packaging is World's (§13.3 scoping note; RMS §15 World row "reified"; 079 §9.1, §9.5).
-        Direction present, and at least one eligibility entry on every role. Either absent
-                                                                        → REJECT     EXTERNAL
+S-04  Direction and per-role eligibility. The source obligation: "Every relationship has a
+      Registry-defined type carrying its participant roles, its direction, its cardinality,
+      and its legality constraints (which kinds may stand at each end)." — one of what Blueprint
+      §13.3 lists as "unchanged and constitutional". This contract represents the direction
+      obligation by direction and the legality obligation by role.eligibility (§3), and does not
+      represent cardinality (OD-079-1). The presence requirements below are those
+      representations; the sources name neither carrier.
+        two-role World type — scope established, because World types are in §13.3's scope:
+        §13.3 describes the reified relationship whose packaging is World's (§13.3 scoping
+        note; RMS §15 World row "reified"; 079 §9.1, §9.5):
+          direction absent — the type carries no direction in the only form this contract
+          defines; the form, a reading from one role to the other, is the one 079 §9.2
+          establishes                                                  → REJECT     EXTERNAL
+          a role with no eligibility entry — the type carries no legality constraint for that
+          end in the only form this contract defines                   → REJECT     EXTERNAL
+          Why every role: §13.3 states legality "at each end", 079 §9.4 states it per role, and
+          in the two-role shape each role is at one end (S-02). Why at least one entry: that is
+          this contract's representation — an absent list states nothing (§3 role.eligibility),
+          and a constraint admitting every Kind, or no Kind, has no representation here
+          (SC-080-N).
+          This REJECT is not an undeclared-Kind finding; no Kind is checked for it (E-07).
+        one-role or three-or-more-role World type, UNRESOLVED under S-02 — how §13.3's direction
+        and per-end legality are carried is part of the open shape. S-04 adds no REJECT for an
+        absent carrier; anything present is still checked by D and E
         scope established not to apply by the governing architecture: no presence requirement
         from §13.3; anything present is still checked by D and E
         scope neither established nor excluded — the case 079 SC-079-H records for E, P, V and
-        I until their rows answer it                                    → UNRESOLVED
+        I until their rows answer it, whether or not direction and eligibility are present
+                                                                        → UNRESOLVED
+      Evidence order. Both REJECTs need S-01's evidence that the type is World's. Until it is
+      established, an absent carrier is PENDING_EXTERNAL on S-04, not REJECT: absence is no
+      violation until the scope that requires the carrier is shown.
 S-05  The owning role's application is not a scope question of this contract. A Record of E, P,
       V or I is never UNRESOLVED, PENDING_EXTERNAL or REJECT because OD-079-2 is open: the
       declaration is definition validity, and its application is not represented (079 §8.5).
 
-BASIS       SOURCE FACT — Blueprint §13.3, §13.9; I-73; RMS §15. REQUIRED SYNTHESIS — 079 §7, §8.5,
-            §9.1, §9.5; that World types fall in §13.3's scope (S-04). SOURCE GAP — S-02's
-            one-role case (SC-079-Q), S-03 (SC-079-E), S-04's open scope (SC-079-H). 080 CHOICE —
-            S-01's evidence route instead of a model-scope element.
+BASIS       SOURCE FACT — Blueprint §13.3, §13.9; I-73; RMS §15. REQUIRED SYNTHESIS — 079 §7, §8.4,
+            §8.5, §9.1, §9.5; that World types fall in §13.3's scope, and that two distinct roles
+            sit one at each end (S-02, S-04). SOURCE GAP — S-02's one-role case (SC-079-Q) and
+            three-or-more case (SC-080-T), S-03 (SC-079-E), S-04's open scope (SC-079-H). 080
+            CHOICE — S-01's evidence route instead of a model-scope element; S-04's carriers and
+            its at-least-one-entry form.
 
 DEFINITION CONTENT
 
@@ -765,7 +821,37 @@ OUTCOME ORDER
 X-01  Outcomes follow §0: a REJECT anywhere in the Record outranks every UNRESOLVED shape, and an
       UNRESOLVED shape outranks PENDING_EXTERNAL. No shape, admissible or not, makes a Record
       CONFORMS while an EXTERNAL check is unestablished, and no open question excuses a shown
-      violation.
+      violation. A shape that depends on S-01's evidence — S-02, S-03, S-04 — becomes UNRESOLVED
+      only once that evidence is established; until then the Record is PENDING_EXTERNAL on it.
+      Shapes that do not depend on it — D-04, D-05, E-04, E-08 — are UNRESOLVED at once.
+
+DECISION MATRIX — a contract-level statement of X-01, not an algorithm and not a validator
+
+  Case                                                                        Outcome
+  a NATIVE rule violated — e.g. R-03, O-01, O-04, E-03                        REJECT
+  a named Kind checked and shown undeclared, or declared under another model
+  (E-07)                                                                      REJECT
+  a named Kind checked, and its declared status cannot be established (E-07;
+  RB-6)                                                                       REJECT
+  a two-role World type, its scope established, lacking direction or an
+  eligibility entry on a role (S-04)                                          REJECT
+  an EXTERNAL check that establishes any other violation — E-09, M-01 to M-05,
+  S-03's contradicted count                                                   REJECT
+  any shown violation together with an open shape or a pending check          REJECT
+  a source-gap shape (S-02, S-03, S-04, D-04, D-05, E-04), no violation       UNRESOLVED
+  participants of different models, every named Kind's status established,
+  permission undecided (E-08), no violation                                   UNRESOLVED
+  a source-gap shape — E-08 included — together with a pending check other
+  than the S-01 evidence the shape depends on, no violation                   UNRESOLVED
+  a named Kind whose check has not run; or S-01's evidence, or a content
+  limit, not yet established — and nothing above                              PENDING_EXTERNAL
+  every NATIVE rule holds, every applicable EXTERNAL check is established by
+  its owner, no shape is open                                                 CONFORMS
+
+  An unrun check is never reported as failed. A checked-but-unestablished declared status is
+  never PENDING_EXTERNAL or UNRESOLVED. A source gap is never reported as a failed lookup. A
+  carrier's presence never establishes the legality of what it holds. E-08 never bypasses
+  E-07, and E-07 is no ban on cross-model types.
 
 The rules fix structure only. They derive no relationship type, role, owning role, direction,
 eligible Kind or cardinality for any concrete type, and no rule of a model's relationship
@@ -869,11 +955,11 @@ REJECTION REGISTER — each with the check that rejects it and where
 23  empty or placeholder eligibility value         NATIVE                E-06
 24  Kind undeclared, wrong model, or unprovable    EXTERNAL              E-07; RB-6
 25  eligibility against 058 or a model constraint  EXTERNAL              E-09
-26  a World type with three or more roles          EXTERNAL              S-02
+26  withdrawn — a World type with three or more roles is UNRESOLVED, not REJECT (S-02; see below)
 27  a role count the model's architecture contradicts
                                                    EXTERNAL              S-03
-28  direction or eligibility absent where §13.3 scope is established
-                                                   EXTERNAL              S-04
+28  a two-role World type, its scope established, lacking direction or an eligibility entry
+    on a role                                      EXTERNAL              S-04
 29  a cardinality element, token or default        NATIVE                P-01A; §3
 30  cardinality presented as governed in content   EXTERNAL              M-03
 31  an owning-role application asserted in content EXTERNAL              M-04
@@ -883,10 +969,16 @@ REJECTION REGISTER — each with the check that rejects it and where
 34  a generic reference list                       NATIVE                P-02
 35  canonical data written from Artifact 080       STATIC, REPOSITORY    §0; §6 MATERIALIZATION
 
-Not in this register, because they are UNRESOLVED unless something above rejects them: a one-role
-World type (S-02), a non-World role count not established (S-03), an open §13.3 scope (S-04), a
-direction from a role to itself (D-04), direction on a type of more than two roles (D-05),
-Model-only eligibility (E-04) and participants of more than one model (E-08).
+UNRESOLVED REGISTER — not in the register above, because they are UNRESOLVED unless something
+above rejects them:
+  a World type with one role, or with three or more roles                    S-02
+  a non-World role count not established                                     S-03
+  a World type of one or three-or-more roles lacking direction or eligibility S-02, S-04
+  an open §13.3 scope, carriers present or not                               S-04
+  a direction from a role to itself                                          D-04
+  direction on a type of more than two roles                                 D-05
+  Model-only eligibility                                                     E-04
+  participants of more than one model                                        E-08
 
 PROHIBITED INFERENCES — each false deduction, and where this contract answers it
 
@@ -936,8 +1028,11 @@ REPRESENTATION  079 leaves the structural form to 080. It "decides none of 080's
                 (3) owning_role as one designation by role.key — one carrier, so that case 3 of
                     §4 is NATIVE and no two carriers can disagree;
                 (4) direction as an optional ordered pair of role keys, from and to, required
-                    only where §13.3 scope is established — so that direction is stated apart
-                    from the owning role without a direction vocabulary;
+                    only on a two-role World type (§4 S-04) — so that direction is stated apart
+                    from the owning role without a direction vocabulary; eligibility likewise
+                    required, at least one entry per role, only on a two-role World type. Both
+                    requirements represent §13.3's "carrying … its direction … and its
+                    legality constraints"; neither carrier is named by a source;
                 (5) eligibility as a declaration reference — the declared Model and the declared
                     Kind themselves, the form 079 RF-079-1 describes and 069, 073 and 077 use — not
                     an R → R reference to a KIND-DEFINITION or MODEL-DEFINITION Record, and not
@@ -1170,7 +1265,9 @@ UNRESOLVED J  a type authored in row 338 for Production, roles requester and req
               S-04 until row 338 answers them                                    STATIC
 UNRESOLVED K  an Epistemic type with three roles, no count established by row 276 (S-03)
                                                                                    STATIC
-REJECT     K  a World type with three roles                           (S-02)        EXTERNAL
+UNRESOLVED K  a World type with three roles — two endpoints cannot occupy three roles one
+              each, and no source settles whether one endpoint may occupy two (S-02;
+              SC-080-T); not rejected on the endpoint count alone             STATIC
 UNRESOLVED K  a World type with one role, occupied at both ends (S-02; SC-079-Q)  STATIC
 UNRESOLVED L  eligibility W with no Kind — Model-only (E-04)                       STATIC
 UNRESOLVED L  role member eligible W CHARACTER, role record eligible E <DECLARED-KIND> —
@@ -1198,8 +1295,14 @@ BOUNDARY   O  a revised definition changing its owning role — no edge is re-ow
 REJECT     P  eligibility W WSV                                       (E-03)        NATIVE
 REJECT     P  eligibility W *                                         (E-03)        NATIVE
 REJECT     P  eligibility written as an explicitly empty list         (E-06)        NATIVE
-REJECT     Q  a World type with direction absent, or a role without eligibility
-                                                                      (S-04)        EXTERNAL
+REJECT     Q  a two-role World type with direction absent, or a role without eligibility, once
+              S-01 establishes it is World's — an unrepresented §13.3 obligation, not an
+              undeclared Kind                                         (S-04)        EXTERNAL
+PENDING_EXTERNAL
+           Q  the same Record before S-01's evidence is established — absence is no violation
+              until the scope requiring the carrier is shown          (S-04; X-01)  EXTERNAL
+UNRESOLVED Q  a one-role World type with no direction — part of S-02's open shape; S-04 adds
+              no REJECT                                               (S-02, S-04)  STATIC
 UNRESOLVED Q  direction from member to member                         (D-04)        STATIC
 REJECT     R  envelope kind CHARACTER, or MEMBER_OF                   (§2 kind)     NATIVE
 REJECT     R  sot_class DEV-ENV                                       (§2 sot_class) NATIVE
@@ -1207,6 +1310,26 @@ REJECT     S  a Model-only eligibility entry (otherwise UNRESOLVED) in a Record 
               owning_role — the REJECT outranks the open shape        (X-01)        NATIVE
 BOUNDARY   T  structurally valid, not yet resolved by any consumer — whether it resolves is row
               115's, and resolvable is not legal                                   EXTERNAL
+
+Combinations. Each applies X-01 to several rules at once.
+
+REJECT     U  a World type with three roles (UNRESOLVED under S-02) whose eligibility names a
+              Kind World has not declared — the RB-6 failure outranks the open shape
+                                                              (E-07; S-02; X-01)  EXTERNAL
+UNRESOLVED V  a World type with one role, every named Kind's declared status established — the
+              open same-role shape still prevents CONFORMS            (S-02; SC-079-Q) STATIC
+UNRESOLVED W  a Production type whose owning_role names a declared role, with no arity
+              established by row 338 — O-02 holds; that does not settle arity (O-02; S-03)
+                                                                                   STATIC
+REJECT     X  a two-role World type, scope established, one role with no eligibility entry
+              while every Kind named on the other role is declared — S-04, not E-07: a missing
+              entry is not an undeclared Kind                         (S-04)        EXTERNAL
+PENDING_EXTERNAL
+           Y  every element present and well formed, no open shape, the Kind checks and S-01's
+              evidence not yet run — never CONFORMS; nothing has failed (§0; X-01) EXTERNAL
+UNRESOLVED Z  role member eligible W CHARACTER, role record eligible E <DECLARED-KIND>, the E
+              Kind's check not yet run — the open shape outranks the pending check
+                                                                      (E-08; X-01)  STATIC
 
 ==================================================================================================
 8. SOURCE CONDITIONS
@@ -1293,6 +1416,10 @@ SC-080-N  Remaining representation and semantic gaps, each bounded:
               that may each stand, nothing more;
             — a World type whose endpoints stand in the same role (079 SC-079-Q): UNRESOLVED
               (S-02, D-04); owner World (197–198);
+            — World types of three or more roles: UNRESOLVED (S-02; SC-080-T);
+            — a legality constraint admitting every Kind at an end, or no Kind: not
+              representable; no source establishes either, and a World type needing one is
+              outside this revision (S-04);
             — direction vocabulary, inverse types, symmetry, transitivity (079 SC-079-F): not
               represented; no owner established;
             — direction for types of more than two roles: UNRESOLVED (D-05);
@@ -1312,6 +1439,18 @@ SC-080-R  registry_ref referent. Artifact 033 leaves the referent unresolved; 08
           and uses registry_ref for neither eligibility nor the owning role (§2). Non-blocking.
 SC-080-S  Version representation and Registry evolution (079 VS-079-1 to VS-079-3). Deferred to
           rows 108–110; not defined and not permanently prohibited (P-01B). Non-blocking.
+SC-080-T  Declared roles against World endpoints. Blueprint §13.9: "An edge joins two objects.";
+          079 §7 defines a participant role as "a position that a participant occupies in every
+          relationship of the type" and synthesizes "two participant positions, one at each end"
+          for World; 079 §8.4 and SC-079-Q nonetheless leave open two endpoints standing in the
+          same role. Condition: no source maps declared roles onto endpoints one-to-one — neither
+          that each endpoint occupies its own role, nor that an endpoint occupies at most one.
+          Treatment: the two-role shape the sources show is admissible; one role, and three or
+          more, are UNRESOLVED (S-02), not rejected and not accepted. 080 does not own the
+          question and edits nothing upstream; 079's role definition and its same-role gap are
+          recorded together here as an upstream observation. Owner: World's relationship
+          architecture and type set (rows 197–198), with the Blueprint/RMS author where the
+          answer needs source text. Non-blocking for 080's Val and Done.
 
 ==================================================================================================
 9. CONFORMANCE CONDITIONS — each labelled NATIVE, EXTERNAL, STATIC or REPOSITORY
@@ -1350,8 +1489,10 @@ C-080-15  NATIVE    Entry order and direction cannot substitute for the designat
                                                                               §3; O-06; D-03
 C-080-16  STATIC    No model is required to adopt Relationship Records, and the owning role's
                     application outside them is not represented.          §6 DECLARATION; S-05
-C-080-17  EXTERNAL  World's two-position rule is applied to World types only; other models' arity
-                    is what their architecture establishes, else UNRESOLVED.       S-02, S-03
+C-080-17  EXTERNAL  World's two-endpoint fact is applied to World types only, and only as far as
+                    it reaches: two distinct roles admissible; one role, or three or more,
+                    UNRESOLVED — never REJECT on the endpoint count alone. Other models' arity is
+                    what their architecture establishes, else UNRESOLVED.  S-02, S-03; SC-080-T
 C-080-18  STATIC    Direction is separate from ownership: no rule derives either from the other,
                     and no inverse, symmetry, transitivity or default is represented.  §3; D-03
 C-080-19  STATIC    Eligibility is classified by its actual carrier — a declaration reference to
@@ -1396,6 +1537,14 @@ C-080-37  REPOSITORY Only docs/registry/relationship_type.schema is created by t
 C-080-38  REPOSITORY No canonical Registry Record is authored or committed.       §0; §6
 C-080-39  STATIC    Completion is claimed at contract level only: no runtime behaviour, resolver
                     result, validator run or edge ownership is reported as shown.     §10
+C-080-40  STATIC    S-04's presence requirements are stated as this contract's representation of
+                    §13.3's direction and legality obligations, apply to two-role World types
+                    only, need S-01's evidence before they can REJECT, and are kept apart from an
+                    undeclared-Kind finding (E-07).                     §3; §4 S-04; §6 (4)
+C-080-41  STATIC    The four evidence states and the decision matrix agree with every rule of §4:
+                    an unrun check is PENDING_EXTERNAL, a checked-but-unestablished declared
+                    status is REJECT, a source gap is UNRESOLVED, and a shown violation outranks
+                    both.                                           §0; §4 OUTCOME ORDER; §7
 
 ==================================================================================================
 10. ROADMAP TRACE — contract-level
