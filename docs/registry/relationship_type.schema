@@ -1451,6 +1451,18 @@ SC-080-T  Declared roles against World endpoints. Blueprint §13.9: "An edge joi
           recorded together here as an upstream observation. Owner: World's relationship
           architecture and type set (rows 197–198), with the Blueprint/RMS author where the
           answer needs source text. Non-blocking for 080's Val and Done.
+SC-080-U  Placement. Row 080 of the repaired Roadmap names docs/registry/relationship_type.schema.
+          Roadmap §0.8 records why: "Twenty-two P3 rows targeted canon/registry/**", which only
+          the Mutation Coordinator may write, and its ruling, marked AUTHOR-DECIDED
+          (AD-REG-AUTHORING-SPLIT), says "Structural contracts — rows 067, 069, 071, 073, 077, 080,
+          082, 084, 087, 089, 091, 093, 095, 097, 099, 102, 104 — move to
+          docs/registry/<family>.schema" while "Canon, CD, SoT, H, S and LS of the moved rows are
+          preserved". A copy of the Roadmap that predates §0.8 shows row 080 under
+          canon/registry/; that copy is superseded by §0.8 and by the row as it now stands. The
+          literal row path, the path §0.8 assigns and this file's location agree. canon/registry/
+          remains the zone of committed Registry Records, written only through row 152 after
+          G-CANON-R; this file is not such a Record and is not copied there. Recorded; CLOSED BY
+          SOURCE; no effect on 080's completion.
 
 ==================================================================================================
 9. CONFORMANCE CONDITIONS — each labelled NATIVE, EXTERNAL, STATIC or REPOSITORY
@@ -1532,8 +1544,9 @@ C-080-35  NATIVE    A participant Kind can be named only in role.eligibility.kin
                     envelope kind.                                                  §1, §2
 C-080-36  STATIC    AD-REG-SOURCE-ENVELOPE is not used to make an envelope field optional.
                                                                      §6 MATERIALIZATION
-C-080-37  REPOSITORY Only docs/registry/relationship_type.schema is created by this artifact.
-                                                                                   row 080
+C-080-37  REPOSITORY Only docs/registry/relationship_type.schema is created by this artifact — the
+                    path row 080 names and Roadmap §0.8 assigns; nothing is written to
+                    canon/registry/.                       row 080; Roadmap §0.8; SC-080-U
 C-080-38  REPOSITORY No canonical Registry Record is authored or committed.       §0; §6
 C-080-39  STATIC    Completion is claimed at contract level only: no runtime behaviour, resolver
                     result, validator run or edge ownership is reported as shown.     §10
