@@ -95,6 +95,10 @@ STATUS     This contract describes the structure a materialized RELATIONSHIP-TYP
            (SC-080-G). Roadmap §0.8 lets this contract be authored before canonical
            materialization: "Structural contracts — rows 067, 069, 071, 073, 077, 080, 082, 084,
            087, 089, 091, 093, 095, 097, 099, 102, 104 — move to docs/registry/<family>.schema".
+           Placement. In the repository's current Roadmap, row 080's path, the path §0.8 assigns
+           and this file's location are the same, docs/registry/relationship_type.schema. A
+           Roadmap copy without §0.8 shows canon/registry/relationship_type.schema instead;
+           SC-080-U records both and the authority each rests on.
            Concrete RELATIONSHIP-TYPE-DEFINITION Records are committed only through the Mutation
            Coordinator (row 152) after G-CANON-R. Where this contract differs from the Master
            Blueprint, the Record Model System, the Roadmap, or Artifact 079, those sources are
@@ -1451,18 +1455,38 @@ SC-080-T  Declared roles against World endpoints. Blueprint §13.9: "An edge joi
           recorded together here as an upstream observation. Owner: World's relationship
           architecture and type set (rows 197–198), with the Blueprint/RMS author where the
           answer needs source text. Non-blocking for 080's Val and Done.
-SC-080-U  Placement. Row 080 of the repaired Roadmap names docs/registry/relationship_type.schema.
-          Roadmap §0.8 records why: "Twenty-two P3 rows targeted canon/registry/**", which only
-          the Mutation Coordinator may write, and its ruling, marked AUTHOR-DECIDED
-          (AD-REG-AUTHORING-SPLIT), says "Structural contracts — rows 067, 069, 071, 073, 077, 080,
-          082, 084, 087, 089, 091, 093, 095, 097, 099, 102, 104 — move to
-          docs/registry/<family>.schema" while "Canon, CD, SoT, H, S and LS of the moved rows are
-          preserved". A copy of the Roadmap that predates §0.8 shows row 080 under
-          canon/registry/; that copy is superseded by §0.8 and by the row as it now stands. The
-          literal row path, the path §0.8 assigns and this file's location agree. canon/registry/
-          remains the zone of committed Registry Records, written only through row 152 after
-          G-CANON-R; this file is not such a Record and is not copied there. Recorded; CLOSED BY
-          SOURCE; no effect on 080's completion.
+SC-080-U  Placement. The source this entry reads is the repaired Roadmap as held in this
+          repository, docs/sources/COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md.
+          Source facts in that copy:
+            — row 080 names docs/registry/relationship_type.schema;
+            — §0.8, "Author revision — Registry authoring vs canonical materialization", headed
+              "(AUTHOR-DECIDED, AD-REG-AUTHORING-SPLIT. Audit trail: Revolving Resolution Note,
+              CONFLICT-F.)", records that "Twenty-two P3 rows targeted canon/registry/**", which
+              only the Mutation Coordinator may write, and rules "Structural contracts — rows
+              067, 069, 071, 073, 077, 080, 082, 084, 087, 089, 091, 093, 095, 097, 099, 102, 104
+              — move to docs/registry/<family>.schema", while "Canon, CD, SoT, H, S and LS of the
+              moved rows are preserved".
+          The three paths, in that copy:
+            planned (row 080)             docs/registry/relationship_type.schema
+            effective (row 080 with §0.8) docs/registry/relationship_type.schema
+            actual (this file)            docs/registry/relationship_type.schema
+          Another copy. A copy of the repaired Roadmap without §0.8 — the text before
+          AD-REG-AUTHORING-SPLIT — names canon/registry/relationship_type.schema in row 080. Read
+          against such a copy, the planned path is canon/registry/, the actual path is
+          docs/registry/, and the effective path is not established by that copy; this file
+          cannot settle which copy governs.
+          Authority. §0.8's authority is its own AUTHOR-DECIDED label and the Revolving Resolution
+          Note's CONFLICT-F, which records "Author ruling (AD-REG-AUTHORING-SPLIT)" with status
+          "RESOLVED FOR BUILD · AUTHOR-DECIDED". The repository holds no other attestation of the
+          ruling, and its version history records changes, not authority. If the Roadmap author
+          does not stand by §0.8, the question is the Roadmap's — it reaches all twenty-two rows
+          §0.8 moved — and is for that author to decide, not for this artifact.
+          Treatment. 080 is not moved, duplicated or written under canon/registry/, which remains
+          the zone of committed Registry Records, written only through row 152 after G-CANON-R;
+          this file is not such a Record. No Roadmap text is changed.
+          Status. CLOSED BY SOURCE against the repository's current Roadmap; an audit using a
+          copy without §0.8 must re-baseline on the repository copy before treating the paths as
+          in conflict. No effect on 080's completion while §0.8 stands.
 
 ==================================================================================================
 9. CONFORMANCE CONDITIONS — each labelled NATIVE, EXTERNAL, STATIC or REPOSITORY
@@ -1471,7 +1495,8 @@ SC-080-U  Placement. Row 080 of the repaired Roadmap names docs/registry/relatio
 These state what a conforming candidate, or this contract, must satisfy. No runtime checker
 exists for them; a NATIVE label says what is decidable from a Record, not that a check has run.
 
-C-080-01  STATIC    The header reproduces repaired Roadmap row 080's 25 values exactly.   header
+C-080-01  STATIC    The header reproduces row 080's 25 values exactly, as the repaired Roadmap
+                    held in this repository states them.                  header; SC-080-U
 C-080-02  STATIC    H: 079 is the only hard dependency, consumed unchanged.               §0 SPEC
 C-080-03  STATIC    Supporting sources — 003, 033, 034, 044, 055, 058, 061–064, 067, 069, 071, 073,
                     077, 078 — are not promoted into H or S.                          §0 SPEC
@@ -1545,8 +1570,8 @@ C-080-35  NATIVE    A participant Kind can be named only in role.eligibility.kin
 C-080-36  STATIC    AD-REG-SOURCE-ENVELOPE is not used to make an envelope field optional.
                                                                      §6 MATERIALIZATION
 C-080-37  REPOSITORY Only docs/registry/relationship_type.schema is created by this artifact — the
-                    path row 080 names and Roadmap §0.8 assigns; nothing is written to
-                    canon/registry/.                       row 080; Roadmap §0.8; SC-080-U
+                    path row 080 names, and §0.8 assigns, in the repository's current Roadmap;
+                    nothing is written to canon/registry/.  row 080; Roadmap §0.8; SC-080-U
 C-080-38  REPOSITORY No canonical Registry Record is authored or committed.       §0; §6
 C-080-39  STATIC    Completion is claimed at contract level only: no runtime behaviour, resolver
                     result, validator run or edge ownership is reported as shown.     §10
