@@ -363,10 +363,10 @@ definition, the scope it governs can be determined. It does not by itself establ
 general mechanism by which a consuming Record, field, Kind or partition selects the vocabulary that
 governs it — and none is defined here. A source may require a consumer-side check for a particular
 field: Blueprint §12.15 lists *"`<kind>_type` legality against its kind"* among the Canon Linter's
-structural rules, and §13.6 makes each `<kind>_type` vocabulary per-kind, so there the legal values
-must be determinable from the consuming Record's Kind. That check is the Linter's, not this
-family's. How it locates the vocabulary, and whether one or several vocabularies may answer for one
-context, is not stated; that remains OD-081-1.
+structural rules, and §13.6 speaks of *"The vocabulary of each `<kind>_type`"* as per-kind, so there
+the legal values must be determinable from the consuming Record's Kind. That check is the Linter's,
+not this family's. How it locates the vocabulary, and by what reference, is not stated, and that
+one field's case sets no rule for other fields or subjects; both remain OD-081-1.
 
 - **Not narrowed to Kinds.** The family is not confined to per-Kind field values; §6.1's other
   scopes are source-established.
@@ -652,7 +652,7 @@ serve several fields or Kinds — is OD-081-1. No binding is chosen here.
 |---|---|
 | **Question** | What is a vocabulary associated with — a field, a Kind, a field within a Kind, a partition, a subtype, a governance or authoring use? With what cardinality: one vocabulary per field per Kind, several, or one shared across fields or Kinds when their sets coincide? By what reference, if any? |
 | **Sources** | Blueprint §9.4 (*"its value vocabulary is per-kind"*); §12.15; §13.6; §13.7c; RMS §11.1; rows 105, 107, 282, 350; 072 SC-072-H and 078 SC-078-H (no field/vocabulary relation established; the family is 081–082's); 070 SC-070-E; Artifact 075 §2.7 (*"used where the owning contracts establish it"*) |
-| **Established** | vocabularies are distinct from fields, schemas and subtypes; per-Kind and per-partition sets may diverge; no forced union; every vocabulary's applicability is determinable from the vocabulary side (§6.2); one Record governs one vocabulary definition, which fixes definition identity and not association cardinality (§4.3); for `<kind>_type`, the vocabulary is per-kind (§13.6) and its legality is checked against the Record's Kind (§12.15) — one field's case, which fixes no Record cardinality and no reference |
+| **Established** | vocabularies are distinct from fields, schemas and subtypes; per-Kind and per-partition sets may diverge; no forced union; every vocabulary's applicability is determinable from the vocabulary side (§6.2); one Record governs one vocabulary definition, which fixes definition identity and not association cardinality (§4.3); for `<kind>_type`, §13.6 speaks of *"The vocabulary of each `<kind>_type`"*, per-kind, and §12.15 checks its legality against the Record's Kind — one field's case, which states no reference and sets no rule for other fields or subjects |
 | **Owner** | the Blueprint/RMS author for any general rule. No Roadmap row is assigned one. Absent a general rule, a concrete association belongs to the row that authors the vocabulary or the field, where a governing source establishes it — for example row 350 for the VISUAL-ASSET subtype vocabulary |
 | **Cannot be treated as source-established** | any part of a design or check that requires an association rule the sources do not state: in 082, a field-binding or Kind-binding carrier whose shape presupposes a cardinality — one-per-field, one-per-Kind, shared (§17 Case C); in row 116, checking that a vocabulary's association is well formed against a rule this family does not have; in shared and model-owned validation (RMS §10.6, §20), checking a Record's value against "its" vocabulary by such a rule — where a source requires the check, as §12.15 does for `<kind>_type`, the check is that source's, and the rule by which it locates the vocabulary is still not stated |
 | **Unaffected** | row 081's `Val` and `Done`; the per-Kind divergence and forced-union obligations; the obligations 082 takes under §17 Case A — all hold whatever the association |
@@ -758,8 +758,8 @@ resolution, and whether it blocks row 081's `Val` or `Done`.
 
 | | |
 |---|---|
-| **Sources** | row 081 `LS: LS-1`; Roadmap PART III: LS-1 *"every Kind spec ↔ its Registry KIND-DEFINITION"*; Artifact 003: *"A lockstep partner is not a predecessor."* |
-| **Condition** | a family specification is neither a Kind specification nor a `KIND-DEFINITION` |
+| **Sources** | row 081 `LS: LS-1`; Roadmap PART III: LS-1 *"every Kind spec ↔ its Registry KIND-DEFINITION"*, and §0.7 (AD-LS1-R-BOOTSTRAP): *"The Registry's own fourteen pairs are 064 ↔ 075"*; Artifact 003: *"A lockstep partner is not a predecessor."* |
+| **Condition** | a family specification is neither a Kind specification nor a `KIND-DEFINITION`; Kind 7's LS-1 pair is 064 ↔ 075 (075 §2.7), which names neither 081 nor 082, though row 082 also carries `LS: LS-1` |
 | **Treatment** | the label is preserved; no 081 ↔ 082 or other pair is invented (as 064 SC-064-J records for the non-roster rows) |
 | **Blocks?** | no |
 
