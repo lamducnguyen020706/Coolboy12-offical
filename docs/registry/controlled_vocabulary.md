@@ -82,7 +82,8 @@ and no concrete vocabulary. It is:
 **Open decision.** One question this family depends on is answered by no current source: how a
 vocabulary is associated with the field, Kind or other subject whose values it governs — its
 cardinality, identity and reference (OD-081-1, §15.1). It is not a Roadmap `G` gate; row 081
-carries `G: —`, and Artifact 003 says *"Do not invent gates."* Nothing here reports it as resolved.
+carries `G: —`, and Artifact 003 says *"Do not invent gates."* Nothing here reports it as resolved,
+and nothing here decides in advance whether it blocks any particular Artifact 082 design (§17).
 
 Where this document differs from the Master Blueprint, the Record Model System or the Roadmap,
 those sources are correct and this document is wrong.
@@ -125,7 +126,7 @@ associated with a field and a Kind is OD-081-1. No value of any of these sets is
 
 - what a `CONTROLLED-VOCABULARY` Record is, and what it governs (§4);
 - the shared-structure, independent-vocabulary rule and the forced-union prohibition (§5);
-- the obligation that a vocabulary's applicability be stated, without inventing its form (§6);
+- the obligation that a vocabulary's applicability be determinable, without inventing its form (§6);
 - the boundary with field meaning, schema composition and subtype definition (§7);
 - what Registry governs and what the owning Record Model keeps (§8);
 - the identity, resolution, versionability and reference obligations of row 081's `Val` (§9–§10);
@@ -251,8 +252,8 @@ of any Record; not a lifecycle; not a Record of any model other than R; not the 
 1. **its values or terms** — the governed set (064 Q1, Q4); a set, so its members are distinct;
 2. **what each value or term means** — values are not meaningless strings (§13.6e: *"What a value
    or term means"*; 064 Q2, Q4);
-3. **its applicability** — where the set applies, so that value sets which may diverge stay apart
-   (§9.4; 064 Q3; §6).
+3. **its applicability** — where the set applies, determinably, so that value sets which may diverge
+   stay apart (§9.4; 064 Q3; §6.2).
 
 These three are semantic obligations of every Record of the family. They are not a field inventory:
 how each is carried — which elements, names, shapes or notations — is Artifact 082's, within this
@@ -262,6 +263,14 @@ specification (§17).
 and Q4 gives a Record *"one vocabulary's values"*. REQUIRED SYNTHESIS: one `CONTROLLED-VOCABULARY`
 Record governs one vocabulary; it is not a container of several independently governed sets, and
 not a catalog of every value in the system.
+
+That synthesis fixes the unit of Registry definition identity: one `CONTROLLED-VOCABULARY` Record,
+one governed vocabulary definition. It does not establish how many fields, Kinds, partitions,
+subtypes or other subjects may be associated with that vocabulary, nor how many vocabularies any
+such subject may use. 064 Q3 and Q4 establish what one governed object is; neither states how many
+subjects one vocabulary may serve or how many vocabularies one subject may use, and no inspected
+source states an association cardinality (SC-072-H; SC-078-H). Those questions remain OD-081-1.
+One vocabulary per Record does not imply one field, or one Kind, per vocabulary.
 
 **Value-level semantics beyond meaning.** A vocabulary's own governing source may give its values
 more than a meaning — row 106's *"five signal classes with their differing authority"*, for example.
@@ -330,7 +339,18 @@ Kinds is therefore never a schema defect, a data-quality finding or an inconsist
 **REQUIRED SYNTHESIS.** Because value sets may diverge by Kind and by partition (§9.4; §13.7c), a
 vocabulary is meaningful only together with where it applies: two sets that may differ must be
 distinguishable by their applicability, not only by their values. Every `CONTROLLED-VOCABULARY`
-therefore states its applicability (§4.3 item 3).
+therefore makes its applicability determinable (§4.3 item 3): the scope it governs is never left
+ambiguous.
+
+**A semantic obligation, not a schema element.** Applicability is an obligation of the
+`CONTROLLED-VOCABULARY` definition family, not a prescribed element. This specification requires no
+element named `applicability`, no particular reference carrier and no fixed association
+cardinality. 081 fixes what must be knowable; 082 fixes how the schema represents it, subject to
+source authority; neither may invent a general association rule to complete the representation.
+The obligation is checkable at the contract level: for a vocabulary a representation carries, the
+scope it governs can be determined without assuming an association cardinality or reference rule
+the sources do not state. Where a representation can show that scope only by assuming such a rule,
+that part rests on OD-081-1 and is not source-established.
 
 - **Not narrowed to Kinds.** The family is not confined to per-Kind field values; §6.1's other
   scopes are source-established.
@@ -342,8 +362,9 @@ therefore states its applicability (§4.3 item 3).
   declared one (§10 RF-081-1).
 
 How applicability is represented — whether as a declared Model and Kind, a field, a combination or
-something else — is 082's, within §17's boundary. Which subject a vocabulary governs, and how many
-vocabularies a subject may have, is OD-081-1.
+something else — is 082's, within §17's boundary. What a vocabulary is associated with as a general
+rule — a field, a Kind, a field within a Kind or another subject — with what cardinality, how many
+vocabularies a subject may have, and by what reference, is OD-081-1.
 
 ### 6.3 `status` beyond World
 
@@ -470,17 +491,17 @@ The IDs below are this specification's, not pre-existing constitutional identifi
 |---|---|---|---|
 | **CV-081-01** | **Registry Kind.** A `CONTROLLED-VOCABULARY` is an R Registry definition Record of Kind 7 of RMS §10.1's frozen fourteen. No Kind is created, renamed or merged. | RMS §10.1; 064 §6, §14 | SOURCE FACT |
 | **CV-081-02** | **Authoritative about meaning.** A vocabulary definition is authoritative about what its values or terms mean, never about the truth of any domain Record. | RMS §10; §13.7c; 064 F-5 | SOURCE FACT |
-| **CV-081-03** | **One vocabulary.** Each Record governs one vocabulary — one governed set of values or terms; it is not a catalog of several independently governed sets. | 064 Q1, Q3, Q4 | REQUIRED SYNTHESIS |
+| **CV-081-03** | **One vocabulary.** Each Record governs one vocabulary — one governed set of values or terms; it is not a catalog of several independently governed sets. This fixes the unit of definition identity, not association cardinality: how many fields, Kinds, partitions, subtypes or other subjects one vocabulary serves, and how many vocabularies one subject uses, is OD-081-1. | 064 Q1, Q3, Q4 | REQUIRED SYNTHESIS |
 | **CV-081-04** | **Values with meaning.** Each value or term of a vocabulary has a stated meaning; values are not bare strings. | §13.6e; 064 Q1, Q2, Q4 | SOURCE FACT + REQUIRED SYNTHESIS |
 | **CV-081-05** | **Independent value sets.** Value sets may differ between the Kinds a vocabulary family serves. Divergence is the intended design, not a defect. | §9.4; §13.6; row 081 `Done` | SOURCE FACT |
 | **CV-081-06** | **No forced union.** A field shared across Kinds never forces the union of their value sets into one enumeration imposed on each. | §9.4; §13.6; row 081 `Done`; 061 §7 row 9 | SOURCE FACT |
 | **CV-081-07** | **Shared structure stays possible.** Independent value sets require no duplication or split of the shared field's meaning. | §9.4; 072 §12 | SOURCE FACT + REQUIRED SYNTHESIS |
-| **CV-081-08** | **Applicability stated.** Every vocabulary states where it applies, so that sets which may diverge stay distinguishable. The family is not narrowed to per-Kind field values, and no closed list of scopes is defined. | §9.4; §13.7c; §11.1; RMS §11.1; rows 105, 107 | REQUIRED SYNTHESIS |
+| **CV-081-08** | **Applicability determinable.** Where every vocabulary applies is determinable, so that sets which may diverge stay distinguishable. This is a semantic obligation, not a prescribed element: no element named `applicability`, no reference carrier and no association cardinality is required (§6.2). The family is not narrowed to per-Kind field values, and no closed list of scopes is defined. | §9.4; §13.7c; §11.1; RMS §11.1; rows 105, 107 | REQUIRED SYNTHESIS |
 | **CV-081-09** | **Nothing universal.** No universal vocabulary, enum, `status` set, lifecycle, Kind taxonomy or semantic schema is defined; no vocabulary applies to every Kind or model by default. | RMS §4; §13.7a; I-106 | SOURCE FACT |
 | **CV-081-10** | **Model sovereignty.** Registry governs the vocabulary; the owning model decides which value its Records carry and owns those Records. | 061 §7 row 9; 064 Q6; §13.6e; I-105 | SOURCE FACT |
 | **CV-081-11** | **No shared semantics by spelling.** Similarly spelled values in vocabularies of different Kinds or models share no meaning by that fact. | I-103; §5.2 | REQUIRED SYNTHESIS |
 | **CV-081-12** | **Distinct from neighbours.** A vocabulary is not a `FIELD-DEFINITION`, `SCHEMA-DEFINITION` or `SUBTYPE-DEFINITION`, and none of those is a vocabulary; requiredness, occurrence and defaults are schema-side. | RMS §10.1; §9.4; 064 Q13; 070 §11; 072 §12 | SOURCE FACT |
-| **CV-081-13** | **No invented association.** No cardinality, identity or reference rule between a vocabulary and a field, Kind, subtype or schema is defined beyond what the sources state (OD-081-1). | SC-072-H; SC-078-H; SC-070-E | SOURCE GAP |
+| **CV-081-13** | **No invented association.** No cardinality, identity or reference rule between a vocabulary and a field, Kind, partition, subtype, schema or other subject is defined beyond what the sources state (OD-081-1). Neither CV-081-03 nor CV-081-08 supplies one. | SC-072-H; SC-078-H; SC-070-E | SOURCE GAP |
 | **CV-081-14** | **Reference legality.** Every reference the family carries obeys Artifact 063; applicability names declared entities only; no domain instance, domain state or runtime object is a target or authority. | RMS §10.3; 063; §10 | SOURCE FACT |
 | **CV-081-15** | **No instances.** A vocabulary value is a governed term, never a Record of any model. | §9.4; RMS §10.3 | SOURCE FACT |
 | **CV-081-16** | **Independent identity.** The definition has its own R Record identity under the universal grammar and envelope, distinct from any value, field, Kind or consuming Record. | RMS §4, §5; RS-081-1, RS-081-2 | SOURCE FACT |
@@ -535,9 +556,9 @@ Character Record `W-CH-000001-Maximus` currently uses, or cites that Record as w
 **Forbidden**, however well the identifier resolves (RMS §10.3; 063 §7 rows 6–7; RF-081-2,
 RF-081-3).
 
-**E. Deferred — representation.** 081 requires that a vocabulary state its values, their meaning
-and its applicability. Which elements carry them is not fixed by any source. The semantic obligation
-is here; the structure is 082's, within §17 (CV-081-21).
+**E. Deferred — representation.** 081 requires that a vocabulary state its values and their
+meaning, and that its applicability be determinable. Which elements carry them is not fixed by any
+source. The semantic obligation is here; the structure is 082's, within §17 (CV-081-21).
 
 **F. Legal — content growth.** A governed Registry change adds a value to a vocabulary. The frozen
 architecture is untouched and no Blueprint amendment is needed (§9.4). The change goes through the
@@ -598,6 +619,9 @@ serve several fields or Kinds — is OD-081-1. No binding is chosen here.
 | PI-23 | Row 106's signal classes are a `CONTROLLED-VOCABULARY` because they list 081 in `H` | a dependency, not a representation | 064 §23 |
 | PI-24 | Every value carries the same attributes as row 106's classes | no universal value-level attribute set | §4.3; SC-081-E |
 | PI-25 | An open decision is a Roadmap gate | open decisions are not `G` gates | row 081 `G: —`; 003 |
+| PI-26 | One vocabulary per Record means one field, or one Kind, per vocabulary | definition identity, not association cardinality | §4.3; CV-081-03; OD-081-1 |
+| PI-27 | Applicability requires an element named `applicability`, or a particular reference carrier | a semantic obligation; its form is 082's | §6.2; CV-081-08 |
+| PI-28 | OD-081-1 cannot affect any 082 schema design or conformance claim | not decided here; assessed against the actual design | §15.1; §17 |
 
 ## 15. Source-Condition Register
 
@@ -609,10 +633,11 @@ serve several fields or Kinds — is OD-081-1. No binding is chosen here.
 |---|---|
 | **Question** | What is a vocabulary associated with — a field, a Kind, a field within a Kind, a partition, a subtype, a governance or authoring use? With what cardinality: one vocabulary per field per Kind, several, or one shared across fields or Kinds when their sets coincide? By what reference, if any? |
 | **Sources** | Blueprint §9.4 (*"its value vocabulary is per-kind"*); §13.6; §13.7c; RMS §11.1; rows 105, 107, 282, 350; 072 SC-072-H and 078 SC-078-H (no field/vocabulary relation established; the family is 081–082's); 070 SC-070-E |
-| **Established** | vocabularies are distinct from fields, schemas and subtypes; per-Kind and per-partition sets may diverge; no forced union; every vocabulary states its applicability (§6.2) |
+| **Established** | vocabularies are distinct from fields, schemas and subtypes; per-Kind and per-partition sets may diverge; no forced union; every vocabulary's applicability is determinable (§6.2); one Record governs one vocabulary definition, which fixes definition identity and not association cardinality (§4.3) |
 | **Owner** | the Blueprint/RMS author for any general rule. No Roadmap row is assigned one. Absent a general rule, a concrete association belongs to the row that authors the vocabulary or the field, where a governing source establishes it — for example row 350 for the VISUAL-ASSET subtype vocabulary |
-| **Blocks** | in 082: a field-binding or Kind-binding carrier whose shape presupposes a cardinality — one-per-field, one-per-Kind, shared; in row 116: checking that a vocabulary's association is well formed against a rule this family does not have; in shared and model-owned validation (RMS §10.6, §20): checking a Record's value against "its" vocabulary by such a rule |
-| **Does not block** | row 081's `Val` and `Done`; 082's `Val` and `Done`; the per-Kind divergence and forced-union obligations, which hold whatever the association |
+| **Cannot be treated as source-established** | any part of a design or check that requires an association rule the sources do not state: in 082, a field-binding or Kind-binding carrier whose shape presupposes a cardinality — one-per-field, one-per-Kind, shared (§17 Case C); in row 116, checking that a vocabulary's association is well formed against a rule this family does not have; in shared and model-owned validation (RMS §10.6, §20), checking a Record's value against "its" vocabulary by such a rule |
+| **Unaffected** | row 081's `Val` and `Done`; the per-Kind divergence and forced-union obligations; the obligations 082 takes under §17 Case A — all hold whatever the association |
+| **Not decided here** | whether OD-081-1 blocks any particular 082 schema design or conformance claim against 082's `Val` and `Done`. OD-081-1 does not invalidate this specification's obligations, and 082 may carry work that does not depend on it; whether a given design depends on it is assessed against that design and 082's exit criteria, which are not changed (§17) |
 | **Closes when** | an authoritative source states how vocabularies are associated with the subjects they govern, or a concrete row's governing source establishes it for that row; and the answer is cited where this document records the gap |
 
 ### 15.2 Source conditions
@@ -645,16 +670,16 @@ resolution, and whether it blocks row 081's `Val` or `Done`.
 | **Established** | the semantic obligations of §4.3 |
 | **Undecided** | element names, shapes, value identification, ordering, notation |
 | **Owner** | 082, within §17 — except what OD-081-1 holds open |
-| **Blocks?** | no |
+| **Blocks?** | row 081: no. A representation choice that depends on OD-081-1 is treated as §17 Case C states |
 
 #### SC-081-D — association cardinality — SOURCE GAP
 
 | | |
 |---|---|
 | **Sources** | as OD-081-1 |
-| **Undecided** | one vocabulary per Kind or several; one per field or several fields sharing one; reuse across Kinds |
-| **Treatment** | recorded as OD-081-1 (§15.1); no cardinality is chosen |
-| **Blocks?** | row 081: no. Downstream: as OD-081-1 states |
+| **Undecided** | one vocabulary per Kind or several; one per field or several fields sharing one; reuse across Kinds; the same questions for partitions, subtypes and other subjects |
+| **Treatment** | recorded as OD-081-1 (§15.1); no cardinality is chosen; one vocabulary per Record (§4.3) is definition identity and does not settle it |
+| **Blocks?** | row 081: no. Downstream: not decided here; as OD-081-1 states |
 
 #### SC-081-E — value-level detail beyond meaning — SOURCE GAP
 
@@ -781,14 +806,17 @@ authoring review, pending human review.
 | **C-081-17** | No downstream row's `Val` or `Done` is expanded. | CROSS-SOURCE | §17 |
 | **C-081-18** | The header and §0 reproduce row 081 exactly. | CROSS-SOURCE | header; §0 |
 | **C-081-19** | Only `docs/registry/controlled_vocabulary.md` is created by this artifact. | REPOSITORY | row 081 |
-| **C-081-20** | Row 081's `Done` is demonstrated at the level it reaches. | STATIC | §18 |
+| **C-081-20** | Row 081's `Done` is reported at the level it reaches, and no higher. | STATIC | §18 |
 | **C-081-21** | The family is neither narrowed to per-Kind field values nor given a closed list of scopes. | CROSS-SOURCE | §6; CV-081-08 |
-| **C-081-22** | Every vocabulary is required to state its values, their meaning and its applicability. | CROSS-SOURCE | §4.3; CV-081-03, CV-081-04, CV-081-08 |
+| **C-081-22** | Every vocabulary is required to state its values and their meaning, and to make its applicability determinable. | CROSS-SOURCE | §4.3; CV-081-03, CV-081-04, CV-081-08 |
 | **C-081-23** | Content extensibility is stated together with governance, and no procedure is invented. | CROSS-SOURCE | §9 VS-081-2, VS-081-3 |
 | **C-081-24** | `status` stays World-owned; no `status` exists elsewhere because of this family. | CROSS-SOURCE | §6.3; SC-081-N |
 | **C-081-25** | Defaults, requiredness and occurrence counts are left schema-side. | CROSS-SOURCE | §7; CV-081-12 |
 | **C-081-26** | `H: 064` is the only hard dependency; supporting artifacts are not promoted. | CROSS-SOURCE | §3 |
 | **C-081-27** | Stale Blueprint wording corrected by the RMS is identified as closed, not reopened. | CROSS-SOURCE | SC-081-A, SC-081-H, SC-081-N |
+| **C-081-28** | No statement declares OD-081-1 unconditionally non-blocking for Artifact 082; independent obligations, representation choices and association-dependent work are distinguished, and whether OD-081-1 blocks a given 082 design is left to the assessment of that design. | STATIC | §15.1; §17 |
+| **C-081-29** | One vocabulary per Record is stated as the unit of definition identity and is not used to fix association cardinality. | STATIC | §4.3; CV-081-03; SC-081-D |
+| **C-081-30** | Applicability is a semantic obligation; no element name, reference carrier or association cardinality is prescribed for it. | STATIC | §6.2; CV-081-08 |
 
 ## 17. Downstream Handoff
 
@@ -796,11 +824,12 @@ authoring review, pending human review.
 `Val`: *"definition resolves; versionable; references only declared entities (063)"*; `Done`:
 *"schema"*). 082 may take from this specification, without redesign:
 
-1. **Meaning.** An R Record governing one vocabulary (§4; CV-081-01, CV-081-03).
+1. **Meaning.** An R Record governing one vocabulary — the unit of definition identity, not an
+   association cardinality (§4; CV-081-01, CV-081-03).
 2. **Content.** Its values or terms, each with a stated meaning, as distinct members of one set
    (§4.3; CV-081-04).
-3. **Applicability.** Stated for every vocabulary, so that divergent sets stay apart, without a
-   closed list of scopes (§6; CV-081-08).
+3. **Applicability.** Determinable for every vocabulary, so that divergent sets stay apart, without
+   a closed list of scopes, a prescribed element or a fixed carrier (§6.2; CV-081-08).
 4. **Divergence and no union.** Nothing in the structure pools the value sets of different Kinds or
    partitions, and nothing requires them to differ (§5; CV-081-05, CV-081-06).
 5. **Declared entities.** Where applicability names a Model or Kind, a declared one, by declaration
@@ -809,14 +838,28 @@ authoring review, pending human review.
 7. **Identity and versionability.** Ordinary R Record identity; nothing that obstructs 108–110 (§9).
 8. **Not schema-side.** No requiredness, occurrence count or default (§7; CV-081-12).
 
-**The boundary for 082 while OD-081-1 is open.**
+**The boundary for 082 while OD-081-1 is open.** Three cases are kept apart:
 
-| 082 may | 082 may not |
-|---|---|
-| meet its own `Val` and `Done` | fix one vocabulary per field, per Kind, or a shared vocabulary across Kinds, by the shape of a carrier |
-| represent applicability, recorded as its own choice where the sources do not fix the form | give a field-binding or Kind-binding element a cardinality the sources do not state |
-| choose how values are identified within a vocabulary, recorded as its own choice | add value labels, aliases, ordering, hierarchy, defaults or value-level deprecation as universal requirements |
-| hold an open association shape as unresolved rather than accepted or rejected | merge, inherit or override value sets across vocabularies |
+| Case | What it covers | 082's position |
+|---|---|---|
+| **A — independent obligations** | properties the sources establish without OD-081-1: the definition's identity; its values or terms and their meaning; that its applicability is determinable; versionability; reference legality (items 1–8 above) | 082 may represent them. They are semantic obligations, not a list of mandatory elements |
+| **B — representation choices** | within 082's schema responsibility: element names, shapes and notation; how values are identified within a vocabulary; the form that makes applicability determinable, where the sources do not fix it | 082 may make them, recorded as its own choices. A choice may not establish a semantic rule: no shape may force one vocabulary per field, per Kind, or one shared across Kinds, unless a governing source establishes it |
+| **C — association-dependent** | any part of a design that requires an association rule — cardinality, identity, reference — the sources do not state | 082 preserves the question, holding such a shape as unresolved rather than accepted or rejected, or escalates it to the owner OD-081-1 names. It does not invent the answer, and that part is not source-established until the relevant authority resolves it |
+
+In every case, 082 may not:
+
+- fix one vocabulary per field, per Kind, or a shared vocabulary across Kinds, by the shape of a
+  carrier;
+- give a field-binding or Kind-binding element a cardinality the sources do not state;
+- add value labels, aliases, ordering, hierarchy, defaults or value-level deprecation as universal
+  requirements;
+- merge, inherit or override value sets across vocabularies.
+
+**Whether OD-081-1 blocks 082 is not decided here.** OD-081-1 does not invalidate the obligations
+082 takes from this specification, and 082 may carry Case A and Case B work without it. Artifact
+081 does not determine in advance whether OD-081-1 blocks any particular 082 schema design or
+conformance claim; that is assessed against the actual design and 082's `Val` and `Done`. An
+unspecified carrier is not evidence that the association question is resolved.
 
 **082 is not asked** to fix anything this specification leaves open, and this specification decides
 none of 082's representation choices. 082's `Val` and `Done` are not enlarged.
@@ -845,16 +888,16 @@ none: 082 and rows 108–124 do not exist in the repository at this revision.
 |---|---|---|---|
 | `Val`: *"definition resolves"* | **SPECIFIED** — independent R Record identity under the universal grammar and envelope, distinct from values, fields and Kinds; resolvable ≠ legal. **SOURCE-CHECKED** — RMS §4, §5 | MECHANISM: 082, 114, 115, 117. DEMONSTRATED: 116, 124 | §9 RS-081 |
 | `Val`: *"versionable"* | **SPECIFIED** — governed evolution under 108–110; content extensible by governed change; not defined ≠ forbidden. **SOURCE-CHECKED** — §9.4, 064 F-4, row 108 | MECHANISM: 108–110 | §9 VS-081 |
-| `Val`: *"references only declared entities (063)"* | **SPECIFIED** — applicability names declared Models and Kinds; no domain instance, state or runtime target; values are not references; category ≠ relation. **SOURCE-CHECKED** — RMS §10.3, 063 | MECHANISM: 082's carrier, 112. DEMONSTRATED: 112's negative test, 116 | §10 RF-081 |
+| `Val`: *"references only declared entities (063)"* | **SPECIFIED** — applicability names declared Models and Kinds; no domain instance, state or runtime target; values are not references; category ≠ relation. **SOURCE-CHECKED** — RMS §10.3, 063 | MECHANISM: 082's representation, 112. DEMONSTRATED: 112's negative test, 116 | §10 RF-081 |
 | `Done`: *"per-kind value sets may diverge; forced enum union prohibited"* | **SPECIFIED** — both stated as rules (CV-081-05, CV-081-06), with what a forced union is (§5.2) and its examples (§13 A, B). **SOURCE-CHECKED** — §9.4, §13.6 | no concrete vocabulary yet exists to show it; whether SPECIFIED is the level `Done` requires is for human review | §5; §11; §13 |
 | `Why`: *"§9.4's explicit rule"* | **SPECIFIED** — §9.4's rule is the family's primary invariant (§1) | — | §1; §5 |
 | `H: 064` | **PRESENT** — Artifact 064 exists at its path; §4.1's quotations of it are SOURCE-CHECKED | its review status is a human record | §4.1 |
 | `S: —` | **PRESERVED** | — | §3 |
 | `LS: LS-1` | **PRESERVED** — label kept; no pair invented | resolution is the Roadmap author's | SC-081-K |
 | `G: —` | **PRESERVED** — no gate introduced; OD-081-1 is not a gate | — | §0; §15.1 |
-| `→ 082` | **SPECIFIED** — the handoff is stated; 082's `Val` and `Done` unchanged | 082 does not exist yet | §17 |
+| `→ 082` | **SPECIFIED** — the handoff is stated, with Cases A–C kept apart; 082's `Val` and `Done` unchanged | 082 does not exist yet; whether OD-081-1 blocks any 082 design is not decided here | §17 |
 | `Req: RR-16` | **CARRIED** — ID only | no compliance claimed | SC-081-I |
-| open decision | **RECORDED** — OD-081-1 with owner, scope and closing condition | OPEN | §15.1 |
+| open decision | **RECORDED** — OD-081-1 with owner, scope and closing condition | OPEN; its effect on 082 is assessed against 082's actual design | §15.1; §17 |
 
 Whether SPECIFIED and SOURCE-CHECKED suffice for row 081 to proceed is a human review decision; this
 document does not make it. No vocabulary, value, Record, schema, validator or canonical data is
