@@ -53,7 +53,8 @@ and no concrete vocabulary. It is:
 - **not a Record.** It carries no envelope, no `object_id`, no provenance and no `registry_ref`, and
   it creates no `CONTROLLED-VOCABULARY` Record.
 - **not the family's schema.** How a `CONTROLLED-VOCABULARY` Record is structurally represented is
-  Artifact 082's (`docs/registry/controlled_vocabulary.schema`, `H: 081`).
+  Artifact 082's (`docs/registry/controlled_vocabulary.schema`, `H: 081`) — row 082's path in the
+  repository Roadmap, as §0.8 set it (SC-081-P).
 - **not a vocabulary.** It lists no value of any vocabulary — no `status` value of any Kind, no
   anchor category, no diagnostic phrase, no reader archetype.
 - **not an implementation.** It defines no enum, validator, resolver, store or service.
@@ -196,7 +197,9 @@ promote it into `H`.
 
 Citations are to the repository copies in `docs/sources/`: the Blueprint is
 `COOLBOY12_MASTER_BLUEPRINT_v0.7.03.md`, the RMS `COOLBOY12_RECORD_MODEL_SYSTEM_v1.0.md`, the
-Roadmap `COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md`.
+Roadmap `COOLBOY12_OS_FILE_BUILD_ROADMAP_REPAIRED.md`. The Roadmap copy carries two author
+revisions the original upload lacks, §0.7 and §0.8; every Roadmap citation here, row 082's path
+included, is to the repository copy (SC-081-P).
 
 ## 4. The CONTROLLED-VOCABULARY Definition Family
 
@@ -749,16 +752,17 @@ resolution, and whether it blocks row 081's `Val` or `Done`.
 
 | | |
 |---|---|
-| **Sources** | row 081 `T: doc · Canon: canonical-about-meaning · CD: yes`; Artifact 003: *"A specification in `docs/**` is `AUTHORITATIVE` about architecture and `Canon: n/a`"*, and `CD` *"licenses nothing"*; Roadmap §0.8 |
-| **Condition** | the row gives a `docs/**` specification the `Canon` value Artifact 003 associates with Registry |
-| **Treatment** | the values are copied exactly; this file is an authored specification, not a Registry Record, and licenses no canonical write; vocabulary Records are committed only through row 152 after G-CANON-R. Route: ROADMAP / CONVENTION ISSUE |
+| **Sources** | row 081 `T: doc · Canon: canonical-about-meaning · CD: yes`; Artifact 003: *"A specification in `docs/**` is `AUTHORITATIVE` about architecture and `Canon: n/a`"*, and `CD` *"licenses nothing"*; Roadmap §0.8 (AD-REG-AUTHORING-SPLIT): *"P3 authors Registry family contracts, structural contracts and canonicalization source material outside `canon/**`; canonical Registry Records are committed only through 152, after G-CANON-R."* |
+| **Condition** | the row gives a `docs/**` specification the `Canon` value Artifact 003 associates with Registry. The labels differ; §0.8 does not change them, and no source reconciles them |
+| **Established** | by §0.8: this file is an authored family contract, not a Registry Record, and licenses no canonical write; vocabulary Records are committed only through row 152 after G-CANON-R |
+| **Treatment** | the values are copied exactly and not normalized. Unresolved: whether row 081's `Canon` and `CD` should read as Artifact 003's convention does — the Roadmap author's. Route: ROADMAP / CONVENTION ISSUE |
 | **Blocks?** | no |
 
 #### SC-081-K — `LS: LS-1` on a family specification — RECORDED, NOT RESOLVED
 
 | | |
 |---|---|
-| **Sources** | row 081 `LS: LS-1`; Roadmap PART III: LS-1 *"every Kind spec ↔ its Registry KIND-DEFINITION"*, and §0.7 (AD-LS1-R-BOOTSTRAP): *"The Registry's own fourteen pairs are 064 ↔ 075"*; Artifact 003: *"A lockstep partner is not a predecessor."* |
+| **Sources** | row 081 `LS: LS-1`; Roadmap PART III: LS-1 *"every Kind spec ↔ its Registry KIND-DEFINITION"* and *"The Registry's own fourteen pairs are 064 ↔ 075"*; §0.7 (AD-LS1-R-BOOTSTRAP): *"Registry's own pairs are 064 ↔ 075"*; Artifact 003: *"A lockstep partner is not a predecessor."* |
 | **Condition** | a family specification is neither a Kind specification nor a `KIND-DEFINITION`; Kind 7's LS-1 pair is 064 ↔ 075 (075 §2.7), which names neither 081 nor 082, though row 082 also carries `LS: LS-1` |
 | **Treatment** | the label is preserved; no 081 ↔ 082 or other pair is invented (as 064 SC-064-J records for the non-roster rows) |
 | **Blocks?** | no |
@@ -794,6 +798,17 @@ resolution, and whether it blocks row 081's `Val` or `Done`.
 |---|---|
 | **Sources** | Blueprint §35: *"Registry expansion — indicator semantics, controlled vocabularies"*, status OPEN |
 | **Treatment** | this specification defines the family; it does not author vocabularies and does not close O-8 |
+| **Blocks?** | no |
+
+#### SC-081-P — the Roadmap copy, its §0.7 and §0.8, and row 082's path — CLOSED BY AUTHOR REVISION
+
+| | |
+|---|---|
+| **Sources** | the repository Roadmap: §0.7, *"Author revisions after the in-repository copy"* (`AUTHOR-DECIDED`, AD-LS1-R-BOOTSTRAP), and §0.8 (`AUTHOR-DECIDED`, AD-REG-AUTHORING-SPLIT), which lists row 082 among the structural contracts that *"move to `docs/registry/<family>.schema`"*; Revolving Resolution Note GAP-K: *"The Roadmap copy is no longer byte-identical to the original upload."*, with CONFLICT-E and CONFLICT-F as the audit trail; git history: the original copy (commit `d68927f`) has no §0.7 or §0.8 and gives row 082 as `canon/registry/controlled_vocabulary.schema` |
+| **Established** | row 082's manifest path in the repository Roadmap is `docs/registry/controlled_vocabulary.schema`; no other source sets a different path; row 081's path is the same in both copies; no file exists at either 082 path |
+| **Condition** | an audit made against the original upload finds row 082 under `canon/registry/` and no §0.7 or §0.8. That difference is these two author revisions, not an error in either copy |
+| **Treatment** | every Roadmap citation here is to the repository copy, as §3 states. The author confirmed both revisions as their rulings on 2026-10-28, when this condition was raised. Nothing is moved, and 082 is not created |
+| **Owner** | the Roadmap author |
 | **Blocks?** | no |
 
 ## 16. Conformance Conditions
@@ -846,10 +861,12 @@ not acceptance, which is a human record (§18).
 | **C-081-31** | No section admits or rejects an empty vocabulary; the meaning obligation is not read as a minimum size. | STATIC | SC-081-E; PI-31 |
 | **C-081-32** | Value spelling is not made a value's identity or meaning, and values are not made Registry Records of their own. | STATIC | CV-081-11; CV-081-15; PI-30 |
 | **C-081-33** | Versionability is kept apart from the versioning mechanism and from semantic-compatibility policy, and neither is defined here. | CROSS-SOURCE | §9 VS-081-2, VS-081-4 |
+| **C-081-34** | Row 082's path and every Roadmap §0.7 and §0.8 citation match the repository Roadmap, and how that copy differs from the original upload is recorded. | CROSS-SOURCE | §0; §3; §17; SC-081-P |
 
 ## 17. Downstream Handoff
 
-**To 082** (`CONTROLLED-VOCABULARY` schema, `docs/registry/controlled_vocabulary.schema`; `H: 081`;
+**To 082** (`CONTROLLED-VOCABULARY` schema, `docs/registry/controlled_vocabulary.schema` per
+SC-081-P; `H: 081`;
 `Val`: *"definition resolves; versionable; references only declared entities (063)"*; `Done`:
 *"schema"*). 082 may take from this specification, without redesign:
 
